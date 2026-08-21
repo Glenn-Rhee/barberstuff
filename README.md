@@ -1,2 +1,2 @@
-# mobile-barbershopstuff-be-fe
+# mobile-barbershopstuff
 Multi-branch barbershop management system. 
