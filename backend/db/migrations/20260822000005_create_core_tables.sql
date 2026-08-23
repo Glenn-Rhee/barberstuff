@@ -1,68 +1,89 @@
 -- +goose Up
 -- +goose StatementBegin
 
+-- Trigger function bersama untuk auto-update kolom updated_at di semua tabel
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- ============ USER TABLES ============
-CREATE TABLE pelanggan (
-    id UUID PRIMARY KEY,
+CREATE TABLE customer (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
-    no_telp VARCHAR(20),
-    tgl_lahir DATE,
-    gender VARCHAR(10),
+    phone_number VARCHAR(20),
+    date_of_birth DATE,
+    gender VARCHAR(10) CHECK (gender IN ('male', 'female', 'other')),
     username VARCHAR(100) UNIQUE NOT NULL,
-    poin_member INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT NOW()
+    member_points INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE kasir (
-    id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+CREATE TRIGGER trg_customer_updated_at
+    BEFORE UPDATE ON customer
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- staff = pegawai internal (cashier / admin / owner), BUKAN capster
+CREATE TABLE staff (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE admin (
-    id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
+CREATE TRIGGER trg_staff_updated_at
+    BEFORE UPDATE ON staff
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
-CREATE TABLE owner (
-    id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
+-- ============ AUTHENTICATION ============
+CREATE TYPE role_enum AS ENUM ('customer', 'cashier', 'admin', 'owner');
 
--- ============ AUTHENTIKASI ============
--- id_user bersifat polymorphic (bisa mengacu ke pelanggan/kasir/admin/owner
--- tergantung "role"). PostgreSQL tidak bisa FK ke banyak tabel sekaligus,
--- jadi validasi id_user vs role harus dilakukan di level aplikasi/backend.
-CREATE TYPE role_enum AS ENUM ('pelanggan', 'kasir', 'admin', 'owner');
-
-CREATE TABLE authentikasi (
-    id UUID PRIMARY KEY,
-    id_user UUID NOT NULL,
-    password VARCHAR(255) NOT NULL,
+-- id_user sebelumnya polymorphic tanpa FK asli (rawan orphan data).
+-- Dipecah jadi 2 kolom nullable + CHECK, integritas dijaga DB:
+--   - role = 'customer'                   -> id_customer terisi, id_staff NULL
+--   - role IN ('cashier','admin','owner') -> id_staff terisi, id_customer NULL
+CREATE TABLE authentication (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_customer UUID REFERENCES customer(id) ON DELETE CASCADE,
+    id_staff UUID REFERENCES staff(id) ON DELETE CASCADE,
+    password VARCHAR(255) NOT NULL, -- simpan hash (bcrypt/argon2), bukan plaintext
     role role_enum NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL
+    email VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_authentication_user_role CHECK (
+        (role = 'customer' AND id_customer IS NOT NULL AND id_staff IS NULL)
+        OR
+        (role IN ('cashier', 'admin', 'owner') AND id_staff IS NOT NULL AND id_customer IS NULL)
+    )
 );
 
-CREATE INDEX idx_authentikasi_id_user ON authentikasi(id_user);
-CREATE INDEX idx_authentikasi_email ON authentikasi(email);
+CREATE INDEX idx_authentication_id_customer ON authentication(id_customer);
+CREATE INDEX idx_authentication_id_staff ON authentication(id_staff);
+-- index email dihapus, sudah otomatis ada dari UNIQUE
 
 -- ============ OTP ============
--- One-to-one ke pelanggan
 CREATE TABLE otp (
-    id UUID PRIMARY KEY,
-    id_user UUID NOT NULL UNIQUE REFERENCES pelanggan(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_user UUID NOT NULL UNIQUE REFERENCES customer(id) ON DELETE CASCADE,
     otp VARCHAR(6) NOT NULL,
-    expired_at TIMESTAMP NOT NULL
+    expired_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX idx_otp_expired_at ON otp(expired_at);
 
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS otp;
-DROP TABLE IF EXISTS authentikasi;
+DROP TABLE IF EXISTS authentication;
 DROP TYPE IF EXISTS role_enum;
-DROP TABLE IF EXISTS pelanggan;
-DROP TABLE IF EXISTS kasir;
-DROP TABLE IF EXISTS admin;
-DROP TABLE IF EXISTS owner;
+DROP TABLE IF EXISTS staff;
+DROP TABLE IF EXISTS customer;
+DROP FUNCTION IF EXISTS set_updated_at();
 -- +goose StatementEnd
