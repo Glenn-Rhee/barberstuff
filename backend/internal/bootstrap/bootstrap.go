@@ -17,8 +17,11 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	customerRepo := repository.NewCustomerRepository(db)
 	authRepo := repository.NewAuthRepository(db)
 	otpRepo := repository.NewOtpRepository(db)
+	
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, otpRepo)
+
+	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
 
 	return &Handlers{

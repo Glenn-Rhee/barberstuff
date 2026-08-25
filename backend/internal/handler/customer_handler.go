@@ -46,8 +46,43 @@ func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
 	}
 
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.CredentialCustomerResponse]{
-		Message:    "Succes",
+		Message:    "OTP telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.",
 		Data:       *result,
+		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *CustomerHandler) VerifyCredential(ctx *gin.Context) {
+	var dataOtpCustomer dto.VerifyCredentialRequest
+
+	if err := ctx.ShouldBindJSON(&dataOtpCustomer); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	if !helper.ValidateOTP(dataOtpCustomer.OTP) {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Hanya masukkan OTP berupa angka diantara 0-9",
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	err := h.service.VerifyOTP(dataOtpCustomer)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+		Message:    "Berhasil verifikasi akun! Silahkan login.",
+		Data:       nil,
 		StatusCode: http.StatusOK,
 	})
 }

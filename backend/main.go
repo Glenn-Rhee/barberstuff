@@ -18,6 +18,7 @@ func main() {
 	router := gin.Default()
 
 	router.POST("/auth/register/credential", h.CustomerHandler.CredentialRegister)
+	router.POST("/auth/verify-credential", h.CustomerHandler.VerifyCredential)
 
 	fmt.Println("Server running on http://localhost:8080")
 	router.Run(":8080")

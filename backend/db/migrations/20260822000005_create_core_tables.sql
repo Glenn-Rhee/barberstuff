@@ -74,6 +74,7 @@ CREATE TABLE otp (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     id_user UUID NOT NULL UNIQUE REFERENCES customer(id) ON DELETE CASCADE,
     otp VARCHAR(6) NOT NULL,
+    attempt_count INT NOT NULL DEFAULT 0,
     expired_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

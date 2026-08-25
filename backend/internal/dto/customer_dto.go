@@ -20,3 +20,9 @@ type CredentialCustomerResponse struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 }
+
+type VerifyCredentialRequest struct {
+	UserId string `json:"user_id" binding:"required"`
+	OTP    string `json:"otp" binding:"required,len=6,numeric"`
+}
+
