@@ -3,7 +3,8 @@ package repository
 import (
 	"barberstuff_backend/internal/entity"
 	"context"
-	"database/sql"
+
+	"gorm.io/gorm"
 )
 
 type CustomerRepository interface {
@@ -11,10 +12,10 @@ type CustomerRepository interface {
 }
 
 type customerRepository struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
-func NewCustomerRepository(db *sql.DB) CustomerRepository {
+func NewCustomerRepository(db *gorm.DB) CustomerRepository {
 	return &customerRepository{db: db}
 }
 

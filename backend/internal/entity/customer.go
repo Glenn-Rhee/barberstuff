@@ -6,6 +6,13 @@ import (
 	"github.com/google/uuid"
 )
 
+type Gender string
+
+const (
+	GenderMale   Gender = "Male"
+	GenderFemale Gender = "Female"
+)
+
 type Customer struct {
 	ID           uuid.UUID  `gorm:"column:id;primaryKey"`
 	Name         string     `gorm:"column:name;not null"`
