@@ -47,7 +47,7 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 	dataAuth, err := c.authRepo.GetByEmail(dataNewCustomer.Email)
 	if err == nil {
 		if dataAuth.IsVerified {
-			return c.failRegister(tx, "EMAIL TERDAFTAR", errors.New("Email telah terdaftar"))
+			return &dto.CredentialCustomerResponse{}, errors.New("Email ini telah terdaftar dan terverifikasi!")
 		}
 
 		if waitErr := c.checkPendingOTP(*dataAuth.IDCustomer); waitErr != nil {
