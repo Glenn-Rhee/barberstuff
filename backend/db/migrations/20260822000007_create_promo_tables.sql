@@ -12,7 +12,7 @@ CREATE TABLE promo (
     discount_type discount_type_enum NOT NULL DEFAULT 'fixed',
     discount_value NUMERIC(12,2) NOT NULL DEFAULT 0, -- nominal (fixed) atau persen 0-100 (percentage)
     expired_at TIMESTAMP,
-    image_promo_url TEXT,
+    image_promo BYTEA,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     CONSTRAINT chk_promo_discount_value CHECK (

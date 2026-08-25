@@ -8,35 +8,45 @@ import (
 )
 
 type PromoStatusEnum string
+
 const (
 	PromoStatusVisible PromoStatusEnum = "visible"
 	PromoStatusHide    PromoStatusEnum = "hide"
 )
 
 type DiscountTypeEnum string
+
 const (
 	DiscountTypePercentage DiscountTypeEnum = "percentage"
 	DiscountTypeFixed      DiscountTypeEnum = "fixed"
 )
 
 type Promo struct {
-	ID            uuid.UUID        `db:"id"`
-	Title         string           `db:"title"`
-	Status        PromoStatusEnum  `db:"status"`
-	Description   *string          `db:"description"`
-	DiscountType  DiscountTypeEnum `db:"discount_type"`
-	DiscountValue decimal.Decimal  `db:"discount_value"`
-	ExpiredAt     *time.Time       `db:"expired_at"`
-	ImagePromo    []byte           `db:"image_promo"`
-	CreatedAt     time.Time        `db:"created_at"`
-	UpdatedAt     time.Time        `db:"updated_at"`
+	ID            uuid.UUID        `gorm:"column:id;primaryKey"`
+	Title         string           `gorm:"column:title;not null"`
+	Status        PromoStatusEnum  `gorm:"column:status;not null"`
+	Description   *string          `gorm:"column:description"`
+	DiscountType  DiscountTypeEnum `gorm:"column:discount_type;not null"`
+	DiscountValue decimal.Decimal  `gorm:"column:discount_value;not null;default:0"`
+	ExpiredAt     *time.Time       `gorm:"column:expired_at"`
+	ImagePromo    []byte           `gorm:"column:image_promo"`
+	CreatedAt     time.Time        `gorm:"column:created_at;not null"`
+	UpdatedAt     time.Time        `gorm:"column:updated_at;not null"`
+}
+
+func (Promo) TableName() string {
+	return "promo"
 }
 
 type PromoClaimed struct {
-	ID        uuid.UUID  `db:"id"`
-	IDPromo   uuid.UUID  `db:"id_promo"`
-	IDUser    uuid.UUID  `db:"id_user"`
-	IsUsed    bool       `db:"is_used"`
-	UsedAt    *time.Time `db:"used_at"`
-	CreatedAt time.Time  `db:"created_at"`
+	ID        uuid.UUID  `gorm:"column:id;primaryKey"`
+	IDPromo   uuid.UUID  `gorm:"column:id_promo;not null"`
+	IDUser    uuid.UUID  `gorm:"column:id_user;not null"`
+	IsUsed    bool       `gorm:"column:is_used;not null;default:false"`
+	UsedAt    *time.Time `gorm:"column:used_at"`
+	CreatedAt time.Time  `gorm:"column:created_at;not null"`
+}
+
+func (PromoClaimed) TableName() string {
+	return "promo_claimed"
 }

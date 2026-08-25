@@ -16,11 +16,15 @@ const (
 )
 
 type Authentication struct {
-	ID         uuid.UUID  `db:"id"`
-	IDCustomer *uuid.UUID `db:"id_customer"`
-	IDStaff    *uuid.UUID `db:"id_staff"`
-	Password   string     `db:"password"`
-	Role       RoleEnum   `db:"role"`
-	Email      string     `db:"email"`
-	CreatedAt  time.Time  `db:"created_at"`
+	ID         uuid.UUID  `gorm:"column:id;primaryKey"`
+	IDCustomer *uuid.UUID `gorm:"column:id_customer"`
+	IDStaff    *uuid.UUID `gorm:"column:id_staff"`
+	Password   string     `gorm:"column:password;not null"`
+	Role       RoleEnum   `gorm:"column:role;not null"`
+	Email      string     `gorm:"column:email;not null;unique"`
+	CreatedAt  time.Time  `gorm:"column:created_at;not null"`
+}
+
+func (Authentication) TableName() string {
+	return "authentication"
 }

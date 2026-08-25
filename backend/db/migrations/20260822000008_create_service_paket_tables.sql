@@ -10,7 +10,7 @@ CREATE TABLE service (
     price NUMERIC(12,2) NOT NULL DEFAULT 0,
     duration_minutes INT, -- estimasi durasi, dipakai utk penjadwalan booking
     status product_status_enum NOT NULL DEFAULT 'active',
-    image_service_url TEXT,
+    image_service BYTEA,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -26,7 +26,7 @@ CREATE TABLE package (
     price NUMERIC(12,2) NOT NULL DEFAULT 0,
     duration_minutes INT,
     status product_status_enum NOT NULL DEFAULT 'active',
-    image_package_url TEXT,
+    image_package BYTEA,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

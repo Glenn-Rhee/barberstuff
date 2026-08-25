@@ -11,7 +11,7 @@ CREATE TABLE store (
     description TEXT,
     phone_number VARCHAR(20),
     status store_status_enum NOT NULL DEFAULT 'open',
-    image_store_url TEXT, -- URL/path ke object storage (S3/GCS/CDN), bukan file mentah di DB
+    image_store BYTEA,
     id_staff UUID UNIQUE REFERENCES staff(id) ON DELETE SET NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -28,7 +28,7 @@ CREATE TYPE capster_status_enum AS ENUM ('active', 'inactive');
 CREATE TABLE capster (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
-    image_capster_url TEXT,
+    image_capster BYTEA,
     status capster_status_enum NOT NULL DEFAULT 'active', -- nonaktifkan tanpa hapus data (masih dipakai di booking/rating lama)
     id_store UUID NOT NULL REFERENCES store(id) ON DELETE CASCADE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
