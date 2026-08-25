@@ -1,18 +1,23 @@
 package helper
-import "barberstuff_backend/internal/dto"
 
-func NewErrorResponse(statusCode int, message string) dto.ResponseApi[any] {
-	return dto.ResponseApi[any]{
+import (
+	"barberstuff_backend/internal/dto"
+
+	"github.com/gin-gonic/gin"
+)
+
+func NewErrorResponse[T any](ctx *gin.Context, dataResponse dto.ResponseApi[T]) {
+	ctx.JSON(dataResponse.StatusCode, dto.ResponseApi[any]{
 		Data:       nil,
-		Message:    message,
-		StatusCode: statusCode,
-	}
+		Message:    dataResponse.Message,
+		StatusCode: dataResponse.StatusCode,
+	})
 }
 
-func NewSuccessResponse[T any](statusCode int, message string, data T) dto.ResponseApi[T] {
-	return dto.ResponseApi[T]{
-		Data:       data,
-		Message:    message,
-		StatusCode: statusCode,
-	}
+func NewSuccessResponse[T any](ctx *gin.Context, dataResponse dto.ResponseApi[T]) {
+	ctx.JSON(dataResponse.StatusCode, dto.ResponseApi[T]{
+		Data:       dataResponse.Data,
+		Message:    dataResponse.Message,
+		StatusCode: dataResponse.StatusCode,
+	})
 }

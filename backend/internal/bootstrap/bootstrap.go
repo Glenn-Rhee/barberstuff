@@ -13,9 +13,12 @@ type Handlers struct {
 }
 
 func InitHandlers(db *gorm.DB) *Handlers {
-	// Customer Modul
+	// Repo
 	customerRepo := repository.NewCustomerRepository(db)
-	customerService := service.NewCustomerService(customerRepo)
+	authRepo := repository.NewAuthRepository(db)
+	otpRepo := repository.NewOtpRepository(db)
+	// Service
+	customerService := service.NewCustomerService(customerRepo, authRepo, db, otpRepo)
 	customerHandler := handler.NewCustomerHandler(customerService)
 
 	return &Handlers{

@@ -19,6 +19,7 @@ CREATE TABLE customer (
     gender VARCHAR(10) CHECK (gender IN ('male', 'female', 'other')),
     username VARCHAR(100) UNIQUE NOT NULL,
     member_points INT NOT NULL DEFAULT 0,
+    image_customer BYTEA,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -54,6 +55,9 @@ CREATE TABLE authentication (
     role role_enum NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    login_type VARCHAR(20) NOT NULL DEFAULT 'credential',
+    oauth_provider VARCHAR(20),
     CONSTRAINT chk_authentication_user_role CHECK (
         (role = 'customer' AND id_customer IS NOT NULL AND id_staff IS NULL)
         OR
