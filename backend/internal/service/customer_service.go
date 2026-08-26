@@ -133,7 +133,7 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 	const MESSAGE_ERROR = "Terjadi kesalahan saat verifikasi otp. Coba lagi nanti"
 	parsedId, err := uuid.Parse(dataOTPCust.UserId)
 	if err != nil {
-		log.Printf("Error [%s] [service/customer_service.go]: %v\n", "Parsed string -> UUID", err.Error())
+		helper.Logger("Parsed string -> UUID", "service/customer_service.go", err)
 		return errors.New(MESSAGE_ERROR)
 	}
 
@@ -142,7 +142,7 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Data tidak ditemukan! Mohon daftar ulang!")
 		}
-		log.Printf("Error [%s] [service/customer_service.go]: %v\n", "Find otp By user id", err.Error())
+		helper.Logger("Find otp By user id", "service/customer_service.go", err)
 		return errors.New(MESSAGE_ERROR)
 	}
 
@@ -154,7 +154,7 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 	if dataOtpRegistered.OTP != dataOTPCust.OTP {
 		err = c.otpRepo.IncrementAttempt(parsedId)
 		if err != nil {
-			log.Printf("Error [%s] [service/customer_service.go]: %v\n", "Increment attempt otp", err.Error())
+			helper.Logger("Increment attempt otp", "service/customer_service.go", err)
 			return errors.New(MESSAGE_ERROR)
 		}
 		if dataOtpRegistered.AttempCount == 4 {
@@ -162,7 +162,7 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 			err = c.otpRepo.Delete(tx, parsedId)
 			if err != nil {
 				tx.Rollback()
-				log.Printf("Error [%s] [service/customer_service.go]: %v\n", "Delete OTP, attempt count > 5", err.Error())
+				helper.Logger("Delete OTP, attempt count > 5", "service/customer_service.go", err)
 				return errors.New(MESSAGE_ERROR)
 			}
 			tx.Commit()
@@ -175,13 +175,13 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 	err = c.otpRepo.Delete(tx, parsedId)
 	if err != nil {
 		tx.Rollback()
-		log.Printf("Error [%s] [service/customer_service.go]: %v\n", "Delete OTP while OTP is correct!", err.Error())
+		helper.Logger("Delete OTP while OTP is correct!", "service/customer_service.go", err)
 		return errors.New(MESSAGE_ERROR)
 	}
 	err = c.authRepo.UpdateVerifiedCredential(tx, parsedId, true)
 	if err != nil {
 		tx.Rollback()
-		log.Printf("Error [%s] [service/customer_service.go]: %v\n", "Update verified", err.Error())
+		helper.Logger("Update verified", "service/customer_service.go", err)
 		return errors.New(MESSAGE_ERROR)
 	}
 	tx.Commit()
@@ -191,7 +191,7 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 
 func (c *customerService) failRegister(tx *gorm.DB, label string, err error) (*dto.CredentialCustomerResponse, error) {
 	tx.Rollback()
-	log.Printf("Error [%s] [service/customer_service.go]: %v\n", label, err)
+	log.Printf(label, err)
 	return &dto.CredentialCustomerResponse{}, errors.New(defaultRegisterErrMsg)
 }
 

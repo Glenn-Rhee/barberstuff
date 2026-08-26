@@ -10,6 +10,7 @@ import (
 
 type Handlers struct {
 	CustomerHandler *handler.CustomerHandler
+	AuthHandler *handler.AuthHandler
 }
 
 func InitHandlers(db *gorm.DB) *Handlers {
@@ -20,11 +21,14 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, otpRepo)
+	authService := service.NewAuthService(authRepo)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
+	authHandler := handler.NewAuthHandler(authService)
 
 	return &Handlers{
 		CustomerHandler: customerHandler,
+		AuthHandler: authHandler,
 	}
 }
