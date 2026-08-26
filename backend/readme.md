@@ -14,7 +14,15 @@ DB_USER=
 DB_PORT=
 DB_PASSWORD=
 DB_NAME=
+
 JWT_KEY=
+
+SMTP_PASSWORD=
+SMTP_HOST=
+SMTP_USERNAME=
+SMTP_FROM_EMAIL=
+SMTP_FROM_NAME=
+SMTP_PORT=
 ```
 
 Contoh:
@@ -25,7 +33,15 @@ DB_USER=postgres
 DB_PORT=5432
 DB_PASSWORD=your_password
 DB_NAME=your_database
+
 JWT_KEY=sangat_rahasia
+
+SMTP_PASSWORD="goxv vfkk kuzz rnry"
+SMTP_HOST="smtp.gmail.com"
+SMTP_USERNAME="glennviktor5@gmail.com"
+SMTP_FROM_EMAIL="glennviktor5@gmail.com"
+SMTP_FROM_NAME="Barberstuff"
+SMTP_PORT="587"
 ```
 
 Pastikan seluruh konfigurasi database sudah sesuai dengan database yang digunakan.
@@ -418,7 +434,15 @@ DB_USER=
 DB_PORT=
 DB_PASSWORD=
 DB_NAME=
+
 JWT_KEY=
+
+SMTP_PASSWORD=
+SMTP_HOST=
+SMTP_USERNAME=
+SMTP_FROM_EMAIL=
+SMTP_FROM_NAME=
+SMTP_PORT=
 ```
 
 ### 2. Jalankan migration
