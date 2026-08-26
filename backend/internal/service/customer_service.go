@@ -173,7 +173,13 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 		return errors.New("OTP Sudah tidak valid. Mohon kirim ulang OTP!")
 	}
 
-	if dataOtpRegistered.OTP != dataOTPCust.OTP {
+	decrypted, err := helper.Decrypt(dataOtpRegistered.OTP)
+	if err != nil {
+		helper.Logger("Decrypt OTP", "service/customer_service.go", err)
+		return errors.New(MESSAGE_ERROR)
+	}
+
+	if decrypted != dataOTPCust.OTP {
 		err = c.otpRepo.IncrementAttempt(parsedId)
 		if err != nil {
 			helper.Logger("Increment attempt otp", "service/customer_service.go", err)
@@ -193,6 +199,7 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 		return fmt.Errorf("OTP Tidak valid, silahkan coba lagi. Sisa percobaan %d kali", 4-dataOtpRegistered.AttempCount)
 	}
 
+	// OTP Valid
 	tx := c.db.Begin()
 	err = c.otpRepo.Delete(tx, parsedId)
 	if err != nil {
@@ -214,15 +221,19 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 func (c *customerService) sendOtp(otpData entity.OTP, email string, name string) error {
 	remaining := time.Until(otpData.ExpiredAt)
 	minutes := int(remaining.Minutes())
+	decrypted, err := helper.Decrypt(otpData.OTP)
+	if err != nil {
+		return err
+	}
 
-	err := lib.SendEmailToUser(lib.EmailOptions{
+	err = lib.SendEmailToUser(lib.EmailOptions{
 		To:           []string{email},
 		Subject:      "Kode OTP Barberstuff",
 		TemplateName: "otp.html",
 		TemplateData: map[string]interface{}{
 			"AppName":       "Barberstuff",
 			"Name":          name,
-			"OTPCode":       otpData.OTP,
+			"OTPCode":       decrypted,
 			"ExpiryMinutes": minutes,
 		},
 	})
@@ -261,10 +272,15 @@ func (c *customerService) issueOTP(tx *gorm.DB, userId uuid.UUID) (*entity.OTP, 
 		return nil, err
 	}
 
+	otpEncrypted, err := helper.Encrypt(otpGenerated)
+	if err != nil {
+		return nil, err
+	}
+
 	otp := &entity.OTP{
 		ID:          uuid.New(),
 		IDUser:      userId,
-		OTP:         otpGenerated,
+		OTP:         otpEncrypted,
 		AttempCount: 0,
 		ExpiredAt:   time.Now().Add(3 * time.Minute),
 	}
