@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Selamat Datang</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      font-family: Arial, Helvetica, sans-serif;
+    "
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background-color: #f4f4f4; padding: 40px 0"
+    >
+      <tr>
+        <td align="center">
+          <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              max-width: 480px;
+              background-color: #ffffff;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                style="
+                  background-color: #171717;
+                  padding: 36px 40px;
+                  text-align: center;
+                "
+              >
+                <span
+                  style="
+                    display: inline-block;
+                    width: 56px;
+                    height: 56px;
+                    background-color: #fecc67;
+                    border-radius: 50%;
+                    line-height: 56px;
+                    font-size: 26px;
+                  "
+                  >&#128434;</span
+                >
+                <h1
+                  style="
+                    margin: 16px 0 0;
+                    color: #ffffff;
+                    font-size: 22px;
+                    font-weight: 700;
+                  "
+                >
+                  Selamat Datang!
+                </h1>
+                <p
+                  style="
+                    margin: 6px 0 0;
+                    color: #fecc67;
+                    font-size: 13px;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                  "
+                >
+                  {{.AppName}}
+                </p>
+              </td>
+            </tr>
+
+            <!-- Accent line -->
+            <tr>
+              <td
+                style="
+                  height: 4px;
+                  background-color: #fecc67;
+                  font-size: 0;
+                  line-height: 0;
+                "
+              >
+                &nbsp;
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding: 32px 40px">
+                <p
+                  style="
+                    margin: 0 0 16px;
+                    font-size: 16px;
+                    color: #171717;
+                    line-height: 1.6;
+                  "
+                >
+                  Halo <strong>{{.Name}}</strong>,
+                </p>
+                <p
+                  style="
+                    margin: 0 0 24px;
+                    font-size: 15px;
+                    color: #4b4b4b;
+                    line-height: 1.6;
+                  "
+                >
+                  Terima kasih sudah bergabung di <strong>{{.AppName}}</strong>!
+                  Akun kamu sudah siap — sekarang kamu bisa mulai booking jadwal
+                  potong rambut favoritmu kapan saja.
+                </p>
+
+                <!-- CTA Button -->
+                <table
+                  role="presentation"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="margin: 0 auto 24px"
+                >
+                  <tr>
+                    <td style="border-radius: 8px; background-color: #fecc67">
+                      <a
+                        href="#"
+                        style="
+                          display: inline-block;
+                          padding: 12px 32px;
+                          font-size: 15px;
+                          font-weight: 700;
+                          color: #171717;
+                          text-decoration: none;
+                          border-radius: 8px;
+                        "
+                      >
+                        Booking Sekarang
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 14px;
+                    color: #6b6b6b;
+                    line-height: 1.6;
+                  "
+                >
+                  Kalau ada pertanyaan, tim kami siap bantu kapan saja. Sampai
+                  jumpa di kursi cukur!
+                </p>
+              </td>
+            </tr>
+
+            <!-- Divider -->
+            <tr>
+              <td style="padding: 0 40px">
+                <div style="border-top: 1px solid #e5e5e5"></div>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td style="padding: 24px 40px 32px; text-align: center">
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 12px;
+                    color: #9a9a9a;
+                    line-height: 1.6;
+                  "
+                >
+                  Email ini dikirim oleh <strong>{{.AppName}}</strong>.<br />
+                  Jika kamu tidak merasa mendaftar, abaikan email ini.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

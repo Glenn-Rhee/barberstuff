@@ -4,6 +4,7 @@ import (
 	"barberstuff_backend/internal/dto"
 	"barberstuff_backend/internal/entity"
 	"barberstuff_backend/internal/helper"
+	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"errors"
 	"fmt"
@@ -54,14 +55,20 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 			tx.Rollback()
 			return &dto.CredentialCustomerResponse{}, waitErr
 		}
-
-		if _, err := c.issueOTP(tx, *dataAuth.IDCustomer); err != nil {
+		
+		otpData, err := c.issueOTP(tx, *dataAuth.IDCustomer)
+		if err != nil {
 			return c.failRegister(tx, "ISSUE OTP", err)
 		}
 
 		dataCustomer, err := c.customerRepo.FindById(dataAuth.IDCustomer.String())
 		if err != nil {
 			return c.failRegister(tx, "GET DATA CUSTOMER", err)
+		}
+
+		err = c.sendOtp(*otpData, dataAuth.Email, dataNewCustomer.Name)
+		if err != nil {
+			return c.failRegister(tx, "Send OTP", err)
 		}
 
 		tx.Commit()
@@ -115,11 +122,16 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 	if err := c.authRepo.Create(tx, auth); err != nil {
 		return c.failRegister(tx, "CREATE AUTHENTICATION", err)
 	}
-	if _, err := c.issueOTP(tx, custId); err != nil {
+
+	otpData, err := c.issueOTP(tx, custId)
+	if err != nil {
 		return c.failRegister(tx, "ISSUE OTP", err)
 	}
 
-	// Ceritanya kirim email
+	err = c.sendOtp(*otpData, auth.Email, customer.Name)
+	if err != nil {
+		return c.failRegister(tx, "Send OTP", err)
+	}
 
 	tx.Commit()
 	return &dto.CredentialCustomerResponse{
@@ -187,6 +199,25 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 	tx.Commit()
 
 	return nil
+}
+
+func (c *customerService) sendOtp(otpData entity.OTP, email string, name string) error {
+	remaining := time.Until(otpData.ExpiredAt)
+	minutes := int(remaining.Minutes())
+
+	err := lib.SendEmailToUser(lib.EmailOptions{
+		To:           []string{email},
+		Subject:      "Kode OTP Barberstuff",
+		TemplateName: "otp.html",
+		TemplateData: map[string]interface{}{
+			"AppName":       "Barberstuff",
+			"Name":          name,
+			"OTPCode":       otpData.OTP,
+			"ExpiryMinutes": minutes,
+		},
+	})
+
+	return err
 }
 
 func (c *customerService) failRegister(tx *gorm.DB, label string, err error) (*dto.CredentialCustomerResponse, error) {
