@@ -25,7 +25,7 @@ func NewAuthService(authRepo repository.AuthenticationRepository) Authentication
 }
 
 func (a *authenticationService) CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.CredentialLoginResponse, error) {
-	dataAuth, err := a.authenticationRepo.GetByEmail(credentialData.Email)
+	dataAuth, err := a.authenticationRepo.FindOne("email = ?", credentialData.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &dto.CredentialLoginResponse{}, errors.New("Email tidak terdaftar.")

@@ -45,7 +45,7 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		return &dto.CredentialCustomerResponse{}, errors.New(defaultRegisterErrMsg)
 	}
 
-	dataAuth, err := c.authRepo.GetByEmail(dataNewCustomer.Email)
+	dataAuth, err := c.authRepo.FindOne("email = ?", dataNewCustomer.Email)
 	if err == nil {
 		if dataAuth.IsVerified {
 			return &dto.CredentialCustomerResponse{}, errors.New("Email ini telah terdaftar dan terverifikasi!")
@@ -55,7 +55,7 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 			tx.Rollback()
 			return &dto.CredentialCustomerResponse{}, waitErr
 		}
-		
+
 		otpData, err := c.issueOTP(tx, *dataAuth.IDCustomer)
 		if err != nil {
 			return c.failRegister(tx, "ISSUE OTP", err)
@@ -152,7 +152,17 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 	dataOtpRegistered, err := c.otpRepo.FindByUserId(parsedId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("Data tidak ditemukan! Mohon daftar ulang!")
+			dataAuth, err := c.authRepo.FindOne("id_customer = ?", parsedId)
+			if err != nil {
+				helper.Logger("Failed get one auth repo", "service/customer_service.go", err)
+				return errors.New(MESSAGE_ERROR)
+			}
+
+			if dataAuth.IsVerified {
+				return errors.New("Email sudah terverifikasi!")
+			}
+
+			return errors.New("Email tidak ditemukan! Mohon daftar terlebih dahulu.")
 		}
 		helper.Logger("Find otp By user id", "service/customer_service.go", err)
 		return errors.New(MESSAGE_ERROR)

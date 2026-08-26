@@ -8,7 +8,7 @@ import (
 )
 
 type AuthenticationRepository interface {
-	GetByEmail(email string) (entity.Authentication, error)
+	FindOne(where string, args ...interface{}) (entity.Authentication, error)
 	Create(tx *gorm.DB, a *entity.Authentication) error
 	UpdateVerifiedCredential(tx *gorm.DB, userId uuid.UUID, verified bool) error
 }
@@ -21,9 +21,9 @@ func NewAuthRepository(db *gorm.DB) AuthenticationRepository {
 	return &authenticationRepository{db: db}
 }
 
-func (r *authenticationRepository) GetByEmail(email string) (entity.Authentication, error) {
+func (r *authenticationRepository) FindOne(where string, args ...interface{}) (entity.Authentication, error) {
 	var dataAuth entity.Authentication
-	result := r.db.Where("email = ?", email).First(&dataAuth)
+	result := r.db.Where(where, args...).First(&dataAuth)
 
 	return dataAuth, result.Error
 }
@@ -34,6 +34,6 @@ func (r *authenticationRepository) Create(tx *gorm.DB, a *entity.Authentication)
 }
 
 func (r *authenticationRepository) UpdateVerifiedCredential(tx *gorm.DB, userId uuid.UUID, verified bool) error {
-	result := tx.Model(&entity.Authentication{}).Where("id_customer = ?",userId).Update("is_verified", verified)
+	result := tx.Model(&entity.Authentication{}).Where("id_customer = ?", userId).Update("is_verified", verified)
 	return result.Error
 }
