@@ -23,6 +23,8 @@ SMTP_USERNAME=
 SMTP_FROM_EMAIL=
 SMTP_FROM_NAME=
 SMTP_PORT=
+
+OTP_ENCRYPTION_KEY=
 ```
 
 Contoh:
@@ -42,6 +44,8 @@ SMTP_USERNAME="glennviktor5@gmail.com"
 SMTP_FROM_EMAIL="glennviktor5@gmail.com"
 SMTP_FROM_NAME="Barberstuff"
 SMTP_PORT="587"
+
+OTP_ENCRYPTION_KEY="cihuy123sebanyak32karakter"
 ```
 
 Pastikan seluruh konfigurasi database sudah sesuai dengan database yang digunakan.
