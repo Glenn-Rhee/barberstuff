@@ -14,6 +14,7 @@ DB_USER=
 DB_PORT=
 DB_PASSWORD=
 DB_NAME=
+JWT_KEY=
 ```
 
 Contoh:
@@ -24,6 +25,7 @@ DB_USER=postgres
 DB_PORT=5432
 DB_PASSWORD=your_password
 DB_NAME=your_database
+JWT_KEY=sangat_rahasia
 ```
 
 Pastikan seluruh konfigurasi database sudah sesuai dengan database yang digunakan.
@@ -307,12 +309,98 @@ Struktur response:
 
 ---
 
+# 3. Credential Login
+
+Endpoint ini digunakan untuk melakukan login user menggunakan email dan password. Endpoint ini bersifat umum dan dapat digunakan oleh seluruh role pengguna, yaitu customer, kasir, admin, maupun owner.
+
+Untuk customer, endpoint ini dapat digunakan apabila user melakukan login secara manual menggunakan email dan password.
+
+### Endpoint
+
+```http
+POST /auth/login/credential
+```
+
+### Request Body
+
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+### Request Body Parameters
+
+| Key        | Tipe Data | Required | Keterangan                                                                                         |
+| ---------- | --------- | -------- | -------------------------------------------------------------------------------------------------- |
+| `email`    | String    | Ya       | Email yang terdaftar pada sistem. Harus memiliki format email yang valid.                          |
+| `password` | String    | Ya       | Password akun yang digunakan untuk proses autentikasi. Password harus memiliki minimal 5 karakter. |
+
+### Aturan Validasi
+
+- `email` wajib diisi.
+- `email` harus memiliki format email yang valid.
+- `password` wajib diisi.
+- `password` harus memiliki minimal 5 karakter.
+- Credential yang diberikan harus sesuai dengan data akun yang terdaftar pada sistem.
+- Akun harus sudah terverifikasi agar dapat melakukan login.
+
+### Response
+
+Endpoint ini mengembalikan data berupa informasi autentikasi user dan access token yang dapat digunakan untuk mengakses endpoint yang membutuhkan autentikasi.
+
+Contoh response ketika login berhasil:
+
+```json
+{
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expires_in": 2592000,
+    "user": {
+      "user_id": "c4e8f131-f41a-4afc-8d8a-02810cafa920",
+      "email": "user@example.com",
+      "role": "customer"
+    }
+  },
+  "message": "Berhasil login.",
+  "statusCode": 200
+}
+```
+
+### Response Data
+
+| Key            | Tipe Data | Keterangan                                                                                                    |
+| -------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
+| `access_token` | String    | JSON Web Token (JWT) yang digunakan sebagai kredensial untuk mengakses endpoint yang membutuhkan autentikasi. |
+| `expires_in`   | Integer   | Durasi berlaku access token dalam satuan detik.                                                               |
+| `user`         | Object    | Informasi user yang berhasil melakukan login.                                                                 |
+
+### User Object
+
+| Key       | Tipe Data | Keterangan                                                                  |
+| --------- | --------- | --------------------------------------------------------------------------- |
+| `user_id` | String    | ID unik user yang berhasil melakukan login.                                 |
+| `email`   | String    | Email user yang digunakan untuk login.                                      |
+| `role`    | String    | Role user dalam sistem, seperti `customer`, `kasir`, `admin`, atau `owner`. |
+
+### Struktur Response
+
+| Key          | Tipe Data | Keterangan                                                             |
+| ------------ | --------- | ---------------------------------------------------------------------- |
+| `data`       | Object    | Berisi access token, informasi masa berlaku token, dan informasi user. |
+| `message`    | String    | Pesan yang menjelaskan hasil proses login.                             |
+| `statusCode` | Integer   | HTTP status code dari hasil proses.                                    |
+
+---
+
 # API Summary
 
-| Method | Endpoint                    | Fungsi                                                              |
-| ------ | --------------------------- | ------------------------------------------------------------------- |
-| POST   | `/auth/register/credential` | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP. |
-| POST   | `/auth/verify-credential`   | Memverifikasi akun menggunakan OTP yang diterima melalui email.     |
+| Method | Endpoint                    | Fungsi                                                                                |
+| ------ | --------------------------- | ------------------------------------------------------------------------------------- |
+| POST   | `/auth/register/credential` | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP.                   |
+| POST   | `/auth/verify-credential`   | Memverifikasi akun menggunakan OTP yang diterima melalui email.                       |
+| POST   | `/auth/login/credential`    | Melakukan login user menggunakan email dan password untuk seluruh role yang tersedia. |
 
 ---
 
@@ -330,6 +418,7 @@ DB_USER=
 DB_PORT=
 DB_PASSWORD=
 DB_NAME=
+JWT_KEY=
 ```
 
 ### 2. Jalankan migration
