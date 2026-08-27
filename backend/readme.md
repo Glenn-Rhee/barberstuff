@@ -407,15 +407,194 @@ Contoh response ketika login berhasil:
 
 ---
 
-# API Summary
+# 4. Authentication Provider
 
-| Method | Endpoint                    | Fungsi                                                                                |
-| ------ | --------------------------- | ------------------------------------------------------------------------------------- |
-| POST   | `/auth/register/credential` | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP.                   |
-| POST   | `/auth/verify-credential`   | Memverifikasi akun menggunakan OTP yang diterima melalui email.                       |
-| POST   | `/auth/login/credential`    | Melakukan login user menggunakan email dan password untuk seluruh role yang tersedia. |
+Endpoint ini digunakan untuk memvalidasi `id_token` yang diberikan oleh provider autentikasi pihak ketiga (contoh: Google). Endpoint ini akan menentukan apakah user yang login melalui provider tersebut sudah terdaftar di sistem atau belum.
+
+Apabila email pada `id_token` **belum terdaftar**, maka user akan diarahkan untuk melengkapi data profil melalui endpoint **Register menggunakan OAuth** (lihat bagian 5). Apabila email **sudah terdaftar**, maka user akan otomatis login dan mendapatkan `access_token`.
+
+### Endpoint
+
+```http
+POST /auth/provider
+```
+
+### Request Body
+
+```json
+{
+  "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYzEyMyJ9...",
+  "provider": "google"
+}
+```
+
+### Request Body Parameters
+
+| Key        | Tipe Data | Required | Keterangan                                                                                          |
+| ---------- | --------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `id_token` | String    | Ya       | ID Token yang diterima dari provider autentikasi setelah user berhasil login (contoh: Google Sign-In). |
+| `provider` | String    | Ya       | Jenis provider yang digunakan untuk autentikasi. Saat ini hanya menerima nilai `google`.               |
+
+### Aturan Validasi
+
+- `id_token` wajib diisi.
+- `id_token` harus berupa token yang valid dan belum kedaluwarsa, serta dapat diverifikasi oleh provider terkait.
+- `provider` wajib diisi.
+- `provider` harus bernilai salah satu dari: `google`.
+
+### Response
+
+Endpoint ini mengembalikan status autentikasi user, yang menentukan apakah user perlu melengkapi profil terlebih dahulu atau langsung berhasil login.
+
+**Contoh response ketika email belum terdaftar (perlu lengkapi profil):**
+
+```json
+{
+  "data": {
+    "email": "user@example.com",
+    "name": "Budi Santoso",
+    "status": "NEED_COMPLETE_PROFILE",
+    "temp_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "message": "Silakan lengkapi profil Anda untuk menyelesaikan proses registrasi.",
+  "statusCode": 200
+}
+```
+
+**Contoh response ketika email sudah terdaftar (login berhasil):**
+
+```json
+{
+  "data": {
+    "email": "user@example.com",
+    "name": "Budi Santoso",
+    "status": "SUCCESS",
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "message": "Berhasil login.",
+  "statusCode": 200
+}
+```
+
+### Response Data
+
+| Key            | Tipe Data | Keterangan                                                                                                                                                     |
+| -------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `email`        | String    | Email user yang didapatkan dari hasil verifikasi `id_token`.                                                                                                   |
+| `name`         | String    | Nama user yang didapatkan dari hasil verifikasi `id_token`.                                                                                                     |
+| `status`       | String    | Status hasil autentikasi. Bernilai `NEED_COMPLETE_PROFILE` apabila user belum terdaftar dan perlu melengkapi profil, atau `SUCCESS` apabila user berhasil login. |
+| `access_token` | String    | JSON Web Token (JWT) yang digunakan sebagai kredensial untuk mengakses endpoint yang membutuhkan autentikasi. Hanya muncul apabila `status` bernilai `SUCCESS`.   |
+| `temp_token`   | String    | Token sementara yang wajib dikirimkan pada endpoint **Register menggunakan OAuth**. Hanya muncul apabila `status` bernilai `NEED_COMPLETE_PROFILE`.               |
+
+### Struktur Response
+
+| Key          | Tipe Data | Keterangan                                                     |
+| ------------ | --------- | ----------------------------------------------------------------- |
+| `data`       | Object    | Berisi status autentikasi beserta token yang relevan.             |
+| `message`    | String    | Pesan yang menjelaskan hasil proses autentikasi.                  |
+| `statusCode` | Integer   | HTTP status code dari hasil proses.                                |
 
 ---
+
+# 5. Register menggunakan OAuth
+
+Endpoint ini digunakan untuk menyelesaikan proses registrasi user yang sebelumnya login menggunakan provider (Google) melalui endpoint **Authentication Provider**, namun belum terdaftar di sistem (`status: NEED_COMPLETE_PROFILE`). User wajib mengirimkan `temp_token` yang didapatkan dari endpoint tersebut beserta data profil tambahan yang belum tersedia dari provider.
+
+### Endpoint
+
+```http
+POST /auth/register/oauth
+```
+
+### Request Body
+
+```json
+{
+  "name": "Budi Santoso",
+  "temp_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "phoneNumber": "081234567890",
+  "date_of_birth": "2000-05-15T00:00:00Z",
+  "gender": "male"
+}
+```
+
+### Request Body Parameters
+
+| Key             | Tipe Data              | Required | Keterangan                                                                                                                      |
+| --------------- | ---------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `name`          | String                  | Ya       | Nama lengkap user.                                                                                                                |
+| `temp_token`    | String                  | Ya       | Token sementara yang didapatkan dari endpoint **Authentication Provider** (`/auth/provider`). Digunakan untuk memvalidasi identitas user yang telah diverifikasi oleh provider. |
+| `phoneNumber`   | String                  | Ya       | Nomor telepon user. Harus memiliki panjang antara 9 sampai 15 karakter.                                                            |
+| `date_of_birth` | String (ISO 8601 Date)  | Ya       | Tanggal lahir user, dengan format `YYYY-MM-DDTHH:mm:ssZ`.                                                                          |
+| `gender`        | String                  | Ya       | Jenis kelamin user. Hanya menerima nilai `male` atau `female`.                                                                     |
+
+### Aturan Validasi
+
+- `name` wajib diisi.
+- `temp_token` wajib diisi.
+- `temp_token` harus berupa token yang valid, belum kedaluwarsa, dan sesuai dengan token yang diterbitkan pada endpoint `/auth/provider`.
+- `phoneNumber` wajib diisi.
+- `phoneNumber` harus memiliki panjang minimal 9 karakter dan maksimal 15 karakter.
+- `date_of_birth` wajib diisi.
+- `gender` wajib diisi.
+- `gender` harus bernilai salah satu dari: `male`, `female`.
+- Email yang terkait dengan `temp_token` tidak boleh sudah terdaftar pada sistem.
+
+### Response
+
+Endpoint ini mengembalikan data berupa informasi autentikasi user dan access token yang dapat digunakan untuk mengakses endpoint yang membutuhkan autentikasi.
+
+Contoh response ketika registrasi berhasil:
+
+```json
+{
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "user_id": "c4e8f131-f41a-4afc-8d8a-02810cafa920",
+      "email": "user@example.com",
+      "role": "customer"
+    }
+  },
+  "message": "Berhasil melakukan registrasi.",
+  "statusCode": 200
+}
+```
+
+### Response Data
+
+| Key            | Tipe Data | Keterangan                                                                                                    |
+| -------------- | --------- | --------------------------------------------------------------------------------------------------------------- |
+| `access_token` | String    | JSON Web Token (JWT) yang digunakan sebagai kredensial untuk mengakses endpoint yang membutuhkan autentikasi. |
+| `user`         | Object    | Informasi user yang berhasil melakukan registrasi.                                                              |
+
+### User Object
+
+| Key       | Tipe Data | Keterangan                                                                  |
+| --------- | --------- | ----------------------------------------------------------------------------- |
+| `user_id` | String    | ID unik user yang berhasil melakukan registrasi.                              |
+| `email`   | String    | Email user yang didapatkan dari hasil verifikasi provider.                    |
+| `role`    | String    | Role user dalam sistem, seperti `customer`, `kasir`, `admin`, atau `owner`.  |
+
+### Struktur Response
+
+| Key          | Tipe Data | Keterangan                                                             |
+| ------------ | --------- | ----------------------------------------------------------------------- |
+| `data`       | Object    | Berisi access token dan informasi user.                                |
+| `message`    | String    | Pesan yang menjelaskan hasil proses registrasi.                        |
+| `statusCode` | Integer   | HTTP status code dari hasil proses.                                    |
+
+---
+
+# API Summary
+
+| Method | Endpoint                    | Fungsi                                                                                              |
+| ------ | ---------------------------- | ----------------------------------------------------------------------------------------------------- |
+| POST   | `/auth/register/credential`  | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP.                                   |
+| POST   | `/auth/verify-credential`    | Memverifikasi akun menggunakan OTP yang diterima melalui email.                                       |
+| POST   | `/auth/login/credential`     | Melakukan login user menggunakan email dan password untuk seluruh role yang tersedia.                 |
+| POST   | `/auth/provider`              | Memvalidasi `id_token` dari provider (Google) untuk menentukan apakah user perlu login atau registrasi. |
+| POST   | `/auth/register/oauth`        | Menyelesaikan proses registrasi user baru yang login melalui provider, menggunakan `temp_token`.       |---
 
 # Quick Start
 
@@ -424,23 +603,6 @@ Urutan menjalankan backend dari awal:
 ### 1. Konfigurasi environment
 
 Buat file `.env` berdasarkan `.env.example`.
-
-```env
-DB_HOST=
-DB_USER=
-DB_PORT=
-DB_PASSWORD=
-DB_NAME=
-
-JWT_KEY=
-
-SMTP_PASSWORD=
-SMTP_HOST=
-SMTP_USERNAME=
-SMTP_FROM_EMAIL=
-SMTP_FROM_NAME=
-SMTP_PORT=
-```
 
 ### 2. Jalankan migration
 
