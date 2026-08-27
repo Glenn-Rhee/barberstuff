@@ -67,16 +67,6 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		return errors.New(BASE_MESSAGE)
 	}
 
-	_, err = c.customerRepo.GetByUsername(dataNewCustomer.Username)
-	if err == nil {
-		return errors.New("Username telah terdaftar")
-	}
-
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		helper.Logger("Get data customer by username", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
-	}
-
 	custId := uuid.New()
 	customer := &entity.Customer{
 		ID:           custId,
@@ -84,7 +74,6 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		PhoneNumber:  &dataNewCustomer.PhoneNumber,
 		DateOfBirth:  &dataNewCustomer.DateOfBirth,
 		Gender:       dataNewCustomer.Gender,
-		Username:     dataNewCustomer.Username,
 		MemberPoints: 100,
 	}
 
@@ -112,7 +101,7 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		helper.Logger("Failed create new customer", BASE_PATH, err)
 		return errors.New(BASE_MESSAGE)
 	}
-	
+
 	if err := c.authRepo.Create(tx, auth); err != nil {
 		tx.Rollback()
 		helper.Logger("Failed create new auth", BASE_PATH, err)
@@ -158,24 +147,13 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 
 		tx.Commit()
 		return &dto.CredentialCustomerResponse{
-			Id:       dataAuth.IDCustomer.String(),
-			Username: dataCustomer.Username,
-			Email:    dataAuth.Email,
+			Id:    dataAuth.IDCustomer.String(),
+			Email: dataAuth.Email,
 		}, nil
 	}
 
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return c.failRegister(tx, "GET EMAIL", err)
-	}
-
-	_, err = c.customerRepo.GetByUsername(dataNewCustomer.Username)
-	if err == nil {
-		tx.Rollback()
-		return &dto.CredentialCustomerResponse{}, errors.New("Username telah terdaftar")
-	}
-
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return c.failRegister(tx, "GET USERNAME", err)
 	}
 
 	hashedPassword, err := helper.HashPassword(dataNewCustomer.Password)
@@ -190,7 +168,6 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		PhoneNumber:  &dataNewCustomer.PhoneNumber,
 		DateOfBirth:  &dataNewCustomer.DateOfBirth,
 		Gender:       dataNewCustomer.Gender,
-		Username:     dataNewCustomer.Username,
 		MemberPoints: 100,
 	}
 	auth := &entity.Authentication{
@@ -223,9 +200,8 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 
 	tx.Commit()
 	return &dto.CredentialCustomerResponse{
-		Id:       custId.String(),
-		Username: dataNewCustomer.Username,
-		Email:    dataNewCustomer.Email,
+		Id:    custId.String(),
+		Email: dataNewCustomer.Email,
 	}, nil
 }
 
@@ -258,6 +234,18 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 
 	remaining := time.Until(dataOtpRegistered.ExpiredAt)
 	if remaining <= 0 {
+		tx := c.db.Begin()
+		if tx.Error != nil {
+			helper.Logger("Start tx", "service/customer_service.go", err)
+			return errors.New(MESSAGE_ERROR)
+		}
+		err = c.otpRepo.Delete(tx, parsedId)
+		if err != nil {
+			helper.Logger("Delete OTP", "service/customer_service.go", err)
+			return errors.New(MESSAGE_ERROR)
+		}
+		
+		tx.Commit()
 		return errors.New("OTP Sudah tidak valid. Mohon kirim ulang OTP!")
 	}
 

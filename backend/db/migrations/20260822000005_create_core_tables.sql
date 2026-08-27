@@ -17,7 +17,6 @@ CREATE TABLE customer (
     phone_number VARCHAR(20),
     date_of_birth DATE,
     gender VARCHAR(10) CHECK (gender IN ('male', 'female', 'other')),
-    username VARCHAR(100) UNIQUE NOT NULL,
     member_points INT NOT NULL DEFAULT 0,
     image_customer BYTEA,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),

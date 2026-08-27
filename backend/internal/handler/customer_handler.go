@@ -55,7 +55,6 @@ func (h *CustomerHandler) OauthRegister(ctx *gin.Context) {
 
 func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
 	var dataNewCustomer dto.CredentialCustomerRequest
-
 	if err := ctx.ShouldBindJSON(&dataNewCustomer); err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    helper.FormatValidationError(err)[0],

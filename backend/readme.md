@@ -198,7 +198,6 @@ POST /auth/register/credential
   "phoneNumber": "081234567890",
   "date_of_birth": "2000-05-15T00:00:00Z",
   "gender": "male",
-  "username": "rielyb2005",
   "email": "rielyb2005@gmail.com",
   "password": "SecurePass123"
 }
@@ -212,7 +211,6 @@ POST /auth/register/credential
 | `phoneNumber`   | String        | Ya       | Nomor telepon pengguna, minimal 9 dan maksimal 15 karakter.             |
 | `date_of_birth` | Date/DateTime | Ya       | Tanggal lahir pengguna dalam format ISO 8601.                           |
 | `gender`        | String        | Ya       | Jenis kelamin pengguna. Nilai yang diperbolehkan: `male` atau `female`. |
-| `username`      | String        | Ya       | Username pengguna, minimal lebih dari 5 karakter.                       |
 | `email`         | String        | Ya       | Alamat email pengguna dengan format email yang valid.                   |
 | `password`      | String        | Ya       | Password pengguna, minimal 5 karakter.                                  |
 
@@ -224,7 +222,6 @@ POST /auth/register/credential
 - `phoneNumber` memiliki panjang maksimal 15 karakter.
 - `date_of_birth` wajib diisi.
 - `gender` wajib diisi dan hanya menerima `male` atau `female`.
-- `username` wajib diisi dan memiliki panjang lebih dari 5 karakter.
 - `email` wajib diisi dan harus memiliki format email yang valid.
 - `password` wajib diisi dan memiliki panjang minimal 5 karakter.
 
@@ -236,7 +233,6 @@ Jika registrasi berhasil, API mengembalikan informasi dasar user dan OTP dikirim
 {
   "data": {
     "id": "633dc6e5-89e3-487d-8e9b-86cc23b71799",
-    "username": "cihuy123",
     "email": "aaa@gmail.com"
   },
   "message": "OTP telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.",
@@ -249,7 +245,6 @@ Struktur `data` pada response sukses:
 | Key        | Tipe Data | Keterangan                            |
 | ---------- | --------- | ------------------------------------- |
 | `id`       | String    | ID unik user.                         |
-| `username` | String    | Username user yang telah didaftarkan. |
 | `email`    | String    | Email user yang telah didaftarkan.    |
 
 ### Response Gagal

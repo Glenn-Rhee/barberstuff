@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Todo hilangkan validasi username, gapke username lagi
+
 func main() {
 	log.Println("Server is starting...")
 	db := db.Connect()
