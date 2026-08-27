@@ -130,6 +130,6 @@ class AppTextStyle {
     bodyLarge: bodyLarge,
     bodyMedium: bodyMedium,
     labelLarge: labelLarge,
-    labelSmall: caption,
+    labelSmall: labelSmall,
   );
 }
