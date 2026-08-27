@@ -21,8 +21,30 @@ type CredentialCustomerResponse struct {
 	Email    string `json:"email"`
 }
 
+type OauthCustomerRequest struct {
+	IdToken     string        `json:"id_token" binding:"required"`
+	Name        string        `json:"name" binding:"required"`
+	PhoneNumber string        `json:"phoneNumber" binding:"required,min=9,max=15"`
+	DateOfBirth time.Time     `json:"date_of_birth" binding:"required"`
+	Gender      entity.Gender `json:"gender" binding:"required,oneof=male female"`
+	Username    string        `json:"username" binding:"required,gt=5"`
+}
+
 type VerifyCredentialRequest struct {
 	UserId string `json:"user_id" binding:"required"`
 	OTP    string `json:"otp" binding:"required,len=6,numeric"`
 }
 
+type GoogleClaims struct {
+	Sub           string  `json:"sub"`
+	Email         string  `json:"email"`
+	EmailVerified bool    `json:"email_verified"`
+	Name          string  `json:"name"`
+	GivenName     string  `json:"given_name"`
+	FamilyName    string  `json:"family_name"`
+	Picture       string  `json:"picture"`
+	Iss           string  `json:"iss"`
+	Aud           string  `json:"aud"`
+	Iat           float64 `json:"iat"`
+	Exp           float64 `json:"exp"`
+}

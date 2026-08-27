@@ -19,7 +19,8 @@ func main() {
 
 	// Customer register
 	router.POST("/auth/register/credential", h.CustomerHandler.CredentialRegister)
-	
+	router.POST("/auth/register/oauth", h.CustomerHandler.OauthRegister)
+
 	// Verify Token
 	router.POST("/auth/verify-credential", h.CustomerHandler.VerifyCredential)
 

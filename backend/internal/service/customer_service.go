@@ -18,6 +18,7 @@ import (
 type CustomerService interface {
 	CredentialRegister(dataNewCustomer dto.CredentialCustomerRequest) (*dto.CredentialCustomerResponse, error)
 	VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) error
+	OauthRegister(dataNewCustomer dto.OauthCustomerRequest) error
 }
 
 type customerService struct {
@@ -36,6 +37,90 @@ func NewCustomerService(custRepo repository.CustomerRepository, authRepo reposit
 		otpRepo:      otpRepo,
 		db:           db,
 	}
+}
+
+const BASE_PATH = "service/customer_service.go"
+const BASE_MESSAGE = "Terjadi kesalahan saat registrasi. Coba lagi nanti."
+
+func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest) error {
+	claims, err := lib.VerifyIdTokenGoogle(dataNewCustomer.IdToken)
+	if err != nil {
+		helper.Logger("Verify token", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if !claims.EmailVerified {
+		return errors.New("Email anda belum terverifikasi oleh Google. Silahkan verifikasi terlebih dahulu")
+	}
+
+	dataAuth, err := c.authRepo.FindOne("email = ?", claims.Email)
+	if err == nil {
+		if dataAuth.IsVerified {
+			return errors.New("Email telah terdaftar dan terverifikasi oleh sistem. Silahkan login menggunakan password!")
+		} else {
+			return errors.New("Email telah terdaftar oleh sistem. Silahkan lakukan verifikasi OTP!")
+		}
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		helper.Logger("Get data Auth", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	_, err = c.customerRepo.GetByUsername(dataNewCustomer.Username)
+	if err == nil {
+		return errors.New("Username telah terdaftar")
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		helper.Logger("Get data customer by username", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	custId := uuid.New()
+	customer := &entity.Customer{
+		ID:           custId,
+		Name:         dataNewCustomer.Name,
+		PhoneNumber:  &dataNewCustomer.PhoneNumber,
+		DateOfBirth:  &dataNewCustomer.DateOfBirth,
+		Gender:       dataNewCustomer.Gender,
+		Username:     dataNewCustomer.Username,
+		MemberPoints: 100,
+	}
+
+	auth := &entity.Authentication{
+		ID:            uuid.New(),
+		IDCustomer:    &custId,
+		Password:      "",
+		Role:          entity.RoleCustomer,
+		Email:         claims.Email,
+		IsVerified:    true,
+		LoginType:     entity.LoginWithOAuth,
+		OAuthProvider: "google",
+	}
+
+	tx := c.db.Begin()
+
+	if tx.Error != nil {
+		tx.Rollback()
+		helper.Logger("Failed start tx", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if err := c.customerRepo.Create(tx, customer); err != nil {
+		tx.Rollback()
+		helper.Logger("Failed create new customer", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+	
+	if err := c.authRepo.Create(tx, auth); err != nil {
+		tx.Rollback()
+		helper.Logger("Failed create new auth", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	tx.Commit()
+	return nil
 }
 
 func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCustomerRequest) (*dto.CredentialCustomerResponse, error) {
@@ -66,7 +151,7 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 			return c.failRegister(tx, "GET DATA CUSTOMER", err)
 		}
 
-		err = c.sendOtp(*otpData, dataAuth.Email, dataNewCustomer.Name)
+		err = c.sendOtp(*otpData, dataAuth.Email, dataCustomer.Name)
 		if err != nil {
 			return c.failRegister(tx, "Send OTP", err)
 		}
@@ -83,10 +168,13 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		return c.failRegister(tx, "GET EMAIL", err)
 	}
 
-	if _, err := c.customerRepo.GetByUsername(dataNewCustomer.Username); err == nil {
+	_, err = c.customerRepo.GetByUsername(dataNewCustomer.Username)
+	if err == nil {
 		tx.Rollback()
 		return &dto.CredentialCustomerResponse{}, errors.New("Username telah terdaftar")
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return c.failRegister(tx, "GET USERNAME", err)
 	}
 

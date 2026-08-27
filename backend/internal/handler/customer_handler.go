@@ -17,6 +17,42 @@ func NewCustomerHandler(service service.CustomerService) *CustomerHandler {
 	return &CustomerHandler{service: service}
 }
 
+func (h *CustomerHandler) OauthRegister(ctx *gin.Context) {
+	var dataNewCustomer dto.OauthCustomerRequest
+
+	if err := ctx.ShouldBindJSON(&dataNewCustomer); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	if !helper.ValidatePhoneNumber(dataNewCustomer.PhoneNumber) {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "No telepon tidak valid, gunakan format +62xxxx atau 08xxxx",
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	err := h.service.OauthRegister(dataNewCustomer)
+
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+		Message:    "Berhasil registrasi dengan google!",
+		Data:       nil,
+		StatusCode: http.StatusOK,
+	})
+}
+
 func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
 	var dataNewCustomer dto.CredentialCustomerRequest
 
