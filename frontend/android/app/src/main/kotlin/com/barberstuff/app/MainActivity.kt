@@ -1,4 +1,4 @@
-package com.example.mobile_barberstuff
+package com.barberstuff.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -26,7 +26,7 @@ class OnboardingContent {
     ),
     OnboardingContent(
       image: AppAssets.onboardingSecond,
-      title: 'Style that fit your daily',
+      title: 'hai iqbal woiiii',
       highlight: 'Lifestyle',
       description: _placeholderBody,
     ),

@@ -75,16 +75,16 @@ class _SplashBrandPageState extends State<SplashBrandPage>
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light.copyWith(
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor: AppColor.gold,
+        systemNavigationBarColor: AppColor.orangeLight,
         systemNavigationBarIconBrightness: Brightness.light,
       ),
       child: Scaffold(
-        backgroundColor: AppColor.gold,
+        backgroundColor: AppColor.orangeLight,
         body: AnimatedBuilder(
           animation: _backdropReveal,
           builder: (BuildContext context, Widget? child) =>
               BarberPatternBackground(
-                backgroundColor: AppColor.gold,
+                backgroundColor: AppColor.orangeLight,
                 patternColor: AppColor.surface,
                 patternIntensity: 1.5,
                 patternScale: 1.25,
@@ -99,7 +99,7 @@ class _SplashBrandPageState extends State<SplashBrandPage>
               BrandGlow(animation: _glowScale),
               AnimatedBrandLogo(
                 tint: AppColor.surface,
-                shimmerColor: AppColor.goldLight,
+                shimmerColor: AppColor.orange,
                 delay: const Duration(milliseconds: 260),
                 onIntroEnd: _handleIntroEnd,
               ),

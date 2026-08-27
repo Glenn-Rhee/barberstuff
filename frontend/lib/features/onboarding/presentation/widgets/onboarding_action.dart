@@ -30,11 +30,11 @@ class OnboardingAction extends StatelessWidget {
             height: _height,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
-              color: AppColor.gold,
+              color: AppColor.orangeLight,
               borderRadius: BorderRadius.circular(_height / 2),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: AppColor.gold.withValues(alpha: 0.32),
+                  color: AppColor.orangeLight.withValues(alpha: 0.32),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
