@@ -14,7 +14,7 @@ import (
 )
 
 type AuthenticationService interface {
-	CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.CredentialLoginResponse, error)
+	CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.AuthenticationResponse, error)
 	AuthProvider(dataAuthProvider dto.AuthProviderRequest) (dto.AuthProviderResponse, error)
 }
 
@@ -26,23 +26,23 @@ func NewAuthService(authRepo repository.AuthenticationRepository) Authentication
 	return &authenticationService{authenticationRepo: authRepo}
 }
 
-func (a *authenticationService) CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.CredentialLoginResponse, error) {
+func (a *authenticationService) CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.AuthenticationResponse, error) {
 	dataAuth, err := a.authenticationRepo.FindOne("email = ?", credentialData.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return &dto.CredentialLoginResponse{}, errors.New("Email tidak terdaftar.")
+			return &dto.AuthenticationResponse{}, errors.New("Email tidak terdaftar.")
 		}
 		helper.Logger("Get data auth by email", "service/auth_service.go", err)
-		return &dto.CredentialLoginResponse{}, errors.New("Terjadi kesalahan saat login! Coba lagi nanti.")
+		return &dto.AuthenticationResponse{}, errors.New("Terjadi kesalahan saat login! Coba lagi nanti.")
 	}
 
 	if !dataAuth.IsVerified {
-		return &dto.CredentialLoginResponse{}, errors.New("Email belum verifikasi! Verifikasi terlebih dahulu.")
+		return &dto.AuthenticationResponse{}, errors.New("Email belum verifikasi! Verifikasi terlebih dahulu.")
 	}
 
 	isPasswordMatch := helper.ComparePassword(dataAuth.Password, credentialData.Password)
 	if !isPasswordMatch {
-		return &dto.CredentialLoginResponse{}, errors.New("Password yang anda masukkan salah.")
+		return &dto.AuthenticationResponse{}, errors.New("Password yang anda masukkan salah.")
 	}
 
 	var userId string
@@ -57,12 +57,11 @@ func (a *authenticationService) CredentialLogin(credentialData dto.CredentialLog
 	token, err := lib.GenerateToken(userId, dataAuth.Email, dataAuth.Role, expiresIn)
 	if err != nil {
 		helper.Logger("Generate Token", "service/auth_service.go", err)
-		return &dto.CredentialLoginResponse{}, errors.New("Terjadi kesalahan saat login! Coba lagi nanti.")
+		return &dto.AuthenticationResponse{}, errors.New("Terjadi kesalahan saat login! Coba lagi nanti.")
 	}
 
-	return &dto.CredentialLoginResponse{
+	return &dto.AuthenticationResponse{
 		AccessToken: token,
-		ExpiresIn:   int(expiresIn),
 		User: dto.UserAuth{
 			UserId: userId,
 			Email:  dataAuth.Email,

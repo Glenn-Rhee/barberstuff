@@ -36,7 +36,7 @@ func (h *CustomerHandler) OauthRegister(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.OauthRegister(dataNewCustomer)
+	result, err := h.service.OauthRegister(dataNewCustomer)
 
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
@@ -46,9 +46,9 @@ func (h *CustomerHandler) OauthRegister(ctx *gin.Context) {
 		return
 	}
 
-	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.AuthenticationResponse]{
 		Message:    "Berhasil registrasi dengan google!",
-		Data:       nil,
+		Data:       result,
 		StatusCode: http.StatusOK,
 	})
 }

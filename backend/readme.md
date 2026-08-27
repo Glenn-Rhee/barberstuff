@@ -267,7 +267,7 @@ Pada response gagal:
 
 ---
 
-# 2. Verify Credential / OTP
+## 2. Verify Credential / OTP
 
 Endpoint ini digunakan untuk melakukan verifikasi akun menggunakan OTP yang telah dikirimkan ke email pengguna setelah proses registrasi.
 
@@ -324,7 +324,7 @@ Struktur response:
 
 ---
 
-# 3. Credential Login
+## 3. Credential Login
 
 Endpoint ini digunakan untuk melakukan login user menggunakan email dan password. Endpoint ini bersifat umum dan dapat digunakan oleh seluruh role pengguna, yaitu customer, kasir, admin, maupun owner.
 
@@ -371,7 +371,6 @@ Contoh response ketika login berhasil:
 {
   "data": {
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "expires_in": 2592000,
     "user": {
       "user_id": "c4e8f131-f41a-4afc-8d8a-02810cafa920",
       "email": "user@example.com",
@@ -388,7 +387,6 @@ Contoh response ketika login berhasil:
 | Key            | Tipe Data | Keterangan                                                                                                    |
 | -------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
 | `access_token` | String    | JSON Web Token (JWT) yang digunakan sebagai kredensial untuk mengakses endpoint yang membutuhkan autentikasi. |
-| `expires_in`   | Integer   | Durasi berlaku access token dalam satuan detik.                                                               |
 | `user`         | Object    | Informasi user yang berhasil melakukan login.                                                                 |
 
 ### User Object

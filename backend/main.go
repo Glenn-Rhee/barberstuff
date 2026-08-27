@@ -20,14 +20,14 @@ func main() {
 	router := gin.Default()
 
 	// Customer register
-	router.POST("/auth/register/credential", h.CustomerHandler.CredentialRegister)
+	router.POST("/auth/register/credential", h.CustomerHandler.CredentialRegister) // 1
 	router.POST("/auth/register/oauth", h.CustomerHandler.OauthRegister)
 
 	// Verify OTP
-	router.POST("/auth/verify-credential", h.CustomerHandler.VerifyCredential)
+	router.POST("/auth/verify-credential", h.CustomerHandler.VerifyCredential) // 2
 
 	// User Login
-	router.POST("/auth/login/credential", h.AuthHandler.CredentialLogin)
+	router.POST("/auth/login/credential", h.AuthHandler.CredentialLogin) // 3
 
 	// Validate IdToken
 	router.POST("/auth/provider", h.AuthHandler.AuthProvider)

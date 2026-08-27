@@ -18,7 +18,7 @@ import (
 type CustomerService interface {
 	CredentialRegister(dataNewCustomer dto.CredentialCustomerRequest) (*dto.CredentialCustomerResponse, error)
 	VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) error
-	OauthRegister(dataNewCustomer dto.OauthCustomerRequest) error
+	OauthRegister(dataNewCustomer dto.OauthCustomerRequest) (dto.AuthenticationResponse, error)
 }
 
 type customerService struct {
@@ -39,29 +39,29 @@ func NewCustomerService(custRepo repository.CustomerRepository, authRepo reposit
 	}
 }
 
-func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest) error {
+func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest) (dto.AuthenticationResponse, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat registrasi. Coba lagi nanti."
 	const BASE_PATH = "service/customer_service.go"
 
 	claims, err := lib.ParseToken(dataNewCustomer.TempToken)
 	if err != nil {
 		helper.Logger("Parse temp token", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.AuthenticationResponse{}, errors.New(BASE_MESSAGE)
 	}
 
 	dataAuth, err := c.authRepo.FindOne("email = ?", claims.Email)
 	if err == nil {
 		if dataAuth.IsVerified {
 			if dataAuth.LoginType == entity.LoginWithOAuth {
-				return errors.New("Email ini telah terdaftar dan terverifikasi oleh sistem!")
+				return dto.AuthenticationResponse{}, errors.New("Email ini telah terdaftar dan terverifikasi oleh sistem!")
 			}
-			return errors.New("Email ini telah terdaftar dan terverifikasi! Silahkan anda login menggunakan password")
+			return dto.AuthenticationResponse{}, errors.New("Email ini telah terdaftar dan terverifikasi! Silahkan anda login menggunakan password")
 		}
 	}
 
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		helper.Logger("Find one auth", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.AuthenticationResponse{}, errors.New(BASE_MESSAGE)
 	}
 	custId := uuid.New()
 	customer := &entity.Customer{
@@ -89,23 +89,36 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 	if tx.Error != nil {
 		tx.Rollback()
 		helper.Logger("Failed start tx", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.AuthenticationResponse{}, errors.New(BASE_MESSAGE)
 	}
 
 	if err := c.customerRepo.Create(tx, customer); err != nil {
 		tx.Rollback()
 		helper.Logger("Failed create new customer", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.AuthenticationResponse{}, errors.New(BASE_MESSAGE)
 	}
 
 	if err := c.authRepo.Create(tx, auth); err != nil {
 		tx.Rollback()
 		helper.Logger("Failed create new auth", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.AuthenticationResponse{}, errors.New(BASE_MESSAGE)
+	}
+	expiresIn := 30 * 24 * time.Hour
+	token, err := lib.GenerateToken(custId.String(), auth.Email, auth.Role, expiresIn)
+	if err != nil {
+		helper.Logger("Generate Token", "service/auth_service.go", err)
+		return dto.AuthenticationResponse{}, errors.New("Terjadi kesalahan saat login! Coba lagi nanti.")
 	}
 
 	tx.Commit()
-	return nil
+	return dto.AuthenticationResponse{
+		AccessToken: token,
+		User: dto.UserAuth{
+			UserId: custId.String(),
+			Email: auth.Email,
+			Role: auth.Role,
+		},
+	}, nil
 }
 
 func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCustomerRequest) (*dto.CredentialCustomerResponse, error) {

@@ -13,9 +13,8 @@ type UserAuth struct {
 	Role   entity.RoleEnum `json:"role"`
 }
 
-type CredentialLoginResponse struct {
+type AuthenticationResponse struct {
 	AccessToken string   `json:"access_token"`
-	ExpiresIn   int      `json:"expires_in"`
 	User        UserAuth `json:"user"`
 }
 
