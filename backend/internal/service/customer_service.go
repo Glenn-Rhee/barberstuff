@@ -39,34 +39,30 @@ func NewCustomerService(custRepo repository.CustomerRepository, authRepo reposit
 	}
 }
 
-const BASE_PATH = "service/customer_service.go"
-const BASE_MESSAGE = "Terjadi kesalahan saat registrasi. Coba lagi nanti."
-
 func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest) error {
-	claims, err := lib.VerifyIdTokenGoogle(dataNewCustomer.IdToken)
-	if err != nil {
-		helper.Logger("Verify token", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
-	}
+	const BASE_MESSAGE = "Terjadi kesalahan saat registrasi. Coba lagi nanti."
+	const BASE_PATH = "service/customer_service.go"
 
-	if !claims.EmailVerified {
-		return errors.New("Email anda belum terverifikasi oleh Google. Silahkan verifikasi terlebih dahulu")
+	claims, err := lib.ParseToken(dataNewCustomer.TempToken)
+	if err != nil {
+		helper.Logger("Parse temp token", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
 	}
 
 	dataAuth, err := c.authRepo.FindOne("email = ?", claims.Email)
 	if err == nil {
 		if dataAuth.IsVerified {
-			return errors.New("Email telah terdaftar dan terverifikasi oleh sistem. Silahkan login menggunakan password!")
-		} else {
-			return errors.New("Email telah terdaftar oleh sistem. Silahkan lakukan verifikasi OTP!")
+			if dataAuth.LoginType == entity.LoginWithOAuth {
+				return errors.New("Email ini telah terdaftar dan terverifikasi oleh sistem!")
+			}
+			return errors.New("Email ini telah terdaftar dan terverifikasi! Silahkan anda login menggunakan password")
 		}
 	}
 
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		helper.Logger("Get data Auth", BASE_PATH, err)
+		helper.Logger("Find one auth", BASE_PATH, err)
 		return errors.New(BASE_MESSAGE)
 	}
-
 	custId := uuid.New()
 	customer := &entity.Customer{
 		ID:           custId,
@@ -244,7 +240,7 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 			helper.Logger("Delete OTP", "service/customer_service.go", err)
 			return errors.New(MESSAGE_ERROR)
 		}
-		
+
 		tx.Commit()
 		return errors.New("OTP Sudah tidak valid. Mohon kirim ulang OTP!")
 	}

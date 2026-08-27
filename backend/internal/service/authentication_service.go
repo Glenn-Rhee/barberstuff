@@ -7,6 +7,7 @@ import (
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"errors"
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -14,6 +15,7 @@ import (
 
 type AuthenticationService interface {
 	CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.CredentialLoginResponse, error)
+	AuthProvider(dataAuthProvider dto.AuthProviderRequest) (dto.AuthProviderResponse, error)
 }
 
 type authenticationService struct {
@@ -66,5 +68,61 @@ func (a *authenticationService) CredentialLogin(credentialData dto.CredentialLog
 			Email:  dataAuth.Email,
 			Role:   dataAuth.Role,
 		},
+	}, nil
+}
+
+func (a *authenticationService) AuthProvider(dataAuthProvider dto.AuthProviderRequest) (dto.AuthProviderResponse, error) {
+	const BASE_PATH = "service/customer_service.go"
+	const BASE_MESSAGE = "Terjadi kesalahan saat authentikasi"
+	if dataAuthProvider.Provider != dto.Google {
+		return dto.AuthProviderResponse{}, errors.New("Provider tidak tersedia!")
+	}
+
+	claims, err := lib.VerifyIdTokenGoogle(dataAuthProvider.IdToken)
+	if err != nil {
+		helper.Logger("Verify token", BASE_PATH, err)
+		return dto.AuthProviderResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	if !claims.EmailVerified {
+		return dto.AuthProviderResponse{}, errors.New("Email anda belum terverifikasi oleh Google. Silahkan verifikasi terlebih dahulu")
+	}
+
+	dataAuth, err := a.authenticationRepo.FindOne("email = ?", claims.Email)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			timestamp := time.Now().UnixMilli()
+			expiresIn := 1 * 24 * time.Hour
+
+			tempToken, err := lib.GenerateToken(fmt.Sprintf("USR-%d", timestamp), claims.Email, entity.RoleCustomer, expiresIn)
+			if err != nil {
+				helper.Logger("Generate Token temp", BASE_PATH, err)
+				return dto.AuthProviderResponse{}, errors.New(BASE_MESSAGE)
+			}
+
+			return dto.AuthProviderResponse{
+				Email:     claims.Email,
+				Name:      claims.Name,
+				Status:    dto.NEED_COMPLETE_PROFILE,
+				TempToken: tempToken,
+			}, nil
+		}
+
+		helper.Logger("Find one data auth", BASE_PATH, err)
+		return dto.AuthProviderResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	expiresIn := 30 * 24 * time.Hour
+	token, err := lib.GenerateToken(dataAuth.IDCustomer.String(), dataAuth.Email, dataAuth.Role, expiresIn)
+	if err != nil {
+		helper.Logger("Generate token", BASE_PATH, err)
+		return dto.AuthProviderResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	return dto.AuthProviderResponse{
+		Email:       claims.Email,
+		Name:        claims.Name,
+		Status:      dto.SUCCESS,
+		AccessToken: token,
 	}, nil
 }

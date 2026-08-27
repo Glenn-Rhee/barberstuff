@@ -43,3 +43,30 @@ func (h *AuthHandler) CredentialLogin(ctx *gin.Context) {
 		StatusCode: http.StatusOK,
 	})
 }
+
+func (h *AuthHandler) AuthProvider(ctx *gin.Context) {
+	var dataAuthProvider dto.AuthProviderRequest
+
+	if err := ctx.ShouldBindJSON(&dataAuthProvider); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, err := h.service.AuthProvider(dataAuthProvider)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.AuthProviderResponse]{
+		Data:       result,
+		Message:    "Login Berhasil!",
+		StatusCode: http.StatusOK,
+	})
+}

@@ -15,13 +15,13 @@ type CredentialCustomerRequest struct {
 }
 
 type CredentialCustomerResponse struct {
-	Id       string `json:"id"`
-	Email    string `json:"email"`
+	Id    string `json:"id"`
+	Email string `json:"email"`
 }
 
 type OauthCustomerRequest struct {
-	IdToken     string        `json:"id_token" binding:"required"`
 	Name        string        `json:"name" binding:"required"`
+	TempToken   string        `json:"temp_token" binding:"required"`
 	PhoneNumber string        `json:"phoneNumber" binding:"required,min=9,max=15"`
 	DateOfBirth time.Time     `json:"date_of_birth" binding:"required"`
 	Gender      entity.Gender `json:"gender" binding:"required,oneof=male female"`
