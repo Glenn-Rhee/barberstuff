@@ -96,7 +96,7 @@ class OnboardingSlide extends StatelessWidget {
               children: <InlineSpan>[
                 TextSpan(
                   text: content.highlight,
-                  style: const TextStyle(color: AppColor.gold),
+                  style: const TextStyle(color: AppColor.orangeLight),
                 ),
               ],
             ),

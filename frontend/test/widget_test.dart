@@ -56,7 +56,7 @@ void main() {
     await tester.pumpWidget(
       const MaterialApp(
         home: BarberPatternBackground(
-          backgroundColor: AppColor.gold,
+          backgroundColor: AppColor.orangeLight,
           patternColor: AppColor.surface,
           patternIntensity: 2.4,
           child: Text('content', textDirection: TextDirection.ltr),

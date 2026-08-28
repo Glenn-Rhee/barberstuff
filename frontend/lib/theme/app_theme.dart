@@ -8,9 +8,9 @@ class AppTheme {
 
   static ThemeData get light {
     final ColorScheme scheme = ColorScheme.fromSeed(
-      seedColor: AppColor.gold,
+      seedColor: AppColor.orangeLight,
       brightness: Brightness.light,
-      primary: AppColor.gold,
+      primary: AppColor.orangeLight,
       onPrimary: AppColor.surface,
       surface: AppColor.surface,
       onSurface: AppColor.ink,
