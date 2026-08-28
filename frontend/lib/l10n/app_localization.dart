@@ -121,6 +121,48 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'{count, plural, =0{Antrean kosong} =1{1 orang mengantre} other{{count} orang mengantre}}'**
   String queueCount(int count);
+
+  /// No description provided for @onboardingFirstTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Gaya yang pas untuk keseharianmu'**
+  String get onboardingFirstTitle;
+
+  /// No description provided for @onboardingFirstDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Temukan gaya rambut yang sesuai dengan karakter dan aktivitas harianmu.'**
+  String get onboardingFirstDescription;
+
+  /// No description provided for @onboardingSecondTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking cukur jadi lebih mudah'**
+  String get onboardingSecondTitle;
+
+  /// No description provided for @onboardingSecondDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih cabang, barber, dan jam yang kamu mau tanpa perlu antre di tempat.'**
+  String get onboardingSecondDescription;
+
+  /// No description provided for @onboardingThirdTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Nikmati berbagai keuntungan member'**
+  String get onboardingThirdTitle;
+
+  /// No description provided for @onboardingThirdDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Kumpulkan poin di setiap kunjungan dan tukarkan dengan potongan harga.'**
+  String get onboardingThirdDescription;
+
+  /// No description provided for @onboardingStart.
+  ///
+  /// In id, this message translates to:
+  /// **'Ayo Mulai!'**
+  String get onboardingStart;
 }
 
 class _AppLocalizationsDelegate

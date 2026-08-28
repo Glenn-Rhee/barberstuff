@@ -3,5 +3,16 @@
   "appTitle": "Barberstuff",
   "bookingTitle": "Book a Service",
   "greeting": "Hi, {name}!",
-  "queueCount": "{count, plural, =0{No one in queue} =1{1 person in queue} other{{count} people in queue}}"
+  "queueCount": "{count, plural, =0{No one in queue} =1{1 person in queue} other{{count} people in queue}}",
+
+  "onboardingFirstTitle": "Style that fits your day",
+  "onboardingFirstDescription": "Find a cut that matches your character and daily routine.",
+
+  "onboardingSecondTitle": "Booking made simple",
+  "onboardingSecondDescription": "Pick your branch, barber, and time slot without queueing.",
+
+  "onboardingThirdTitle": "Enjoy member benefits",
+  "onboardingThirdDescription": "Collect points on every visit and redeem them for discounts.",
+
+  "onboardingStart": "Get Started!"
 }

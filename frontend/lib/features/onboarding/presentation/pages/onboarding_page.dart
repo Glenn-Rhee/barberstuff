@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 import '../../../../src/core/constants/app_duration.dart';
 import '../../../../theme/app_color.dart';
@@ -18,11 +19,17 @@ class OnboardingPage extends StatefulWidget {
 }
 
 class _OnboardingPageState extends State<OnboardingPage> {
-  static const List<OnboardingContent> _items = OnboardingContent.items;
-
   final PageController _controller = PageController();
 
+  late List<OnboardingContent> _items;
   int _index = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Dipanggil ulang otomatis kalau bahasa berubah.
+    _items = OnboardingContent.items(AppLocalizations.of(context));
+  }
 
   @override
   void dispose() {
@@ -89,7 +96,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               padding: const EdgeInsets.fromLTRB(32, 28, 32, 12),
               child: OnboardingAction(
                 isExpanded: _isLastSlide,
-                label: 'Ayo Mulai!',
+                label: AppLocalizations.of(context).onboardingStart,
                 onPressed: _handleAction,
               ),
             ),

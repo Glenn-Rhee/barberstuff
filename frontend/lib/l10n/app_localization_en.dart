@@ -30,4 +30,28 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get onboardingFirstTitle => 'Style that fits your day';
+
+  @override
+  String get onboardingFirstDescription =>
+      'Find a cut that matches your character and daily routine.';
+
+  @override
+  String get onboardingSecondTitle => 'Booking made simple';
+
+  @override
+  String get onboardingSecondDescription =>
+      'Pick your branch, barber, and time slot without queueing.';
+
+  @override
+  String get onboardingThirdTitle => 'Enjoy member benefits';
+
+  @override
+  String get onboardingThirdDescription =>
+      'Collect points on every visit and redeem them for discounts.';
+
+  @override
+  String get onboardingStart => 'Get Started!';
 }

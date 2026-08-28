@@ -30,4 +30,28 @@ class AppLocalizationsId extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get onboardingFirstTitle => 'Gaya yang pas untuk keseharianmu';
+
+  @override
+  String get onboardingFirstDescription =>
+      'Temukan gaya rambut yang sesuai dengan karakter dan aktivitas harianmu.';
+
+  @override
+  String get onboardingSecondTitle => 'Booking cukur jadi lebih mudah';
+
+  @override
+  String get onboardingSecondDescription =>
+      'Pilih cabang, barber, dan jam yang kamu mau tanpa perlu antre di tempat.';
+
+  @override
+  String get onboardingThirdTitle => 'Nikmati berbagai keuntungan member';
+
+  @override
+  String get onboardingThirdDescription =>
+      'Kumpulkan poin di setiap kunjungan dan tukarkan dengan potongan harga.';
+
+  @override
+  String get onboardingStart => 'Ayo Mulai!';
 }
