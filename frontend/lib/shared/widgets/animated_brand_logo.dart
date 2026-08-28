@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../src/core/constants/app_assets.dart';
-import '../../src/core/constants/app_duration.dart';
-import '../../theme/app_color.dart';
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/constants/app_duration.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
 
 class AnimatedBrandLogo extends StatefulWidget {
   const AnimatedBrandLogo({
@@ -82,9 +81,10 @@ class _AnimatedBrandLogoState extends State<AnimatedBrandLogo>
       ),
     );
 
-    _pulse = Tween<double>(begin: 1, end: 1.022).animate(
-      CurvedAnimation(parent: _breathe, curve: Curves.easeInOut),
-    );
+    _pulse = Tween<double>(
+      begin: 1,
+      end: 1.022,
+    ).animate(CurvedAnimation(parent: _breathe, curve: Curves.easeInOut));
 
     _play();
   }

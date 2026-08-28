@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:mobile_barberstuff/app/app_route.dart';
+import 'package:mobile_barberstuff/core/localization/local_controller.dart';
+import 'package:mobile_barberstuff/core/theme/app_theme.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/src/app/app_route.dart';
-import 'package:mobile_barberstuff/src/core/localization/local_controller.dart';
-import 'package:mobile_barberstuff/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     final locale = context.select<LocalController, Locale>((c) => c.locale);
 
     return MaterialApp(
@@ -44,7 +42,7 @@ class App extends StatelessWidget {
           ),
           child: child!,
         );
-      }
+      },
     );
   }
 }

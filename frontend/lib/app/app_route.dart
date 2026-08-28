@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
-import '../../features/onboarding/presentation/pages/onboarding_page.dart';
-import '../../features/splash/presentation/pages/splash_brand_page.dart';
-import '../../features/splash/presentation/pages/splash_page.dart';
-import '../../shared/transitions/circular_reveal_route.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/pages/choose_login_page.dart';
+import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
+import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
+import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
+import 'package:mobile_barberstuff/shared/transitions/circular_reveal_route.dart';
 
 class AppRoute {
   const AppRoute._();
@@ -11,6 +11,7 @@ class AppRoute {
   static const String splash = '/';
   static const String splashBrand = '/splash-brand';
   static const String onboarding = '/onboarding';
+  static const String chooseLogin = '/choose-login';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -32,7 +33,12 @@ class AppRoute {
           settings: settings,
           builder: (BuildContext context) => const OnboardingPage(),
         );
-      
+      case chooseLogin:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => const ChooseLoginPage(),
+        );
+
       default:
         return null;
     }

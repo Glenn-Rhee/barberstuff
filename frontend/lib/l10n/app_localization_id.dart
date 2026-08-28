@@ -54,4 +54,32 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get onboardingStart => 'Ayo Mulai!';
+
+  @override
+  String get chooseLoginWelcome => 'Selamat Datang';
+
+  @override
+  String get chooseLoginGoogleText => 'Lanjutkan dengan Google';
+
+  @override
+  String get chooseLoginDividerOr => 'atau';
+
+  @override
+  String get chooseLoginWithPasswordText => 'Masuk dengan Kata Sandi';
+
+  @override
+  String get chooseLoginTextMessage => 'Belum punya akun?';
+
+  @override
+  String get chooseLoginTextLink => 'Daftar';
+
+  @override
+  String get comingSoonTitle => 'Segera hadir';
+
+  @override
+  String get comingSoonMessage =>
+      'Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.';
+
+  @override
+  String get commonUnderstood => 'Mengerti';
 }

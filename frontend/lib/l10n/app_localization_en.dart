@@ -54,4 +54,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingStart => 'Get Started!';
+
+  @override
+  String get chooseLoginWelcome => 'Welcome';
+
+  @override
+  String get chooseLoginGoogleText => 'Continue with Google';
+
+  @override
+  String get chooseLoginDividerOr => 'or';
+
+  @override
+  String get chooseLoginWithPasswordText => 'Sign In with Password';
+
+  @override
+  String get chooseLoginTextMessage => 'Don\'t have an account yet?';
+
+  @override
+  String get chooseLoginTextLink => 'Sign Up';
+
+  @override
+  String get comingSoonTitle => 'Coming soon';
+
+  @override
+  String get comingSoonMessage =>
+      'We are still working on this feature. In the meantime, feel free to use the available features. Thank you.';
+
+  @override
+  String get commonUnderstood => 'Got it';
 }

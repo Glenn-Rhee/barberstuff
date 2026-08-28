@@ -14,5 +14,17 @@
   "onboardingThirdTitle": "Enjoy member benefits",
   "onboardingThirdDescription": "Collect points on every visit and redeem them for discounts.",
 
-  "onboardingStart": "Get Started!"
+  "onboardingStart": "Get Started!",
+
+  "chooseLoginWelcome": "Welcome",
+  "chooseLoginGoogleText": "Continue with Google",
+  "chooseLoginDividerOr": "or",
+  "chooseLoginWithPasswordText": "Sign In with Password",
+  "chooseLoginTextMessage": "Don't have an account yet?",
+  "chooseLoginTextLink": "Sign Up",
+
+  "comingSoonTitle": "Coming soon",
+  "comingSoonMessage": "We are still working on this feature. In the meantime, feel free to use the available features. Thank you.",
+  "commonUnderstood": "Got it"
+
 }

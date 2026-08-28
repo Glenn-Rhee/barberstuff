@@ -1,8 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-
-import '../../src/core/constants/app_duration.dart';
+import 'package:mobile_barberstuff/core/constants/app_duration.dart';
 
 class CircularRevealRoute<T> extends PageRouteBuilder<T> {
   CircularRevealRoute({
@@ -12,11 +11,12 @@ class CircularRevealRoute<T> extends PageRouteBuilder<T> {
   }) : super(
          transitionDuration: AppDuration.revealTransition,
          reverseTransitionDuration: AppDuration.revealTransition,
-         pageBuilder: (
-           BuildContext context,
-           Animation<double> animation,
-           Animation<double> secondaryAnimation,
-         ) => builder(context),
+         pageBuilder:
+             (
+               BuildContext context,
+               Animation<double> animation,
+               Animation<double> secondaryAnimation,
+             ) => builder(context),
        );
 
   final WidgetBuilder builder;
@@ -37,10 +37,7 @@ class CircularRevealRoute<T> extends PageRouteBuilder<T> {
     return AnimatedBuilder(
       animation: curved,
       builder: (BuildContext context, Widget? inner) => ClipPath(
-        clipper: _CircularRevealClipper(
-          fraction: curved.value,
-          origin: origin,
-        ),
+        clipper: _CircularRevealClipper(fraction: curved.value, origin: origin),
         child: inner,
       ),
       child: child,
@@ -62,9 +59,7 @@ class _CircularRevealClipper extends CustomClipper<Path> {
     final double maxRadius = math.sqrt(dx * dx + dy * dy);
 
     return Path()
-      ..addOval(
-        Rect.fromCircle(center: center, radius: maxRadius * fraction),
-      );
+      ..addOval(Rect.fromCircle(center: center, radius: maxRadius * fraction));
   }
 
   @override

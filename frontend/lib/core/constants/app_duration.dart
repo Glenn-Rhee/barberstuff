@@ -10,4 +10,5 @@ class AppDuration {
   static const Duration slideChange = Duration(milliseconds: 460);
   static const Duration actionMorph = Duration(milliseconds: 420);
   static const Duration indicatorChange = Duration(milliseconds: 280);
+  static const Duration pressFeedback = Duration(milliseconds: 120);
 }

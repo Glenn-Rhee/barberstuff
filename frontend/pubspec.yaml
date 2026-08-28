@@ -1,6 +1,6 @@
 name: mobile_barberstuff
 description: "BarberStuff mobile application."
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -29,7 +29,7 @@ flutter:
 
   assets:
     - assets/images/
-
+    - assets/icons/
 
   fonts:
     - family: Poppins
@@ -48,4 +48,8 @@ flutter_launcher_icons:
 
   android: "launcher_icon"
   min_sdk_android: 21
-  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_background: "#E0E0E0"
+  adaptive_icon_foreground: "assets/icon/icon_barberstuff_fg.png"
+
+  ios: true
+  remove_alpha_ios: true

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_barberstuff/app/app_route.dart';
+import 'package:mobile_barberstuff/core/constants/app_duration.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
+import 'package:mobile_barberstuff/features/onboarding/domain/onboarding_content.dart';
+import 'package:mobile_barberstuff/features/onboarding/presentation/widgets/onboarding_action.dart';
+import 'package:mobile_barberstuff/features/onboarding/presentation/widgets/onboarding_indicator.dart';
+import 'package:mobile_barberstuff/features/onboarding/presentation/widgets/onboarding_slide.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-
-import '../../../../src/core/constants/app_duration.dart';
-import '../../../../theme/app_color.dart';
-import '../../domain/onboarding_content.dart';
-import '../widgets/onboarding_action.dart';
-import '../widgets/onboarding_indicator.dart';
-import '../widgets/onboarding_slide.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key, this.onFinished});
@@ -27,7 +27,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Dipanggil ulang otomatis kalau bahasa berubah.
     _items = OnboardingContent.items(AppLocalizations.of(context));
   }
 
@@ -41,7 +40,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   void _handleAction() {
     if (_isLastSlide) {
-      widget.onFinished?.call();
+      Navigator.of(context).pushReplacementNamed(AppRoute.chooseLogin);
       return;
     }
 
@@ -61,7 +60,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark.copyWith(
+   
+      value: SystemUiOverlayStyle.light.copyWith(
         statusBarColor: Colors.transparent,
         systemNavigationBarColor: AppColor.surface,
         systemNavigationBarIconBrightness: Brightness.dark,
@@ -88,19 +88,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 },
               ),
             ),
-            OnboardingIndicator(
-              length: _items.length,
-              activeIndex: _index,
-            ),
+            const SizedBox(height: 24),
+            OnboardingIndicator(length: _items.length, activeIndex: _index),
             Padding(
-              padding: const EdgeInsets.fromLTRB(32, 28, 32, 12),
+              padding: const EdgeInsets.fromLTRB(32, 24, 32, 0),
               child: OnboardingAction(
                 isExpanded: _isLastSlide,
                 label: AppLocalizations.of(context).onboardingStart,
                 onPressed: _handleAction,
               ),
             ),
-            SizedBox(height: MediaQuery.paddingOf(context).bottom + 12),
+            SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
           ],
         ),
       ),

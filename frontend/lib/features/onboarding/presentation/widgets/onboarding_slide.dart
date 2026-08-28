@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../domain/onboarding_content.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
+import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/features/onboarding/domain/onboarding_content.dart';
 
 class OnboardingSlide extends StatelessWidget {
   const OnboardingSlide({
@@ -9,9 +10,16 @@ class OnboardingSlide extends StatelessWidget {
     required this.offset,
   });
 
+  static const double _parallax = 90;
+
+  static const double _textPadding = 32;
+
+  static const double _fadeStart = 0.52;
+
+  static const double _fadeEnd = 0.94;
+
   final OnboardingContent content;
 
-  /// 0 = di tengah layar, -1 = belum masuk (kanan), 1 = sudah keluar (kiri).
   final double offset;
 
   @override
@@ -19,40 +27,64 @@ class OnboardingSlide extends StatelessWidget {
     final double t = offset.clamp(-1.0, 1.0);
     final double fade = (1 - t.abs()).clamp(0.0, 1.0);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          // Hanya gambar yang beranimasi (parallax + fade).
-          // Perbesar angka 90 untuk efek lebih kuat, perkecil untuk lebih halus.
-          Transform.translate(
-            offset: Offset(t * 90, 0),
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Transform.translate(
+            offset: Offset(t * _parallax, 0),
             child: Opacity(
               opacity: fade,
-              child: Image.asset(
-                content.image,
-                fit: BoxFit.contain,
+              child: SizedBox.expand(
+                child: ShaderMask(
+                  blendMode: BlendMode.dstIn,
+                  shaderCallback: (Rect bounds) => const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: <Color>[
+                      Color(0xFF000000),
+                      Color(0x66000000),
+                      Color(0x00000000),
+                    ],
+                    stops: <double>[_fadeStart, 0.78, _fadeEnd],
+                  ).createShader(bounds),
+                  child: Image.asset(
+                    content.image,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    filterQuality: FilterQuality.medium,
+                  ),
+                ),
               ),
             ),
           ),
+        ),
 
-          const SizedBox(height: 48),
-
-          // Teks tanpa animasi tambahan.
-          Text(
-            content.title,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(_textPadding, 0, _textPadding, 0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                content.title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.headlineMedium,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                content.description,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.bodyMedium.copyWith(
+                  color: AppColor.inkSoft,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            content.description,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

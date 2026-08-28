@@ -163,6 +163,60 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Ayo Mulai!'**
   String get onboardingStart;
+
+  /// No description provided for @chooseLoginWelcome.
+  ///
+  /// In id, this message translates to:
+  /// **'Selamat Datang'**
+  String get chooseLoginWelcome;
+
+  /// No description provided for @chooseLoginGoogleText.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjutkan dengan Google'**
+  String get chooseLoginGoogleText;
+
+  /// No description provided for @chooseLoginDividerOr.
+  ///
+  /// In id, this message translates to:
+  /// **'atau'**
+  String get chooseLoginDividerOr;
+
+  /// No description provided for @chooseLoginWithPasswordText.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk dengan Kata Sandi'**
+  String get chooseLoginWithPasswordText;
+
+  /// No description provided for @chooseLoginTextMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum punya akun?'**
+  String get chooseLoginTextMessage;
+
+  /// No description provided for @chooseLoginTextLink.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar'**
+  String get chooseLoginTextLink;
+
+  /// No description provided for @comingSoonTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Segera hadir'**
+  String get comingSoonTitle;
+
+  /// No description provided for @comingSoonMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.'**
+  String get comingSoonMessage;
+
+  /// No description provided for @commonUnderstood.
+  ///
+  /// In id, this message translates to:
+  /// **'Mengerti'**
+  String get commonUnderstood;
 }
 
 class _AppLocalizationsDelegate

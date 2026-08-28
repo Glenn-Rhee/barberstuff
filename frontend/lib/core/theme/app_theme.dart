@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'app_color.dart';
-import 'app_text_style.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
+import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 
 class AppTheme {
   const AppTheme._();

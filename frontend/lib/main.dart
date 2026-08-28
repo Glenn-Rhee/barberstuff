@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_barberstuff/app/app.dart';
+import 'package:mobile_barberstuff/core/localization/local_controller.dart';
 import 'package:provider/provider.dart';
-
-import 'package:mobile_barberstuff/src/app/app.dart';
-import 'package:mobile_barberstuff/src/core/localization/local_controller.dart';
 import 'package:provider/single_child_widget.dart';
 
 Future<void> main() async {
@@ -28,5 +27,5 @@ Future<void> main() async {
       ],
       child: const App(),
     ),
-  );  
+  );
 }
