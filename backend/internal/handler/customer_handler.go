@@ -17,8 +17,8 @@ func NewCustomerHandler(service service.CustomerService) *CustomerHandler {
 	return &CustomerHandler{service: service}
 }
 
-func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
-	var dataNewCustomer dto.CredentialCustomerRequest
+func (h *CustomerHandler) OauthRegister(ctx *gin.Context) {
+	var dataNewCustomer dto.OauthCustomerRequest
 
 	if err := ctx.ShouldBindJSON(&dataNewCustomer); err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
@@ -36,7 +36,42 @@ func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
 		return
 	}
 
-	result, err := h.service.CredentialRegister(dataNewCustomer)
+	result, err := h.service.OauthRegister(dataNewCustomer, ctx.Request.Context())
+
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.AuthenticationResponse]{
+		Message:    "Berhasil registrasi dengan google!",
+		Data:       result,
+		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
+	var dataNewCustomer dto.CredentialCustomerRequest
+	if err := ctx.ShouldBindJSON(&dataNewCustomer); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	if !helper.ValidatePhoneNumber(dataNewCustomer.PhoneNumber) {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "No telepon tidak valid, gunakan format +62xxxx atau 08xxxx",
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, err := h.service.CredentialRegister(dataNewCustomer, ctx.Request.Context())
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -71,7 +106,7 @@ func (h *CustomerHandler) VerifyCredential(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.VerifyOTP(dataOtpCustomer)
+	result, err := h.service.VerifyOTP(ctx.Request.Context(), dataOtpCustomer)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -80,9 +115,36 @@ func (h *CustomerHandler) VerifyCredential(ctx *gin.Context) {
 		return
 	}
 
-	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
-		Message:    "Berhasil verifikasi akun! Silahkan login.",
-		Data:       nil,
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.VerifyOTPResponse]{
+		Message:    "Berhasil verifikasi!",
+		Data:       result,
+		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *CustomerHandler) ForgotPassword(ctx *gin.Context) {
+	var dataResetPassword dto.ForgotPasswordRequest
+
+	if err := ctx.ShouldBindJSON(&dataResetPassword); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, err := h.service.ForgotPassword(ctx.Request.Context(), dataResetPassword)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.ForgotPassswordResponse]{
+		Message:    "Berhasil kirim otp",
+		Data:       result,
 		StatusCode: http.StatusOK,
 	})
 }

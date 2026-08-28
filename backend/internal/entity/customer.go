@@ -19,7 +19,6 @@ type Customer struct {
 	PhoneNumber   *string    `gorm:"column:phone_number"`
 	DateOfBirth   *time.Time `gorm:"column:date_of_birth"`
 	Gender        Gender     `gorm:"column:gender"`
-	Username      string     `gorm:"column:username;not null;unique"`
 	MemberPoints  int        `gorm:"column:member_points;not null;default:0"`
 	ImageCustomer []byte     `gorm:"column:image_customer"`
 	CreatedAt     time.Time  `gorm:"column:created_at;not null"`

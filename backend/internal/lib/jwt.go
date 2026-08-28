@@ -72,13 +72,14 @@ func ParseToken(tokenString string) (*CustomClaims, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, ErrTokenInvalid
 		}
-		return os.Getenv("JWT_KEY"), nil
+		return []byte(os.Getenv("JWT_KEY")), nil
 	})
 
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
 			return nil, ErrTokenExpired
 		}
+		log.Println(err.Error())
 		return nil, ErrTokenInvalid
 	}
 

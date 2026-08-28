@@ -3,6 +3,8 @@ module barberstuff_backend
 go 1.25.0
 
 require (
+	github.com/MicahParks/jwkset v0.11.1 // indirect
+	github.com/MicahParks/keyfunc/v3 v3.8.1 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.43.8 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.19 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.32.39 // indirect
@@ -25,6 +27,7 @@ require (
 	github.com/bytedance/gopkg v0.1.4 // indirect
 	github.com/bytedance/sonic v1.15.2 // indirect
 	github.com/bytedance/sonic/loader v0.5.2 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.7 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.15 // indirect
 	github.com/gin-contrib/cors v1.7.7 // indirect
@@ -58,6 +61,7 @@ require (
 	github.com/pressly/goose v2.7.0+incompatible // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.61.0 // indirect
+	github.com/redis/go-redis/v9 v9.22.0 // indirect
 	github.com/resend/resend-go/v3 v3.17.0 // indirect
 	github.com/ryszard/goskiplist v0.0.0-20150312221310-2dfbae5fcf46 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
@@ -65,12 +69,14 @@ require (
 	github.com/ugorji/go/codec v1.3.2 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.8.1 // indirect
 	go.shabbyrobe.org/gocovmerge v0.0.0-20230507111327-fa4f82cfbf4d // indirect
+	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/arch v0.30.0 // indirect
 	golang.org/x/crypto v0.55.0 // indirect
 	golang.org/x/net v0.58.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
+	golang.org/x/time v0.15.0 // indirect
 	golang.org/x/tools v0.48.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect

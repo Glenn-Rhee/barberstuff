@@ -11,6 +11,7 @@ type AuthenticationRepository interface {
 	FindOne(where string, args ...interface{}) (entity.Authentication, error)
 	Create(tx *gorm.DB, a *entity.Authentication) error
 	UpdateVerifiedCredential(tx *gorm.DB, userId uuid.UUID, verified bool) error
+	ResetPassword(newPassword, email string) error
 }
 
 type authenticationRepository struct {
@@ -36,4 +37,8 @@ func (r *authenticationRepository) Create(tx *gorm.DB, a *entity.Authentication)
 func (r *authenticationRepository) UpdateVerifiedCredential(tx *gorm.DB, userId uuid.UUID, verified bool) error {
 	result := tx.Model(&entity.Authentication{}).Where("id_customer = ?", userId).Update("is_verified", verified)
 	return result.Error
+}
+
+func (r *authenticationRepository) ResetPassword(newPassword, email string) error {
+	return r.db.Model(&entity.Authentication{}).Where("email = ?", email).Update("password", newPassword).Error
 }
