@@ -1,0 +1,13 @@
+{
+  "@@locale": "id",
+  "appTitle": "Barberstuff",
+  "bookingTitle": "Pesan Layanan",
+  "greeting": "Halo, {name}!",
+  "@greeting": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "queueCount": "{count, plural, =0{Antrean kosong} =1{1 orang mengantre} other{{count} orang mengantre}}",
+  "@queueCount": {
+    "placeholders": { "count": { "type": "int" } }
+  }
+}

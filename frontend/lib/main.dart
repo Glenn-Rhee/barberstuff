@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-import 'src/app/app.dart';
+import 'package:mobile_barberstuff/src/app/app.dart';
+import 'package:mobile_barberstuff/src/core/localization/local_controller.dart';
+import 'package:provider/single_child_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,5 +18,15 @@ Future<void> main() async {
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
 
-  runApp(const App());
+  final localController = LocalController();
+  await localController.load();
+
+  runApp(
+    MultiProvider(
+      providers: <SingleChildWidget>[
+        ChangeNotifierProvider<LocalController>.value(value: localController),
+      ],
+      child: const App(),
+    ),
+  );  
 }

@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "Barberstuff",
+  "bookingTitle": "Book a Service",
+  "greeting": "Hi, {name}!",
+  "queueCount": "{count, plural, =0{No one in queue} =1{1 person in queue} other{{count} people in queue}}"
+}
