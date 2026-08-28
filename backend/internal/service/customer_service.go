@@ -6,40 +6,45 @@ import (
 	"barberstuff_backend/internal/helper"
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
+	"context"
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 type CustomerService interface {
-	CredentialRegister(dataNewCustomer dto.CredentialCustomerRequest) (*dto.CredentialCustomerResponse, error)
-	VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) error
-	OauthRegister(dataNewCustomer dto.OauthCustomerRequest) (dto.AuthenticationResponse, error)
+	CredentialRegister(dataNewCustomer dto.CredentialCustomerRequest, ctx context.Context) (*dto.CredentialCustomerResponse, error)
+	VerifyOTP(ctx context.Context, dataOTPCust dto.VerifyCredentialRequest) error
+	OauthRegister(dataNewCustomer dto.OauthCustomerRequest, ctx context.Context) (dto.AuthenticationResponse, error)
+	ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) error
 }
 
 type customerService struct {
 	customerRepo repository.CustomerRepository
 	authRepo     repository.AuthenticationRepository
-	otpRepo      repository.OtpRepository
 	db           *gorm.DB
+	client       *redis.Client
 }
 
 const defaultRegisterErrMsg = "Terjadi kesalahan saat mendaftar. Silahkan coba lagi nanti!"
+const EXPIRED_OTP = 3 * time.Minute
 
-func NewCustomerService(custRepo repository.CustomerRepository, authRepo repository.AuthenticationRepository, db *gorm.DB, otpRepo repository.OtpRepository) CustomerService {
+func NewCustomerService(custRepo repository.CustomerRepository, authRepo repository.AuthenticationRepository, db *gorm.DB, client *redis.Client) CustomerService {
 	return &customerService{
 		customerRepo: custRepo,
 		authRepo:     authRepo,
-		otpRepo:      otpRepo,
 		db:           db,
+		client:       client,
 	}
 }
 
-func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest) (dto.AuthenticationResponse, error) {
+func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest, ctx context.Context) (dto.AuthenticationResponse, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat registrasi. Coba lagi nanti."
 	const BASE_PATH = "service/customer_service.go"
 
@@ -57,6 +62,22 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 			}
 			return dto.AuthenticationResponse{}, errors.New("Email ini telah terdaftar dan terverifikasi! Silahkan anda login menggunakan password")
 		}
+	}
+
+	resultDel := c.client.Del(ctx, fmt.Sprintf("temp_token:%v", claims.Email))
+	if resultDel.Err() != nil {
+		helper.Logger("Delete temp token", BASE_PATH, err)
+		return dto.AuthenticationResponse{}, errors.New(BASE_MESSAGE)
+	}
+	result := c.client.GetDel(ctx, dataNewCustomer.TempToken)
+
+	if result.Err() != nil {
+		if errors.Is(result.Err(), redis.Nil) {
+			return dto.AuthenticationResponse{}, errors.New("Data anda sudah tidak valid mohon register ulang dengan akun Anda.")
+		}
+
+		helper.Logger("Get and delete redis", BASE_PATH, result.Err())
+		return dto.AuthenticationResponse{}, errors.New(BASE_MESSAGE)
 	}
 
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -115,18 +136,21 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		AccessToken: token,
 		User: dto.UserAuth{
 			UserId: custId.String(),
-			Email: auth.Email,
-			Role: auth.Role,
+			Email:  auth.Email,
+			Role:   auth.Role,
 		},
 	}, nil
 }
 
-func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCustomerRequest) (*dto.CredentialCustomerResponse, error) {
+func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCustomerRequest, ctx context.Context) (*dto.CredentialCustomerResponse, error) {
+	const BASE_PATH = "service/customer_service.go"
 	tx := c.db.Begin()
 	if tx.Error != nil {
 		log.Println("Error [START TRANSAKSI] [service/customer_service.go]:", tx.Error.Error())
 		return &dto.CredentialCustomerResponse{}, errors.New(defaultRegisterErrMsg)
 	}
+
+	descriptionOTP := "Gunakan kode berikut untuk melanjutkan verifikasi akun kamu:"
 
 	dataAuth, err := c.authRepo.FindOne("email = ?", dataNewCustomer.Email)
 	if err == nil {
@@ -134,12 +158,24 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 			return &dto.CredentialCustomerResponse{}, errors.New("Email ini telah terdaftar dan terverifikasi!")
 		}
 
-		if waitErr := c.checkPendingOTP(*dataAuth.IDCustomer); waitErr != nil {
-			tx.Rollback()
-			return &dto.CredentialCustomerResponse{}, waitErr
+		allowed, err := helper.AllowAttemp(
+			c.client,
+			ctx,
+			fmt.Sprintf("otp_attempt:%v", dataAuth.IDCustomer.String()),
+			5,
+			EXPIRED_OTP,
+		)
+
+		if err != nil {
+			helper.Logger("Find Attemp", BASE_PATH, err)
+			return &dto.CredentialCustomerResponse{}, errors.New(defaultRegisterErrMsg)
 		}
 
-		otpData, err := c.issueOTP(tx, *dataAuth.IDCustomer)
+		if !allowed {
+			return &dto.CredentialCustomerResponse{}, errors.New("Mohon tunggu sebelum anda meminta OTP kembali.")
+		}
+
+		otp, err := c.issueOTP(ctx, *dataAuth.IDCustomer)
 		if err != nil {
 			return c.failRegister(tx, "ISSUE OTP", err)
 		}
@@ -149,7 +185,7 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 			return c.failRegister(tx, "GET DATA CUSTOMER", err)
 		}
 
-		err = c.sendOtp(*otpData, dataAuth.Email, dataCustomer.Name)
+		err = c.sendOtp(ctx, *dataAuth.IDCustomer, otp, dataAuth.Email, dataCustomer.Name, descriptionOTP)
 		if err != nil {
 			return c.failRegister(tx, "Send OTP", err)
 		}
@@ -197,12 +233,14 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		return c.failRegister(tx, "CREATE AUTHENTICATION", err)
 	}
 
-	otpData, err := c.issueOTP(tx, custId)
+	otp, err := c.issueOTP(ctx, *auth.IDCustomer)
 	if err != nil {
 		return c.failRegister(tx, "ISSUE OTP", err)
 	}
 
-	err = c.sendOtp(*otpData, auth.Email, customer.Name)
+	log.Println("otp:", otp)
+
+	err = c.sendOtp(ctx, custId, otp, auth.Email, customer.Name, descriptionOTP)
 	if err != nil {
 		return c.failRegister(tx, "Send OTP", err)
 	}
@@ -214,17 +252,27 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 	}, nil
 }
 
-func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) error {
+func (c *customerService) VerifyOTP(ctx context.Context, dataOTPCust dto.VerifyCredentialRequest) error {
 	const MESSAGE_ERROR = "Terjadi kesalahan saat verifikasi otp. Coba lagi nanti"
+	const BASE_PATH = "service/customer_service.go"
 	parsedId, err := uuid.Parse(dataOTPCust.UserId)
 	if err != nil {
 		helper.Logger("Parsed string -> UUID", "service/customer_service.go", err)
 		return errors.New(MESSAGE_ERROR)
 	}
 
-	dataOtpRegistered, err := c.otpRepo.FindByUserId(parsedId)
+	keyOtpRedis := fmt.Sprintf("OTP:%v", dataOTPCust.UserId)
+	keyTotalAttempt := fmt.Sprintf("otp_attempt:%v", dataOTPCust.UserId)
+	remaining, err := helper.GetRemainingTime(c.client, ctx, keyOtpRedis)
+
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		helper.Logger("Find remaining time", BASE_PATH, err)
+		return errors.New(MESSAGE_ERROR)
+	}
+
+	dataOtpResult := c.client.Get(ctx, keyOtpRedis)
+	if dataOtpResult.Err() != nil {
+		if errors.Is(dataOtpResult.Err(), redis.Nil) {
 			dataAuth, err := c.authRepo.FindOne("id_customer = ?", parsedId)
 			if err != nil {
 				helper.Logger("Failed get one auth repo", "service/customer_service.go", err)
@@ -237,76 +285,149 @@ func (c *customerService) VerifyOTP(dataOTPCust dto.VerifyCredentialRequest) err
 
 			return errors.New("Email tidak ditemukan! Mohon daftar terlebih dahulu.")
 		}
-		helper.Logger("Find otp By user id", "service/customer_service.go", err)
+
+		helper.Logger("Find otp redis By user id", BASE_PATH, err)
 		return errors.New(MESSAGE_ERROR)
 	}
 
-	remaining := time.Until(dataOtpRegistered.ExpiredAt)
 	if remaining <= 0 {
-		tx := c.db.Begin()
-		if tx.Error != nil {
-			helper.Logger("Start tx", "service/customer_service.go", err)
-			return errors.New(MESSAGE_ERROR)
-		}
-		err = c.otpRepo.Delete(tx, parsedId)
-		if err != nil {
-			helper.Logger("Delete OTP", "service/customer_service.go", err)
-			return errors.New(MESSAGE_ERROR)
-		}
-
-		tx.Commit()
 		return errors.New("OTP Sudah tidak valid. Mohon kirim ulang OTP!")
 	}
 
-	decrypted, err := helper.Decrypt(dataOtpRegistered.OTP)
+	otp, err := dataOtpResult.Result()
+	if err != nil {
+		helper.Logger("Result otp from redis", "service/customer_service.go", err)
+		return errors.New(MESSAGE_ERROR)
+	}
+
+	decrypted, err := helper.Decrypt(otp)
 	if err != nil {
 		helper.Logger("Decrypt OTP", "service/customer_service.go", err)
 		return errors.New(MESSAGE_ERROR)
 	}
 
 	if decrypted != dataOTPCust.OTP {
-		err = c.otpRepo.IncrementAttempt(parsedId)
+		allowed, err := helper.AllowAttemp(
+			c.client,
+			ctx,
+			keyTotalAttempt,
+			5,
+			EXPIRED_OTP,
+		)
+
 		if err != nil {
 			helper.Logger("Increment attempt otp", "service/customer_service.go", err)
 			return errors.New(MESSAGE_ERROR)
 		}
-		if dataOtpRegistered.AttempCount == 4 {
-			tx := c.db.Begin()
-			err = c.otpRepo.Delete(tx, parsedId)
-			if err != nil {
-				tx.Rollback()
-				helper.Logger("Delete OTP, attempt count > 5", "service/customer_service.go", err)
+
+		if !allowed {
+			if err := c.client.Del(ctx, keyOtpRedis).Err(); err != nil {
+				helper.Logger("Delete OTP, attempt count > 5", BASE_PATH, err)
 				return errors.New(MESSAGE_ERROR)
 			}
-			tx.Commit()
+
 			return errors.New("Anda telah melakukan kesalahan 5 kali percobaan! Mohon untuk kirim ulang OTP!")
 		}
-		return fmt.Errorf("OTP Tidak valid, silahkan coba lagi. Sisa percobaan %d kali", 4-dataOtpRegistered.AttempCount)
+
+		count, err := c.client.Get(ctx, keyTotalAttempt).Result()
+		if err != nil {
+			helper.Logger("Gett total attempt otp", "service/customer_service.go", err)
+			return errors.New(MESSAGE_ERROR)
+		}
+
+		totalAttemps, err := strconv.Atoi(count)
+		if err != nil {
+			helper.Logger("Failed convert string to int", "service/customer_service.go", err)
+			return errors.New(MESSAGE_ERROR)
+		}
+
+		return fmt.Errorf("OTP Tidak valid, silahkan coba lagi. Sisa percobaan %d kali", 5-totalAttemps)
 	}
 
 	// OTP Valid
 	tx := c.db.Begin()
-	err = c.otpRepo.Delete(tx, parsedId)
+	err = c.client.Del(ctx, keyOtpRedis).Err()
 	if err != nil {
 		tx.Rollback()
 		helper.Logger("Delete OTP while OTP is correct!", "service/customer_service.go", err)
 		return errors.New(MESSAGE_ERROR)
 	}
+
+	err = c.client.Del(ctx, keyTotalAttempt).Err()
+	if err != nil {
+		tx.Rollback()
+		helper.Logger("Delete total attemmpt otp while OTP is correct!", "service/customer_service.go", err)
+		return errors.New(MESSAGE_ERROR)
+	}
+
 	err = c.authRepo.UpdateVerifiedCredential(tx, parsedId, true)
 	if err != nil {
 		tx.Rollback()
 		helper.Logger("Update verified", "service/customer_service.go", err)
 		return errors.New(MESSAGE_ERROR)
 	}
-	tx.Commit()
+	if err := tx.Commit().Error; err != nil {
+		helper.Logger("Commit transaction", BASE_PATH, err)
+		return errors.New(MESSAGE_ERROR)
+	}
 
 	return nil
 }
 
-func (c *customerService) sendOtp(otpData entity.OTP, email string, name string) error {
-	remaining := time.Until(otpData.ExpiredAt)
-	minutes := int(remaining.Minutes())
-	decrypted, err := helper.Decrypt(otpData.OTP)
+func (c *customerService) ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) error {
+	const BASE_PATH = "service/customer_service.go"
+	const BASE_MESSAGE = "Terjadi kesalahan saat reset password!"
+	dataAuth, err := c.authRepo.FindOne("email = ?", dataForgotPassword.Email)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Email tidak terdaftar!")
+		}
+
+		helper.Logger("Find one data auth", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if !dataAuth.IsVerified {
+		return errors.New("Email belum verified! Tidak dapat reset password.")
+	}
+
+	if dataAuth.LoginType == entity.LoginWithOAuth {
+		return errors.New("Email Anda login dengan google! Tidak dapat reset password.")
+	}
+
+	tx := c.db.Begin()
+	if tx.Error != nil {
+		helper.Logger("Begin tx", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	otp, err := c.issueOTP(ctx, *dataAuth.IDCustomer)
+	if err != nil {
+		helper.Logger("Begin tx", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	description := "Gunakan kode berikut untuk mereset passsword anda."
+	userId := dataAuth.IDCustomer
+	dataCustomer, err := c.customerRepo.FindById(userId.String())
+	if err != nil {
+		helper.Logger("Get customer by id", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	err = c.sendOtp(ctx, *userId, otp, dataAuth.Email, dataCustomer.Name, description)
+	if err != nil {
+		helper.Logger("Send otp", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (c *customerService) sendOtp(ctx context.Context, userId uuid.UUID, otpPlain string, email string, name string, description string) error {
+	key := fmt.Sprintf("OTP:%v", userId.String())
+
+	minutes, err := helper.GetRemainingTime(c.client, ctx, key)
 	if err != nil {
 		return err
 	}
@@ -318,8 +439,9 @@ func (c *customerService) sendOtp(otpData entity.OTP, email string, name string)
 		TemplateData: map[string]interface{}{
 			"AppName":       "Barberstuff",
 			"Name":          name,
-			"OTPCode":       decrypted,
+			"OTPCode":       otpPlain,
 			"ExpiryMinutes": minutes,
+			"Description":   description,
 		},
 	})
 
@@ -332,47 +454,21 @@ func (c *customerService) failRegister(tx *gorm.DB, label string, err error) (*d
 	return &dto.CredentialCustomerResponse{}, errors.New(defaultRegisterErrMsg)
 }
 
-func (c *customerService) checkPendingOTP(userId uuid.UUID) error {
-	otpRegistered, err := c.otpRepo.FindByUserId(userId)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil // aman, boleh lanjut generate baru
-		}
-		return err // error tak terduga
-	}
-
-	remaining := time.Until(otpRegistered.ExpiredAt)
-	if remaining > 0 {
-		minutes := int(remaining.Minutes())
-		seconds := int(remaining.Seconds()) % 60
-		return fmt.Errorf("Tunggu %d menit %d detik sebelum meminta OTP baru", minutes, seconds)
-	}
-
-	return nil
-}
-
-func (c *customerService) issueOTP(tx *gorm.DB, userId uuid.UUID) (*entity.OTP, error) {
+func (c *customerService) issueOTP(ctx context.Context, userId uuid.UUID) (string, error) {
 	otpGenerated, err := helper.GenerateOTP()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	otpEncrypted, err := helper.Encrypt(otpGenerated)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	otp := &entity.OTP{
-		ID:          uuid.New(),
-		IDUser:      userId,
-		OTP:         otpEncrypted,
-		AttempCount: 0,
-		ExpiredAt:   time.Now().Add(3 * time.Minute),
+	err = c.client.Set(ctx, fmt.Sprintf("OTP:%v", userId.String()), otpEncrypted, EXPIRED_OTP).Err()
+	if err != nil {
+		return "", err
 	}
 
-	if err := c.otpRepo.Upsert(tx, otp); err != nil {
-		return nil, err
-	}
-
-	return otp, nil
+	return otpGenerated, nil 
 }

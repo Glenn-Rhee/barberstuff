@@ -55,7 +55,7 @@ func (h *AuthHandler) AuthProvider(ctx *gin.Context) {
 		return
 	}
 
-	result, err := h.service.AuthProvider(dataAuthProvider)
+	result, err := h.service.AuthProvider(dataAuthProvider, ctx.Request.Context())
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),

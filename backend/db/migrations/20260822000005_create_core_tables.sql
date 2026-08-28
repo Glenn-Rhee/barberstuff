@@ -68,18 +68,6 @@ CREATE INDEX idx_authentication_id_customer ON authentication(id_customer);
 CREATE INDEX idx_authentication_id_staff ON authentication(id_staff);
 -- index email dihapus, sudah otomatis ada dari UNIQUE
 
--- ============ OTP ============
-CREATE TABLE otp (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    id_user UUID NOT NULL UNIQUE REFERENCES customer(id) ON DELETE CASCADE,
-    otp TEXT NOT NULL,
-    attempt_count INT NOT NULL DEFAULT 0,
-    expired_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX idx_otp_expired_at ON otp(expired_at);
-
 -- +goose StatementEnd
 
 -- +goose Down

@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"barberstuff_backend/internal/handler"
+	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"barberstuff_backend/internal/service"
 
@@ -17,11 +18,10 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	// Repo
 	customerRepo := repository.NewCustomerRepository(db)
 	authRepo := repository.NewAuthRepository(db)
-	otpRepo := repository.NewOtpRepository(db)
 	
 	// Service
-	customerService := service.NewCustomerService(customerRepo, authRepo, db, otpRepo)
-	authService := service.NewAuthService(authRepo)
+	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis)
+	authService := service.NewAuthService(authRepo, lib.ClientRedis)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)

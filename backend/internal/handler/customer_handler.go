@@ -36,7 +36,7 @@ func (h *CustomerHandler) OauthRegister(ctx *gin.Context) {
 		return
 	}
 
-	result, err := h.service.OauthRegister(dataNewCustomer)
+	result, err := h.service.OauthRegister(dataNewCustomer, ctx.Request.Context())
 
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
@@ -71,7 +71,7 @@ func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
 		return
 	}
 
-	result, err := h.service.CredentialRegister(dataNewCustomer)
+	result, err := h.service.CredentialRegister(dataNewCustomer, ctx.Request.Context())
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -106,7 +106,7 @@ func (h *CustomerHandler) VerifyCredential(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.VerifyOTP(dataOtpCustomer)
+	err := h.service.VerifyOTP(ctx.Request.Context(), dataOtpCustomer)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -117,6 +117,33 @@ func (h *CustomerHandler) VerifyCredential(ctx *gin.Context) {
 
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
 		Message:    "Berhasil verifikasi akun! Silahkan login.",
+		Data:       nil,
+		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *CustomerHandler) ForgotPassword(ctx *gin.Context) {
+	var dataResetPassword dto.ForgotPasswordRequest
+
+	if err := ctx.ShouldBindJSON(&dataResetPassword); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	err := h.service.ForgotPassword(ctx.Request.Context(), dataResetPassword)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+		Message:    "Berhasil kirim otp",
 		Data:       nil,
 		StatusCode: http.StatusOK,
 	})

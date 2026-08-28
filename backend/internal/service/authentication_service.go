@@ -6,24 +6,27 @@ import (
 	"barberstuff_backend/internal/helper"
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
+	"context"
 	"errors"
 	"fmt"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 type AuthenticationService interface {
 	CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.AuthenticationResponse, error)
-	AuthProvider(dataAuthProvider dto.AuthProviderRequest) (dto.AuthProviderResponse, error)
+	AuthProvider(dataAuthProvider dto.AuthProviderRequest, ctx context.Context) (dto.AuthProviderResponse, error)
 }
 
 type authenticationService struct {
 	authenticationRepo repository.AuthenticationRepository
+	client             *redis.Client
 }
 
-func NewAuthService(authRepo repository.AuthenticationRepository) AuthenticationService {
-	return &authenticationService{authenticationRepo: authRepo}
+func NewAuthService(authRepo repository.AuthenticationRepository, client *redis.Client) AuthenticationService {
+	return &authenticationService{authenticationRepo: authRepo, client: client}
 }
 
 func (a *authenticationService) CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.AuthenticationResponse, error) {
@@ -70,7 +73,7 @@ func (a *authenticationService) CredentialLogin(credentialData dto.CredentialLog
 	}, nil
 }
 
-func (a *authenticationService) AuthProvider(dataAuthProvider dto.AuthProviderRequest) (dto.AuthProviderResponse, error) {
+func (a *authenticationService) AuthProvider(dataAuthProvider dto.AuthProviderRequest, ctx context.Context) (dto.AuthProviderResponse, error) {
 	const BASE_PATH = "service/customer_service.go"
 	const BASE_MESSAGE = "Terjadi kesalahan saat authentikasi"
 	if dataAuthProvider.Provider != dto.Google {
@@ -91,13 +94,26 @@ func (a *authenticationService) AuthProvider(dataAuthProvider dto.AuthProviderRe
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			timestamp := time.Now().UnixMilli()
-			expiresIn := 1 * 24 * time.Hour
+			expiresIn := 15 * time.Minute
+
+			allowed, err := helper.AllowAttemp(a.client, ctx, fmt.Sprintf("temp_token:%v", claims.Email), 3, 1*time.Hour)
+
+			if err != nil {
+				helper.Logger("Ask allowed req temp token", BASE_PATH, err)
+				return dto.AuthProviderResponse{}, errors.New(BASE_MESSAGE)
+			}
+
+			if !allowed {
+				return dto.AuthProviderResponse{}, errors.New("Terlalu banyak percobaan, coba lagi nanti.")
+			}
 
 			tempToken, err := lib.GenerateToken(fmt.Sprintf("USR-%d", timestamp), claims.Email, entity.RoleCustomer, expiresIn)
 			if err != nil {
 				helper.Logger("Generate Token temp", BASE_PATH, err)
 				return dto.AuthProviderResponse{}, errors.New(BASE_MESSAGE)
 			}
+
+			a.client.Set(ctx, tempToken, claims.Email, expiresIn)
 
 			return dto.AuthProviderResponse{
 				Email:     claims.Email,

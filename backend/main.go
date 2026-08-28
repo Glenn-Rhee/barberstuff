@@ -3,6 +3,7 @@ package main
 import (
 	"barberstuff_backend/db"
 	"barberstuff_backend/internal/bootstrap"
+	"barberstuff_backend/internal/lib"
 	"fmt"
 	"log"
 
@@ -14,7 +15,7 @@ import (
 func main() {
 	log.Println("Server is starting...")
 	db := db.Connect()
-
+	lib.RedisInit()
 	h := bootstrap.InitHandlers(db)
 
 	router := gin.Default()
@@ -29,8 +30,11 @@ func main() {
 	// User Login
 	router.POST("/auth/login/credential", h.AuthHandler.CredentialLogin) // 3
 
-	// Validate IdToken
+	// Validate Provider
 	router.POST("/auth/provider", h.AuthHandler.AuthProvider)
+
+	// Forgot Password
+	router.POST("/auth/reset-password", h.CustomerHandler.ForgotPassword)
 
 	fmt.Println("Server running on http://localhost:8080")
 	router.Run(":8080")

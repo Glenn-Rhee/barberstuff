@@ -45,3 +45,7 @@ type GoogleClaims struct {
 	Iat           float64 `json:"iat"`
 	Exp           float64 `json:"exp"`
 }
+
+type ForgotPasswordRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
