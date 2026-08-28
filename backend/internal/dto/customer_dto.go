@@ -51,6 +51,9 @@ type ForgotPasswordRequest struct {
 }
 
 type ForgotPassswordResponse struct {
-	Email     string `json:"email"`
-	TempToken string `json:"temp_token"`
+	UserId    string `json:"user_id"`
+}
+
+type VerifyOTPResponse struct {
+	ResetToken string `json:"reset_token,omitempty"`
 }

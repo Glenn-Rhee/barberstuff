@@ -43,3 +43,8 @@ type AuthProviderResponse struct {
 	AccessToken string     `json:"access_token,omitempty"`
 	TempToken   string     `json:"temp_token,omitempty"`
 }
+
+type ResetPasswordRequest struct {
+	ResetToken  string `json:"reset_token" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required,min=5"`
+}

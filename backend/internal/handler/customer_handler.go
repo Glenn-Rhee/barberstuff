@@ -106,7 +106,7 @@ func (h *CustomerHandler) VerifyCredential(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.VerifyOTP(ctx.Request.Context(), dataOtpCustomer)
+	result, err := h.service.VerifyOTP(ctx.Request.Context(), dataOtpCustomer)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -115,9 +115,9 @@ func (h *CustomerHandler) VerifyCredential(ctx *gin.Context) {
 		return
 	}
 
-	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
-		Message:    "Berhasil verifikasi akun! Silahkan login.",
-		Data:       nil,
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.VerifyOTPResponse]{
+		Message:    "Berhasil verifikasi!",
+		Data:       result,
 		StatusCode: http.StatusOK,
 	})
 }

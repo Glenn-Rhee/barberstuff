@@ -33,6 +33,8 @@ func main() {
 
 	// Forgot Password
 	router.POST("/auth/forgot", h.CustomerHandler.ForgotPassword)
+	// Reset Passsword
+	router.POST("/auth/reset", h.AuthHandler.ResetPassword)
 
 	fmt.Println("Server running on http://localhost:8080")
 	router.Run(":8080")

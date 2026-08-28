@@ -18,6 +18,7 @@ import (
 type AuthenticationService interface {
 	CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.AuthenticationResponse, error)
 	AuthProvider(dataAuthProvider dto.AuthProviderRequest, ctx context.Context) (dto.AuthProviderResponse, error)
+	ResetPassword(ctx context.Context, req dto.ResetPasswordRequest) error
 }
 
 type authenticationService struct {
@@ -140,4 +141,26 @@ func (a *authenticationService) AuthProvider(dataAuthProvider dto.AuthProviderRe
 		Status:      dto.SUCCESS,
 		AccessToken: token,
 	}, nil
+}
+
+func (c *authenticationService) ResetPassword(ctx context.Context, req dto.ResetPasswordRequest) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat reset password, coba lagi nanti!"
+	const BASE_PATH = "service/auth_service.go"
+	key := fmt.Sprintf("reset_token:%s", req.ResetToken)
+	email, err := c.client.GetDel(ctx, key).Result()
+	if errors.Is(err, redis.Nil) {
+		return errors.New("Token tidak valid atau sudah kedaluwarsa.")
+	}
+	if err != nil {
+		helper.Logger("Get and delete key", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	hashed, err := helper.HashPassword(req.NewPassword)
+	if err != nil {
+		helper.Logger("Hash Password", BASE_PATH, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return c.authenticationRepo.ResetPassword(hashed, email)
 }
