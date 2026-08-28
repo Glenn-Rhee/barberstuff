@@ -22,7 +22,7 @@ type CustomerService interface {
 	CredentialRegister(dataNewCustomer dto.CredentialCustomerRequest, ctx context.Context) (*dto.CredentialCustomerResponse, error)
 	VerifyOTP(ctx context.Context, dataOTPCust dto.VerifyCredentialRequest) error
 	OauthRegister(dataNewCustomer dto.OauthCustomerRequest, ctx context.Context) (dto.AuthenticationResponse, error)
-	ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) error
+	ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) (dto.ForgotPassswordResponse, error)
 }
 
 type customerService struct {
@@ -374,37 +374,49 @@ func (c *customerService) VerifyOTP(ctx context.Context, dataOTPCust dto.VerifyC
 	return nil
 }
 
-func (c *customerService) ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) error {
+func (c *customerService) ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) (dto.ForgotPassswordResponse, error) {
 	const BASE_PATH = "service/customer_service.go"
 	const BASE_MESSAGE = "Terjadi kesalahan saat reset password!"
 	dataAuth, err := c.authRepo.FindOne("email = ?", dataForgotPassword.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("Email tidak terdaftar!")
+			return dto.ForgotPassswordResponse{}, errors.New("Email tidak terdaftar!")
 		}
 
 		helper.Logger("Find one data auth", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.ForgotPassswordResponse{}, errors.New(BASE_MESSAGE)
 	}
 
 	if !dataAuth.IsVerified {
-		return errors.New("Email belum verified! Tidak dapat reset password.")
+		return dto.ForgotPassswordResponse{}, errors.New("Email belum verified! Tidak dapat reset password.")
 	}
 
 	if dataAuth.LoginType == entity.LoginWithOAuth {
-		return errors.New("Email Anda login dengan google! Tidak dapat reset password.")
+		return dto.ForgotPassswordResponse{}, errors.New("Email Anda login dengan google! Tidak dapat reset password.")
+	}
+
+	expiresIn := 5 * time.Minute
+
+	allowed, err := helper.AllowAttemp(c.client, ctx, fmt.Sprintf("temp_token:%v", dataAuth.Email), 1, expiresIn)
+	if err != nil {
+		helper.Logger("Ask allowed req temp token", BASE_PATH, err)
+		return dto.ForgotPassswordResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	if !allowed {
+		return dto.ForgotPassswordResponse{}, errors.New("Terlalu banyak percobaan, coba lagi nanti.")
 	}
 
 	tx := c.db.Begin()
 	if tx.Error != nil {
 		helper.Logger("Begin tx", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.ForgotPassswordResponse{}, errors.New(BASE_MESSAGE)
 	}
 
-	otp, err := c.issueOTP(ctx, *dataAuth.IDCustomer)
+	otpPlain, err := c.issueOTP(ctx, *dataAuth.IDCustomer)
 	if err != nil {
 		helper.Logger("Begin tx", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.ForgotPassswordResponse{}, errors.New(BASE_MESSAGE)
 	}
 
 	description := "Gunakan kode berikut untuk mereset passsword anda."
@@ -412,16 +424,30 @@ func (c *customerService) ForgotPassword(ctx context.Context, dataForgotPassword
 	dataCustomer, err := c.customerRepo.FindById(userId.String())
 	if err != nil {
 		helper.Logger("Get customer by id", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.ForgotPassswordResponse{}, errors.New(BASE_MESSAGE)
 	}
 
-	err = c.sendOtp(ctx, *userId, otp, dataAuth.Email, dataCustomer.Name, description)
+	err = c.sendOtp(ctx, *userId, otpPlain, dataAuth.Email, dataCustomer.Name, description)
 	if err != nil {
 		helper.Logger("Send otp", BASE_PATH, err)
-		return errors.New(BASE_MESSAGE)
+		return dto.ForgotPassswordResponse{}, errors.New(BASE_MESSAGE)
 	}
 
-	return nil
+	tempToken, err := lib.GenerateToken(userId.String(), dataAuth.Email, dataAuth.Role, expiresIn)
+	if err != nil {
+		helper.Logger("Generattet token", BASE_PATH, err)
+		return dto.ForgotPassswordResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	if err := c.client.Set(ctx, tempToken, dataAuth.Email, expiresIn).Err(); err != nil {
+		helper.Logger("Set temp token", BASE_PATH, err)
+		return dto.ForgotPassswordResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	return dto.ForgotPassswordResponse{
+		Email:     dataAuth.Email,
+		TempToken: tempToken,
+	}, nil
 }
 
 func (c *customerService) sendOtp(ctx context.Context, userId uuid.UUID, otpPlain string, email string, name string, description string) error {
@@ -470,5 +496,5 @@ func (c *customerService) issueOTP(ctx context.Context, userId uuid.UUID) (strin
 		return "", err
 	}
 
-	return otpGenerated, nil 
+	return otpGenerated, nil
 }

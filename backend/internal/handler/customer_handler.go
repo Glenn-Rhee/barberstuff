@@ -133,7 +133,7 @@ func (h *CustomerHandler) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.ForgotPassword(ctx.Request.Context(), dataResetPassword)
+	result, err := h.service.ForgotPassword(ctx.Request.Context(), dataResetPassword)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -142,9 +142,9 @@ func (h *CustomerHandler) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.ForgotPassswordResponse]{
 		Message:    "Berhasil kirim otp",
-		Data:       nil,
+		Data:       result,
 		StatusCode: http.StatusOK,
 	})
 }

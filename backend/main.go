@@ -10,8 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Todo hilangkan validasi username, gapke username lagi
-
 func main() {
 	log.Println("Server is starting...")
 	db := db.Connect()
@@ -21,20 +19,20 @@ func main() {
 	router := gin.Default()
 
 	// Customer register
-	router.POST("/auth/register/credential", h.CustomerHandler.CredentialRegister) // 1
+	router.POST("/auth/register/credential", h.CustomerHandler.CredentialRegister)
 	router.POST("/auth/register/oauth", h.CustomerHandler.OauthRegister)
 
 	// Verify OTP
-	router.POST("/auth/verify-credential", h.CustomerHandler.VerifyCredential) // 2
+	router.POST("/auth/verify-credential", h.CustomerHandler.VerifyCredential)
 
 	// User Login
-	router.POST("/auth/login/credential", h.AuthHandler.CredentialLogin) // 3
+	router.POST("/auth/login/credential", h.AuthHandler.CredentialLogin)
 
 	// Validate Provider
 	router.POST("/auth/provider", h.AuthHandler.AuthProvider)
 
 	// Forgot Password
-	router.POST("/auth/reset-password", h.CustomerHandler.ForgotPassword)
+	router.POST("/auth/forgot", h.CustomerHandler.ForgotPassword)
 
 	fmt.Println("Server running on http://localhost:8080")
 	router.Run(":8080")

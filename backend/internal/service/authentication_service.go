@@ -96,7 +96,7 @@ func (a *authenticationService) AuthProvider(dataAuthProvider dto.AuthProviderRe
 			timestamp := time.Now().UnixMilli()
 			expiresIn := 15 * time.Minute
 
-			allowed, err := helper.AllowAttemp(a.client, ctx, fmt.Sprintf("temp_token:%v", claims.Email), 3, 1*time.Hour)
+			allowed, err := helper.AllowAttemp(a.client, ctx, fmt.Sprintf("temp_token:%v", claims.Email), 3, expiresIn)
 
 			if err != nil {
 				helper.Logger("Ask allowed req temp token", BASE_PATH, err)

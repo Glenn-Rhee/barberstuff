@@ -49,3 +49,8 @@ type GoogleClaims struct {
 type ForgotPasswordRequest struct {
 	Email string `json:"email" binding:"required,email"`
 }
+
+type ForgotPassswordResponse struct {
+	Email     string `json:"email"`
+	TempToken string `json:"temp_token"`
+}
