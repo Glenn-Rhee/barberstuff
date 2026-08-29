@@ -374,6 +374,60 @@ abstract class AppLocalizations {
   /// **'Lanjutkan'**
   String get verifySuccessButton;
 
+  /// No description provided for @loginHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk ke Akun Anda'**
+  String get loginHeadline;
+
+  /// No description provided for @loginEmailHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Email'**
+  String get loginEmailHint;
+
+  /// No description provided for @loginPasswordHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata Sandi'**
+  String get loginPasswordHint;
+
+  /// No description provided for @loginRememberMe.
+  ///
+  /// In id, this message translates to:
+  /// **'Ingat Saya'**
+  String get loginRememberMe;
+
+  /// No description provided for @loginSubmitButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk'**
+  String get loginSubmitButton;
+
+  /// No description provided for @loginForgotQuestion.
+  ///
+  /// In id, this message translates to:
+  /// **'Lupa kata sandi?'**
+  String get loginForgotQuestion;
+
+  /// No description provided for @loginForgotAction.
+  ///
+  /// In id, this message translates to:
+  /// **'Klik disini'**
+  String get loginForgotAction;
+
+  /// No description provided for @loginWithGoogle.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk dengan Google'**
+  String get loginWithGoogle;
+
+  /// No description provided for @homeComingSoon.
+  ///
+  /// In id, this message translates to:
+  /// **'Coming soon'**
+  String get homeComingSoon;
+
   /// No description provided for @comingSoonTitle.
   ///
   /// In id, this message translates to:

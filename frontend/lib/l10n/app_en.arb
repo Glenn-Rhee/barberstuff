@@ -56,6 +56,16 @@
   "verifySuccessMessage": "Your email has been verified successfully. You can now access all features of our app.",
   "verifySuccessButton": "Continue",
 
+  "loginHeadline": "Sign In to Your Account",
+  "loginEmailHint": "Email",
+  "loginPasswordHint": "Password",
+  "loginRememberMe": "Remember Me",
+  "loginSubmitButton": "Sign In",
+  "loginForgotQuestion": "Forgot your password?",
+  "loginForgotAction": "Click here",
+  "loginWithGoogle": "Sign in with Google",
+  "homeComingSoon": "Coming soon",
+
   "comingSoonTitle": "Coming soon",
   "comingSoonMessage": "We are still working on this feature. In the meantime, feel free to use the available features. Thank you.",
   "commonUnderstood": "Got it"

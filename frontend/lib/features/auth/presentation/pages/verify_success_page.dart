@@ -49,7 +49,7 @@ class VerifySuccessPage extends StatelessWidget {
                   label: l10n.verifySuccessButton,
                   onPressed: () => Navigator.of(context)
                       .pushNamedAndRemoveUntil(
-                        AppRoute.chooseLogin,
+                        AppRoute.login,
                         (Route<dynamic> r) => false,
                       ),
                 ),

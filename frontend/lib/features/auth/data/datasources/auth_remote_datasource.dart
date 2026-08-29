@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:mobile_barberstuff/core/config/api_endpoint.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/api_response.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/login_request_api.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/login_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_request_api.dart';
@@ -54,5 +56,26 @@ class AuthRemoteDataSource {
       );
     }
     return parsed.data ?? const VerifyOtpResult();
+  }
+
+  Future<LoginResult> loginCredential(LoginRequestApi request) async {
+    final Response<dynamic> res = await _dio.post<dynamic>(
+      ApiEndpoint.loginCredential,
+      data: request.toJson(),
+    );
+
+    final ApiResponse<LoginResult> parsed = ApiResponse<LoginResult>.fromJson(
+      res.data as Map<String, dynamic>,
+      LoginResult.fromJson,
+    );
+
+    final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;
+    if (!ok || parsed.data == null) {
+      throw ApiException(
+        parsed.message.isNotEmpty ? parsed.message : 'Gagal masuk.',
+        statusCode: parsed.statusCode,
+      );
+    }
+    return parsed.data!;
   }
 }

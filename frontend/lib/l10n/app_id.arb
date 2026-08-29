@@ -72,6 +72,16 @@
   "verifySuccessMessage": "Email Anda telah berhasil diverifikasi. Anda sekarang dapat mengakses semua fitur aplikasi kami.",
   "verifySuccessButton": "Lanjutkan",
 
+  "loginHeadline": "Masuk ke Akun Anda",
+  "loginEmailHint": "Email",
+  "loginPasswordHint": "Kata Sandi",
+  "loginRememberMe": "Ingat Saya",
+  "loginSubmitButton": "Masuk",
+  "loginForgotQuestion": "Lupa kata sandi?",
+  "loginForgotAction": "Klik disini",
+  "loginWithGoogle": "Masuk dengan Google",
+  "homeComingSoon": "Coming soon",
+
   "comingSoonTitle": "Segera hadir",
   "comingSoonMessage": "Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.",
   "commonUnderstood": "Mengerti"

@@ -167,6 +167,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verifySuccessButton => 'Continue';
 
   @override
+  String get loginHeadline => 'Sign In to Your Account';
+
+  @override
+  String get loginEmailHint => 'Email';
+
+  @override
+  String get loginPasswordHint => 'Password';
+
+  @override
+  String get loginRememberMe => 'Remember Me';
+
+  @override
+  String get loginSubmitButton => 'Sign In';
+
+  @override
+  String get loginForgotQuestion => 'Forgot your password?';
+
+  @override
+  String get loginForgotAction => 'Click here';
+
+  @override
+  String get loginWithGoogle => 'Sign in with Google';
+
+  @override
+  String get homeComingSoon => 'Coming soon';
+
+  @override
   String get comingSoonTitle => 'Coming soon';
 
   @override

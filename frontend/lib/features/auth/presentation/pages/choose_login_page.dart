@@ -68,7 +68,8 @@ class ChooseLoginPage extends StatelessWidget {
                         const DividerOr(),
                         BoxButton(
                           label: l10n.chooseLoginWithPasswordText,
-                          onPressed: () => showComingSoonDialog(context),
+                          onPressed: () =>
+                              Navigator.of(context).pushNamed(AppRoute.login),
                         ),
                         const SizedBox(height: 24),
                         AppTextLink(

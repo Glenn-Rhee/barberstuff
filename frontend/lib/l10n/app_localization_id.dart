@@ -167,6 +167,33 @@ class AppLocalizationsId extends AppLocalizations {
   String get verifySuccessButton => 'Lanjutkan';
 
   @override
+  String get loginHeadline => 'Masuk ke Akun Anda';
+
+  @override
+  String get loginEmailHint => 'Email';
+
+  @override
+  String get loginPasswordHint => 'Kata Sandi';
+
+  @override
+  String get loginRememberMe => 'Ingat Saya';
+
+  @override
+  String get loginSubmitButton => 'Masuk';
+
+  @override
+  String get loginForgotQuestion => 'Lupa kata sandi?';
+
+  @override
+  String get loginForgotAction => 'Klik disini';
+
+  @override
+  String get loginWithGoogle => 'Masuk dengan Google';
+
+  @override
+  String get homeComingSoon => 'Coming soon';
+
+  @override
   String get comingSoonTitle => 'Segera hadir';
 
   @override
