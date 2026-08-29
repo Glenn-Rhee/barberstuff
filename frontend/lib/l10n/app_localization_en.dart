@@ -74,6 +74,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseLoginTextLink => 'Sign Up';
 
   @override
+  String get commonProcessing => 'Processing...';
+
+  @override
+  String get commonSuccess => 'Success';
+
+  @override
+  String get commonRetry => 'Try again';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get registerPageBarText => 'Sign Up';
+
+  @override
+  String get registerHeadline => 'Create Your Account';
+
+  @override
+  String get registerSubheadline =>
+      'Fill in your details to become a Barberstuff.';
+
+  @override
+  String get registerNameLabel => 'Full Name';
+
+  @override
+  String get registerPhoneLabel => 'Phone Number';
+
+  @override
+  String get registerBirthDateLabel => 'Date of Birth';
+
+  @override
+  String get registerGenderLabel => 'Gender';
+
+  @override
+  String get registerEmailLabel => 'Email';
+
+  @override
+  String get registerPasswordLabel => 'Password';
+
+  @override
+  String get registerSubmitButton => 'Sign Up';
+
+  @override
+  String get registerHaveAccountQuestion => 'Already have an account?';
+
+  @override
+  String get registerLoginAction => 'Sign In';
+
+  @override
+  String get registerOtpSentMessage => 'An OTP has been sent to your email.';
+
+  @override
   String get comingSoonTitle => 'Coming soon';
 
   @override

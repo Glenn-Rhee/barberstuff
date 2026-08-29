@@ -74,6 +74,61 @@ class AppLocalizationsId extends AppLocalizations {
   String get chooseLoginTextLink => 'Daftar';
 
   @override
+  String get commonProcessing => 'Memproses...';
+
+  @override
+  String get commonSuccess => 'Berhasil';
+
+  @override
+  String get commonRetry => 'Coba lagi';
+
+  @override
+  String get genderMale => 'Laki-laki';
+
+  @override
+  String get genderFemale => 'Perempuan';
+
+  @override
+  String get registerPageBarText => 'Daftar';
+
+  @override
+  String get registerHeadline => 'Buat Akun Anda';
+
+  @override
+  String get registerSubheadline =>
+      'Isi data diri kamu untuk jadi Barberstuff.';
+
+  @override
+  String get registerNameLabel => 'Nama Lengkap';
+
+  @override
+  String get registerPhoneLabel => 'Nomor Telepon';
+
+  @override
+  String get registerBirthDateLabel => 'Tanggal Lahir';
+
+  @override
+  String get registerGenderLabel => 'Jenis Kelamin';
+
+  @override
+  String get registerEmailLabel => 'Email';
+
+  @override
+  String get registerPasswordLabel => 'Kata Sandi';
+
+  @override
+  String get registerSubmitButton => 'Daftar';
+
+  @override
+  String get registerHaveAccountQuestion => 'Sudah punya akun?';
+
+  @override
+  String get registerLoginAction => 'Masuk';
+
+  @override
+  String get registerOtpSentMessage => 'OTP telah dikirim ke email Anda.';
+
+  @override
   String get comingSoonTitle => 'Segera hadir';
 
   @override

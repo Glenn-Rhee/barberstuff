@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
@@ -73,7 +74,9 @@ class ChooseLoginPage extends StatelessWidget {
                         AppTextLink(
                           message: l10n.chooseLoginTextMessage,
                           actionLabel: l10n.chooseLoginTextLink,
-                          onPressed: () => showComingSoonDialog(context),
+                          onPressed: () => {
+                            Navigator.of(context).pushNamed(AppRoute.registerPage),
+                          },
                         ),
                       ],
                     ),

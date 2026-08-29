@@ -23,6 +23,27 @@
   "chooseLoginTextMessage": "Don't have an account yet?",
   "chooseLoginTextLink": "Sign Up",
 
+  "commonProcessing": "Processing...",
+  "commonSuccess": "Success",
+  "commonRetry": "Try again",
+
+  "genderMale": "Male",
+  "genderFemale": "Female",
+
+  "registerPageBarText": "Sign Up",
+  "registerHeadline": "Create Your Account",
+  "registerSubheadline": "Fill in your details to become a Barberstuff.",
+  "registerNameLabel": "Full Name",
+  "registerPhoneLabel": "Phone Number",
+  "registerBirthDateLabel": "Date of Birth",
+  "registerGenderLabel": "Gender",
+  "registerEmailLabel": "Email",
+  "registerPasswordLabel": "Password",
+  "registerSubmitButton": "Sign Up",
+  "registerHaveAccountQuestion": "Already have an account?",
+  "registerLoginAction": "Sign In",
+  "registerOtpSentMessage": "An OTP has been sent to your email.",
+
   "comingSoonTitle": "Coming soon",
   "comingSoonMessage": "We are still working on this feature. In the meantime, feel free to use the available features. Thank you.",
   "commonUnderstood": "Got it"

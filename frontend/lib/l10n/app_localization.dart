@@ -200,6 +200,114 @@ abstract class AppLocalizations {
   /// **'Daftar'**
   String get chooseLoginTextLink;
 
+  /// No description provided for @commonProcessing.
+  ///
+  /// In id, this message translates to:
+  /// **'Memproses...'**
+  String get commonProcessing;
+
+  /// No description provided for @commonSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Berhasil'**
+  String get commonSuccess;
+
+  /// No description provided for @commonRetry.
+  ///
+  /// In id, this message translates to:
+  /// **'Coba lagi'**
+  String get commonRetry;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In id, this message translates to:
+  /// **'Laki-laki'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In id, this message translates to:
+  /// **'Perempuan'**
+  String get genderFemale;
+
+  /// No description provided for @registerPageBarText.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar'**
+  String get registerPageBarText;
+
+  /// No description provided for @registerHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat Akun Anda'**
+  String get registerHeadline;
+
+  /// No description provided for @registerSubheadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Isi data diri kamu untuk jadi Barberstuff.'**
+  String get registerSubheadline;
+
+  /// No description provided for @registerNameLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Lengkap'**
+  String get registerNameLabel;
+
+  /// No description provided for @registerPhoneLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Nomor Telepon'**
+  String get registerPhoneLabel;
+
+  /// No description provided for @registerBirthDateLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal Lahir'**
+  String get registerBirthDateLabel;
+
+  /// No description provided for @registerGenderLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Jenis Kelamin'**
+  String get registerGenderLabel;
+
+  /// No description provided for @registerEmailLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Email'**
+  String get registerEmailLabel;
+
+  /// No description provided for @registerPasswordLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata Sandi'**
+  String get registerPasswordLabel;
+
+  /// No description provided for @registerSubmitButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar'**
+  String get registerSubmitButton;
+
+  /// No description provided for @registerHaveAccountQuestion.
+  ///
+  /// In id, this message translates to:
+  /// **'Sudah punya akun?'**
+  String get registerHaveAccountQuestion;
+
+  /// No description provided for @registerLoginAction.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk'**
+  String get registerLoginAction;
+
+  /// No description provided for @registerOtpSentMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'OTP telah dikirim ke email Anda.'**
+  String get registerOtpSentMessage;
+
   /// No description provided for @comingSoonTitle.
   ///
   /// In id, this message translates to:

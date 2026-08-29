@@ -29,6 +29,27 @@
   "chooseLoginTextMessage": "Belum punya akun?",
   "chooseLoginTextLink": "Daftar",
 
+  "commonProcessing": "Memproses...",
+  "commonSuccess": "Berhasil",
+  "commonRetry": "Coba lagi",
+
+  "genderMale": "Laki-laki",
+  "genderFemale": "Perempuan",
+
+  "registerPageBarText": "Daftar",
+  "registerHeadline": "Buat Akun Anda",
+  "registerSubheadline": "Isi data diri kamu untuk jadi Barberstuff.",
+  "registerNameLabel": "Nama Lengkap",
+  "registerPhoneLabel": "Nomor Telepon",
+  "registerBirthDateLabel": "Tanggal Lahir",
+  "registerGenderLabel": "Jenis Kelamin",
+  "registerEmailLabel": "Email",
+  "registerPasswordLabel": "Kata Sandi",
+  "registerSubmitButton": "Daftar",
+  "registerHaveAccountQuestion": "Sudah punya akun?",
+  "registerLoginAction": "Masuk",
+  "registerOtpSentMessage": "OTP telah dikirim ke email Anda.",
+
   "comingSoonTitle": "Segera hadir",
   "comingSoonMessage": "Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.",
   "commonUnderstood": "Mengerti"

@@ -11,6 +11,8 @@ class AppColor {
   static const Color inkSoft = Color(0xFF6B6B6B);
   static const Color inkFaint = Color(0xFF9C9C9C);
 
+  static const Color disabled = Color(0xFFB5B5B5);
+
   static const Color surface = Color(0xFFFFFFFF);
   static const Color border = Color(0xFFE3E3E3);
   static const Color cream = Color(0xFFFAF3E7);

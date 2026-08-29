@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/choose_login_page.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
@@ -12,6 +13,7 @@ class AppRoute {
   static const String splashBrand = '/splash-brand';
   static const String onboarding = '/onboarding';
   static const String chooseLogin = '/choose-login';
+  static const String registerPage = '/register-page';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -37,6 +39,11 @@ class AppRoute {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (BuildContext context) => const ChooseLoginPage(),
+        );
+      case registerPage:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => const RegisterPage(),
         );
 
       default:

@@ -14,4 +14,10 @@ class AppAssets {
   static const String logoLogin = '$_images/logo_login.png';
 
   static const String googleIcon = '$_icon/google_icon.png';
+  static const String nameIcon = '$_icon/name_icon.png';
+  static const String phoneIcon = '$_icon/telephone_icon.png';
+  static const String birthDateIcon = '$_icon/date-of-birth_icon.png';
+  static const String genderIcon = '$_icon/gender_icon.png';
+  static const String mailIcon = '$_icon/mail_icon.png';
+  static const String lockIcon = '$_icon/lock_icon.png';
 }
