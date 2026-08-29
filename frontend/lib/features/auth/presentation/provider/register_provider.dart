@@ -36,7 +36,9 @@ class RegisterProvider extends ChangeNotifier {
   bool _isComplete = false;
   String? _errorMessage;
   RegisterResult? _result;
+  RegisterRequestApi? _lastRequest;
 
+  RegisterRequestApi? get lastRequest => _lastRequest;
   DateTime? get dateOfBirth => _dateOfBirth;
   String? get gender => _gender;
   bool get obscurePassword => _obscurePassword;
@@ -87,17 +89,18 @@ class RegisterProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
+    final RegisterRequestApi request = RegisterRequestApi(
+      name: nameController.text.trim(),
+      phoneNumber: phoneController.text.trim(),
+      dateOfBirth: _dateOfBirth!,
+      gender: _gender!,
+      email: emailController.text.trim(),
+      password: passwordController.text,
+    );
+
     try {
-      _result = await _repository.register(
-        RegisterRequestApi(
-          name: nameController.text.trim(),
-          phoneNumber: phoneController.text.trim(),
-          dateOfBirth: _dateOfBirth!,
-          gender: _gender!,
-          email: emailController.text.trim(),
-          password: passwordController.text,
-        ),
-      );
+      _result = await _repository.register(request);
+      _lastRequest = request;
       _isLoading = false;
       notifyListeners();
       return true;

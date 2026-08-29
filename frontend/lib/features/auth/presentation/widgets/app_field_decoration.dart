@@ -49,9 +49,9 @@ class AppField {
       border: _border(AppColor.border, 1),
       enabledBorder: _border(AppColor.border, 1),
       focusedBorder: _border(AppColor.orangeLight, 1.5),
-      errorBorder: _border(const Color(0xFFD32F2F), 1),
-      focusedErrorBorder: _border(const Color(0xFFD32F2F), 1.5),
-      errorStyle: AppTextStyle.bodySmall.copyWith(color: const Color(0xFFD32F2F)),
+      errorBorder: _border(AppColor.danger, 1),
+      focusedErrorBorder: _border(AppColor.danger, 1.5),
+      errorStyle: AppTextStyle.bodySmall.copyWith(color: AppColor.danger),
     );
   }
 }

@@ -129,6 +129,44 @@ class AppLocalizationsId extends AppLocalizations {
   String get registerOtpSentMessage => 'OTP telah dikirim ke email Anda.';
 
   @override
+  String get verifyPageBarText => 'Verifikasi Email';
+
+  @override
+  String get verifyHeadline => 'Periksa Email Anda';
+
+  @override
+  String verifyDescription(String email) {
+    return 'Kami telah mengirimkan kode verifikasi 6 digit ke $email. Silakan masukkan kode di bawah ini.';
+  }
+
+  @override
+  String get verifySubmitButton => 'Verifikasi';
+
+  @override
+  String get verifyResendQuestion => 'Tidak menerima kode?';
+
+  @override
+  String get verifyResendAction => 'Kirim ulang kode';
+
+  @override
+  String verifyResendCountdown(int seconds) {
+    return 'Kirim ulang dalam $seconds detik';
+  }
+
+  @override
+  String get verifyResendSuccess => 'Kode baru telah dikirim ke email Anda.';
+
+  @override
+  String get verifySuccessTitle => 'Selamat!';
+
+  @override
+  String get verifySuccessMessage =>
+      'Email Anda telah berhasil diverifikasi. Anda sekarang dapat mengakses semua fitur aplikasi kami.';
+
+  @override
+  String get verifySuccessButton => 'Lanjutkan';
+
+  @override
   String get comingSoonTitle => 'Segera hadir';
 
   @override

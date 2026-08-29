@@ -308,6 +308,72 @@ abstract class AppLocalizations {
   /// **'OTP telah dikirim ke email Anda.'**
   String get registerOtpSentMessage;
 
+  /// No description provided for @verifyPageBarText.
+  ///
+  /// In id, this message translates to:
+  /// **'Verifikasi Email'**
+  String get verifyPageBarText;
+
+  /// No description provided for @verifyHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Periksa Email Anda'**
+  String get verifyHeadline;
+
+  /// No description provided for @verifyDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Kami telah mengirimkan kode verifikasi 6 digit ke {email}. Silakan masukkan kode di bawah ini.'**
+  String verifyDescription(String email);
+
+  /// No description provided for @verifySubmitButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Verifikasi'**
+  String get verifySubmitButton;
+
+  /// No description provided for @verifyResendQuestion.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak menerima kode?'**
+  String get verifyResendQuestion;
+
+  /// No description provided for @verifyResendAction.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim ulang kode'**
+  String get verifyResendAction;
+
+  /// No description provided for @verifyResendCountdown.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim ulang dalam {seconds} detik'**
+  String verifyResendCountdown(int seconds);
+
+  /// No description provided for @verifyResendSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Kode baru telah dikirim ke email Anda.'**
+  String get verifyResendSuccess;
+
+  /// No description provided for @verifySuccessTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Selamat!'**
+  String get verifySuccessTitle;
+
+  /// No description provided for @verifySuccessMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Email Anda telah berhasil diverifikasi. Anda sekarang dapat mengakses semua fitur aplikasi kami.'**
+  String get verifySuccessMessage;
+
+  /// No description provided for @verifySuccessButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjutkan'**
+  String get verifySuccessButton;
+
   /// No description provided for @comingSoonTitle.
   ///
   /// In id, this message translates to:

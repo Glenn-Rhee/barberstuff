@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/register_provider.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_dropdown_field.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
@@ -48,11 +50,18 @@ class _RegisterView extends StatelessWidget {
 
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    if (ok) {
+    if (ok && p.result != null && p.lastRequest != null) {
       AppToast.show(
         context,
         message: l10n.registerOtpSentMessage,
         type: AppToastType.success,
+      );
+      Navigator.of(context).pushNamed(
+        AppRoute.verifyOtp,
+        arguments: VerifyOtpArgs(
+          userId: p.result!.id,
+          registerRequest: p.lastRequest!,
+        ),
       );
     } else if (p.errorMessage != null) {
       AppToast.show(context, message: p.errorMessage!);

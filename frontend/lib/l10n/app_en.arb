@@ -44,6 +44,18 @@
   "registerLoginAction": "Sign In",
   "registerOtpSentMessage": "An OTP has been sent to your email.",
 
+  "verifyPageBarText": "Email Verification",
+  "verifyHeadline": "Check Your Email",
+  "verifyDescription": "We have sent a 6-digit verification code to {email}. Please enter the code below.",
+  "verifySubmitButton": "Verify",
+  "verifyResendQuestion": "Did not receive the code?",
+  "verifyResendAction": "Resend code",
+  "verifyResendCountdown": "Resend in {seconds} seconds",
+  "verifyResendSuccess": "A new code has been sent to your email.",
+  "verifySuccessTitle": "Congratulations!",
+  "verifySuccessMessage": "Your email has been verified successfully. You can now access all features of our app.",
+  "verifySuccessButton": "Continue",
+
   "comingSoonTitle": "Coming soon",
   "comingSoonMessage": "We are still working on this feature. In the meantime, feel free to use the available features. Thank you.",
   "commonUnderstood": "Got it"

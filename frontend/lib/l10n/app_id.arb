@@ -50,6 +50,28 @@
   "registerLoginAction": "Masuk",
   "registerOtpSentMessage": "OTP telah dikirim ke email Anda.",
 
+  "verifyPageBarText": "Verifikasi Email",
+  "verifyHeadline": "Periksa Email Anda",
+  "verifyDescription": "Kami telah mengirimkan kode verifikasi 6 digit ke {email}. Silakan masukkan kode di bawah ini.",
+  "@verifyDescription": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifySubmitButton": "Verifikasi",
+  "verifyResendQuestion": "Tidak menerima kode?",
+  "verifyResendAction": "Kirim ulang kode",
+  "verifyResendCountdown": "Kirim ulang dalam {seconds} detik",
+  "@verifyResendCountdown": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "verifyResendSuccess": "Kode baru telah dikirim ke email Anda.",
+  "verifySuccessTitle": "Selamat!",
+  "verifySuccessMessage": "Email Anda telah berhasil diverifikasi. Anda sekarang dapat mengakses semua fitur aplikasi kami.",
+  "verifySuccessButton": "Lanjutkan",
+
   "comingSoonTitle": "Segera hadir",
   "comingSoonMessage": "Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.",
   "commonUnderstood": "Mengerti"

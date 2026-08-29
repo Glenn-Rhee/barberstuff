@@ -129,6 +129,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerOtpSentMessage => 'An OTP has been sent to your email.';
 
   @override
+  String get verifyPageBarText => 'Email Verification';
+
+  @override
+  String get verifyHeadline => 'Check Your Email';
+
+  @override
+  String verifyDescription(String email) {
+    return 'We have sent a 6-digit verification code to $email. Please enter the code below.';
+  }
+
+  @override
+  String get verifySubmitButton => 'Verify';
+
+  @override
+  String get verifyResendQuestion => 'Did not receive the code?';
+
+  @override
+  String get verifyResendAction => 'Resend code';
+
+  @override
+  String verifyResendCountdown(int seconds) {
+    return 'Resend in $seconds seconds';
+  }
+
+  @override
+  String get verifyResendSuccess => 'A new code has been sent to your email.';
+
+  @override
+  String get verifySuccessTitle => 'Congratulations!';
+
+  @override
+  String get verifySuccessMessage =>
+      'Your email has been verified successfully. You can now access all features of our app.';
+
+  @override
+  String get verifySuccessButton => 'Continue';
+
+  @override
   String get comingSoonTitle => 'Coming soon';
 
   @override

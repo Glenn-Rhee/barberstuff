@@ -12,6 +12,7 @@ class AppColor {
   static const Color inkFaint = Color(0xFF9C9C9C);
 
   static const Color disabled = Color(0xFFB5B5B5);
+  static const Color danger = Color(0xFFD32F2F);
 
   static const Color surface = Color(0xFFFFFFFF);
   static const Color border = Color(0xFFE3E3E3);

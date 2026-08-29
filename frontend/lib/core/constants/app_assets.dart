@@ -13,6 +13,9 @@ class AppAssets {
 
   static const String logoLogin = '$_images/logo_login.png';
 
+  static const String emailVerification = '$_images/email_verification.png';
+  static const String checkVerification = '$_images/check_verification.png';
+
   static const String googleIcon = '$_icon/google_icon.png';
   static const String nameIcon = '$_icon/name_icon.png';
   static const String phoneIcon = '$_icon/telephone_icon.png';
