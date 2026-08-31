@@ -71,6 +71,14 @@ func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
 		return
 	}
 
+	if !helper.ValidateMinAge(dataNewCustomer.DateOfBirth) {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Minimal usia untuk mendaftar adalah 6 bulan!",
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
 	result, err := h.service.CredentialRegister(dataNewCustomer, ctx.Request.Context())
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{

@@ -237,13 +237,11 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 	if err != nil {
 		return c.failRegister(tx, "ISSUE OTP", err)
 	}
-
-	log.Println("otp:", otp)
-
-	err = c.sendOtp(ctx, custId, otp, auth.Email, customer.Name, descriptionOTP)
-	if err != nil {
-		return c.failRegister(tx, "Send OTP", err)
-	}
+	log.Println(otp)
+	// err = c.sendOtp(ctx, custId, otp, auth.Email, customer.Name, descriptionOTP)
+	// if err != nil {
+	// 	return c.failRegister(tx, "Send OTP", err)
+	// }
 
 	tx.Commit()
 	return &dto.CredentialCustomerResponse{
@@ -323,6 +321,10 @@ func (c *customerService) VerifyOTP(ctx context.Context, dataOTPCust dto.VerifyC
 		if err != nil {
 			helper.Logger("Failed convert string to int", BASE_PATH, err)
 			return dto.VerifyOTPResponse{}, errors.New(MESSAGE_ERROR)
+		}
+
+		if totalAttempts == 5 {
+			return dto.VerifyOTPResponse{}, errors.New("Anda telah melakukan percobaan sebanyak 5 kali. Coba lagi nanti!")
 		}
 
 		return dto.VerifyOTPResponse{}, fmt.Errorf("OTP tidak valid, silahkan coba lagi. Sisa percobaan %d kali", 5-totalAttempts)
