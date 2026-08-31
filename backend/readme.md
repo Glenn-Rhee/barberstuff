@@ -564,7 +564,7 @@ POST /auth/reset
 
 ---
 
-# 6. Authentication Provider
+## 6. Authentication Provider
 
 Endpoint ini digunakan untuk memvalidasi `id_token` yang diberikan oleh provider autentikasi pihak ketiga (contoh: Google). Endpoint ini akan menentukan apakah user yang login melalui provider tersebut sudah terdaftar di sistem atau belum.
 
@@ -653,7 +653,7 @@ Endpoint ini mengembalikan status autentikasi user, yang menentukan apakah user 
 
 ---
 
-# 7. Register menggunakan OAuth
+## 7. Register menggunakan OAuth
 
 Endpoint ini digunakan untuk menyelesaikan proses registrasi user yang sebelumnya login menggunakan provider (Google) melalui endpoint **Authentication Provider**, namun belum terdaftar di sistem (`status: NEED_COMPLETE_PROFILE`). User wajib mengirimkan `temp_token` yang didapatkan dari endpoint tersebut beserta data profil tambahan yang belum tersedia dari provider.
 
@@ -743,7 +743,7 @@ Contoh response ketika registrasi berhasil:
 
 ---
 
-# 8. Register Admin
+## 8. Register Admin
 
 Endpoint ini digunakan untuk membuat akun admin secara **internal**. Endpoint ini **tidak diperuntukkan untuk diakses melalui UI/frontend**, melainkan hanya dapat diakses melalui API tools seperti Postman atau semacamnya, dengan menyertakan `secret-key` pada header request.
 
@@ -828,8 +828,105 @@ Pada response gagal:
 
 ---
 
-# API Summary
 
+
+# 9. Create Store
+ 
+Endpoint ini digunakan untuk membuat data toko/cabang (store) baru. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
+ 
+### Endpoint
+ 
+```http
+POST /store
+```
+ 
+### Headers
+ 
+| Key             | Required | Keterangan                                                                                  |
+| --------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token milik admin, dengan format `Bearer <token>`.                                       |
+ 
+### Request Body
+ 
+```json
+{
+  "name": "Toko Cabang Kemang",
+  "description": "Cabang baru di area Kemang, Jakarta Selatan.",
+  "alamat": "Jl. Kemang Raya No. 10, Jakarta Selatan",
+  "banner_url": "https://example.com/images/banner-kemang.jpg",
+  "open_hour": "2024-01-01T08:00:00Z",
+  "close_hour": "2024-01-01T21:00:00Z",
+  "lat": -6.260278,
+  "long": 106.813889,
+  "phone_number": "081234567890"
+}
+```
+ 
+### Request Body Parameters
+ 
+| Key            | Tipe Data     | Required | Keterangan                                                                              |
+| -------------- | ------------- | -------- | ------------------------------------------------------------------------------------------ |
+| `name`         | String        | Ya       | Nama toko/cabang.                                                                            |
+| `description`  | String        | Tidak    | Deskripsi toko/cabang. Boleh bernilai `null`.                                                |
+| `alamat`       | String        | Ya       | Alamat lengkap toko/cabang.                                                                   |
+| `banner_url`   | String        | Ya       | URL gambar banner toko. Harus berupa format URL yang valid.                                  |
+| `open_hour`    | Date/DateTime | Ya       | Jam buka toko dalam format ISO 8601.                                                          |
+| `close_hour`   | Date/DateTime | Ya       | Jam tutup toko dalam format ISO 8601.                                                         |
+| `lat`          | Float         | Ya       | Koordinat latitude lokasi toko.                                                               |
+| `long`         | Float         | Ya       | Koordinat longitude lokasi toko.                                                              |
+| `phone_number` | String        | Ya       | Nomor telepon toko, minimal 9 dan maksimal 15 karakter.                                      |
+ 
+### Aturan Validasi
+ 
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`, dan token harus milik user dengan role `admin`.
+- `name` wajib diisi.
+- `description` bersifat opsional dan boleh tidak disertakan atau bernilai `null`.
+- `alamat` wajib diisi.
+- `banner_url` wajib diisi dan harus berupa URL yang valid.
+- `open_hour` wajib diisi.
+- `close_hour` wajib diisi.
+- `lat` wajib diisi.
+- `long` wajib diisi.
+- `phone_number` wajib diisi, dengan panjang minimal 9 karakter dan maksimal 15 karakter.
+### Response Sukses
+ 
+```json
+{
+  "data": null,
+  "message": "Berhasil membuat toko cabang baru!",
+  "statusCode": 200
+}
+```
+ 
+Pada response sukses:
+ 
+- `data` bernilai `null` karena endpoint ini tidak mengembalikan data toko yang baru dibuat.
+- `message` berisi konfirmasi bahwa toko cabang baru berhasil dibuat.
+- `statusCode` bernilai `200`.
+### Response Gagal
+ 
+Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
+ 
+```json
+{
+  "data": null,
+  "message": "Anda tidak memiliki akses untuk membuat toko cabang baru!",
+  "statusCode": 403
+}
+```
+ 
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat membuat toko cabang baru!",
+  "statusCode": 406
+}
+```
+ 
+---
+ 
+# API Summary
+ 
 | Method | Endpoint                    | Fungsi                                                                                                    |
 | ------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | POST   | `/auth/register/credential`  | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP.                                          |
@@ -840,29 +937,6 @@ Pada response gagal:
 | POST   | `/auth/provider`             | Memvalidasi `id_token` dari provider (Google) untuk menentukan apakah user perlu login atau registrasi.       |
 | POST   | `/auth/register/oauth`       | Menyelesaikan proses registrasi user baru yang login melalui provider, menggunakan `temp_token`.              |
 | POST   | `/auth/register/admin`       | Membuat akun admin secara internal (khusus API tools, wajib menyertakan header `secret-key`, tidak untuk UI). |
-
----
-
-### 1. Konfigurasi environment
-
-Buat file `.env` berdasarkan `.env.example`.
-
-### 2. Jalankan migration
-
-```bash
-go run cmd/migrate/main.go up
-```
-
-### 3. Masukkan dummy data (opsional)
-
-```bash
-go run cmd/seed/main.go up
-```
-
-### 4. Jalankan backend
-
-```bash
-go run main.go
-```
-
+| POST   | `/store`                     | Membuat data toko/cabang baru. Hanya dapat diakses oleh token milik admin.                                    |
+ 
 Backend siap digunakan setelah aplikasi berhasil dijalankan.
