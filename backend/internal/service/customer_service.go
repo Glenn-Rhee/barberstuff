@@ -458,7 +458,7 @@ func (c *customerService) sendOtp(ctx context.Context, userId uuid.UUID, otpPlai
 
 func (c *customerService) failRegister(tx *gorm.DB, label string, err error) (*dto.CredentialCustomerResponse, error) {
 	tx.Rollback()
-	log.Printf(label, err)
+	helper.Logger(label, "service/customer_service.go", err)
 	return &dto.CredentialCustomerResponse{}, errors.New(defaultRegisterErrMsg)
 }
 

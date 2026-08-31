@@ -1,0 +1,89 @@
+{
+  "@@locale": "id",
+  "appTitle": "Barberstuff",
+  "bookingTitle": "Pesan Layanan",
+  "greeting": "Halo, {name}!",
+  "@greeting": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "queueCount": "{count, plural, =0{Antrean kosong} =1{1 orang mengantre} other{{count} orang mengantre}}",
+  "@queueCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "onboardingFirstTitle": "Gaya yang pas untuk keseharianmu",
+  "onboardingFirstDescription": "Temukan gaya rambut yang sesuai dengan karakter dan aktivitas harianmu.",
+
+  "onboardingSecondTitle": "Booking cukur jadi lebih mudah",
+  "onboardingSecondDescription": "Pilih cabang, barber, dan jam yang kamu mau tanpa perlu antre di tempat.",
+
+  "onboardingThirdTitle": "Nikmati berbagai keuntungan member",
+  "onboardingThirdDescription": "Kumpulkan poin di setiap kunjungan dan tukarkan dengan potongan harga.",
+
+  "onboardingStart": "Ayo Mulai!",
+
+  "chooseLoginWelcome": "Selamat Datang",
+  "chooseLoginGoogleText": "Lanjutkan dengan Google",
+  "chooseLoginDividerOr": "atau",
+  "chooseLoginWithPasswordText": "Masuk dengan Kata Sandi",
+  "chooseLoginTextMessage": "Belum punya akun?",
+  "chooseLoginTextLink": "Daftar",
+
+  "commonProcessing": "Memproses...",
+  "commonSuccess": "Berhasil",
+  "commonRetry": "Coba lagi",
+
+  "genderMale": "Laki-laki",
+  "genderFemale": "Perempuan",
+
+  "registerPageBarText": "Daftar",
+  "registerHeadline": "Buat Akun Anda",
+  "registerSubheadline": "Isi data diri kamu untuk jadi Barberstuff.",
+  "registerNameLabel": "Nama Lengkap",
+  "registerPhoneLabel": "Nomor Telepon",
+  "registerBirthDateLabel": "Tanggal Lahir",
+  "registerGenderLabel": "Jenis Kelamin",
+  "registerEmailLabel": "Email",
+  "registerPasswordLabel": "Kata Sandi",
+  "registerSubmitButton": "Daftar",
+  "registerHaveAccountQuestion": "Sudah punya akun?",
+  "registerLoginAction": "Masuk",
+  "registerOtpSentMessage": "OTP telah dikirim ke email Anda.",
+
+  "verifyPageBarText": "Verifikasi Email",
+  "verifyHeadline": "Periksa Email Anda",
+  "verifyDescription": "Kami telah mengirimkan kode verifikasi 6 digit ke {email}. Silakan masukkan kode di bawah ini.",
+  "@verifyDescription": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifySubmitButton": "Verifikasi",
+  "verifyResendQuestion": "Tidak menerima kode?",
+  "verifyResendAction": "Kirim ulang kode",
+  "verifyResendCountdown": "Kirim ulang dalam {seconds} detik",
+  "@verifyResendCountdown": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "verifyResendSuccess": "Kode baru telah dikirim ke email Anda.",
+  "verifySuccessTitle": "Selamat!",
+  "verifySuccessMessage": "Email Anda telah berhasil diverifikasi. Anda sekarang dapat mengakses semua fitur aplikasi kami.",
+  "verifySuccessButton": "Lanjutkan",
+
+  "loginHeadline": "Masuk ke Akun Anda",
+  "loginEmailHint": "Email",
+  "loginPasswordHint": "Kata Sandi",
+  "loginRememberMe": "Ingat Saya",
+  "loginSubmitButton": "Masuk",
+  "loginForgotQuestion": "Lupa kata sandi?",
+  "loginForgotAction": "Klik disini",
+  "loginWithGoogle": "Masuk dengan Google",
+  "homeComingSoon": "Coming soon",
+
+  "comingSoonTitle": "Segera hadir",
+  "comingSoonMessage": "Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.",
+  "commonUnderstood": "Mengerti"
+
+}

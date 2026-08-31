@@ -1,6 +1,6 @@
 name: mobile_barberstuff
 description: "BarberStuff mobile application."
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -10,17 +10,27 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  shared_preferences: ^2.3.0
+  provider: ^6.1.5+1
+  dio: ^5.11.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
 
+  generate: true
+
   assets:
     - assets/images/
+    - assets/icons/
 
   fonts:
     - family: Poppins
@@ -33,3 +43,14 @@ flutter:
           weight: 600
         - asset: assets/fonts/Poppins-Bold.ttf
           weight: 700
+
+flutter_launcher_icons:
+  image_path: "assets/icon/icon_barberstuff.png"
+
+  android: "launcher_icon"
+  min_sdk_android: 21
+  adaptive_icon_background: "#E0E0E0"
+  adaptive_icon_foreground: "assets/icon/icon_barberstuff_fg.png"
+
+  ios: true
+  remove_alpha_ios: true

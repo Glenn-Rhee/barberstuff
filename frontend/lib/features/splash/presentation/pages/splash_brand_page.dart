@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../../../../shared/widgets/animated_brand_logo.dart';
-import '../../../../shared/widgets/barber_pattern_background.dart';
-import '../../../../src/core/constants/app_duration.dart';
-import '../../../../theme/app_color.dart';
-import '../widgets/brand_glow.dart';
+import 'package:mobile_barberstuff/core/constants/app_duration.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
+import 'package:mobile_barberstuff/features/splash/presentation/widgets/brand_glow.dart';
+import 'package:mobile_barberstuff/shared/widgets/animated_brand_logo.dart';
+import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
 
 class SplashBrandPage extends StatefulWidget {
   const SplashBrandPage({super.key, this.onFinished});
@@ -35,19 +34,14 @@ class _SplashBrandPageState extends State<SplashBrandPage>
       duration: AppDuration.backdropIntro,
     );
 
-    _glow = AnimationController(
-      vsync: this,
-      duration: AppDuration.logoBreathe,
-    );
+    _glow = AnimationController(vsync: this, duration: AppDuration.logoBreathe);
 
-    _backdropReveal = CurvedAnimation(
-      parent: _backdrop,
-      curve: Curves.easeOut,
-    );
+    _backdropReveal = CurvedAnimation(parent: _backdrop, curve: Curves.easeOut);
 
-    _glowScale = Tween<double>(begin: 0.9, end: 1.35).animate(
-      CurvedAnimation(parent: _glow, curve: Curves.easeInOut),
-    );
+    _glowScale = Tween<double>(
+      begin: 0.9,
+      end: 1.35,
+    ).animate(CurvedAnimation(parent: _glow, curve: Curves.easeInOut));
 
     _backdrop.forward();
     _glow.repeat(reverse: true);

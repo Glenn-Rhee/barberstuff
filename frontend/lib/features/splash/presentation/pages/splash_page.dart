@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../../../../shared/widgets/animated_brand_logo.dart';
-import '../../../../shared/widgets/barber_pattern_background.dart';
-import '../../../../src/app/app_route.dart';
-import '../../../../src/core/constants/app_duration.dart';
-import '../../../../theme/app_color.dart';
+import 'package:mobile_barberstuff/app/app_route.dart';
+import 'package:mobile_barberstuff/core/constants/app_duration.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
+import 'package:mobile_barberstuff/shared/widgets/animated_brand_logo.dart';
+import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

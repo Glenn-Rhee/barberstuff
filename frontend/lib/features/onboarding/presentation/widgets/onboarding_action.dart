@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../../../src/core/constants/app_duration.dart';
-import '../../../../theme/app_color.dart';
-import '../../../../theme/app_text_style.dart';
+import 'package:mobile_barberstuff/core/constants/app_duration.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
+import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 
 class OnboardingAction extends StatelessWidget {
   const OnboardingAction({

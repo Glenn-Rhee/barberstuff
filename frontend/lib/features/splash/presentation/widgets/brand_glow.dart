@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../../theme/app_color.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
 
 class BrandGlow extends StatelessWidget {
   const BrandGlow({

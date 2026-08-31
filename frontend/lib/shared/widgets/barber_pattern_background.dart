@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../src/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 
 class BarberPatternBackground extends StatelessWidget {
   const BarberPatternBackground({
@@ -92,10 +91,26 @@ class BarberPatternBackground extends StatelessWidget {
     final double blue = tint == null ? 1 : 0;
 
     return ColorFilter.matrix(<double>[
-      red, 0, 0, 0, tint == null ? 0 : tint.r * 255,
-      0, green, 0, 0, tint == null ? 0 : tint.g * 255,
-      0, 0, blue, 0, tint == null ? 0 : tint.b * 255,
-      0, 0, 0, patternIntensity, 0,
+      red,
+      0,
+      0,
+      0,
+      tint == null ? 0 : tint.r * 255,
+      0,
+      green,
+      0,
+      0,
+      tint == null ? 0 : tint.g * 255,
+      0,
+      0,
+      blue,
+      0,
+      tint == null ? 0 : tint.b * 255,
+      0,
+      0,
+      0,
+      patternIntensity,
+      0,
     ]);
   }
 }

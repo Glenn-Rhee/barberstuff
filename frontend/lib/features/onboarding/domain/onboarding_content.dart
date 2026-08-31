@@ -1,40 +1,34 @@
-import '../../../src/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 class OnboardingContent {
   const OnboardingContent({
     required this.image,
     required this.title,
-    required this.highlight,
     required this.description,
   });
 
   final String image;
   final String title;
-  final String highlight;
   final String description;
 
-  static const String _placeholderBody =
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit '
-      'sed do eiusmod tempor incidunt ut labore et dolore magna aliqua.';
-
-  static const List<OnboardingContent> items = <OnboardingContent>[
-    OnboardingContent(
-      image: AppAssets.onboardingFirst,
-      title: 'Style that fit your daily',
-      highlight: 'Lifestyle',
-      description: _placeholderBody,
-    ),
-    OnboardingContent(
-      image: AppAssets.onboardingSecond,
-      title: 'hai iqbal woiiii',
-      highlight: 'Lifestyle',
-      description: _placeholderBody,
-    ),
-    OnboardingContent(
-      image: AppAssets.onboardingThird,
-      title: 'Style that fit your daily',
-      highlight: 'Lifestyle',
-      description: _placeholderBody,
-    ),
-  ];
+  static List<OnboardingContent> items(AppLocalizations l10n) {
+    return <OnboardingContent>[
+      OnboardingContent(
+        image: AppAssets.onboardingFirst,
+        title: l10n.onboardingFirstTitle,
+        description: l10n.onboardingFirstDescription,
+      ),
+      OnboardingContent(
+        image: AppAssets.onboardingSecond,
+        title: l10n.onboardingSecondTitle,
+        description: l10n.onboardingSecondDescription,
+      ),
+      OnboardingContent(
+        image: AppAssets.onboardingThird,
+        title: l10n.onboardingThirdTitle,
+        description: l10n.onboardingThirdDescription,
+      ),
+    ];
+  }
 }
