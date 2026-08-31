@@ -12,7 +12,7 @@ const (
 	RoleCustomer RoleEnum = "customer"
 	RoleCashier  RoleEnum = "cashier"
 	RoleAdmin    RoleEnum = "admin"
-	RoleOwner    RoleEnum = "owner"
+	RoleMitra    RoleEnum = "mitra"
 )
 
 type LoginType string

@@ -237,11 +237,10 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 	if err != nil {
 		return c.failRegister(tx, "ISSUE OTP", err)
 	}
-	log.Println(otp)
-	// err = c.sendOtp(ctx, custId, otp, auth.Email, customer.Name, descriptionOTP)
-	// if err != nil {
-	// 	return c.failRegister(tx, "Send OTP", err)
-	// }
+	err = c.sendOtp(ctx, custId, otp, auth.Email, customer.Name, descriptionOTP)
+	if err != nil {
+		return c.failRegister(tx, "Send OTP", err)
+	}
 
 	tx.Commit()
 	return &dto.CredentialCustomerResponse{

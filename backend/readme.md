@@ -375,7 +375,7 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 
 ## 3. Credential Login
 
-Endpoint ini digunakan untuk melakukan login user menggunakan email dan password. Endpoint ini bersifat umum dan dapat digunakan oleh seluruh role pengguna, yaitu customer, kasir, admin, maupun owner.
+Endpoint ini digunakan untuk melakukan login user menggunakan email dan password. Endpoint ini bersifat umum dan dapat digunakan oleh seluruh role pengguna, yaitu customer, kasir, admin, maupun mitra.
 
 Untuk customer, endpoint ini dapat digunakan apabila user melakukan login secara manual menggunakan email dan password.
 
@@ -444,7 +444,7 @@ Contoh response ketika login berhasil:
 | --------- | --------- | ----------------------------------------------------------------------------- |
 | `user_id` | String    | ID unik user yang berhasil melakukan login.                                 |
 | `email`   | String    | Email user yang digunakan untuk login.                                      |
-| `role`    | String    | Role user dalam sistem, seperti `customer`, `kasir`, `admin`, atau `owner`. |
+| `role`    | String    | Role user dalam sistem, seperti `customer`, `kasir`, `admin`, atau `mitra`. |
 
 ### Struktur Response
 
@@ -777,7 +777,7 @@ Contoh response ketika registrasi berhasil:
 | --------- | --------- | ----------------------------------------------------------------------------- |
 | `user_id` | String    | ID unik user yang berhasil melakukan registrasi.                              |
 | `email`   | String    | Email user yang didapatkan dari hasil verifikasi provider.                    |
-| `role`    | String    | Role user dalam sistem, seperti `customer`, `kasir`, `admin`, atau `owner`.  |
+| `role`    | String    | Role user dalam sistem, seperti `customer`, `kasir`, `admin`, atau `mitra`.  |
 
 ### Struktur Response
 

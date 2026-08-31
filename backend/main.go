@@ -18,23 +18,21 @@ func main() {
 
 	router := gin.Default()
 
-	// Customer register
-	router.POST("/auth/register/credential", h.CustomerHandler.CredentialRegister)
-	router.POST("/auth/register/oauth", h.CustomerHandler.OauthRegister)
+	auth := router.Group("/auth")
+	{
+		register := auth.Group("/register")
+		{
+			register.POST("/credential", h.CustomerHandler.CredentialRegister)
+			register.POST("/oauth", h.CustomerHandler.OauthRegister)
+			register.POST("/admin", h.StaffHandler.CreateAdmin)
+		}
 
-	// Verify OTP
-	router.POST("/auth/verify-credential", h.CustomerHandler.VerifyCredential)
-
-	// User Login
-	router.POST("/auth/login/credential", h.AuthHandler.CredentialLogin)
-
-	// Validate Provider
-	router.POST("/auth/provider", h.AuthHandler.AuthProvider)
-
-	// Forgot Password
-	router.POST("/auth/forgot", h.CustomerHandler.ForgotPassword)
-	// Reset Passsword
-	router.POST("/auth/reset", h.AuthHandler.ResetPassword)
+		auth.POST("/verify-credential", h.CustomerHandler.VerifyCredential)
+		auth.POST("/login/credential", h.AuthHandler.CredentialLogin)
+		auth.POST("/provider", h.AuthHandler.AuthProvider)
+		auth.POST("/forgot", h.CustomerHandler.ForgotPassword)
+		auth.POST("/reset", h.AuthHandler.ResetPassword)
+	}
 
 	fmt.Println("Server running on http://localhost:8080")
 	router.Run(":8080")

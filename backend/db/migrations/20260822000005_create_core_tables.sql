@@ -27,7 +27,7 @@ CREATE TRIGGER trg_customer_updated_at
     BEFORE UPDATE ON customer
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
--- staff = pegawai internal (cashier / admin / owner), BUKAN capster
+-- staff = pegawai internal (cashier / mitra / admin), BUKAN capster
 CREATE TABLE staff (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
@@ -40,12 +40,12 @@ CREATE TRIGGER trg_staff_updated_at
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- ============ AUTHENTICATION ============
-CREATE TYPE role_enum AS ENUM ('customer', 'cashier', 'admin', 'owner');
+CREATE TYPE role_enum AS ENUM ('customer', 'cashier', 'admin', 'mitra');
 
 -- id_user sebelumnya polymorphic tanpa FK asli (rawan orphan data).
 -- Dipecah jadi 2 kolom nullable + CHECK, integritas dijaga DB:
 --   - role = 'customer'                   -> id_customer terisi, id_staff NULL
---   - role IN ('cashier','admin','owner') -> id_staff terisi, id_customer NULL
+--   - role IN ('cashier','admin','mitra') -> id_staff terisi, id_customer NULL
 CREATE TABLE authentication (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     id_customer UUID REFERENCES customer(id) ON DELETE CASCADE,
@@ -60,7 +60,7 @@ CREATE TABLE authentication (
     CONSTRAINT chk_authentication_user_role CHECK (
         (role = 'customer' AND id_customer IS NOT NULL AND id_staff IS NULL)
         OR
-        (role IN ('cashier', 'admin', 'owner') AND id_staff IS NOT NULL AND id_customer IS NULL)
+        (role IN ('cashier', 'admin', 'mitra') AND id_staff IS NOT NULL AND id_customer IS NULL)
     )
 );
 
