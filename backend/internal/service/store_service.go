@@ -15,6 +15,7 @@ import (
 
 type StoreService interface {
 	CreateNewStore(req dto.NewStoreRequest) error
+	GetStores(query dto.QueryParamsStores) ([]dto.StoresResponse, error)
 }
 
 type storeService struct {
@@ -59,6 +60,26 @@ func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
 	if err != nil {
 		return errors.New(BASE_MESSAGE)
 	}
-	
+
 	return nil
+}
+
+func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoresResponse, error) {
+	var scopes []func(*gorm.DB) *gorm.DB
+	if query.NameStore != nil {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("name = ?", query.NameStore)
+		})
+	}
+
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data toko!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	stores, err := s.storeRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("Find all data", filePath, err)
+		return []dto.StoresResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	return dto.ToStoreResponseList(stores), nil
 }

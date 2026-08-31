@@ -9,6 +9,7 @@ import (
 type StoreRepository interface {
 	Create(s *entity.Store) error
 	FindOne(where string, args ...interface{}) (entity.Store, error)
+	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Store, error)
 }
 
 type storeRepository struct {
@@ -28,4 +29,10 @@ func (r *storeRepository) FindOne(where string, args ...interface{}) (entity.Sto
 	var dataStore entity.Store
 	result := r.db.Where(where, args...).First(&dataStore)
 	return dataStore, result.Error
+}
+
+func (r *storeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Store, error) {
+	var stores []entity.Store
+	result := r.db.Scopes(scopes...).Find(&stores)
+	return stores, result.Error
 }

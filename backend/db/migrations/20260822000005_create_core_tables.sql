@@ -11,6 +11,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ============ USER TABLES ============
+CREATE TYPE premium_type_enum AS ENUM ('newbie', 'bestie', 'royal', 'crazy');
 CREATE TABLE customer (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
@@ -18,7 +19,8 @@ CREATE TABLE customer (
     date_of_birth DATE,
     gender VARCHAR(10) CHECK (gender IN ('male', 'female', 'other')),
     member_points INT NOT NULL DEFAULT 0,
-    image_customer BYTEA,
+    premium_type VARCHAR(20) NOT NULL DEFAULT 'newbie' CHECK (premium_type IN ('newbie', 'bestie', 'royal', 'crazy')),
+    image_customer TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -75,6 +77,7 @@ CREATE INDEX idx_authentication_id_staff ON authentication(id_staff);
 DROP TABLE IF EXISTS otp;
 DROP TABLE IF EXISTS authentication;
 DROP TYPE IF EXISTS role_enum;
+DROP TYPE IF EXISTS premium_type_enum;
 DROP TABLE IF EXISTS staff;
 DROP TABLE IF EXISTS customer;
 DROP FUNCTION IF EXISTS set_updated_at();

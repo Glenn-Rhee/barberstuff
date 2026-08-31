@@ -39,6 +39,7 @@ func main() {
 	{
 		store.Use(middleware.AuthMiddleware)
 		store.POST("/", h.StoreHandler.CreateNewStore)
+		store.GET("/", h.StoreHandler.GetStores)
 	}
 
 	fmt.Println("Server running on http://localhost:8080")
