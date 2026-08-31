@@ -6,52 +6,6 @@ Backend aplikasi ini dibangun menggunakan bahasa pemrograman Go (Golang).
 
 Sebelum menjalankan backend, buat file `.env` berdasarkan file `.env.example`.
 
-Isi konfigurasi environment variable berikut:
-
-```env
-DB_HOST=
-DB_USER=
-DB_PORT=
-DB_PASSWORD=
-DB_NAME=
-
-JWT_KEY=
-
-SMTP_PASSWORD=
-SMTP_HOST=
-SMTP_USERNAME=
-SMTP_FROM_EMAIL=
-SMTP_FROM_NAME=
-SMTP_PORT=
-
-OTP_ENCRYPTION_KEY=
-```
-
-Contoh:
-
-```env
-DB_HOST=localhost
-DB_USER=postgres
-DB_PORT=5432
-DB_PASSWORD=your_password
-DB_NAME=your_database
-
-JWT_KEY=sangat_rahasia
-
-SMTP_PASSWORD="goxv vfkk kuzz rnry"
-SMTP_HOST="smtp.gmail.com"
-SMTP_USERNAME="glennviktor5@gmail.com"
-SMTP_FROM_EMAIL="glennviktor5@gmail.com"
-SMTP_FROM_NAME="Barberstuff"
-SMTP_PORT="587"
-
-OTP_ENCRYPTION_KEY="cihuy123sebanyak32karakter"
-```
-
-Pastikan seluruh konfigurasi database sudah sesuai dengan database yang digunakan.
-
----
-
 ## 2. Database Migration
 
 Setelah environment selesai dikonfigurasi, jalankan proses migrasi database menggunakan perintah berikut:
@@ -206,7 +160,7 @@ POST /auth/register/credential
 ### Request Body Parameters
 
 | Key             | Tipe Data     | Required | Keterangan                                                              |
-| --------------- | ------------- | -------- | ------------------------------------------------------------------------- |
+| --------------- | ------------- | -------- | ----------------------------------------------------------------------- |
 | `name`          | String        | Ya       | Nama lengkap pengguna.                                                  |
 | `phoneNumber`   | String        | Ya       | Nomor telepon pengguna, minimal 9 dan maksimal 15 karakter.             |
 | `date_of_birth` | Date/DateTime | Ya       | Tanggal lahir pengguna dalam format ISO 8601.                           |
@@ -242,10 +196,10 @@ Jika registrasi berhasil, API mengembalikan informasi dasar user dan OTP dikirim
 
 Struktur `data` pada response sukses:
 
-| Key        | Tipe Data | Keterangan                            |
-| ---------- | --------- | -------------------------------------- |
-| `id`       | String    | ID unik user.                         |
-| `email`    | String    | Email user yang telah didaftarkan.    |
+| Key     | Tipe Data | Keterangan                         |
+| ------- | --------- | ---------------------------------- |
+| `id`    | String    | ID unik user.                      |
+| `email` | String    | Email user yang telah didaftarkan. |
 
 ### Response Gagal
 
@@ -292,7 +246,7 @@ POST /auth/verify-credential
 ### Request Body Parameters
 
 | Key       | Tipe Data | Required | Keterangan                                                                        |
-| --------- | --------- | -------- | ----------------------------------------------------------------------------------- |
+| --------- | --------- | -------- | --------------------------------------------------------------------------------- |
 | `user_id` | String    | Ya       | ID unik user yang akan diverifikasi.                                              |
 | `otp`     | String    | Ya       | Kode OTP yang diterima melalui email. OTP harus terdiri dari tepat 6 digit angka. |
 
@@ -331,16 +285,16 @@ Isi `data` pada endpoint ini berbeda tergantung alur yang sedang dijalankan.
 
 Struktur response:
 
-| Key          | Tipe Data   | Keterangan                                                                                                                              |
-| ------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `data`       | Object | Bernilai `{}` pada alur verifikasi akun baru. Berisi `reset_token` pada alur verifikasi lupa password.                               |
-| `message`    | String      | Pesan yang menjelaskan hasil verifikasi.                                                                                                |
-| `statusCode` | Integer     | HTTP status code dari hasil proses.                                                                                                     |
+| Key          | Tipe Data | Keterangan                                                                                             |
+| ------------ | --------- | ------------------------------------------------------------------------------------------------------ |
+| `data`       | Object    | Bernilai `{}` pada alur verifikasi akun baru. Berisi `reset_token` pada alur verifikasi lupa password. |
+| `message`    | String    | Pesan yang menjelaskan hasil verifikasi.                                                               |
+| `statusCode` | Integer   | HTTP status code dari hasil proses.                                                                    |
 
 ### Response Data (alur Forgot Password)
 
-| Key           | Tipe Data | Keterangan                                                                                                                    |
-| ------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Key           | Tipe Data | Keterangan                                                                                                                         |
+| ------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `reset_token` | String    | Token sementara, berlaku singkat, yang wajib dikirimkan pada endpoint **Reset Password** (`/auth/reset`) untuk mengganti password. |
 
 ### Response Gagal
@@ -397,7 +351,7 @@ POST /auth/login/credential
 ### Request Body Parameters
 
 | Key        | Tipe Data | Required | Keterangan                                                                                         |
-| ---------- | --------- | -------- | ------------------------------------------------------------------------------------------------------ |
+| ---------- | --------- | -------- | -------------------------------------------------------------------------------------------------- |
 | `email`    | String    | Ya       | Email yang terdaftar pada sistem. Harus memiliki format email yang valid.                          |
 | `password` | String    | Ya       | Password akun yang digunakan untuk proses autentikasi. Password harus memiliki minimal 5 karakter. |
 
@@ -441,7 +395,7 @@ Contoh response ketika login berhasil:
 ### User Object
 
 | Key       | Tipe Data | Keterangan                                                                  |
-| --------- | --------- | ----------------------------------------------------------------------------- |
+| --------- | --------- | --------------------------------------------------------------------------- |
 | `user_id` | String    | ID unik user yang berhasil melakukan login.                                 |
 | `email`   | String    | Email user yang digunakan untuk login.                                      |
 | `role`    | String    | Role user dalam sistem, seperti `customer`, `kasir`, `admin`, atau `mitra`. |
@@ -478,8 +432,8 @@ POST /auth/forgot
 
 ### Request Body Parameters
 
-| Key     | Tipe Data | Required | Keterangan                                             |
-| ------- | --------- | -------- | ---------------------------------------------------------- |
+| Key     | Tipe Data | Required | Keterangan                                                    |
+| ------- | --------- | -------- | ------------------------------------------------------------- |
 | `email` | String    | Ya       | Email akun yang terdaftar dan ingin melakukan reset password. |
 
 ### Aturan Validasi
@@ -506,8 +460,8 @@ Jika permintaan berhasil, OTP dikirimkan ke email pengguna dan `user_id` dikemba
 
 ### Response Data
 
-| Key       | Tipe Data | Keterangan                                                                          |
-| --------- | --------- | ---------------------------------------------------------------------------------------- |
+| Key       | Tipe Data | Keterangan                                                                           |
+| --------- | --------- | ------------------------------------------------------------------------------------ |
 | `user_id` | String    | ID unik user, wajib dikirimkan pada endpoint **Verify Credential / OTP** berikutnya. |
 
 ### Response Gagal
@@ -569,10 +523,10 @@ POST /auth/reset
 
 ### Request Body Parameters
 
-| Key            | Tipe Data | Required | Keterangan                                                                       |
-| -------------- | --------- | -------- | --------------------------------------------------------------------------------- |
+| Key            | Tipe Data | Required | Keterangan                                                                               |
+| -------------- | --------- | -------- | ---------------------------------------------------------------------------------------- |
 | `reset_token`  | String    | Ya       | Token yang didapatkan dari hasil verifikasi OTP pada endpoint `/auth/verify-credential`. |
-| `new_password` | String    | Ya       | Password baru untuk akun, minimal 5 karakter.                                    |
+| `new_password` | String    | Ya       | Password baru untuk akun, minimal 5 karakter.                                            |
 
 ### Aturan Validasi
 
@@ -633,8 +587,8 @@ POST /auth/provider
 
 ### Request Body Parameters
 
-| Key        | Tipe Data | Required | Keterangan                                                                                          |
-| ---------- | --------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| Key        | Tipe Data | Required | Keterangan                                                                                             |
+| ---------- | --------- | -------- | ------------------------------------------------------------------------------------------------------ |
 | `id_token` | String    | Ya       | ID Token yang diterima dari provider autentikasi setelah user berhasil login (contoh: Google Sign-In). |
 | `provider` | String    | Ya       | Jenis provider yang digunakan untuk autentikasi. Saat ini hanya menerima nilai `google`.               |
 
@@ -681,21 +635,21 @@ Endpoint ini mengembalikan status autentikasi user, yang menentukan apakah user 
 
 ### Response Data
 
-| Key            | Tipe Data | Keterangan                                                                                                                                                     |
+| Key            | Tipe Data | Keterangan                                                                                                                                                       |
 | -------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `email`        | String    | Email user yang didapatkan dari hasil verifikasi `id_token`.                                                                                                   |
-| `name`         | String    | Nama user yang didapatkan dari hasil verifikasi `id_token`.                                                                                                     |
+| `email`        | String    | Email user yang didapatkan dari hasil verifikasi `id_token`.                                                                                                     |
+| `name`         | String    | Nama user yang didapatkan dari hasil verifikasi `id_token`.                                                                                                      |
 | `status`       | String    | Status hasil autentikasi. Bernilai `NEED_COMPLETE_PROFILE` apabila user belum terdaftar dan perlu melengkapi profil, atau `SUCCESS` apabila user berhasil login. |
-| `access_token` | String    | JSON Web Token (JWT) yang digunakan sebagai kredensial untuk mengakses endpoint yang membutuhkan autentikasi. Hanya muncul apabila `status` bernilai `SUCCESS`.   |
-| `temp_token`   | String    | Token sementara yang wajib dikirimkan pada endpoint **Register menggunakan OAuth**. Hanya muncul apabila `status` bernilai `NEED_COMPLETE_PROFILE`.               |
+| `access_token` | String    | JSON Web Token (JWT) yang digunakan sebagai kredensial untuk mengakses endpoint yang membutuhkan autentikasi. Hanya muncul apabila `status` bernilai `SUCCESS`.  |
+| `temp_token`   | String    | Token sementara yang wajib dikirimkan pada endpoint **Register menggunakan OAuth**. Hanya muncul apabila `status` bernilai `NEED_COMPLETE_PROFILE`.              |
 
 ### Struktur Response
 
-| Key          | Tipe Data | Keterangan                                                     |
-| ------------ | --------- | ----------------------------------------------------------------- |
-| `data`       | Object    | Berisi status autentikasi beserta token yang relevan.             |
-| `message`    | String    | Pesan yang menjelaskan hasil proses autentikasi.                  |
-| `statusCode` | Integer   | HTTP status code dari hasil proses.                                |
+| Key          | Tipe Data | Keterangan                                            |
+| ------------ | --------- | ----------------------------------------------------- |
+| `data`       | Object    | Berisi status autentikasi beserta token yang relevan. |
+| `message`    | String    | Pesan yang menjelaskan hasil proses autentikasi.      |
+| `statusCode` | Integer   | HTTP status code dari hasil proses.                   |
 
 ---
 
@@ -723,13 +677,13 @@ POST /auth/register/oauth
 
 ### Request Body Parameters
 
-| Key             | Tipe Data              | Required | Keterangan                                                                                                                      |
-| --------------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `name`          | String                  | Ya       | Nama lengkap user.                                                                                                                |
-| `temp_token`    | String                  | Ya       | Token sementara yang didapatkan dari endpoint **Authentication Provider** (`/auth/provider`). Digunakan untuk memvalidasi identitas user yang telah diverifikasi oleh provider. |
-| `phoneNumber`   | String                  | Ya       | Nomor telepon user. Harus memiliki panjang antara 9 sampai 15 karakter.                                                            |
-| `date_of_birth` | String (ISO 8601 Date)  | Ya       | Tanggal lahir user, dengan format `YYYY-MM-DDTHH:mm:ssZ`.                                                                          |
-| `gender`        | String                  | Ya       | Jenis kelamin user. Hanya menerima nilai `male` atau `female`.                                                                     |
+| Key             | Tipe Data              | Required | Keterangan                                                                                                                                                                      |
+| --------------- | ---------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`          | String                 | Ya       | Nama lengkap user.                                                                                                                                                              |
+| `temp_token`    | String                 | Ya       | Token sementara yang didapatkan dari endpoint **Authentication Provider** (`/auth/provider`). Digunakan untuk memvalidasi identitas user yang telah diverifikasi oleh provider. |
+| `phoneNumber`   | String                 | Ya       | Nomor telepon user. Harus memiliki panjang antara 9 sampai 15 karakter.                                                                                                         |
+| `date_of_birth` | String (ISO 8601 Date) | Ya       | Tanggal lahir user, dengan format `YYYY-MM-DDTHH:mm:ssZ`.                                                                                                                       |
+| `gender`        | String                 | Ya       | Jenis kelamin user. Hanya menerima nilai `male` atau `female`.                                                                                                                  |
 
 ### Aturan Validasi
 
@@ -769,37 +723,125 @@ Contoh response ketika registrasi berhasil:
 | Key            | Tipe Data | Keterangan                                                                                                    |
 | -------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
 | `access_token` | String    | JSON Web Token (JWT) yang digunakan sebagai kredensial untuk mengakses endpoint yang membutuhkan autentikasi. |
-| `user`         | Object    | Informasi user yang berhasil melakukan registrasi.                                                              |
+| `user`         | Object    | Informasi user yang berhasil melakukan registrasi.                                                            |
 
 ### User Object
 
 | Key       | Tipe Data | Keterangan                                                                  |
-| --------- | --------- | ----------------------------------------------------------------------------- |
-| `user_id` | String    | ID unik user yang berhasil melakukan registrasi.                              |
-| `email`   | String    | Email user yang didapatkan dari hasil verifikasi provider.                    |
-| `role`    | String    | Role user dalam sistem, seperti `customer`, `kasir`, `admin`, atau `mitra`.  |
+| --------- | --------- | --------------------------------------------------------------------------- |
+| `user_id` | String    | ID unik user yang berhasil melakukan registrasi.                            |
+| `email`   | String    | Email user yang didapatkan dari hasil verifikasi provider.                  |
+| `role`    | String    | Role user dalam sistem, seperti `customer`, `kasir`, `admin`, atau `mitra`. |
 
 ### Struktur Response
 
-| Key          | Tipe Data | Keterangan                                                             |
-| ------------ | --------- | ----------------------------------------------------------------------- |
-| `data`       | Object    | Berisi access token dan informasi user.                                |
-| `message`    | String    | Pesan yang menjelaskan hasil proses registrasi.                        |
-| `statusCode` | Integer   | HTTP status code dari hasil proses.                                    |
+| Key          | Tipe Data | Keterangan                                      |
+| ------------ | --------- | ----------------------------------------------- |
+| `data`       | Object    | Berisi access token dan informasi user.         |
+| `message`    | String    | Pesan yang menjelaskan hasil proses registrasi. |
+| `statusCode` | Integer   | HTTP status code dari hasil proses.             |
+
+---
+
+# 8. Register Admin
+
+Endpoint ini digunakan untuk membuat akun admin secara **internal**. Endpoint ini **tidak diperuntukkan untuk diakses melalui UI/frontend**, melainkan hanya dapat diakses melalui API tools seperti Postman atau semacamnya, dengan menyertakan `secret-key` pada header request.
+
+Endpoint ini umumnya digunakan sekali di awal (initial setup) untuk membuat akun admin pertama pada sistem.
+
+### Endpoint
+
+```http
+POST /auth/register/admin
+```
+
+### Headers
+
+| Key          | Required | Keterangan                                                                 |
+| ------------ | -------- | --------------------------------------------------------------------------- |
+| `secret-key` | Ya       | Secret key internal yang digunakan untuk otorisasi pembuatan akun admin.    |
+
+### Request Body
+
+```json
+{
+  "name": "Admin Utama",
+  "email": "admin@example.com",
+  "password": "SecurePass123"
+}
+```
+
+### Request Body Parameters
+
+| Key        | Tipe Data | Required | Keterangan                                             |
+| ---------- | --------- | -------- | ------------------------------------------------------- |
+| `name`     | String    | Ya       | Nama lengkap admin.                                      |
+| `email`    | String    | Ya       | Alamat email admin dengan format email yang valid.       |
+| `password` | String    | Ya       | Password admin, minimal 5 karakter.                      |
+
+### Aturan Validasi
+
+- `name` wajib diisi.
+- `email` wajib diisi dan harus memiliki format email yang valid.
+- `password` wajib diisi dan memiliki panjang minimal 5 karakter.
+- Header `secret-key` wajib disertakan dan harus sesuai dengan secret key yang terdaftar pada sistem.
+- Akun admin hanya dapat didaftarkan satu kali; apabila akun admin sudah pernah terdaftar sebelumnya, permintaan akan ditolak.
+
+### Response Sukses
+
+```json
+{
+  "data": null,
+  "message": "Berhasil membuat akun admin",
+  "statusCode": 201
+}
+```
+
+Pada response sukses:
+
+- `data` bernilai `null` karena endpoint ini tidak mengembalikan data user maupun token.
+- `message` berisi konfirmasi bahwa akun admin berhasil dibuat.
+- `statusCode` bernilai `201`.
+
+### Response Gagal
+
+Contoh response ketika akun admin sudah pernah terdaftar sebelumnya:
+
+```json
+{
+  "data": null,
+  "message": "Akun admin telah terdaftar! Tidak dapat mendaftar kembali",
+  "statusCode": 400
+}
+```
+
+Pada response gagal:
+
+- `data` bernilai `null` karena tidak ada data yang dikembalikan.
+- `message` berisi informasi mengenai penyebab kegagalan.
+- `statusCode` bernilai `400` (atau kode error lain sesuai jenis kesalahan, misalnya `401`/`403` apabila `secret-key` tidak valid).
+
+### Catatan
+
+- Endpoint ini **tidak boleh** diekspos atau dipanggil dari sisi client/UI aplikasi, karena bersifat sensitif dan hanya untuk keperluan internal.
+- Pastikan `secret-key` disimpan secara aman (misalnya melalui environment variable) dan tidak dibagikan ke pihak yang tidak berwenang.
 
 ---
 
 # API Summary
 
-| Method | Endpoint                    | Fungsi                                                                                              |
-| ------ | ---------------------------- | ------------------------------------------------------------------------------------------------------ |
-| POST   | `/auth/register/credential`  | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP.                                   |
-| POST   | `/auth/verify-credential`    | Memverifikasi kode OTP, baik untuk alur verifikasi akun baru maupun alur lupa password.               |
-| POST   | `/auth/login/credential`     | Melakukan login user menggunakan email dan password untuk seluruh role yang tersedia.                 |
-| POST   | `/auth/forgot`                | Memulai proses lupa password dan mengirimkan OTP ke email pengguna.                                   |
-| POST   | `/auth/reset`                 | Mengganti password akun menggunakan `reset_token` hasil verifikasi OTP.                                |
-| POST   | `/auth/provider`              | Memvalidasi `id_token` dari provider (Google) untuk menentukan apakah user perlu login atau registrasi. |
-| POST   | `/auth/register/oauth`        | Menyelesaikan proses registrasi user baru yang login melalui provider, menggunakan `temp_token`.       |Urutan menjalankan backend dari awal:
+| Method | Endpoint                    | Fungsi                                                                                                    |
+| ------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| POST   | `/auth/register/credential`  | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP.                                          |
+| POST   | `/auth/verify-credential`    | Memverifikasi kode OTP, baik untuk alur verifikasi akun baru maupun alur lupa password.                      |
+| POST   | `/auth/login/credential`     | Melakukan login user menggunakan email dan password untuk seluruh role yang tersedia.                        |
+| POST   | `/auth/forgot`               | Memulai proses lupa password dan mengirimkan OTP ke email pengguna.                                           |
+| POST   | `/auth/reset`                | Mengganti password akun menggunakan `reset_token` hasil verifikasi OTP.                                       |
+| POST   | `/auth/provider`             | Memvalidasi `id_token` dari provider (Google) untuk menentukan apakah user perlu login atau registrasi.       |
+| POST   | `/auth/register/oauth`       | Menyelesaikan proses registrasi user baru yang login melalui provider, menggunakan `temp_token`.              |
+| POST   | `/auth/register/admin`       | Membuat akun admin secara internal (khusus API tools, wajib menyertakan header `secret-key`, tidak untuk UI). |
+
+---
 
 ### 1. Konfigurasi environment
 
