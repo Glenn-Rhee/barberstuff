@@ -4,6 +4,7 @@ import (
 	"barberstuff_backend/db"
 	"barberstuff_backend/internal/bootstrap"
 	"barberstuff_backend/internal/lib"
+	"barberstuff_backend/internal/middleware"
 	"fmt"
 	"log"
 
@@ -16,9 +17,9 @@ func main() {
 	lib.RedisInit()
 	h := bootstrap.InitHandlers(db)
 
-	router := gin.Default()
+	r := gin.Default()
 
-	auth := router.Group("/auth")
+	auth := r.Group("/auth")
 	{
 		register := auth.Group("/register")
 		{
@@ -34,6 +35,12 @@ func main() {
 		auth.POST("/reset", h.AuthHandler.ResetPassword)
 	}
 
+	store := r.Group("/store")
+	{
+		store.Use(middleware.AuthMiddleware)
+		store.POST("/", h.StoreHandler.CreateNewStore)
+	}
+
 	fmt.Println("Server running on http://localhost:8080")
-	router.Run(":8080")
+	r.Run(":8080")
 }

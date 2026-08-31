@@ -31,7 +31,7 @@ func (h *StaffHandler) CreateAdmin(ctx *gin.Context) {
 	if key != os.Getenv("SECRET_KEY_ADMIN") {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    "Opps! Anda tidak memiliki akses.",
-			StatusCode: http.StatusBadRequest,
+			StatusCode: http.StatusUnauthorized,
 		})
 		return
 	}

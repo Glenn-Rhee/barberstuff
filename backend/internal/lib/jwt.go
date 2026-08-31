@@ -131,7 +131,7 @@ func RefreshToken(oldTokenString string, newDuration time.Duration) (string, err
 func ExtractTokenFromHeader(authHeader string) (string, error) {
 	const prefix = "Bearer "
 	if len(authHeader) <= len(prefix) || authHeader[:len(prefix)] != prefix {
-		return "", errors.New("format header authorization tidak valid")
+		return "", errors.New("Format header tidak valid!")
 	}
 	return authHeader[len(prefix):], nil
 }

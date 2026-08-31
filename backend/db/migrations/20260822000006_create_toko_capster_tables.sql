@@ -6,30 +6,31 @@ CREATE TYPE store_status_enum AS ENUM ('open', 'close');
 CREATE TABLE store (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
-    address TEXT,
-    coordinate VARCHAR(100), -- format bebas: "longitude,latitude"
-    description TEXT,
     phone_number VARCHAR(20),
+    coordinate VARCHAR(100), -- format bebas: "longitude,latitude"
+    open_hour TIMESTAMP NOT NULL,
+    close_hour TIMESTAMP NOT NULL,
+    banner_url TEXT,
+    address TEXT,
+    description TEXT,
     status store_status_enum NOT NULL DEFAULT 'open',
-    image_store BYTEA,
-    id_staff UUID UNIQUE REFERENCES staff(id) ON DELETE SET NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP
 );
 
 CREATE TRIGGER trg_store_updated_at
     BEFORE UPDATE ON store
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
-CREATE INDEX idx_store_id_staff ON store(id_staff);
-
 CREATE TYPE capster_status_enum AS ENUM ('active', 'inactive');
 
 CREATE TABLE capster (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
-    image_capster BYTEA,
+    title VARCHAR(20) NOT NULL,
     status capster_status_enum NOT NULL DEFAULT 'active', -- nonaktifkan tanpa hapus data (masih dipakai di booking/rating lama)
+    image_url TEXT,
     id_store UUID NOT NULL REFERENCES store(id) ON DELETE CASCADE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()

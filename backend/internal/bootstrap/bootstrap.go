@@ -11,8 +11,9 @@ import (
 
 type Handlers struct {
 	CustomerHandler *handler.CustomerHandler
-	AuthHandler *handler.AuthHandler
-	StaffHandler *handler.StaffHandler
+	AuthHandler     *handler.AuthHandler
+	StaffHandler    *handler.StaffHandler
+	StoreHandler    *handler.StoreHandler
 }
 
 func InitHandlers(db *gorm.DB) *Handlers {
@@ -20,20 +21,24 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	customerRepo := repository.NewCustomerRepository(db)
 	authRepo := repository.NewAuthRepository(db)
 	staffRepo := repository.NewStaffRepository(db)
-	
+	storeRepo := repository.NewStoreRepository(db)
+
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis)
 	authService := service.NewAuthService(authRepo, lib.ClientRedis)
 	staffService := service.NewStaffService(staffRepo, authRepo, db)
+	storeService := service.NewStoreService(storeRepo)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
 	authHandler := handler.NewAuthHandler(authService)
 	staffHandler := handler.NewStaffHandler(staffService)
+	storeHandler := handler.NewStoreHandler(storeService)
 
 	return &Handlers{
 		CustomerHandler: customerHandler,
-		AuthHandler: authHandler,
-		StaffHandler: staffHandler,
+		AuthHandler:     authHandler,
+		StaffHandler:    staffHandler,
+		StoreHandler:    storeHandler,
 	}
 }
