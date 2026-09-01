@@ -743,7 +743,7 @@ Contoh response ketika registrasi berhasil:
 
 ---
 
-# 8. Register Admin
+## 8. Register Admin
 
 Endpoint ini digunakan untuk membuat akun admin secara **internal**. Endpoint ini **tidak diperuntukkan untuk diakses melalui UI/frontend**, melainkan hanya dapat diakses melalui API tools seperti Postman atau semacamnya, dengan menyertakan `secret-key` pada header request.
 
@@ -828,7 +828,7 @@ Pada response gagal:
 
 ---
 
-# 9. Create Store
+## 9. Create Store
 
 Endpoint ini digunakan untuk membuat data toko/cabang (store) baru. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
 
@@ -925,7 +925,7 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 
 ---
 
-# 10. Get All Stores
+## 10. Get All Stores
 
 Endpoint ini digunakan untuk mendapatkan seluruh data store/cabang yang tersedia pada sistem.
 
@@ -991,7 +991,7 @@ GET /store
 
 ---
 
-# 11. Get Store Detail
+## 11. Get Store Detail
 
 Endpoint ini digunakan untuk mendapatkan detail satu store/cabang berdasarkan `id`, termasuk daftar service, package, rating & review, serta capster yang tersedia pada store tersebut.
 
@@ -1175,9 +1175,110 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 ```
 
 ---
-
+## 12. Update Store
+ 
+Endpoint ini digunakan untuk mengupdate seluruh data store/cabang berdasarkan `id`, apabila diperlukan. Header yang wajib disertakan sama seperti endpoint lain yang membutuhkan autentikasi.
+ 
+### Endpoint
+ 
+```http
+PUT /store/:id
+```
+ 
+### Path Parameters
+ 
+| Key  | Tipe Data     | Required | Keterangan                |
+| ---- | ------------- | -------- | --------------------------- |
+| `id` | String (UUID) | Ya       | ID unik store yang akan diupdate. |
+ 
+### Headers
+ 
+| Key             | Required | Keterangan                                                 |
+| --------------- | -------- | ------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token yang valid, dengan format `Bearer <token>`.       |
+ 
+### Request Body
+ 
+```json
+{
+  "name": "Toko Cabang Kemang",
+  "description": "Cabang baru di area Kemang, Jakarta Selatan.",
+  "address": "Jl. Kemang Raya No. 10, Jakarta Selatan",
+  "banner_url": "https://example.com/images/banner-kemang.jpg",
+  "open_hour": "2024-01-01T08:00:00Z",
+  "close_hour": "2024-01-01T21:00:00Z",
+  "lat": -6.260278,
+  "long": 106.813889,
+  "phone_number": "081234567890",
+  "status": "open"
+}
+```
+ 
+### Request Body Parameters
+ 
+| Key            | Tipe Data     | Required | Keterangan                                                                              |
+| -------------- | ------------- | -------- | ------------------------------------------------------------------------------------------ |
+| `name`         | String        | Ya       | Nama toko/cabang.                                                                            |
+| `description`  | String        | Tidak    | Deskripsi toko/cabang. Boleh bernilai `null`.                                                |
+| `address`      | String        | Ya       | Alamat lengkap toko/cabang.                                                                   |
+| `banner_url`   | String        | Ya       | URL gambar banner toko. Harus berupa format URL yang valid.                                  |
+| `open_hour`    | Date/DateTime | Ya       | Jam buka toko dalam format ISO 8601.                                                          |
+| `close_hour`   | Date/DateTime | Ya       | Jam tutup toko dalam format ISO 8601.                                                         |
+| `lat`          | Float         | Ya       | Koordinat latitude lokasi toko.                                                               |
+| `long`         | Float         | Ya       | Koordinat longitude lokasi toko.                                                              |
+| `phone_number` | String        | Ya       | Nomor telepon toko, minimal 9 dan maksimal 15 karakter.                                      |
+| `status`       | String        | Ya       | Status toko. Hanya menerima nilai `open` atau `close`.                                       |
+ 
+### Aturan Validasi
+ 
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`.
+- `name` wajib diisi.
+- `description` bersifat opsional dan boleh tidak disertakan atau bernilai `null`.
+- `address` wajib diisi.
+- `banner_url` wajib diisi dan harus berupa URL yang valid.
+- `open_hour` wajib diisi.
+- `close_hour` wajib diisi.
+- `lat` wajib diisi.
+- `long` wajib diisi.
+- `phone_number` wajib diisi, dengan panjang minimal 9 karakter dan maksimal 15 karakter.
+- `status` wajib diisi dan hanya menerima nilai `open` atau `close`.
+### Response Sukses
+ 
+```json
+{
+  "data": null,
+  "message": "Berhasil mengubah toko cabang!",
+  "statusCode": 200
+}
+```
+ 
+Pada response sukses:
+ 
+- `data` bernilai `null` karena endpoint ini tidak mengembalikan data toko yang telah diupdate.
+- `message` berisi konfirmasi bahwa data toko cabang berhasil diubah.
+- `statusCode` bernilai `200`.
+### Response Gagal
+ 
+```json
+{
+  "data": null,
+  "message": "Store tidak ditemukan!",
+  "statusCode": 404
+}
+```
+ 
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat mengubah toko cabang!",
+  "statusCode": 406
+}
+```
+ 
+---
+ 
 # API Summary
-
+ 
 | Method | Endpoint                    | Fungsi                                                                                                    |
 | ------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | POST   | `/auth/register/credential`  | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP.                                          |
@@ -1191,3 +1292,4 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 | POST   | `/store`                     | Membuat data toko/cabang baru. Hanya dapat diakses oleh token milik admin.                                    |
 | GET    | `/store`                     | Mendapatkan seluruh data store/cabang yang tersedia.                                                           |
 | GET    | `/store/:id`                 | Mendapatkan detail satu store/cabang beserta service, package, rating, dan capster-nya.                        |
+| PUT    | `/store/:id`                 | Mengupdate seluruh data store/cabang berdasarkan `id`.    
