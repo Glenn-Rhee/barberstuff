@@ -1175,6 +1175,7 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 ```
 
 ---
+
 ## 12. Update Store
  
 Endpoint ini digunakan untuk mengupdate seluruh data store/cabang berdasarkan `id`, apabila diperlukan. Header yang wajib disertakan sama seperti endpoint lain yang membutuhkan autentikasi.
@@ -1277,6 +1278,64 @@ Pada response sukses:
  
 ---
  
+
+## 13. Delete Store
+ 
+Endpoint ini digunakan untuk menghapus data store/cabang berdasarkan `id`. Penghapusan yang dilakukan bersifat **soft delete**, artinya data tidak benar-benar dihapus dari database, melainkan hanya ditandai sebagai terhapus.
+ 
+### Endpoint
+ 
+```http
+DELETE /store/:id
+```
+ 
+### Path Parameters
+ 
+| Key  | Tipe Data     | Required | Keterangan                |
+| ---- | ------------- | -------- | --------------------------- |
+| `id` | String (UUID) | Ya       | ID unik store yang akan dihapus. |
+ 
+### Headers
+ 
+| Key             | Required | Keterangan                                                 |
+| --------------- | -------- | ------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token yang valid, dengan format `Bearer <token>`.       |
+ 
+### Response Sukses
+ 
+```json
+{
+  "data": null,
+  "message": "Berhasil menghapus toko cabang!",
+  "statusCode": 200
+}
+```
+ 
+Pada response sukses:
+ 
+- `data` bernilai `null` karena endpoint ini tidak mengembalikan data apa pun.
+- `message` berisi konfirmasi bahwa toko cabang berhasil dihapus (soft delete).
+- `statusCode` bernilai `200`.
+### Response Gagal
+ 
+```json
+{
+  "data": null,
+  "message": "Store tidak ditemukan!",
+  "statusCode": 404
+}
+```
+ 
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat menghapus toko cabang!",
+  "statusCode": 406
+}
+```
+ 
+---
+ 
 # API Summary
  
 | Method | Endpoint                    | Fungsi                                                                                                    |
@@ -1292,4 +1351,6 @@ Pada response sukses:
 | POST   | `/store`                     | Membuat data toko/cabang baru. Hanya dapat diakses oleh token milik admin.                                    |
 | GET    | `/store`                     | Mendapatkan seluruh data store/cabang yang tersedia.                                                           |
 | GET    | `/store/:id`                 | Mendapatkan detail satu store/cabang beserta service, package, rating, dan capster-nya.                        |
-| PUT    | `/store/:id`                 | Mengupdate seluruh data store/cabang berdasarkan `id`.    
+| PUT    | `/store/:id`                 | Mengupdate seluruh data store/cabang berdasarkan `id`.                                                         |
+| DELETE | `/store/:id`                 | Menghapus data store/cabang berdasarkan `id` (soft delete).                                                    |
+ 
