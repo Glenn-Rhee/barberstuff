@@ -743,7 +743,7 @@ Contoh response ketika registrasi berhasil:
 
 ---
 
-## 8. Register Admin
+# 8. Register Admin
 
 Endpoint ini digunakan untuk membuat akun admin secara **internal**. Endpoint ini **tidak diperuntukkan untuk diakses melalui UI/frontend**, melainkan hanya dapat diakses melalui API tools seperti Postman atau semacamnya, dengan menyertakan `secret-key` pada header request.
 
@@ -828,26 +828,24 @@ Pada response gagal:
 
 ---
 
-
-
 # 9. Create Store
- 
+
 Endpoint ini digunakan untuk membuat data toko/cabang (store) baru. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
- 
+
 ### Endpoint
- 
+
 ```http
 POST /store
 ```
- 
+
 ### Headers
- 
+
 | Key             | Required | Keterangan                                                                                  |
 | --------------- | -------- | ---------------------------------------------------------------------------------------------- |
 | `Authorization` | Ya       | Access token milik admin, dengan format `Bearer <token>`.                                       |
- 
+
 ### Request Body
- 
+
 ```json
 {
   "name": "Toko Cabang Kemang",
@@ -861,9 +859,9 @@ POST /store
   "phone_number": "081234567890"
 }
 ```
- 
+
 ### Request Body Parameters
- 
+
 | Key            | Tipe Data     | Required | Keterangan                                                                              |
 | -------------- | ------------- | -------- | ------------------------------------------------------------------------------------------ |
 | `name`         | String        | Ya       | Nama toko/cabang.                                                                            |
@@ -875,9 +873,9 @@ POST /store
 | `lat`          | Float         | Ya       | Koordinat latitude lokasi toko.                                                               |
 | `long`         | Float         | Ya       | Koordinat longitude lokasi toko.                                                              |
 | `phone_number` | String        | Ya       | Nomor telepon toko, minimal 9 dan maksimal 15 karakter.                                      |
- 
+
 ### Aturan Validasi
- 
+
 - Header `Authorization` wajib disertakan dengan format `Bearer <token>`, dan token harus milik user dengan role `admin`.
 - `name` wajib diisi.
 - `description` bersifat opsional dan boleh tidak disertakan atau bernilai `null`.
@@ -888,8 +886,9 @@ POST /store
 - `lat` wajib diisi.
 - `long` wajib diisi.
 - `phone_number` wajib diisi, dengan panjang minimal 9 karakter dan maksimal 15 karakter.
+
 ### Response Sukses
- 
+
 ```json
 {
   "data": null,
@@ -897,16 +896,17 @@ POST /store
   "statusCode": 200
 }
 ```
- 
+
 Pada response sukses:
- 
+
 - `data` bernilai `null` karena endpoint ini tidak mengembalikan data toko yang baru dibuat.
 - `message` berisi konfirmasi bahwa toko cabang baru berhasil dibuat.
 - `statusCode` bernilai `200`.
+
 ### Response Gagal
- 
+
 Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
- 
+
 ```json
 {
   "data": null,
@@ -914,7 +914,7 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
   "statusCode": 403
 }
 ```
- 
+
 ```json
 {
   "data": null,
@@ -922,11 +922,262 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
   "statusCode": 406
 }
 ```
- 
+
 ---
- 
+
+# 10. Get All Stores
+
+Endpoint ini digunakan untuk mendapatkan seluruh data store/cabang yang tersedia pada sistem.
+
+### Endpoint
+
+```http
+GET /store
+```
+
+### Headers
+
+| Key             | Required | Keterangan                                                 |
+| --------------- | -------- | ------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token yang valid, dengan format `Bearer <token>`.       |
+
+### Response Sukses
+
+```json
+{
+  "data": [
+    {
+      "id": "51c45423-5f2a-4067-b8c9-5a2513059ea1",
+      "name": "Barberstuff Cabang Pondok Gede",
+      "phone_number": "081234567890",
+      "coordinate": "-6.260278,106.813889",
+      "open_hour": "2026-08-31T09:00:00Z",
+      "close_hour": "2026-08-31T21:00:00Z",
+      "banner_url": "https://example.com/images/store-kemang-banner.jpg",
+      "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
+      "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
+      "created_at": "2026-09-01T07:24:12.256445Z"
+    }
+  ],
+  "message": "Succes get data stores!",
+  "statusCode": 200
+}
+```
+
+### Struktur `data` (Array of Store Object)
+
+| Key            | Tipe Data     | Keterangan                                                    |
+| -------------- | ------------- | ------------------------------------------------------------- |
+| `id`           | String (UUID) | ID unik store.                                                  |
+| `name`         | String        | Nama store/cabang.                                              |
+| `phone_number` | String        | Nomor telepon store.                                             |
+| `coordinate`   | String        | Koordinat lokasi store dalam format `"latitude,longitude"`.      |
+| `open_hour`    | Date/DateTime | Jam buka store dalam format ISO 8601.                            |
+| `close_hour`   | Date/DateTime | Jam tutup store dalam format ISO 8601.                           |
+| `banner_url`   | String        | URL gambar banner store.                                         |
+| `address`      | String        | Alamat lengkap store.                                            |
+| `description`  | String        | Deskripsi store.                                                 |
+| `created_at`   | Date/DateTime | Waktu store dibuat, dalam format ISO 8601.                       |
+
+### Response Gagal
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat mengambil data stores!",
+  "statusCode": 406
+}
+```
+
+---
+
+# 11. Get Store Detail
+
+Endpoint ini digunakan untuk mendapatkan detail satu store/cabang berdasarkan `id`, termasuk daftar service, package, rating & review, serta capster yang tersedia pada store tersebut.
+
+### Endpoint
+
+```http
+GET /store/:id
+```
+
+### Path Parameters
+
+| Key  | Tipe Data     | Required | Keterangan             |
+| ---- | ------------- | -------- | ----------------------- |
+| `id` | String (UUID) | Ya       | ID unik store yang dituju. |
+
+### Headers
+
+| Key             | Required | Keterangan                                                 |
+| --------------- | -------- | ------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token yang valid, dengan format `Bearer <token>`.       |
+
+### Response Sukses
+
+```json
+{
+  "data": {
+    "store": {
+      "id": "51c45423-5f2a-4067-b8c9-5a2513059ea1",
+      "name": "Barberstuff Cabang Pondok Gede",
+      "phone_number": "081234567890",
+      "coordinate": "-6.260278,106.813889",
+      "open_hour": "2026-08-31T09:00:00Z",
+      "close_hour": "2026-08-31T21:00:00Z",
+      "banner_url": "https://example.com/images/store-kemang-banner.jpg",
+      "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
+      "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
+      "created_at": "2026-09-01T07:24:12.256445Z"
+    },
+    "service": [
+      {
+        "id": "8c1e2a3b-1234-4a5b-9c6d-7e8f9a0b1c2d",
+        "name": "Haircut",
+        "price": "50000",
+        "duration_minutes": 30,
+        "do_dont": "Datang 10 menit sebelum jadwal.",
+        "description": "Potong rambut standar.",
+        "status": "active"
+      }
+    ],
+    "package": [
+      {
+        "id": "9d2f3b4c-2345-4b6c-8d7e-9f0a1b2c3d4e",
+        "name": "Haircut + Shaving",
+        "price": "80000",
+        "duration_minutes": 60,
+        "do_dont": "Datang 10 menit sebelum jadwal.",
+        "description": "Paket potong rambut dan cukur.",
+        "status": "active"
+      }
+    ],
+    "rating": {
+      "avg_rating": 4.5,
+      "review": [
+        {
+          "id": "1a2b3c4d-3456-4c7d-9e8f-0a1b2c3d4e5f",
+          "message": "Pelayanan ramah dan hasil rapi.",
+          "rating": 5,
+          "user": {
+            "id": "2b3c4d5e-4567-4d8e-0f1a-2b3c4d5e6f7a",
+            "name": "Budi Santoso",
+            "image_url": "https://example.com/images/user-budi.jpg",
+            "premium_type": "bestie"
+          }
+        }
+      ]
+    },
+    "capster": [
+      {
+        "id": "3c4d5e6f-5678-4e9f-1a2b-3c4d5e6f7a8b",
+        "name": "Andi Wijaya",
+        "title": "Senior Capster",
+        "status": "active",
+        "image_url": "https://example.com/images/capster-andi.jpg",
+        "avg_rating": 4.8
+      }
+    ]
+  },
+  "message": "Succes get store detail!",
+  "statusCode": 200
+}
+```
+
+### Struktur `data`
+
+| Key       | Tipe Data | Keterangan                                                    |
+| --------- | --------- | --------------------------------------------------------------- |
+| `store`   | Object    | Informasi detail store (lihat struktur pada bagian **Get All Stores**). |
+| `service` | Array     | Daftar service yang tersedia pada store tersebut.                 |
+| `package` | Array     | Daftar package yang tersedia pada store tersebut.                 |
+| `rating`  | Object    | Rating rata-rata beserta daftar review store tersebut.            |
+| `capster` | Array     | Daftar capster yang bertugas pada store tersebut.                 |
+
+### Struktur `service` (Array of Service Object)
+
+| Key                 | Tipe Data          | Keterangan                                                                |
+| ------------------- | ------------------ | -------------------------------------------------------------------------- |
+| `id`                | String (UUID)      | ID unik service.                                                             |
+| `name`              | String             | Nama service.                                                                |
+| `price`             | String/Decimal     | Harga service.                                                               |
+| `duration_minutes`  | Integer            | Estimasi durasi pengerjaan service (dalam menit). Dapat bernilai `null`.       |
+| `do_dont`           | String             | Catatan hal yang boleh/tidak boleh dilakukan terkait service. Dapat bernilai `null`. |
+| `description`       | String             | Deskripsi service. Dapat bernilai `null`.                                     |
+| `status`            | String              | Status service. Bernilai `active` atau `inactive`.                            |
+
+### Struktur `package` (Array of Package Object)
+
+| Key                 | Tipe Data          | Keterangan                                                                |
+| ------------------- | ------------------ | -------------------------------------------------------------------------- |
+| `id`                | String (UUID)      | ID unik package.                                                             |
+| `name`              | String             | Nama package.                                                                |
+| `price`             | String/Decimal     | Harga package.                                                               |
+| `duration_minutes`  | Integer            | Estimasi durasi pengerjaan package (dalam menit). Dapat bernilai `null`.       |
+| `do_dont`           | String             | Catatan hal yang boleh/tidak boleh dilakukan terkait package. Dapat bernilai `null`. |
+| `description`       | String             | Deskripsi package. Dapat bernilai `null`.                                     |
+| `status`            | String              | Status package. Bernilai `active` atau `inactive`.                            |
+
+### Struktur `rating`
+
+| Key          | Tipe Data | Keterangan                                  |
+| ------------ | --------- | ---------------------------------------------- |
+| `avg_rating` | Float     | Rata-rata rating store berdasarkan seluruh review. |
+| `review`     | Array     | Daftar review yang diberikan oleh customer.        |
+
+### Struktur `review` (Array of Review Object)
+
+| Key       | Tipe Data     | Keterangan                                 |
+| --------- | ------------- | --------------------------------------------- |
+| `id`      | String (UUID) | ID unik review.                                 |
+| `message` | String        | Isi pesan/ulasan dari customer.                 |
+| `rating`  | Integer       | Nilai rating yang diberikan oleh customer.       |
+| `user`    | Object        | Informasi customer pemberi review (lihat struktur `user` di bawah). |
+
+### Struktur `user` (pada Review)
+
+| Key            | Tipe Data     | Keterangan                                                                       |
+| -------------- | ------------- | ----------------------------------------------------------------------------------- |
+| `id`           | String (UUID) | ID unik customer.                                                                      |
+| `name`         | String        | Nama customer.                                                                         |
+| `image_url`    | String        | URL foto profil customer.                                                              |
+| `premium_type` | String        | Tipe keanggotaan premium customer. Bernilai salah satu dari: `newbie`, `bestie`, `royal`, `crazy`. |
+
+### Struktur `capster` (Array of Capster Object)
+
+| Key          | Tipe Data     | Keterangan                                           |
+| ------------ | ------------- | ------------------------------------------------------- |
+| `id`         | String (UUID) | ID unik capster.                                           |
+| `name`       | String        | Nama capster.                                              |
+| `title`      | String        | Jabatan/gelar capster (contoh: `Senior Capster`).           |
+| `status`     | String        | Status capster. Bernilai `active` atau `inactive`.          |
+| `image_url`  | String        | URL foto profil capster.                                    |
+| `avg_rating` | Float         | Rata-rata rating capster berdasarkan seluruh review.         |
+
+### Response Gagal
+
+Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
+
+```json
+{
+  "data": null,
+  "message": "Store tidak ditemukan!",
+  "statusCode": 404
+}
+```
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat mengambil data store!",
+  "statusCode": 406
+}
+```
+
+---
+
 # API Summary
- 
+
 | Method | Endpoint                    | Fungsi                                                                                                    |
 | ------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | POST   | `/auth/register/credential`  | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP.                                          |
@@ -938,5 +1189,5 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 | POST   | `/auth/register/oauth`       | Menyelesaikan proses registrasi user baru yang login melalui provider, menggunakan `temp_token`.              |
 | POST   | `/auth/register/admin`       | Membuat akun admin secara internal (khusus API tools, wajib menyertakan header `secret-key`, tidak untuk UI). |
 | POST   | `/store`                     | Membuat data toko/cabang baru. Hanya dapat diakses oleh token milik admin.                                    |
- 
-Backend siap digunakan setelah aplikasi berhasil dijalankan.
+| GET    | `/store`                     | Mendapatkan seluruh data store/cabang yang tersedia.                                                           |
+| GET    | `/store/:id`                 | Mendapatkan detail satu store/cabang beserta service, package, rating, dan capster-nya.                        |
