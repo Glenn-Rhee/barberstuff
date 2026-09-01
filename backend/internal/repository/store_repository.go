@@ -10,6 +10,7 @@ type StoreRepository interface {
 	Create(s *entity.Store) error
 	FindOne(where string, args ...interface{}) (entity.Store, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Store, error)
+	Update(s *entity.Store) error
 }
 
 type storeRepository struct {
@@ -35,4 +36,9 @@ func (r *storeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.S
 	var stores []entity.Store
 	result := r.db.Scopes(scopes...).Find(&stores)
 	return stores, result.Error
+}
+
+func (r *storeRepository) Update(s *entity.Store) error {
+	result := r.db.Save(s)
+	return result.Error
 }

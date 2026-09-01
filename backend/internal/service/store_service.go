@@ -18,6 +18,7 @@ type StoreService interface {
 	CreateNewStore(req dto.NewStoreRequest) error
 	GetStores(query dto.QueryParamsStores) ([]dto.StoreData, error)
 	GetStore(claims lib.CustomClaims, idStore string) (dto.StoreResponse, error)
+	UpdateStore(req dto.UpdateStoreRequest, storeId string) error
 }
 
 type storeService struct {
@@ -254,4 +255,47 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		},
 		Capster: capsters,
 	}, nil
+}
+
+func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data toko!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	id, err := uuid.Parse(storeId)
+	if err != nil {
+		return errors.New("Id toko tidak valid")
+	}
+
+	_, err = s.storeRepo.FindOne("id = ?", id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Toko cabang yang anda ingin ubah tidak ditemukan atau telah dihapus")
+		}
+
+		helper.Logger("Find data store", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	coordinate := fmt.Sprintf("%f,%f", req.Lat, req.Long)
+
+	store := entity.Store{
+		ID:          id,
+		Name:        req.Name,
+		PhoneNumber: &req.PhoneNumber,
+		Coordinate:  &coordinate,
+		OpenHour:    req.OpenHour,
+		CloseHour:   req.CloseHour,
+		BannerUrl:   &req.BannerUrl,
+		Address:     &req.Address,
+		Description: req.Description,
+		Status:      req.Status,
+	}
+
+	err = s.storeRepo.Update(&store)
+	if err != nil {
+		helper.Logger("Find data store", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
 }

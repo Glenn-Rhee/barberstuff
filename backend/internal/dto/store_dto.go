@@ -19,6 +19,11 @@ type NewStoreRequest struct {
 	PhoneNumber string    `json:"phone_number" binding:"required,min=9,max=15"`
 }
 
+type UpdateStoreRequest struct {
+	NewStoreRequest
+	Status entity.StoreStatusEnum `json:"status" binding:"required,oneof=open close"`
+}
+
 type StoreData struct {
 	Id          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
@@ -33,10 +38,10 @@ type StoreData struct {
 }
 
 type StoreResponse struct {
-	Store   StoreData      `json:"store"`
+	Store   StoreData             `json:"store"`
 	Service []ServiceData         `json:"service"`
 	Package []PackageData         `json:"package"`
-	Rating  RatingResponseData  `json:"rating"`
+	Rating  RatingResponseData    `json:"rating"`
 	Capster []CapsterDataResponse `json:"capster"`
 }
 
