@@ -20,8 +20,8 @@ type Capster struct {
 	Status    CapsterStatusEnum `gorm:"column:status;not null"`
 	ImageUrl  *string           `gorm:"column:image_url"`
 	IDStore   uuid.UUID         `gorm:"column:id_store;not null"`
-	CreatedAt time.Time         `gorm:"column:created_at;not null"`
-	UpdatedAt time.Time         `gorm:"column:updated_at;not null"`
+	CreatedAt time.Time         `gorm:"column:created_at;not null;autoCreateTime"`
+	UpdatedAt time.Time         `gorm:"column:updated_at;not null;autoUpdateTime"`
 	Ratings   []Rating          `gorm:"foreignKey:IDCapster;references:ID"`
 }
 

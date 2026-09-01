@@ -90,6 +90,10 @@ func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, 
 		})
 	}
 
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Where("deleted_at IS NULL")
+	})
+
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data toko!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -126,6 +130,7 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		BannerUrl:   *dataStore.BannerUrl,
 		Address:     *dataStore.Address,
 		Description: *dataStore.Description,
+		Status:      dataStore.Status,
 		CreatedAt:   dataStore.CreatedAt,
 	}
 
@@ -267,7 +272,7 @@ func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) e
 		return errors.New("Id toko tidak valid")
 	}
 
-	_, err = s.storeRepo.FindOne("id = ?", id)
+	dataStore, err := s.storeRepo.FindOne("id = ?", id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Toko cabang yang anda ingin ubah tidak ditemukan atau telah dihapus")
@@ -290,6 +295,8 @@ func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) e
 		Address:     &req.Address,
 		Description: req.Description,
 		Status:      req.Status,
+		CreatedAt:   dataStore.CreatedAt,
+		DeletedAt:   dataStore.DeletedAt,
 	}
 
 	err = s.storeRepo.Update(&store)

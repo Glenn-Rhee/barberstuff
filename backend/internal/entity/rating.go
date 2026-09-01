@@ -21,8 +21,8 @@ type Rating struct {
 	Type      RatingTypeEnum `gorm:"column:type;not null"`
 	Score     int16          `gorm:"column:score;not null"`
 	Message   *string        `gorm:"column:message"`
-	CreatedAt time.Time      `gorm:"column:created_at;not null"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;not null"`
+	CreatedAt time.Time      `gorm:"column:created_at;not null;autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;not null;autoUpdateTime"`
 
 	Customer Customer `gorm:"foreignKey:IDUser;references:ID"`
 }

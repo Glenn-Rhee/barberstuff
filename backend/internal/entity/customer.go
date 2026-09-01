@@ -29,8 +29,8 @@ type Customer struct {
 	MemberPoints  int         `gorm:"column:member_points;not null;default:100"`
 	PremiumType   PremiumType `gorm:"column:premium_type;default:newbie"`
 	ImageCustomer string      `gorm:"column:image_customer"`
-	CreatedAt     time.Time   `gorm:"column:created_at;not null"`
-	UpdatedAt     time.Time   `gorm:"column:updated_at;not null"`
+	CreatedAt     time.Time   `gorm:"column:created_at;not null;autoCreateTime"`
+	UpdatedAt     time.Time   `gorm:"column:updated_at;not null;autoUpdateTime"`
 }
 
 func (Customer) TableName() string {

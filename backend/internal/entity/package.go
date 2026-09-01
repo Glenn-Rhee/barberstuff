@@ -16,8 +16,8 @@ type Package struct {
 	DurationMinutes *int              `gorm:"column:duration_minutes"`
 	Status          ProductStatusEnum `gorm:"column:status;not null"` // reuse enum dari service.go
 	IdStore         uuid.UUID         `gorm:"column:id_store;not null"`
-	CreatedAt       time.Time         `gorm:"column:created_at;not null"`
-	UpdatedAt       time.Time         `gorm:"column:updated_at;not null"`
+	CreatedAt       time.Time         `gorm:"column:created_at;not null;autoCreateTime"`
+	UpdatedAt       time.Time         `gorm:"column:updated_at;not null;autoUpdateTime"`
 }
 
 func (Package) TableName() string {
@@ -28,7 +28,7 @@ type PackageService struct {
 	ID        uuid.UUID `gorm:"column:id;primaryKey"`
 	IDService uuid.UUID `gorm:"column:id_service;not null"`
 	IDPackage uuid.UUID `gorm:"column:id_package;not null"`
-	CreatedAt time.Time `gorm:"column:created_at;not null"`
+	CreatedAt time.Time `gorm:"column:created_at;not null;autoCreateTime"`
 }
 
 func (PackageService) TableName() string {

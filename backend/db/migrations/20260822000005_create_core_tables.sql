@@ -29,12 +29,36 @@ CREATE TRIGGER trg_customer_updated_at
     BEFORE UPDATE ON customer
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+CREATE TYPE store_status_enum AS ENUM ('open', 'close');
+
+CREATE TABLE store (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(20),
+    coordinate VARCHAR(100), -- format bebas: "longitude,latitude"
+    open_hour TIMESTAMP NOT NULL,
+    close_hour TIMESTAMP NOT NULL,
+    banner_url TEXT,
+    address TEXT,
+    description TEXT,
+    status store_status_enum NOT NULL DEFAULT 'open',
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP
+);
+
+CREATE TRIGGER trg_store_updated_at
+    BEFORE UPDATE ON store
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 -- staff = pegawai internal (cashier / mitra / admin), BUKAN capster
 CREATE TABLE staff (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
+    id_store UUID REFERENCES store(id),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP
 );
 
 CREATE TRIGGER trg_staff_updated_at
@@ -77,8 +101,10 @@ CREATE INDEX idx_authentication_id_staff ON authentication(id_staff);
 DROP TABLE IF EXISTS otp;
 DROP TABLE IF EXISTS authentication;
 DROP TYPE IF EXISTS role_enum;
-DROP TYPE IF EXISTS premium_type_enum;
 DROP TABLE IF EXISTS staff;
 DROP TABLE IF EXISTS customer;
+DROP TYPE IF EXISTS premium_type_enum;
+DROP TABLE IF EXISTS store;
+DROP TYPE IF EXISTS store_status_enum;
 DROP FUNCTION IF EXISTS set_updated_at();
 -- +goose StatementEnd
