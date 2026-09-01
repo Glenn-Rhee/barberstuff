@@ -828,6 +828,8 @@ Pada response gagal:
 
 ---
 
+# Store API
+
 ## 9. Create Store
 
 Endpoint ini digunakan untuk membuat data toko/cabang (store) baru. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
@@ -956,6 +958,7 @@ GET /store
       "banner_url": "https://example.com/images/store-kemang-banner.jpg",
       "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
       "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
+      "status": "close",
       "created_at": "2026-09-01T07:24:12.256445Z"
     }
   ],
@@ -977,6 +980,7 @@ GET /store
 | `banner_url`   | String        | URL gambar banner store.                                         |
 | `address`      | String        | Alamat lengkap store.                                            |
 | `description`  | String        | Deskripsi store.                                                 |
+| `status`       | String        | Status hanya berisi `open` atau `close`.                         | 
 | `created_at`   | Date/DateTime | Waktu store dibuat, dalam format ISO 8601.                       |
 
 ### Response Gagal
@@ -1028,7 +1032,9 @@ GET /store/:id
       "banner_url": "https://example.com/images/store-kemang-banner.jpg",
       "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
       "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
-      "created_at": "2026-09-01T07:24:12.256445Z"
+      "status": "close",
+      "created_at": "2026-09-01T07:24:12.256445Z",
+      "deleted_at": null
     },
     "service": [
       {
