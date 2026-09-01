@@ -10,11 +10,12 @@ import (
 type Package struct {
 	ID              uuid.UUID         `gorm:"column:id;primaryKey"`
 	Name            string            `gorm:"column:name;not null"`
-	Description     *string           `gorm:"column:description"`
 	Price           decimal.Decimal   `gorm:"column:price;not null;default:0"`
+	DoDont          *string           `gorm:"column:do_dont"`
+	Description     *string           `gorm:"column:description"`
 	DurationMinutes *int              `gorm:"column:duration_minutes"`
 	Status          ProductStatusEnum `gorm:"column:status;not null"` // reuse enum dari service.go
-	ImagePackage    []byte            `gorm:"column:image_package"`
+	IdStore         uuid.UUID         `gorm:"column:id_store;not null"`
 	CreatedAt       time.Time         `gorm:"column:created_at;not null"`
 	UpdatedAt       time.Time         `gorm:"column:updated_at;not null"`
 }

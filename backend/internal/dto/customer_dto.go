@@ -3,6 +3,8 @@ package dto
 import (
 	"barberstuff_backend/internal/entity"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type CredentialCustomerRequest struct {
@@ -51,9 +53,16 @@ type ForgotPasswordRequest struct {
 }
 
 type ForgotPassswordResponse struct {
-	UserId    string `json:"user_id"`
+	UserId string `json:"user_id"`
 }
 
 type VerifyOTPResponse struct {
 	ResetToken string `json:"reset_token,omitempty"`
+}
+
+type CustomerResponseRating struct {
+	Id          uuid.UUID             `json:"id"`
+	Name        string             `json:"name"`
+	ImageUrl    string             `json:"image_url"`
+	PremiumType entity.PremiumType `json:"premium_type"`
 }

@@ -27,7 +27,7 @@ func (r *storeRepository) Create(s *entity.Store) error {
 
 func (r *storeRepository) FindOne(where string, args ...interface{}) (entity.Store, error) {
 	var dataStore entity.Store
-	result := r.db.Where(where, args...).First(&dataStore)
+	result := r.db.Where(where, args...).Where("deleted_at IS NULL").First(&dataStore)
 	return dataStore, result.Error
 }
 

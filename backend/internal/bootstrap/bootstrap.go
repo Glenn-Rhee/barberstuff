@@ -22,12 +22,16 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	authRepo := repository.NewAuthRepository(db)
 	staffRepo := repository.NewStaffRepository(db)
 	storeRepo := repository.NewStoreRepository(db)
+	serviceRepo := repository.NewServiceRepository(db)
+	packageRepo := repository.NewPackageRepository(db)
+	ratingRepo := repository.NewRatingRepository(db)
+	capsterRepo := repository.NewCapsterRepository(db)
 
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis)
 	authService := service.NewAuthService(authRepo, lib.ClientRedis)
 	staffService := service.NewStaffService(staffRepo, authRepo, db)
-	storeService := service.NewStoreService(storeRepo)
+	storeService := service.NewStoreService(storeRepo, serviceRepo, packageRepo, ratingRepo, capsterRepo)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)

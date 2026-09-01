@@ -11,6 +11,7 @@ CREATE TABLE service (
     do_dont TEXT,
     description TEXT,
     status product_status_enum NOT NULL DEFAULT 'active',
+    id_store UUID NOT NULL REFERENCES store(id) ON DELETE CASCADE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -27,6 +28,7 @@ CREATE TABLE package (
     description TEXT,
     duration_minutes INT,
     status product_status_enum NOT NULL DEFAULT 'active',
+    id_store UUID NOT NULL REFERENCES store(id) ON DELETE CASCADE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

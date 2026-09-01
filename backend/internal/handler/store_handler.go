@@ -126,9 +126,53 @@ func (h *StoreHandler) GetStores(ctx *gin.Context) {
 		return
 	}
 
-	helper.NewSuccessResponse(ctx, dto.ResponseApi[[]dto.StoresResponse]{
-		Data: result,
-		Message: "Succes get data stores!",
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[[]dto.StoreData]{
+		Data:       result,
+		Message:    "Succes get data stores!",
+		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *StoreHandler) GetStore(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role == entity.RoleCashier {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	idStore := ctx.Param("id")
+	result, err := h.service.GetStore(*claimsResult, idStore)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusFailedDependency,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.StoreResponse]{
+		Data:       result,
+		Message:    "Succes get data store!",
 		StatusCode: http.StatusOK,
 	})
 }

@@ -19,7 +19,7 @@ type NewStoreRequest struct {
 	PhoneNumber string    `json:"phone_number" binding:"required,min=9,max=15"`
 }
 
-type StoresResponse struct {
+type StoreData struct {
 	Id          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	PhoneNumber string    `json:"phone_number"`
@@ -30,11 +30,18 @@ type StoresResponse struct {
 	Address     string    `json:"address"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func ToStoreResponse(store entity.Store) StoresResponse{
-	return StoresResponse{
+type StoreResponse struct {
+	Store   StoreData      `json:"store"`
+	Service []ServiceData         `json:"service"`
+	Package []PackageData         `json:"package"`
+	Rating  RatingResponseData  `json:"rating"`
+	Capster []CapsterDataResponse `json:"capster"`
+}
+
+func ToStoreResponse(store entity.Store) StoreData {
+	return StoreData{
 		Id:          store.ID,
 		Name:        store.Name,
 		PhoneNumber: derefString(store.PhoneNumber),
@@ -45,12 +52,11 @@ func ToStoreResponse(store entity.Store) StoresResponse{
 		Address:     derefString(store.Address),
 		Description: derefString(store.Description),
 		CreatedAt:   store.CreatedAt,
-		UpdatedAt:   store.UpdatedAt,
 	}
 }
 
-func ToStoreResponseList(stores []entity.Store) []StoresResponse {
-	responses := make([]StoresResponse, 0, len(stores))
+func ToStoreResponseList(stores []entity.Store) []StoreData {
+	responses := make([]StoreData, 0, len(stores))
 	for _, s := range stores {
 		responses = append(responses, ToStoreResponse(s))
 	}
