@@ -25,16 +25,17 @@ type UpdateStoreRequest struct {
 }
 
 type StoreData struct {
-	Id          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	PhoneNumber string    `json:"phone_number"`
-	Coordinate  string    `json:"coordinate"`
-	OpenHour    time.Time `json:"open_hour"`
-	CloseHour   time.Time `json:"close_hour"`
-	BannerUrl   string    `json:"banner_url"`
-	Address     string    `json:"address"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
+	Id          uuid.UUID  `json:"id"`
+	Name        string     `json:"name"`
+	PhoneNumber string     `json:"phone_number"`
+	Coordinate  string     `json:"coordinate"`
+	OpenHour    time.Time  `json:"open_hour"`
+	CloseHour   time.Time  `json:"close_hour"`
+	BannerUrl   string     `json:"banner_url"`
+	Address     string     `json:"address"`
+	Description string     `json:"description"`
+	CreatedAt   time.Time  `json:"created_at"`
+	DeletedAt   *time.Time `json:"deleted_at"`
 }
 
 type StoreResponse struct {

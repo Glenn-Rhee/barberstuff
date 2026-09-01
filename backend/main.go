@@ -42,6 +42,7 @@ func main() {
 		store.GET("/", h.StoreHandler.GetStores)
 		store.GET("/:id", h.StoreHandler.GetStore)
 		store.PUT("/:id", h.StoreHandler.UpdateStore)
+		store.DELETE("/:id", h.StoreHandler.DeleteStore)
 	}
 
 	fmt.Println("Server running on http://localhost:8080")

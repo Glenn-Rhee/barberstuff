@@ -19,6 +19,7 @@ type StoreService interface {
 	GetStores(query dto.QueryParamsStores) ([]dto.StoreData, error)
 	GetStore(claims lib.CustomClaims, idStore string) (dto.StoreResponse, error)
 	UpdateStore(req dto.UpdateStoreRequest, storeId string) error
+	DeleteStore(storeId string) error
 }
 
 type storeService struct {
@@ -294,6 +295,38 @@ func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) e
 	err = s.storeRepo.Update(&store)
 	if err != nil {
 		helper.Logger("Find data store", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *storeService) DeleteStore(storeId string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat menghapus data toko!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	id, err := uuid.Parse(storeId)
+	if err != nil {
+		return errors.New("Id toko tidak valid")
+	}
+
+	dataStore, err := s.storeRepo.FindOne("id = ?", id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Toko cabang yang anda ingin hapus tidak ditemukan atau telah dihapus")
+		}
+
+		helper.Logger("Find data store", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if dataStore.DeletedAt != nil {
+		return errors.New("Toko ini telah dihapus!")
+	}
+
+	err = s.storeRepo.SoftDelete(id)
+	if err != nil {
+		helper.Logger("Delete store", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
