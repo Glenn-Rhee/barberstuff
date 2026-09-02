@@ -4,6 +4,7 @@ import (
 	"barberstuff_backend/internal/dto"
 	"barberstuff_backend/internal/entity"
 	"barberstuff_backend/internal/helper"
+	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"errors"
 	"fmt"
@@ -20,6 +21,7 @@ type StaffService interface {
 	CreateAdmin(req dto.StaffRequest) error
 	CreateAccout(req dto.CreateAccountStaffRequest) error
 	GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.StaffAccountsResponse, error)
+	GetProfile(claims *lib.CustomClaims) (dto.StaffAccountsResponse, error)
 }
 
 type staffService struct {
@@ -270,4 +272,48 @@ func (s *staffService) GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.St
 	}
 
 	return &dataResults, nil
+}
+
+func (s *staffService) GetProfile(claims *lib.CustomClaims) (dto.StaffAccountsResponse, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data akun staff"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	dataStaff, err := s.staffRepo.FindProfile(claims.UserId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.StaffAccountsResponse{}, errors.New("Profile tidak ditemukan atau telah dihapus!")
+		}
+
+		helper.Logger("Find data staff", filePath, err)
+		return dto.StaffAccountsResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	if claims.Role != entity.RoleAdmin {
+		_, err = s.storeRepo.FindOne("id = ?", dataStaff.IdStore)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return dto.StaffAccountsResponse{}, errors.New("Data toko tidak ditemukan atau telah dihapus")
+			}
+
+			helper.Logger("Find data staff", filePath, err)
+			return dto.StaffAccountsResponse{}, errors.New(BASE_MESSAGE)
+		}
+	}
+
+	var idStore uuid.UUID
+
+	if claims.Role != entity.RoleAdmin {
+		idStore = *dataStaff.IdStore
+	}
+
+	dataResult := dto.StaffAccountsResponse{
+		Id:        dataStaff.ID,
+		Name:      dataStaff.Name,
+		IdStore:   idStore,
+		Role:      dataStaff.Authentication.Role,
+		Email:     dataStaff.Authentication.Email,
+		CreatedAt: dataStaff.CreatedAt,
+	}
+
+	return dataResult, nil
 }

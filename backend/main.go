@@ -55,7 +55,7 @@ func main() {
 	{
 		profile.Use(h.AuthMiddleware)
 		profile.GET("/customer", h.CustomerHandler.GetProfile)
-		// profile.GET("/staff")
+		profile.GET("/staff", h.StaffHandler.GetProfile)
 	}
 
 	fmt.Println("Server running on http://localhost:8080")

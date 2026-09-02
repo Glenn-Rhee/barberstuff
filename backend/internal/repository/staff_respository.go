@@ -10,6 +10,7 @@ type StaffRepository interface {
 	Create(tx *gorm.DB, s *entity.Staff) error
 	FindOne(where string, args ...interface{}) (entity.Staff, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Staff, error)
+	FindProfile(userId string) (entity.Staff, error)
 }
 
 type staffRepository struct {
@@ -44,4 +45,19 @@ func (r *staffRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.S
 		Scopes(scopes...).
 		Find(&dataStaffes)
 	return dataStaffes, result.Error
+}
+
+func (r *staffRepository) FindProfile(userId string) (entity.Staff, error) {
+	var dataStaff entity.Staff
+
+	result := r.db.
+		Select("staff.id", "staff.name", "staff.id_store", "staff.created_at").
+		Preload("Authentication", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "id_staff", "role", "email")
+		}).
+		Where("staff.id = ?", userId).
+		Where("staff.deleted_at IS NULL").
+		First(&dataStaff)
+
+	return dataStaff, result.Error
 }
