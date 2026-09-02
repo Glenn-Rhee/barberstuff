@@ -45,6 +45,12 @@ func main() {
 		store.DELETE("/:id", h.StoreHandler.DeleteStore)
 	}
 
+	staff := r.Group("/staff")
+	{
+		staff.Use(middleware.AuthMiddleware)
+		staff.POST("/", h.StaffHandler.CreateAccountStaff)
+	}
+
 	fmt.Println("Server running on http://localhost:8080")
 	r.Run(":8080")
 }
