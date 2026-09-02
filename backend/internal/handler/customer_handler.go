@@ -2,7 +2,9 @@ package handler
 
 import (
 	"barberstuff_backend/internal/dto"
+	"barberstuff_backend/internal/entity"
 	"barberstuff_backend/internal/helper"
+	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/service"
 	"net/http"
 
@@ -154,5 +156,48 @@ func (h *CustomerHandler) ForgotPassword(ctx *gin.Context) {
 		Message:    "Berhasil kirim otp",
 		Data:       result,
 		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *CustomerHandler) GetProfile(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleCustomer {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	result, err := h.service.GetProfile(claimsResult)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.ProfileCustomerResponse]{
+		Message:    "Berhasil mengambil data!",
+		Data:       result,
+		StatusCode: http.StatusUnauthorized,
 	})
 }

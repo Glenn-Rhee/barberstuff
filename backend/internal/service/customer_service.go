@@ -23,6 +23,7 @@ type CustomerService interface {
 	VerifyOTP(ctx context.Context, dataOTPCust dto.VerifyCredentialRequest) (dto.VerifyOTPResponse, error)
 	OauthRegister(dataNewCustomer dto.OauthCustomerRequest, ctx context.Context) (dto.AuthenticationResponse, error)
 	ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) (dto.ForgotPassswordResponse, error)
+	GetProfile(claims *lib.CustomClaims) (dto.ProfileCustomerResponse, error)
 }
 
 type customerService struct {
@@ -432,6 +433,38 @@ func (c *customerService) ForgotPassword(ctx context.Context, dataForgotPassword
 		UserId: dataAuth.IDCustomer.String(),
 	}, nil
 }
+
+func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCustomerResponse, error) {
+	dataCustomers, err := c.customerRepo.FindProfile(claims.UserId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.ProfileCustomerResponse{}, errors.New("Akun anda tidak ditemukan!")
+		}
+
+		helper.Logger("Find data profile", "get profile", err)
+		return dto.ProfileCustomerResponse{}, errors.New("Terdapat kesalahan saat mengambil data profile!")
+	}
+
+	dataResult := dto.ProfileCustomerResponse{
+		Id: dataCustomers.ID,
+		Name: dataCustomers.Name,
+		PhoneNumber: *dataCustomers.PhoneNumber,
+		DateOfBirth: *dataCustomers.DateOfBirth,
+		Gender: dataCustomers.Gender,
+		MemberPoints: dataCustomers.MemberPoints,
+		PremiumType: dataCustomers.PremiumType,
+		ImageUrl: &dataCustomers.ImageCustomer,
+		CreatedAt: dataCustomers.CreatedAt,
+		Role: dataCustomers.Authentication.Role,
+		Email: dataCustomers.Authentication.Email,
+		IsVerified: dataCustomers.Authentication.IsVerified,
+		LoginType: dataCustomers.Authentication.LoginType,
+		OauthProvider: dataCustomers.Authentication.OAuthProvider,
+	}
+
+	return dataResult, nil
+}
+
 func (c *customerService) sendOtp(ctx context.Context, userId uuid.UUID, otpPlain string, email string, name string, description string) error {
 	key := fmt.Sprintf("OTP:%v", userId.String())
 

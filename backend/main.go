@@ -51,6 +51,13 @@ func main() {
 		staff.GET("/", h.StaffHandler.GetAccountStaffes)
 	}
 
+	profile := r.Group("/profile")
+	{
+		profile.Use(h.AuthMiddleware)
+		profile.GET("/customer", h.CustomerHandler.GetProfile)
+		// profile.GET("/staff")
+	}
+
 	fmt.Println("Server running on http://localhost:8080")
 	r.Run(":8080")
 }
