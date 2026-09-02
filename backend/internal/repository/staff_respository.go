@@ -23,7 +23,7 @@ func NewStaffRepository(db *gorm.DB) StaffRepository {
 }
 
 func (r *staffRepository) Create(tx *gorm.DB, s *entity.Staff) error {
-	result := tx.Model(&entity.Staff{}).Create(s)
+	result := tx.Model(&entity.Staff{}).Where("deleted_at IS NULL").Create(s)
 
 	return result.Error
 }

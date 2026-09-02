@@ -3,9 +3,11 @@ package bootstrap
 import (
 	"barberstuff_backend/internal/handler"
 	"barberstuff_backend/internal/lib"
+	"barberstuff_backend/internal/middleware"
 	"barberstuff_backend/internal/repository"
 	"barberstuff_backend/internal/service"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -14,6 +16,7 @@ type Handlers struct {
 	AuthHandler     *handler.AuthHandler
 	StaffHandler    *handler.StaffHandler
 	StoreHandler    *handler.StoreHandler
+	AuthMiddleware  gin.HandlerFunc
 }
 
 func InitHandlers(db *gorm.DB) *Handlers {
@@ -31,7 +34,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis)
 	authService := service.NewAuthService(authRepo, lib.ClientRedis)
 	staffService := service.NewStaffService(storeRepo, staffRepo, authRepo, db)
-	storeService := service.NewStoreService(storeRepo, serviceRepo, packageRepo, ratingRepo, capsterRepo)
+	storeService := service.NewStoreService(storeRepo, serviceRepo, packageRepo, ratingRepo, capsterRepo, staffRepo)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
@@ -39,10 +42,14 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	staffHandler := handler.NewStaffHandler(staffService)
 	storeHandler := handler.NewStoreHandler(storeService)
 
+	// middleware
+	authMiddleware := middleware.AuthMiddleware(authRepo, staffRepo, customerRepo)
+
 	return &Handlers{
 		CustomerHandler: customerHandler,
 		AuthHandler:     authHandler,
 		StaffHandler:    staffHandler,
 		StoreHandler:    storeHandler,
+		AuthMiddleware:  authMiddleware,
 	}
 }

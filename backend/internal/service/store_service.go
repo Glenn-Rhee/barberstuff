@@ -28,6 +28,7 @@ type storeService struct {
 	packageRepo repository.PackageRepository
 	ratingRepo  repository.RatingRepository
 	capsterRepo repository.CapsterRepository
+	staffRepo   repository.StaffRepository
 }
 
 func NewStoreService(
@@ -36,6 +37,7 @@ func NewStoreService(
 	pr repository.PackageRepository,
 	rr repository.RatingRepository,
 	cr repository.CapsterRepository,
+	str repository.StaffRepository,
 ) StoreService {
 	return &storeService{
 		storeRepo:   storeRepo,
@@ -43,6 +45,7 @@ func NewStoreService(
 		packageRepo: pr,
 		ratingRepo:  rr,
 		capsterRepo: cr,
+		staffRepo:   str,
 	}
 }
 

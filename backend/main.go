@@ -4,7 +4,6 @@ import (
 	"barberstuff_backend/db"
 	"barberstuff_backend/internal/bootstrap"
 	"barberstuff_backend/internal/lib"
-	"barberstuff_backend/internal/middleware"
 	"fmt"
 	"log"
 
@@ -37,7 +36,7 @@ func main() {
 
 	store := r.Group("/store")
 	{
-		store.Use(middleware.AuthMiddleware)
+		store.Use(h.AuthMiddleware)
 		store.POST("/", h.StoreHandler.CreateNewStore)
 		store.GET("/", h.StoreHandler.GetStores)
 		store.GET("/:id", h.StoreHandler.GetStore)
@@ -47,7 +46,7 @@ func main() {
 
 	staff := r.Group("/staff")
 	{
-		staff.Use(middleware.AuthMiddleware)
+		staff.Use(h.AuthMiddleware)
 		staff.POST("/", h.StaffHandler.CreateAccountStaff)
 		staff.GET("/", h.StaffHandler.GetAccountStaffes)
 	}
