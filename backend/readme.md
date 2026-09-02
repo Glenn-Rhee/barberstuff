@@ -113,10 +113,18 @@ Pastikan proses migration telah dijalankan terlebih dahulu agar struktur databas
 Seluruh endpoint API menggunakan format response yang memiliki struktur dasar sebagai berikut:
 
 ```go
+type StatusResponse string
+
+const (
+    StatusSuccess StatusResponse = "success"
+    StatusFailed  StatusResponse = "failed"
+)
+
 type ResponseApi[T any] struct {
-    Data       T      `json:"data:"`
-    Message    string `json:"message"`
-    StatusCode int    `json:"statusCode"`
+    Data       T              `json:"data"`
+    Message    string         `json:"message"`
+    StatusCode int            `json:"statusCode"`
+    Status     StatusResponse `json:"status"`
 }
 ```
 
@@ -127,6 +135,7 @@ Secara umum, struktur response dapat dipahami sebagai berikut:
 | `data`       | Object / Array / null | Data yang dikembalikan oleh API. Tipe datanya dapat berbeda tergantung endpoint. |
 | `message`    | String                | Pesan yang menjelaskan hasil proses API.                                         |
 | `statusCode` | Integer               | HTTP status code yang menunjukkan hasil proses request.                          |
+| `status`     | String                | Status hasil proses API. Bernilai `success` atau `failed`.                       |
 
 ---
 
@@ -190,7 +199,8 @@ Jika registrasi berhasil, API mengembalikan informasi dasar user dan OTP dikirim
     "email": "aaa@gmail.com"
   },
   "message": "OTP telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -209,7 +219,8 @@ Jika terjadi kesalahan ketika melakukan registrasi:
 {
   "data": null,
   "message": "Terjadi kesalahan saat mendaftar. Silahkan coba lagi nanti!",
-  "statusCode": 406
+  "statusCode": 406,
+  "status": "failed"
 }
 ```
 
@@ -218,6 +229,7 @@ Pada response gagal:
 - `data` memiliki nilai `null` karena tidak ada data user yang dikembalikan.
 - `message` berisi informasi mengenai hasil proses.
 - `statusCode` bernilai `406`.
+- `status` bernilai `failed`.
 
 ---
 
@@ -246,7 +258,7 @@ POST /auth/verify-credential
 ### Request Body Parameters
 
 | Key       | Tipe Data | Required | Keterangan                                                                        |
-| --------- | --------- | -------- | --------------------------------------------------------------------------------- |
+| --------- | --------- | -------- | ----------------------------------------------------------------------------------- |
 | `user_id` | String    | Ya       | ID unik user yang akan diverifikasi.                                              |
 | `otp`     | String    | Ya       | Kode OTP yang diterima melalui email. OTP harus terdiri dari tepat 6 digit angka. |
 
@@ -267,7 +279,8 @@ Isi `data` pada endpoint ini berbeda tergantung alur yang sedang dijalankan.
 {
   "data": {},
   "message": "Berhasil verifikasi akun! Silahkan login.",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -279,7 +292,8 @@ Isi `data` pada endpoint ini berbeda tergantung alur yang sedang dijalankan.
     "reset_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
   },
   "message": "OTP berhasil diverifikasi. Silakan lanjutkan proses reset password.",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -290,6 +304,7 @@ Struktur response:
 | `data`       | Object    | Bernilai `{}` pada alur verifikasi akun baru. Berisi `reset_token` pada alur verifikasi lupa password. |
 | `message`    | String    | Pesan yang menjelaskan hasil verifikasi.                                                               |
 | `statusCode` | Integer   | HTTP status code dari hasil proses.                                                                    |
+| `status`     | String    | Status hasil proses. Bernilai `success` atau `failed`.                                                 |
 
 ### Response Data (alur Forgot Password)
 
@@ -305,7 +320,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "OTP tidak valid, silahkan coba lagi. Sisa percobaan 3 kali",
-  "statusCode": 400
+  "statusCode": 400,
+  "status": "failed"
 }
 ```
 
@@ -313,7 +329,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "Anda telah melakukan kesalahan 5 kali percobaan! Mohon untuk kirim ulang OTP!",
-  "statusCode": 400
+  "statusCode": 400,
+  "status": "failed"
 }
 ```
 
@@ -321,7 +338,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "OTP sudah kedaluwarsa. Mohon kirim ulang OTP!",
-  "statusCode": 400
+  "statusCode": 400,
+  "status": "failed"
 }
 ```
 
@@ -381,7 +399,8 @@ Contoh response ketika login berhasil:
     }
   },
   "message": "Berhasil login.",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -407,6 +426,7 @@ Contoh response ketika login berhasil:
 | `data`       | Object    | Berisi access token, informasi masa berlaku token, dan informasi user. |
 | `message`    | String    | Pesan yang menjelaskan hasil proses login.                             |
 | `statusCode` | Integer   | HTTP status code dari hasil proses.                                    |
+| `status`     | String    | Status hasil proses. Bernilai `success` atau `failed`.                 |
 
 ---
 
@@ -454,7 +474,8 @@ Jika permintaan berhasil, OTP dikirimkan ke email pengguna dan `user_id` dikemba
     "user_id": "c4e8f131-f41a-4afc-8d8a-02810cafa920"
   },
   "message": "OTP telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -472,7 +493,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "Email tidak terdaftar!",
-  "statusCode": 404
+  "statusCode": 404,
+  "status": "failed"
 }
 ```
 
@@ -480,7 +502,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "Email belum verified! Tidak dapat reset password.",
-  "statusCode": 400
+  "statusCode": 400,
+  "status": "failed"
 }
 ```
 
@@ -488,7 +511,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "Email Anda login dengan google! Tidak dapat reset password.",
-  "statusCode": 400
+  "statusCode": 400,
+  "status": "failed"
 }
 ```
 
@@ -496,7 +520,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "Terlalu banyak percobaan, coba lagi nanti.",
-  "statusCode": 429
+  "statusCode": 429,
+  "status": "failed"
 }
 ```
 
@@ -540,7 +565,8 @@ POST /auth/reset
 {
   "data": null,
   "message": "Password berhasil direset. Silahkan login menggunakan password baru.",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -550,7 +576,8 @@ POST /auth/reset
 {
   "data": null,
   "message": "Token tidak valid atau sudah kedaluwarsa.",
-  "statusCode": 400
+  "statusCode": 400,
+  "status": "failed"
 }
 ```
 
@@ -558,7 +585,8 @@ POST /auth/reset
 {
   "data": null,
   "message": "Terjadi kesalahan saat reset password!",
-  "statusCode": 406
+  "statusCode": 406,
+  "status": "failed"
 }
 ```
 
@@ -614,7 +642,8 @@ Endpoint ini mengembalikan status autentikasi user, yang menentukan apakah user 
     "temp_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
   },
   "message": "Silakan lengkapi profil Anda untuk menyelesaikan proses registrasi.",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -629,9 +658,12 @@ Endpoint ini mengembalikan status autentikasi user, yang menentukan apakah user 
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
   },
   "message": "Berhasil login.",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
+
+> Catatan: field `status` di dalam objek `data` pada endpoint ini adalah status alur autentikasi (`NEED_COMPLETE_PROFILE` / `SUCCESS`), berbeda dengan field `status` pada level response utama (`success` / `failed`).
 
 ### Response Data
 
@@ -650,6 +682,7 @@ Endpoint ini mengembalikan status autentikasi user, yang menentukan apakah user 
 | `data`       | Object    | Berisi status autentikasi beserta token yang relevan. |
 | `message`    | String    | Pesan yang menjelaskan hasil proses autentikasi.      |
 | `statusCode` | Integer   | HTTP status code dari hasil proses.                   |
+| `status`     | String    | Status hasil proses. Bernilai `success` atau `failed`. |
 
 ---
 
@@ -714,7 +747,8 @@ Contoh response ketika registrasi berhasil:
     }
   },
   "message": "Berhasil melakukan registrasi.",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -736,10 +770,11 @@ Contoh response ketika registrasi berhasil:
 ### Struktur Response
 
 | Key          | Tipe Data | Keterangan                                      |
-| ------------ | --------- | ----------------------------------------------- |
+| ------------ | --------- | ------------------------------------------------ |
 | `data`       | Object    | Berisi access token dan informasi user.         |
 | `message`    | String    | Pesan yang menjelaskan hasil proses registrasi. |
 | `statusCode` | Integer   | HTTP status code dari hasil proses.             |
+| `status`     | String    | Status hasil proses. Bernilai `success` atau `failed`. |
 
 ---
 
@@ -793,7 +828,8 @@ POST /auth/register/admin
 {
   "data": null,
   "message": "Berhasil membuat akun admin",
-  "statusCode": 201
+  "statusCode": 201,
+  "status": "success"
 }
 ```
 
@@ -802,6 +838,7 @@ Pada response sukses:
 - `data` bernilai `null` karena endpoint ini tidak mengembalikan data user maupun token.
 - `message` berisi konfirmasi bahwa akun admin berhasil dibuat.
 - `statusCode` bernilai `201`.
+- `status` bernilai `success`.
 
 ### Response Gagal
 
@@ -811,7 +848,8 @@ Contoh response ketika akun admin sudah pernah terdaftar sebelumnya:
 {
   "data": null,
   "message": "Akun admin telah terdaftar! Tidak dapat mendaftar kembali",
-  "statusCode": 400
+  "statusCode": 400,
+  "status": "failed"
 }
 ```
 
@@ -820,6 +858,7 @@ Pada response gagal:
 - `data` bernilai `null` karena tidak ada data yang dikembalikan.
 - `message` berisi informasi mengenai penyebab kegagalan.
 - `statusCode` bernilai `400` (atau kode error lain sesuai jenis kesalahan, misalnya `401`/`403` apabila `secret-key` tidak valid).
+- `status` bernilai `failed`.
 
 ### Catatan
 
@@ -895,7 +934,8 @@ POST /store
 {
   "data": null,
   "message": "Berhasil membuat toko cabang baru!",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -904,6 +944,7 @@ Pada response sukses:
 - `data` bernilai `null` karena endpoint ini tidak mengembalikan data toko yang baru dibuat.
 - `message` berisi konfirmasi bahwa toko cabang baru berhasil dibuat.
 - `statusCode` bernilai `200`.
+- `status` bernilai `success`.
 
 ### Response Gagal
 
@@ -913,7 +954,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "Anda tidak memiliki akses untuk membuat toko cabang baru!",
-  "statusCode": 403
+  "statusCode": 403,
+  "status": "failed"
 }
 ```
 
@@ -921,7 +963,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "Terjadi kesalahan saat membuat toko cabang baru!",
-  "statusCode": 406
+  "statusCode": 406,
+  "status": "failed"
 }
 ```
 
@@ -963,9 +1006,12 @@ GET /store
     }
   ],
   "message": "Succes get data stores!",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
+
+> Catatan: field `status` di dalam masing-masing objek store (`open`/`close`) adalah status operasional toko, berbeda dengan field `status` pada level response utama (`success` / `failed`).
 
 ### Struktur `data` (Array of Store Object)
 
@@ -980,7 +1026,7 @@ GET /store
 | `banner_url`   | String        | URL gambar banner store.                                         |
 | `address`      | String        | Alamat lengkap store.                                            |
 | `description`  | String        | Deskripsi store.                                                 |
-| `status`       | String        | Status hanya berisi `open` atau `close`.                         | 
+| `status`       | String        | Status operasional store. Bernilai `open` atau `close`.          |
 | `created_at`   | Date/DateTime | Waktu store dibuat, dalam format ISO 8601.                       |
 
 ### Response Gagal
@@ -989,7 +1035,8 @@ GET /store
 {
   "data": null,
   "message": "Terjadi kesalahan saat mengambil data stores!",
-  "statusCode": 406
+  "statusCode": 406,
+  "status": "failed"
 }
 ```
 
@@ -1086,7 +1133,8 @@ GET /store/:id
     ]
   },
   "message": "Succes get store detail!",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
 
@@ -1094,7 +1142,7 @@ GET /store/:id
 
 | Key       | Tipe Data | Keterangan                                                    |
 | --------- | --------- | --------------------------------------------------------------- |
-| `store`   | Object    | Informasi detail store (lihat struktur pada bagian **Get All Stores**). |
+| `store`   | Object    | Informasi detail store (lihat struktur pada bagian **Get All Stores**), termasuk field tambahan `deleted_at`. |
 | `service` | Array     | Daftar service yang tersedia pada store tersebut.                 |
 | `package` | Array     | Daftar package yang tersedia pada store tersebut.                 |
 | `rating`  | Object    | Rating rata-rata beserta daftar review store tersebut.            |
@@ -1168,7 +1216,8 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "Store tidak ditemukan!",
-  "statusCode": 404
+  "statusCode": 404,
+  "status": "failed"
 }
 ```
 
@@ -1176,36 +1225,37 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 {
   "data": null,
   "message": "Terjadi kesalahan saat mengambil data store!",
-  "statusCode": 406
+  "statusCode": 406,
+  "status": "failed"
 }
 ```
 
 ---
 
 ## 12. Update Store
- 
+
 Endpoint ini digunakan untuk mengupdate seluruh data store/cabang berdasarkan `id`, apabila diperlukan. Header yang wajib disertakan sama seperti endpoint lain yang membutuhkan autentikasi.
- 
+
 ### Endpoint
- 
+
 ```http
 PUT /store/:id
 ```
- 
+
 ### Path Parameters
- 
+
 | Key  | Tipe Data     | Required | Keterangan                |
 | ---- | ------------- | -------- | --------------------------- |
 | `id` | String (UUID) | Ya       | ID unik store yang akan diupdate. |
- 
+
 ### Headers
- 
+
 | Key             | Required | Keterangan                                                 |
 | --------------- | -------- | ------------------------------------------------------------- |
 | `Authorization` | Ya       | Access token yang valid, dengan format `Bearer <token>`.       |
- 
+
 ### Request Body
- 
+
 ```json
 {
   "name": "Toko Cabang Kemang",
@@ -1220,9 +1270,9 @@ PUT /store/:id
   "status": "open"
 }
 ```
- 
+
 ### Request Body Parameters
- 
+
 | Key            | Tipe Data     | Required | Keterangan                                                                              |
 | -------------- | ------------- | -------- | ------------------------------------------------------------------------------------------ |
 | `name`         | String        | Ya       | Nama toko/cabang.                                                                            |
@@ -1235,9 +1285,9 @@ PUT /store/:id
 | `long`         | Float         | Ya       | Koordinat longitude lokasi toko.                                                              |
 | `phone_number` | String        | Ya       | Nomor telepon toko, minimal 9 dan maksimal 15 karakter.                                      |
 | `status`       | String        | Ya       | Status toko. Hanya menerima nilai `open` atau `close`.                                       |
- 
+
 ### Aturan Validasi
- 
+
 - Header `Authorization` wajib disertakan dengan format `Bearer <token>`.
 - `name` wajib diisi.
 - `description` bersifat opsional dan boleh tidak disertakan atau bernilai `null`.
@@ -1249,101 +1299,443 @@ PUT /store/:id
 - `long` wajib diisi.
 - `phone_number` wajib diisi, dengan panjang minimal 9 karakter dan maksimal 15 karakter.
 - `status` wajib diisi dan hanya menerima nilai `open` atau `close`.
+
 ### Response Sukses
- 
+
 ```json
 {
   "data": null,
   "message": "Berhasil mengubah toko cabang!",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
- 
+
 Pada response sukses:
- 
+
 - `data` bernilai `null` karena endpoint ini tidak mengembalikan data toko yang telah diupdate.
 - `message` berisi konfirmasi bahwa data toko cabang berhasil diubah.
 - `statusCode` bernilai `200`.
+- `status` bernilai `success`.
+
 ### Response Gagal
- 
+
 ```json
 {
   "data": null,
   "message": "Store tidak ditemukan!",
-  "statusCode": 404
+  "statusCode": 404,
+  "status": "failed"
 }
 ```
- 
+
 ```json
 {
   "data": null,
   "message": "Terjadi kesalahan saat mengubah toko cabang!",
-  "statusCode": 406
+  "statusCode": 406,
+  "status": "failed"
 }
 ```
- 
+
 ---
- 
 
 ## 13. Delete Store
- 
+
 Endpoint ini digunakan untuk menghapus data store/cabang berdasarkan `id`. Penghapusan yang dilakukan bersifat **soft delete**, artinya data tidak benar-benar dihapus dari database, melainkan hanya ditandai sebagai terhapus.
- 
+
 ### Endpoint
- 
+
 ```http
 DELETE /store/:id
 ```
- 
+
 ### Path Parameters
- 
+
 | Key  | Tipe Data     | Required | Keterangan                |
 | ---- | ------------- | -------- | --------------------------- |
 | `id` | String (UUID) | Ya       | ID unik store yang akan dihapus. |
- 
+
 ### Headers
- 
+
 | Key             | Required | Keterangan                                                 |
 | --------------- | -------- | ------------------------------------------------------------- |
 | `Authorization` | Ya       | Access token yang valid, dengan format `Bearer <token>`.       |
- 
+
 ### Response Sukses
- 
+
 ```json
 {
   "data": null,
   "message": "Berhasil menghapus toko cabang!",
-  "statusCode": 200
+  "statusCode": 200,
+  "status": "success"
 }
 ```
- 
+
 Pada response sukses:
- 
+
 - `data` bernilai `null` karena endpoint ini tidak mengembalikan data apa pun.
 - `message` berisi konfirmasi bahwa toko cabang berhasil dihapus (soft delete).
 - `statusCode` bernilai `200`.
+- `status` bernilai `success`.
+
 ### Response Gagal
- 
+
 ```json
 {
   "data": null,
   "message": "Store tidak ditemukan!",
-  "statusCode": 404
+  "statusCode": 404,
+  "status": "failed"
 }
 ```
- 
+
 ```json
 {
   "data": null,
   "message": "Terjadi kesalahan saat menghapus toko cabang!",
-  "statusCode": 406
+  "statusCode": 406,
+  "status": "failed"
 }
 ```
- 
+
 ---
- 
+
+# Staff API
+
+## 14. Create Staff Account
+
+Endpoint ini digunakan untuk membuat akun staff (cashier/mitra) pada suatu toko cabang. Setiap toko cabang hanya memiliki dua jenis akun staff, yaitu **cashier** dan **mitra**. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
+
+### Endpoint
+
+```http
+POST /staff
+```
+
+### Headers
+
+| Key             | Required | Keterangan                                                                                  |
+| --------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token milik admin, dengan format `Bearer <token>`.                                       |
+
+### Request Body
+
+```json
+{
+  "id_store": "5c2ed29d-7403-43de-9a22-90675c0d3b54",
+  "name": "Ariel Cashier",
+  "email": "arielmitra@gmail.com",
+  "role": "cashier"
+}
+```
+
+### Request Body Parameters
+
+| Key        | Tipe Data | Required | Keterangan                                                                 |
+| ---------- | --------- | -------- | ----------------------------------------------------------------------------- |
+| `id_store` | String    | Ya       | ID unik store/cabang tempat akun staff ini akan ditugaskan.                    |
+| `name`     | String    | Ya       | Nama lengkap staff, minimal 3 karakter.                                        |
+| `email`    | String    | Ya       | Alamat email staff dengan format email yang valid.                             |
+| `role`     | String    | Ya       | Role staff. Hanya menerima nilai `cashier` atau `mitra`.                       |
+
+### Aturan Validasi
+
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`, dan token harus milik user dengan role `admin`.
+- `id_store` wajib diisi.
+- `name` wajib diisi dan memiliki panjang minimal 3 karakter.
+- `email` wajib diisi dan harus memiliki format email yang valid.
+- `role` wajib diisi dan hanya menerima nilai `cashier` atau `mitra`.
+
+### Response Sukses
+
+```json
+{
+  "data": null,
+  "message": "Berhasil membuat akun staaff",
+  "statusCode": 200,
+  "status": "success"
+}
+```
+
+Pada response sukses:
+
+- `data` bernilai `null` karena endpoint ini tidak mengembalikan data akun staff yang baru dibuat.
+- `message` berisi konfirmasi bahwa akun staff berhasil dibuat.
+- `statusCode` bernilai `200`.
+- `status` bernilai `success`.
+
+### Response Gagal
+
+```json
+{
+  "data": null,
+  "message": "Anda tidak memiliki akses untuk membuat akun staff!",
+  "statusCode": 403,
+  "status": "failed"
+}
+```
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat membuat akun staff!",
+  "statusCode": 406,
+  "status": "failed"
+}
+```
+
+---
+
+## 15. Get Staff Accounts
+
+Endpoint ini digunakan untuk mendapatkan seluruh data akun staff berdasarkan toko cabang tertentu. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
+
+### Endpoint
+
+```http
+GET /staff
+```
+
+### Headers
+
+| Key             | Required | Keterangan                                                                                  |
+| --------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token milik admin, dengan format `Bearer <token>`.                                       |
+
+### Query Parameters
+
+| Key        | Tipe Data | Required | Keterangan                                                              |
+| ---------- | --------- | -------- | -------------------------------------------------------------------------- |
+| `id_store` | String    | Ya       | ID unik store/cabang untuk memfilter data akun staff.                       |
+| `name`     | String    | Tidak    | Filter berdasarkan nama staff.                                              |
+| `email`    | String    | Tidak    | Filter berdasarkan email staff. Harus memiliki format email yang valid apabila diisi. |
+
+### Aturan Validasi
+
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`, dan token harus milik user dengan role `admin`.
+- `id_store` wajib diisi.
+- `name` bersifat opsional.
+- `email` bersifat opsional, namun harus memiliki format email yang valid apabila diisi.
+
+### Response Sukses
+
+```json
+{
+  "data": [
+    {
+      "id": "dc58fc46-4fd4-432d-bbcb-54a2f4b9727f",
+      "name": "Ariel Cashier",
+      "id_store": "5c2ed29d-7403-43de-9a22-90675c0d3b54",
+      "role": "cashier",
+      "email": "arielmitra@gmail.com",
+      "created_at": "2026-09-02T10:20:55.292672Z"
+    }
+  ],
+  "message": "Berhasil mengambil data akun staff!",
+  "statusCode": 200,
+  "status": "success"
+}
+```
+
+### Struktur `data` (Array of Staff Account Object)
+
+| Key          | Tipe Data     | Keterangan                                             |
+| ------------ | ------------- | ---------------------------------------------------------- |
+| `id`         | String (UUID) | ID unik akun staff.                                          |
+| `name`       | String        | Nama staff.                                                  |
+| `id_store`   | String (UUID) | ID store/cabang tempat staff bertugas.                        |
+| `role`       | String        | Role staff. Bernilai `cashier` atau `mitra`.                  |
+| `email`      | String        | Email staff.                                                  |
+| `created_at` | Date/DateTime | Waktu akun staff dibuat, dalam format ISO 8601.                |
+
+### Response Gagal
+
+```json
+{
+  "data": null,
+  "message": "Anda tidak memiliki akses untuk melihat data akun staff!",
+  "statusCode": 403,
+  "status": "failed"
+}
+```
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat mengambil data akun staff!",
+  "statusCode": 406,
+  "status": "failed"
+}
+```
+
+---
+
+# Profile API
+
+## 16. Get Customer Profile
+
+Endpoint ini digunakan untuk mendapatkan data profil milik akun customer yang sedang login. Endpoint ini hanya dapat diakses oleh user dengan role **customer**.
+
+### Endpoint
+
+```http
+GET /profile/customer
+```
+
+### Headers
+
+| Key             | Required | Keterangan                                                 |
+| --------------- | -------- | ------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token yang valid, dengan format `Bearer <token>`.       |
+
+### Aturan Validasi
+
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`.
+- Token harus milik user dengan role `customer`.
+
+### Response Sukses
+
+```json
+{
+  "data": {
+    "id": "fb1baa4a-8593-41f8-a71a-63b06a515677",
+    "name": "Budi Doremi",
+    "phone_number": "081234567890",
+    "date_of_birth": "2026-01-20T00:00:00Z",
+    "gender": "male",
+    "member_points": 100,
+    "premium_type": "newbie",
+    "image_url": "",
+    "created_at": "2026-09-02T09:35:40.293725Z",
+    "role": "customer",
+    "email": "glennviktor5@gmail.com",
+    "is_verified": true,
+    "login_type": "Credential",
+    "oauth_provider": ""
+  },
+  "message": "Berhasil mengambil data!",
+  "statusCode": 401,
+  "status": "success"
+}
+```
+
+### Struktur `data`
+
+| Key              | Tipe Data     | Keterangan                                                                     |
+| ---------------- | ------------- | ---------------------------------------------------------------------------------- |
+| `id`             | String (UUID) | ID unik customer.                                                                    |
+| `name`           | String        | Nama customer.                                                                       |
+| `phone_number`   | String        | Nomor telepon customer.                                                              |
+| `date_of_birth`  | Date/DateTime | Tanggal lahir customer dalam format ISO 8601.                                       |
+| `gender`         | String        | Jenis kelamin customer. Bernilai `male` atau `female`.                              |
+| `member_points`  | Integer       | Jumlah poin member yang dimiliki customer.                                          |
+| `premium_type`   | String        | Tipe keanggotaan premium customer. Bernilai salah satu dari: `newbie`, `bestie`, `royal`, `crazy`. |
+| `image_url`      | String        | URL foto profil customer. Dapat bernilai `null`.                                    |
+| `created_at`     | Date/DateTime | Waktu akun customer dibuat, dalam format ISO 8601.                                  |
+| `role`           | String        | Role user, bernilai `customer`.                                                     |
+| `email`          | String        | Email customer.                                                                     |
+| `is_verified`    | Boolean       | Status verifikasi akun customer.                                                     |
+| `login_type`     | String        | Tipe login yang digunakan customer (contoh: `Credential`, `Google`).                 |
+| `oauth_provider` | String        | Nama provider OAuth yang digunakan, jika ada. Bernilai kosong apabila login menggunakan credential. |
+
+### Response Gagal
+
+```json
+{
+  "data": null,
+  "message": "Anda tidak memiliki akses untuk melihat profil ini!",
+  "statusCode": 403,
+  "status": "failed"
+}
+```
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat mengambil data profil!",
+  "statusCode": 406,
+  "status": "failed"
+}
+```
+
+---
+
+## 17. Get Staff Profile
+
+Endpoint ini digunakan untuk mendapatkan data profil milik akun staff (admin, cashier, atau mitra) yang sedang login. Endpoint ini tidak dapat diakses oleh role **customer**.
+
+### Endpoint
+
+```http
+GET /profile/staff
+```
+
+### Headers
+
+| Key             | Required | Keterangan                                                 |
+| --------------- | -------- | ------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token yang valid, dengan format `Bearer <token>`.       |
+
+### Aturan Validasi
+
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`.
+- Token tidak boleh milik user dengan role `customer`.
+
+### Response Sukses
+
+```json
+{
+  "data": {
+    "id": "c96d559f-182d-4f6d-82cf-92958525d25b",
+    "name": "Tommy ardiansah",
+    "id_store": "00000000-0000-0000-0000-000000000000",
+    "role": "admin",
+    "email": "tommyardiansah@gmail.com",
+    "created_at": "2026-09-02T09:46:09.308996Z"
+  },
+  "message": "Berhasil mengambil data akun staff!",
+  "statusCode": 200,
+  "status": "success"
+}
+```
+
+### Struktur `data`
+
+| Key          | Tipe Data     | Keterangan                                                                                          |
+| ------------ | ------------- | -------------------------------------------------------------------------------------------------------- |
+| `id`         | String (UUID) | ID unik akun staff.                                                                                          |
+| `name`       | String        | Nama staff.                                                                                                  |
+| `id_store`   | String (UUID) | ID store/cabang tempat staff bertugas. Bernilai UUID kosong (`00000000-0000-0000-0000-000000000000`) untuk role `admin` yang tidak terikat pada store tertentu. |
+| `role`       | String        | Role staff, seperti `admin`, `cashier`, atau `mitra`.                                                       |
+| `email`      | String        | Email staff.                                                                                                 |
+| `created_at` | Date/DateTime | Waktu akun staff dibuat, dalam format ISO 8601.                                                              |
+
+### Response Gagal
+
+```json
+{
+  "data": null,
+  "message": "Anda tidak memiliki akses untuk melihat profil ini!",
+  "statusCode": 403,
+  "status": "failed"
+}
+```
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat mengambil data profil!",
+  "statusCode": 406,
+  "status": "failed"
+}
+```
+
+---
+
 # API Summary
- 
+
 | Method | Endpoint                    | Fungsi                                                                                                    |
 | ------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | POST   | `/auth/register/credential`  | Mendaftarkan user menggunakan credential/email dan mengirimkan OTP.                                          |
@@ -1359,4 +1751,7 @@ Pada response sukses:
 | GET    | `/store/:id`                 | Mendapatkan detail satu store/cabang beserta service, package, rating, dan capster-nya.                        |
 | PUT    | `/store/:id`                 | Mengupdate seluruh data store/cabang berdasarkan `id`.                                                         |
 | DELETE | `/store/:id`                 | Menghapus data store/cabang berdasarkan `id` (soft delete).                                                    |
- 
+| POST   | `/staff`                     | Membuat akun staff (cashier/mitra) untuk suatu toko cabang. Hanya dapat diakses oleh token milik admin.        |
+| GET    | `/staff`                     | Mendapatkan seluruh data akun staff berdasarkan toko cabang tertentu. Hanya dapat diakses oleh token milik admin. |
+| GET    | `/profile/customer`          | Mendapatkan data profil akun customer yang sedang login.                                                       |
+| GET    | `/profile/staff`             | Mendapatkan data profil akun staff (admin/cashier/mitra) yang sedang login.                                    |
