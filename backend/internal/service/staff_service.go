@@ -19,6 +19,7 @@ import (
 type StaffService interface {
 	CreateAdmin(req dto.StaffRequest) error
 	CreateAccout(req dto.CreateAccountStaffRequest) error
+	GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.StaffAccountsResponse, error)
 }
 
 type staffService struct {
@@ -148,7 +149,7 @@ func (s *staffService) CreateAccout(req dto.CreateAccountStaffRequest) error {
 	}
 	var scopes []func(*gorm.DB) *gorm.DB
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Where("id_store = ?", dataStore.ID)
+		return d.Where("staff.id_store = ?", dataStore.ID)
 	})
 	dataStaffes, err := s.staffRepo.FindAll(scopes...)
 	if err != nil {
@@ -211,4 +212,62 @@ func (s *staffService) CreateAccout(req dto.CreateAccountStaffRequest) error {
 	}
 
 	return nil
+}
+
+func (s *staffService) GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.StaffAccountsResponse, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data akun staff"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idStore, err := uuid.Parse(query.IdStore)
+	if err != nil {
+		return &[]dto.StaffAccountsResponse{}, errors.New("Id toko cabang tidak valid")
+	}
+
+	_, err = s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &[]dto.StaffAccountsResponse{}, errors.New("Toko tidak ditemukan atau sudah dihapus.")
+		}
+
+		helper.Logger("Find data store", filePath, err)
+		return &[]dto.StaffAccountsResponse{}, errors.New(BASE_MESSAGE)
+	}
+	var scopes []func(*gorm.DB) *gorm.DB
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Where("staff.id_store = ?", idStore)
+	})
+
+	if query.Email != nil {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Joins("JOIN authentication ON authentication.id_staff = staff.id").
+				Where("authentication.email = ?", *query.Email)
+		})
+	}
+
+	if query.Name != nil {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("staff.name = ?", *query.Name)
+		})
+	}
+
+	dataStaffes, err := s.staffRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("Fin all data staff", filePath, err)
+		return &[]dto.StaffAccountsResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	var dataResults = make([]dto.StaffAccountsResponse, 0)
+
+	for _, v := range dataStaffes {
+		dataResults = append(dataResults, dto.StaffAccountsResponse{
+			Id:        v.ID,
+			Name:      v.Name,
+			IdStore:   *v.IdStore,
+			Role:      v.Authentication.Role,
+			Email:     v.Authentication.Email,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+
+	return &dataResults, nil
 }

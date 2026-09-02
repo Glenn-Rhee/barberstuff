@@ -49,6 +49,7 @@ func main() {
 	{
 		staff.Use(middleware.AuthMiddleware)
 		staff.POST("/", h.StaffHandler.CreateAccountStaff)
+		staff.GET("/", h.StaffHandler.GetAccountStaffes)
 	}
 
 	fmt.Println("Server running on http://localhost:8080")

@@ -104,7 +104,7 @@ func (h *StaffHandler) CreateAccountStaff(ctx *gin.Context) {
 	if err := h.service.CreateAccout(dataRequest); err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
-			StatusCode: http.StatusUnauthorized,
+			StatusCode: http.StatusNotAcceptable,
 		})
 		return
 	}
@@ -112,6 +112,58 @@ func (h *StaffHandler) CreateAccountStaff(ctx *gin.Context) {
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
 		Data:       nil,
 		Message:    "Berhasil membuat akun staaff",
+		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *StaffHandler) GetAccountStaffes(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleAdmin {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	var query dto.QueryParamsAccountStaff
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, err := h.service.GetAccounts(query)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[*[]dto.StaffAccountsResponse]{
+		Data:       result,
+		Message:    "Berhasil mengambil data akun staff!",
 		StatusCode: http.StatusOK,
 	})
 }

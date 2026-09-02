@@ -49,10 +49,11 @@ func (r *staffRepository) CountByStoreAndRole(idStore uuid.UUID, role entity.Rol
 func (r *staffRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Staff, error) {
 	var dataStaffes []entity.Staff
 	result := r.db.
-		Select("id").
-		Preload("Authentication", func(db *gorm.DB) *gorm.DB  {
-			return db.Select("id", "id_staff", "role", "email")
+		Select("staff.id", "staff.name", "staff.id_store", "staff.created_at").
+		Preload("Authentication", func(db *gorm.DB) *gorm.DB {
+			 return db.Select("id", "id_staff", "role", "email")
 		}).
+		Where("staff.deleted_at IS NULL").
 		Scopes(scopes...).
 		Find(&dataStaffes)
 	return dataStaffes, result.Error

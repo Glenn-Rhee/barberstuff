@@ -1,6 +1,11 @@
 package dto
 
-import "barberstuff_backend/internal/entity"
+import (
+	"barberstuff_backend/internal/entity"
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type StaffRequest struct {
 	Name     string `json:"name" binding:"required"`
@@ -13,4 +18,19 @@ type CreateAccountStaffRequest struct {
 	Name    string          `json:"name" binding:"required,min=3"`
 	Email   string          `json:"email" binding:"required,email"`
 	Role    entity.RoleEnum `json:"role" binding:"required,oneof=cashier mitra"`
+}
+
+type QueryParamsAccountStaff struct {
+	IdStore string  `form:"id_store"`
+	Name    *string `form:"name"`
+	Email   *string `form:"email" binding:"omitempty,email"`
+}
+
+type StaffAccountsResponse struct {
+	Id        uuid.UUID       `json:"id"`
+	Name      string          `json:"name"`
+	IdStore   uuid.UUID       `json:"id_store"`
+	Role      entity.RoleEnum `json:"role"`
+	Email     string          `json:"email"`
+	CreatedAt time.Time       `json:"created_at"`
 }
