@@ -20,7 +20,7 @@ func main() {
 
 	auth := r.Group("/auth")
 	{
-		register := auth.Group("/register")
+		register := auth.Group("/register") 
 		{
 			register.POST("/credential", h.CustomerHandler.CredentialRegister)
 			register.POST("/oauth", h.CustomerHandler.OauthRegister)

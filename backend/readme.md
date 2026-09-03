@@ -867,8 +867,6 @@ Pada response gagal:
 
 ---
 
-# Store API
-
 ## 9. Create Store
 
 Endpoint ini digunakan untuk membuat data toko/cabang (store) baru. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
@@ -1402,8 +1400,6 @@ Pada response sukses:
 
 ---
 
-# Staff API
-
 ## 14. Create Staff Account
 
 Endpoint ini digunakan untuk membuat akun staff (cashier/mitra) pada suatu toko cabang. Setiap toko cabang hanya memiliki dua jenis akun staff, yaitu **cashier** dan **mitra**. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
@@ -1571,8 +1567,6 @@ GET /staff
 ```
 
 ---
-
-# Profile API
 
 ## 16. Get Customer Profile
 

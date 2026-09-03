@@ -299,7 +299,7 @@ func (h *StaffHandler) DeleteAccountStaff(ctx *gin.Context){
 		return
 	}
 
-	err := h.service.DeleteAccount(dataRequest)
+	err := h.service.DeleteAccount(dataRequest, claimsResult)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),

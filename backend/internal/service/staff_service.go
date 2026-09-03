@@ -23,7 +23,7 @@ type StaffService interface {
 	GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.StaffAccountsResponse, error)
 	GetProfile(claims *lib.CustomClaims) (dto.StaffAccountsResponse, error)
 	UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims) error
-	DeleteAccount(req dto.DeleteAccountStaffRequst) error
+	DeleteAccount(req dto.DeleteAccountStaffRequst, claims *lib.CustomClaims) error
 }
 
 type staffService struct {
@@ -373,13 +373,17 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 	return nil
 }
 
-func (s *staffService) DeleteAccount(req dto.DeleteAccountStaffRequst) error {
+func (s *staffService) DeleteAccount(req dto.DeleteAccountStaffRequst, claims *lib.CustomClaims) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data toko!"
 	_, filePath, _, _ := runtime.Caller(0)
 
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
 		return errors.New("Id staff tidak valid!")
+	}
+
+	if claims.UserId == req.Id {
+		return errors.New("Oops! Anda tidak dapat menghapus diri sendiri!")
 	}
 
 	_, err = s.staffRepo.FindOne("id = ?", id)
@@ -390,8 +394,6 @@ func (s *staffService) DeleteAccount(req dto.DeleteAccountStaffRequst) error {
 		helper.Logger("Find one data", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
-
-	log.Println("cihuy")
 
 	err = s.staffRepo.SoftDelete(id)
 	if err != nil {
