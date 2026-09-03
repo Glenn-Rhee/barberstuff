@@ -3,6 +3,7 @@ package repository
 import (
 	"barberstuff_backend/internal/entity"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +12,7 @@ type StaffRepository interface {
 	FindOne(where string, args ...interface{}) (entity.Staff, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Staff, error)
 	FindProfile(userId string) (entity.Staff, error)
+	Updates(value interface{}, id uuid.UUID) error
 }
 
 type staffRepository struct {
@@ -29,7 +31,7 @@ func (r *staffRepository) Create(tx *gorm.DB, s *entity.Staff) error {
 
 func (r *staffRepository) FindOne(where string, args ...interface{}) (entity.Staff, error) {
 	var dataStaff entity.Staff
-	result := r.db.Where(where, args...).First(&dataStaff)
+	result := r.db.Preload("Authentication").Where(where, args...).Where("deleted_at IS NULL").First(&dataStaff)
 
 	return dataStaff, result.Error
 }
@@ -60,4 +62,12 @@ func (r *staffRepository) FindProfile(userId string) (entity.Staff, error) {
 		First(&dataStaff)
 
 	return dataStaff, result.Error
+}
+
+func (r *staffRepository) Updates(value interface{}, id uuid.UUID) error {
+	result := r.db.
+		Model(&entity.Staff{}).
+		Where("id = ?", id).
+		Updates(value)
+	return result.Error
 }

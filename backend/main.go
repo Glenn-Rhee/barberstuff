@@ -49,6 +49,7 @@ func main() {
 		staff.Use(h.AuthMiddleware)
 		staff.POST("/", h.StaffHandler.CreateAccountStaff)
 		staff.GET("/", h.StaffHandler.GetAccountStaffes)
+		staff.PATCH("/", h.StaffHandler.UpdateAccountStaff)
 	}
 
 	profile := r.Group("/profile")

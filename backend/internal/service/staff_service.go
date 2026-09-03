@@ -22,6 +22,7 @@ type StaffService interface {
 	CreateAccout(req dto.CreateAccountStaffRequest) error
 	GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.StaffAccountsResponse, error)
 	GetProfile(claims *lib.CustomClaims) (dto.StaffAccountsResponse, error)
+	UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims) error
 }
 
 type staffService struct {
@@ -316,4 +317,63 @@ func (s *staffService) GetProfile(claims *lib.CustomClaims) (dto.StaffAccountsRe
 	}
 
 	return dataResult, nil
+}
+
+func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data toko!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	id, err := uuid.Parse(req.Id)
+	if err != nil {
+		return errors.New("Id staff tidak valid!")
+	}
+
+	dataStaff, err := s.staffRepo.FindOne("id = ?", id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Data stafff yang anda ingin ubah tidak ditemukan atau telah dihapus")
+		}
+
+		helper.Logger("Find data staff", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	updateRole := dataStaff.Authentication.Role
+	if claims.Role == entity.RoleAdmin && (claims.UserId != req.Id) {
+		updateRole = req.Role
+	}
+
+	hashedPassword, err := helper.HashPassword(req.Password)
+	if err != nil{
+		helper.Logger("Hash password", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		err = s.staffRepo.Updates(map[string]interface{}{
+			"name": req.Name,
+		}, id)
+
+		if err != nil {
+			return err
+		}
+
+		err = s.authRepo.Updates(map[string]interface{}{
+			"password": hashedPassword,
+			"role": updateRole,
+		}, dataStaff.Authentication.ID)
+
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		helper.Logger("Update data account", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
 }

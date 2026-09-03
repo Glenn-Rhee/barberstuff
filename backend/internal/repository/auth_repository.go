@@ -12,6 +12,7 @@ type AuthenticationRepository interface {
 	Create(tx *gorm.DB, a *entity.Authentication) error
 	UpdateVerifiedCredential(tx *gorm.DB, userId uuid.UUID, verified bool) error
 	ResetPassword(newPassword, email string) error
+	Updates(value interface{}, id uuid.UUID) error
 }
 
 type authenticationRepository struct {
@@ -41,4 +42,13 @@ func (r *authenticationRepository) UpdateVerifiedCredential(tx *gorm.DB, userId 
 
 func (r *authenticationRepository) ResetPassword(newPassword, email string) error {
 	return r.db.Model(&entity.Authentication{}).Where("email = ?", email).Update("password", newPassword).Error
+}
+
+func (r *authenticationRepository) Updates(value interface{}, id uuid.UUID) error {
+	result := r.db.
+		Model(&entity.Authentication{}).
+		Where("id = ?", id).
+		Updates(value)
+
+	return result.Error
 }
