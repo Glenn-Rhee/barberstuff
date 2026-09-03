@@ -88,8 +88,11 @@ func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
 func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, error) {
 	var scopes []func(*gorm.DB) *gorm.DB
 	if query.NameStore != nil {
+		q := "%"
+		q += *query.NameStore
+		q += "%"
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-			return d.Where("name = ?", query.NameStore)
+			return d.Where("name ILIKE ?", q)
 		})
 	}
 

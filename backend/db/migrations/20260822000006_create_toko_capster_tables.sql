@@ -6,12 +6,12 @@ CREATE TYPE capster_status_enum AS ENUM ('active', 'inactive');
 CREATE TABLE capster (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
-    title VARCHAR(20) NOT NULL,
     status capster_status_enum NOT NULL DEFAULT 'active', -- nonaktifkan tanpa hapus data (masih dipakai di booking/rating lama)
     image_url TEXT,
-    id_store UUID NOT NULL REFERENCES store(id)  ,
+    id_store UUID NOT NULL REFERENCES store(id),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP
 );
 
 CREATE TRIGGER trg_capster_updated_at
