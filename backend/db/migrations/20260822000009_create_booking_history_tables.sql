@@ -42,7 +42,7 @@ CREATE INDEX idx_booking_id_package ON booking(id_package);
 -- (dari status apa ke status apa, kapan, siapa yang ubah).
 CREATE TABLE booking_status_history (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    id_booking UUID NOT NULL REFERENCES booking(id) ON DELETE CASCADE,
+    id_booking UUID NOT NULL REFERENCES booking(id)  ,
     old_status booking_status_enum,
     new_status booking_status_enum NOT NULL,
     changed_by UUID, -- id_customer atau id_staff, divalidasi di level aplikasi

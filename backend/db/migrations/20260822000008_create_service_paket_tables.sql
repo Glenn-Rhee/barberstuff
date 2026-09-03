@@ -11,7 +11,7 @@ CREATE TABLE service (
     do_dont TEXT,
     description TEXT,
     status product_status_enum NOT NULL DEFAULT 'active',
-    id_store UUID NOT NULL REFERENCES store(id) ON DELETE CASCADE,
+    id_store UUID NOT NULL REFERENCES store(id)  ,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -28,7 +28,7 @@ CREATE TABLE package (
     description TEXT,
     duration_minutes INT,
     status product_status_enum NOT NULL DEFAULT 'active',
-    id_store UUID NOT NULL REFERENCES store(id) ON DELETE CASCADE,
+    id_store UUID NOT NULL REFERENCES store(id)  ,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -39,8 +39,8 @@ CREATE TRIGGER trg_package_updated_at
 
 CREATE TABLE package_service (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    id_service UUID NOT NULL REFERENCES service(id) ON DELETE CASCADE,
-    id_package UUID NOT NULL REFERENCES package(id) ON DELETE CASCADE,
+    id_service UUID NOT NULL REFERENCES service(id)  ,
+    id_package UUID NOT NULL REFERENCES package(id)  ,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     UNIQUE(id_service, id_package)
 );

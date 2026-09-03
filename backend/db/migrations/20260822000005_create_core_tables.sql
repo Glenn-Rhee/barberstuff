@@ -74,8 +74,8 @@ CREATE TYPE role_enum AS ENUM ('customer', 'cashier', 'admin', 'mitra');
 --   - role IN ('cashier','admin','mitra') -> id_staff terisi, id_customer NULL
 CREATE TABLE authentication (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    id_customer UUID REFERENCES customer(id) ON DELETE CASCADE,
-    id_staff UUID REFERENCES staff(id) ON DELETE CASCADE,
+    id_customer UUID REFERENCES customer(id)  ,
+    id_staff UUID REFERENCES staff(id)  ,
     password VARCHAR(255) NOT NULL, -- simpan hash (bcrypt/argon2), bukan plaintext
     role role_enum NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,

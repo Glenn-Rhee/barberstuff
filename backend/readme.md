@@ -778,7 +778,76 @@ Contoh response ketika registrasi berhasil:
 
 ---
 
-## 8. Register Admin
+## 8. Refresh Token
+
+Endpoint ini digunakan untuk mendapatkan kembali token baru berdasarkan `refresh_token` lama yang sudah atau akan segera kedaluwarsa (expired).
+
+### Endpoint
+
+```http
+POST /auth/refresh-token
+```
+
+### Request Body
+
+```json
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### Request Body Parameters
+
+| Key             | Tipe Data | Required | Keterangan                                            |
+| --------------- | --------- | -------- | ----------------------------------------------------- |
+| `refresh_token` | String    | Ya       | Refresh token lama yang akan digunakan untuk mendapatkan token baru. |
+
+### Aturan Validasi
+
+- `refresh_token` wajib diisi.
+
+### Response Sukses
+
+```json
+{
+  "data": {
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "message": "Berhasil mendapatkan token baru.",
+  "statusCode": 200,
+  "status": "success"
+}
+```
+
+### Response Data
+
+| Key             | Tipe Data | Keterangan                       |
+| --------------- | --------- | ----------------------------------- |
+| `refresh_token` | String    | Token baru hasil dari proses refresh. |
+
+### Response Gagal
+
+```json
+{
+  "data": null,
+  "message": "Refresh token tidak valid atau sudah kedaluwarsa.",
+  "statusCode": 400,
+  "status": "failed"
+}
+```
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat me-refresh token!",
+  "statusCode": 406,
+  "status": "failed"
+}
+```
+
+---
+
+## 9. Register Admin
 
 Endpoint ini digunakan untuk membuat akun admin secara **internal**. Endpoint ini **tidak diperuntukkan untuk diakses melalui UI/frontend**, melainkan hanya dapat diakses melalui API tools seperti Postman atau semacamnya, dengan menyertakan `secret-key` pada header request.
 
@@ -867,7 +936,9 @@ Pada response gagal:
 
 ---
 
-## 9. Create Store
+# Store API
+
+## 10. Create Store
 
 Endpoint ini digunakan untuk membuat data toko/cabang (store) baru. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
 
@@ -968,7 +1039,7 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 
 ---
 
-## 10. Get All Stores
+## 11. Get All Stores
 
 Endpoint ini digunakan untuk mendapatkan seluruh data store/cabang yang tersedia pada sistem.
 
@@ -1040,7 +1111,7 @@ GET /store
 
 ---
 
-## 11. Get Store Detail
+## 12. Get Store Detail
 
 Endpoint ini digunakan untuk mendapatkan detail satu store/cabang berdasarkan `id`, termasuk daftar service, package, rating & review, serta capster yang tersedia pada store tersebut.
 
@@ -1230,7 +1301,7 @@ Beberapa contoh pesan kegagalan yang mungkin dikembalikan:
 
 ---
 
-## 12. Update Store
+## 13. Update Store
 
 Endpoint ini digunakan untuk mengupdate seluruh data store/cabang berdasarkan `id`, apabila diperlukan. Header yang wajib disertakan sama seperti endpoint lain yang membutuhkan autentikasi.
 
@@ -1338,7 +1409,7 @@ Pada response sukses:
 
 ---
 
-## 13. Delete Store
+## 14. Delete Store
 
 Endpoint ini digunakan untuk menghapus data store/cabang berdasarkan `id`. Penghapusan yang dilakukan bersifat **soft delete**, artinya data tidak benar-benar dihapus dari database, melainkan hanya ditandai sebagai terhapus.
 
@@ -1400,7 +1471,9 @@ Pada response sukses:
 
 ---
 
-## 14. Create Staff Account
+# Staff API
+
+## 15. Create Staff Account
 
 Endpoint ini digunakan untuk membuat akun staff (cashier/mitra) pada suatu toko cabang. Setiap toko cabang hanya memiliki dua jenis akun staff, yaitu **cashier** dan **mitra**. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
 
@@ -1484,7 +1557,7 @@ Pada response sukses:
 
 ---
 
-## 15. Get Staff Accounts
+## 16. Get Staff Accounts
 
 Endpoint ini digunakan untuk mendapatkan seluruh data akun staff berdasarkan toko cabang tertentu. Endpoint ini hanya dapat diakses oleh user dengan role **admin**.
 
@@ -1568,7 +1641,170 @@ GET /staff
 
 ---
 
-## 16. Get Customer Profile
+## 17. Update Staff Account
+
+Endpoint ini digunakan untuk mengupdate data akun staff berdasarkan `id`. Seluruh role dapat mengakses endpoint ini untuk mengupdate data akun staff, **kecuali role customer**.
+
+### Endpoint
+
+```http
+PATCH /staff/:id
+```
+
+### Path Parameters
+
+| Key  | Tipe Data     | Required | Keterangan                          |
+| ---- | ------------- | -------- | -------------------------------------- |
+| `id` | String (UUID) | Ya       | ID unik akun staff yang akan diupdate. |
+
+### Headers
+
+| Key             | Required | Keterangan                                                 |
+| --------------- | -------- | ------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token yang valid, dengan format `Bearer <token>`.       |
+
+### Request Body
+
+```json
+{
+  "name": "Ariel Cashier Updated",
+  "password": "NewSecurePass123"
+}
+```
+
+### Request Body Parameters
+
+| Key        | Tipe Data | Required | Keterangan                                        |
+| ---------- | --------- | -------- | ---------------------------------------------------- |
+| `name`     | String    | Ya       | Nama staff, minimal 3 karakter.                      |
+| `password` | String    | Ya       | Password baru untuk akun staff, minimal 5 karakter.   |
+
+### Aturan Validasi
+
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`.
+- Token tidak boleh milik user dengan role `customer`.
+- `name` wajib diisi dan memiliki panjang minimal 3 karakter.
+- `password` wajib diisi dan memiliki panjang minimal 5 karakter.
+
+### Response Sukses
+
+```json
+{
+  "data": null,
+  "message": "Berhasil mengubah data akun staff!",
+  "statusCode": 200,
+  "status": "success"
+}
+```
+
+Pada response sukses:
+
+- `data` bernilai `null` karena endpoint ini tidak mengembalikan data akun staff yang telah diupdate.
+- `message` berisi konfirmasi bahwa data akun staff berhasil diubah.
+- `statusCode` bernilai `200`.
+- `status` bernilai `success`.
+
+### Response Gagal
+
+```json
+{
+  "data": null,
+  "message": "Akun staff tidak ditemukan!",
+  "statusCode": 404,
+  "status": "failed"
+}
+```
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat mengubah data akun staff!",
+  "statusCode": 406,
+  "status": "failed"
+}
+```
+
+---
+
+## 18. Delete Staff Account
+
+Endpoint ini digunakan untuk menghapus data akun staff berdasarkan `id`. Penghapusan yang dilakukan bersifat **soft delete**. Endpoint ini hanya dapat diakses oleh user dengan role **admin**, dan admin **tidak dapat menghapus akunnya sendiri**.
+
+### Endpoint
+
+```http
+DELETE /staff/:id
+```
+
+### Path Parameters
+
+| Key  | Tipe Data     | Required | Keterangan                        |
+| ---- | ------------- | -------- | ------------------------------------ |
+| `id` | String (UUID) | Ya       | ID unik akun staff yang akan dihapus. |
+
+### Headers
+
+| Key             | Required | Keterangan                                                 |
+| --------------- | -------- | ------------------------------------------------------------- |
+| `Authorization` | Ya       | Access token milik admin, dengan format `Bearer <token>`.       |
+
+### Aturan Validasi
+
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`, dan token harus milik user dengan role `admin`.
+- Admin tidak dapat menghapus akun staff miliknya sendiri.
+
+### Response Sukses
+
+```json
+{
+  "data": null,
+  "message": "Berhasil menghapus data akun staff!",
+  "statusCode": 200,
+  "status": "success"
+}
+```
+
+Pada response sukses:
+
+- `data` bernilai `null` karena endpoint ini tidak mengembalikan data apa pun.
+- `message` berisi konfirmasi bahwa data akun staff berhasil dihapus (soft delete).
+- `statusCode` bernilai `200`.
+- `status` bernilai `success`.
+
+### Response Gagal
+
+```json
+{
+  "data": null,
+  "message": "Anda tidak dapat menghapus akun Anda sendiri!",
+  "statusCode": 400,
+  "status": "failed"
+}
+```
+
+```json
+{
+  "data": null,
+  "message": "Akun staff tidak ditemukan!",
+  "statusCode": 404,
+  "status": "failed"
+}
+```
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan saat menghapus data akun staff!",
+  "statusCode": 406,
+  "status": "failed"
+}
+```
+
+---
+
+# Profile API
+
+## 19. Get Customer Profile
 
 Endpoint ini digunakan untuk mendapatkan data profil milik akun customer yang sedang login. Endpoint ini hanya dapat diakses oleh user dengan role **customer**.
 
@@ -1656,7 +1892,7 @@ GET /profile/customer
 
 ---
 
-## 17. Get Staff Profile
+## 20. Get Staff Profile
 
 Endpoint ini digunakan untuk mendapatkan data profil milik akun staff (admin, cashier, atau mitra) yang sedang login. Endpoint ini tidak dapat diakses oleh role **customer**.
 
@@ -1739,6 +1975,7 @@ GET /profile/staff
 | POST   | `/auth/reset`                | Mengganti password akun menggunakan `reset_token` hasil verifikasi OTP.                                       |
 | POST   | `/auth/provider`             | Memvalidasi `id_token` dari provider (Google) untuk menentukan apakah user perlu login atau registrasi.       |
 | POST   | `/auth/register/oauth`       | Menyelesaikan proses registrasi user baru yang login melalui provider, menggunakan `temp_token`.              |
+| POST   | `/auth/refresh-token`        | Mendapatkan token baru berdasarkan `refresh_token` lama yang sudah/akan kedaluwarsa.                          |
 | POST   | `/auth/register/admin`       | Membuat akun admin secara internal (khusus API tools, wajib menyertakan header `secret-key`, tidak untuk UI). |
 | POST   | `/store`                     | Membuat data toko/cabang baru. Hanya dapat diakses oleh token milik admin.                                    |
 | GET    | `/store`                     | Mendapatkan seluruh data store/cabang yang tersedia.                                                           |
@@ -1747,5 +1984,7 @@ GET /profile/staff
 | DELETE | `/store/:id`                 | Menghapus data store/cabang berdasarkan `id` (soft delete).                                                    |
 | POST   | `/staff`                     | Membuat akun staff (cashier/mitra) untuk suatu toko cabang. Hanya dapat diakses oleh token milik admin.        |
 | GET    | `/staff`                     | Mendapatkan seluruh data akun staff berdasarkan toko cabang tertentu. Hanya dapat diakses oleh token milik admin. |
+| PATCH  | `/staff/:id`                 | Mengupdate data akun staff (nama & password). Seluruh role dapat mengakses, kecuali customer.                  |
+| DELETE | `/staff/:id`                 | Menghapus data akun staff (soft delete). Hanya admin, dan admin tidak dapat menghapus akunnya sendiri.         |
 | GET    | `/profile/customer`          | Mendapatkan data profil akun customer yang sedang login.                                                       |
 | GET    | `/profile/staff`             | Mendapatkan data profil akun staff (admin/cashier/mitra) yang sedang login.                                    |
