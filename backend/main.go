@@ -32,6 +32,7 @@ func main() {
 		auth.POST("/provider", h.AuthHandler.AuthProvider)
 		auth.POST("/forgot", h.CustomerHandler.ForgotPassword)
 		auth.POST("/reset", h.AuthHandler.ResetPassword)
+		auth.POST("/refresh-token", h.AuthHandler.RefreshToken)
 	}
 
 	store := r.Group("/store")

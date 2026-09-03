@@ -48,3 +48,7 @@ type ResetPasswordRequest struct {
 	ResetToken  string `json:"reset_token" binding:"required"`
 	NewPassword string `json:"new_password" binding:"required,min=5"`
 }
+
+type RefreshTokenBody struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
