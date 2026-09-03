@@ -51,6 +51,7 @@ func main() {
 		staff.POST("/", h.StaffHandler.CreateAccountStaff)
 		staff.GET("/", h.StaffHandler.GetAccountStaffes)
 		staff.PATCH("/", h.StaffHandler.UpdateAccountStaff)
+		staff.DELETE("/", h.StaffHandler.DeleteAccountStaff)
 	}
 
 	profile := r.Group("/profile")

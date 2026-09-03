@@ -2,6 +2,7 @@ package repository
 
 import (
 	"barberstuff_backend/internal/entity"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -13,6 +14,7 @@ type StaffRepository interface {
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Staff, error)
 	FindProfile(userId string) (entity.Staff, error)
 	Updates(value interface{}, id uuid.UUID) error
+	SoftDelete(id uuid.UUID) error
 }
 
 type staffRepository struct {
@@ -24,7 +26,7 @@ func NewStaffRepository(db *gorm.DB) StaffRepository {
 }
 
 func (r *staffRepository) Create(tx *gorm.DB, s *entity.Staff) error {
-	result := tx.Model(&entity.Staff{}).Where("deleted_at IS NULL").Create(s)
+	result := tx.Model(&entity.Staff{}).Create(s)
 
 	return result.Error
 }
@@ -69,5 +71,13 @@ func (r *staffRepository) Updates(value interface{}, id uuid.UUID) error {
 		Model(&entity.Staff{}).
 		Where("id = ?", id).
 		Updates(value)
+	return result.Error
+}
+
+func (r *staffRepository) SoftDelete(id uuid.UUID) error {
+	result := r.db.
+		Model(&entity.Staff{}).
+		Where("id = ?", id).
+		Update("deleted_at", time.Now())
 	return result.Error
 }

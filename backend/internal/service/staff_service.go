@@ -23,6 +23,7 @@ type StaffService interface {
 	GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.StaffAccountsResponse, error)
 	GetProfile(claims *lib.CustomClaims) (dto.StaffAccountsResponse, error)
 	UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims) error
+	DeleteAccount(req dto.DeleteAccountStaffRequst) error
 }
 
 type staffService struct {
@@ -344,7 +345,7 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 	}
 
 	hashedPassword, err := helper.HashPassword(req.Password)
-	if err != nil{
+	if err != nil {
 		helper.Logger("Hash password", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
@@ -360,7 +361,7 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 
 		err = s.authRepo.Updates(map[string]interface{}{
 			"password": hashedPassword,
-			"role": updateRole,
+			"role":     updateRole,
 		}, dataStaff.Authentication.ID)
 
 		if err != nil {
@@ -372,6 +373,35 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 
 	if err != nil {
 		helper.Logger("Update data account", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *staffService) DeleteAccount(req dto.DeleteAccountStaffRequst) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data toko!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	id, err := uuid.Parse(req.Id)
+	if err != nil {
+		return errors.New("Id staff tidak valid!")
+	}
+
+	_, err = s.staffRepo.FindOne("id = ?", id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Data akun tidak ditemukan atau telah dihapus!")
+		}
+		helper.Logger("Find one data", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	log.Println("cihuy")
+
+	err = s.staffRepo.SoftDelete(id)
+	if err != nil {
+		helper.Logger("Delete data", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 

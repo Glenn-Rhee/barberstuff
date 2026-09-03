@@ -36,8 +36,12 @@ type StaffAccountsResponse struct {
 }
 
 type UpdateAccountStaffRequest struct {
-	Id       string          `json:"id_user"`
+	Id       string          `json:"id_staff"`
 	Name     string          `json:"name" binding:"required,min=3"`
 	Role     entity.RoleEnum `json:"role" binding:"required,oneof=cashier mitra"`
 	Password string          `json:"password" binding:"required,min=5"`
+}
+
+type DeleteAccountStaffRequst struct {
+	Id string `json:"id_staff"`
 }
