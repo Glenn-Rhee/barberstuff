@@ -36,11 +36,6 @@ type StaffAccountsResponse struct {
 }
 
 type UpdateAccountStaffRequest struct {
-	Id       string          `json:"id_staff"`
 	Name     string          `json:"name" binding:"required,min=3"`
 	Password string          `json:"password" binding:"required,min=5"`
-}
-
-type DeleteAccountStaffRequst struct {
-	Id string `json:"id_staff"`
 }

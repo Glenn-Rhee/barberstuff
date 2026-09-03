@@ -22,8 +22,8 @@ type StaffService interface {
 	CreateAccout(req dto.CreateAccountStaffRequest) error
 	GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.StaffAccountsResponse, error)
 	GetProfile(claims *lib.CustomClaims) (dto.StaffAccountsResponse, error)
-	UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims) error
-	DeleteAccount(req dto.DeleteAccountStaffRequst, claims *lib.CustomClaims) error
+	UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims, idStaff string) error
+	DeleteAccount(idStaff string, claims *lib.CustomClaims) error
 }
 
 type staffService struct {
@@ -320,11 +320,11 @@ func (s *staffService) GetProfile(claims *lib.CustomClaims) (dto.StaffAccountsRe
 	return dataResult, nil
 }
 
-func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims) error {
+func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims, idStaff string) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data toko!"
 	_, filePath, _, _ := runtime.Caller(0)
 
-	id, err := uuid.Parse(req.Id)
+	id, err := uuid.Parse(idStaff)
 	if err != nil {
 		return errors.New("Id staff tidak valid!")
 	}
@@ -332,13 +332,17 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 	dataStaff, err := s.staffRepo.FindOne("id = ?", id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("Data stafff yang anda ingin ubah tidak ditemukan atau telah dihapus")
+			return errors.New("Data staff yang anda ingin ubah tidak ditemukan atau telah dihapus")
 		}
 
 		helper.Logger("Find data staff", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
+	if claims.Role != entity.RoleAdmin && idStaff != claims.UserId {
+		return errors.New("Oops! Anda tidak bisa mengubah data milik orang lain")
+	}
+	
 	hashedPassword, err := helper.HashPassword(req.Password)
 	if err != nil {
 		helper.Logger("Hash password", filePath, err)
@@ -373,16 +377,16 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 	return nil
 }
 
-func (s *staffService) DeleteAccount(req dto.DeleteAccountStaffRequst, claims *lib.CustomClaims) error {
+func (s *staffService) DeleteAccount(idStaff string, claims *lib.CustomClaims) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data toko!"
 	_, filePath, _, _ := runtime.Caller(0)
 
-	id, err := uuid.Parse(req.Id)
+	id, err := uuid.Parse(idStaff)
 	if err != nil {
 		return errors.New("Id staff tidak valid!")
 	}
 
-	if claims.UserId == req.Id {
+	if claims.UserId == idStaff {
 		return errors.New("Oops! Anda tidak dapat menghapus diri sendiri!")
 	}
 

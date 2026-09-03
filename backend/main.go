@@ -20,7 +20,7 @@ func main() {
 
 	auth := r.Group("/auth")
 	{
-		register := auth.Group("/register") 
+		register := auth.Group("/register")
 		{
 			register.POST("/credential", h.CustomerHandler.CredentialRegister)
 			register.POST("/oauth", h.CustomerHandler.OauthRegister)
@@ -50,8 +50,8 @@ func main() {
 		staff.Use(h.AuthMiddleware)
 		staff.POST("/", h.StaffHandler.CreateAccountStaff)
 		staff.GET("/", h.StaffHandler.GetAccountStaffes)
-		staff.PATCH("/", h.StaffHandler.UpdateAccountStaff)
-		staff.DELETE("/", h.StaffHandler.DeleteAccountStaff)
+		staff.PATCH("/:id", h.StaffHandler.UpdateAccountStaff)
+		staff.DELETE("/:id", h.StaffHandler.DeleteAccountStaff)
 	}
 
 	profile := r.Group("/profile")

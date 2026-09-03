@@ -247,8 +247,9 @@ func (h *StaffHandler) UpdateAccountStaff(ctx *gin.Context) {
 		})
 		return
 	}
+	idStaff := ctx.Param("id")
 
-	err := h.service.UpdateAccount(dataRequest, claimsResult)
+	err := h.service.UpdateAccount(dataRequest, claimsResult, idStaff)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -290,16 +291,10 @@ func (h *StaffHandler) DeleteAccountStaff(ctx *gin.Context){
 		})
 		return
 	}
-	var dataRequest dto.DeleteAccountStaffRequst
-	if err := ctx.ShouldBindJSON(&dataRequest); err != nil {
-		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
-			Message:    helper.FormatValidationError(err)[0],
-			StatusCode: http.StatusBadRequest,
-		})
-		return
-	}
 
-	err := h.service.DeleteAccount(dataRequest, claimsResult)
+	idStaff := ctx.Param("id")
+
+	err := h.service.DeleteAccount(idStaff, claimsResult)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
