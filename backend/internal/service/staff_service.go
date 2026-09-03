@@ -339,11 +339,6 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 		return errors.New(BASE_MESSAGE)
 	}
 
-	updateRole := dataStaff.Authentication.Role
-	if claims.Role == entity.RoleAdmin && (claims.UserId != req.Id) {
-		updateRole = req.Role
-	}
-
 	hashedPassword, err := helper.HashPassword(req.Password)
 	if err != nil {
 		helper.Logger("Hash password", filePath, err)
@@ -361,7 +356,6 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 
 		err = s.authRepo.Updates(map[string]interface{}{
 			"password": hashedPassword,
-			"role":     updateRole,
 		}, dataStaff.Authentication.ID)
 
 		if err != nil {
