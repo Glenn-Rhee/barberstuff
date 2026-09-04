@@ -16,6 +16,6 @@ type CapsterDataResponse struct {
 
 type CreateCapsterRequest struct {
 	IdStore  string `json:"id_store" binding:"required"`
-	Name     string `json:"name" binding:"required,min=1"`
+	Name     string `json:"name" binding:"required,min=3"`
 	ImageUrl string `json:"image_url" binding:"omitempty,url"`
 }

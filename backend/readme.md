@@ -1957,6 +1957,91 @@ GET /profile/staff
 
 ---
 
+# Capster API
+
+## 21. Create Capster
+
+Digunakan untuk membuat capster baru berdasarkan toko cabang tertentu. Jadi capster ini terikat dengan satu toko cabang. Endpoint ini hanya bisa diakses oleh **admin**
+
+### Endpoint
+
+```http
+POST /capster
+```
+
+### Headers
+
+| Key | Required | Keterangan |
+| --- | --- | --- |
+| `Authorization` | Ya | Access token milik admin, dengan format `Bearer <token>`. |
+
+### Request Body
+
+```json
+{
+    "id_store": "ccbfc173-3074-4a7d-8784-d87eb3a1d9aa",
+    "name": "Ariel Capster",
+    "image_url": "//example.com/images/store-kemang-banner.jpg"
+}
+```
+
+### Request Body Parameters
+
+| Key | Tipe Data | Required | Keterangan |
+| --- | --- | --- | --- |
+| `id_store` | String | Ya | Id toko cabang |
+| `name` | String | Ya | Nama capster yang ingin ditambahkan |
+| `image_url` | String | Tidak | Gambar capster jika ingin ditambahkan |
+
+### Aturan Validasi
+
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`, dan token harus milik user dengan role `admin`.
+- `id_store` wajib diisi.
+- `name` wajib diisi dan memiliki panjang minimal 3 karakter.
+- `image_url` opsional hanya jika admin mau menambahkan foto capster.
+
+### Response Sukses
+
+```json
+{
+    "data": null,
+    "message": "Berhasil membuat capster baru!",
+    "statusCode": 200,
+    "status": "success"
+}
+```
+
+### Response Gagal
+
+```json
+{
+    "data": null,
+    "message": "Nama capster ini sudah ada!",
+    "statusCode": 400,
+    "status": "failed"
+}
+```
+
+```json
+{
+    "data": null,
+    "message": "Format id toko tidak valid!",
+    "statusCode": 400,
+    "status": "failed"
+}
+```
+
+```json
+{
+    "data": null,
+    "message": "Toko untuk membuat capster ini tidak ditemukan!",
+    "statusCode": 400,
+    "status": "failed"
+}
+```
+
+---
+
 # API Summary
 
 | Method | Endpoint | Fungsi |
@@ -1981,3 +2066,4 @@ GET /profile/staff
 | DELETE | `/staff/:id` | Menghapus data akun staff (soft delete). Hanya admin, dan admin tidak dapat menghapus akunnya sendiri. |
 | GET | `/profile/customer` | Mendapatkan data profil akun customer yang sedang login. |
 | GET | `/profile/staff` | Mendapatkan data profil akun staff (admin/cashier/mitra) yang sedang login. |
+| POST | `/capster` | Membuat capster baru yang hanya bisa dilakukan oleh admin. |
