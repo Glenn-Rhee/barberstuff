@@ -49,7 +49,7 @@ class ResetSuccessPage extends StatelessWidget {
                   label: l10n.resetSuccessButton,
                   onPressed: () =>
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                        AppRoute.home,
+                        AppRoute.login,
                         (Route<dynamic> r) => false,
                       ),
                 ),

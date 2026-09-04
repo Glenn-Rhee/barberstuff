@@ -41,6 +41,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Barberstuff memerlukan akses galeri untuk memilih foto profil Anda.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Barberstuff memerlukan akses kamera untuk mengambil foto profil Anda.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

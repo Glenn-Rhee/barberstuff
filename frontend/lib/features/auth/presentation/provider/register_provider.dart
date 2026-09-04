@@ -4,8 +4,9 @@ import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
 
-class RegisterProvider extends ChangeNotifier {
+class RegisterProvider extends ChangeNotifier with AvatarFormMixin {
   RegisterProvider(this._repository) {
     for (final TextEditingController c in _textFields) {
       c.addListener(_syncComplete);
@@ -31,7 +32,6 @@ class RegisterProvider extends ChangeNotifier {
 
   DateTime? _dateOfBirth;
   String? _gender;
-  String? _imageUrl;
   bool _obscurePassword = true;
   bool _isLoading = false;
   bool _isComplete = false;
@@ -42,7 +42,6 @@ class RegisterProvider extends ChangeNotifier {
   RegisterRequestApi? get lastRequest => _lastRequest;
   DateTime? get dateOfBirth => _dateOfBirth;
   String? get gender => _gender;
-  String? get imageUrl => _imageUrl;
   bool get obscurePassword => _obscurePassword;
   bool get isLoading => _isLoading;
   bool get isComplete => _isComplete;
@@ -68,11 +67,6 @@ class RegisterProvider extends ChangeNotifier {
     String two(int n) => n.toString().padLeft(2, '0');
     birthDateController.text = '${two(v.day)}/${two(v.month)}/${v.year}';
     _syncComplete();
-    notifyListeners();
-  }
-
-  void setImageUrl(String? v) {
-    _imageUrl = v;
     notifyListeners();
   }
 
@@ -102,7 +96,7 @@ class RegisterProvider extends ChangeNotifier {
       gender: _gender!,
       email: emailController.text.trim(),
       password: passwordController.text,
-      imageUrl: _imageUrl,
+      imageUrl: imageUrl,
     );
 
     try {

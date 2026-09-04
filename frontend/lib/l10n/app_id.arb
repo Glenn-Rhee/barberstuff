@@ -54,6 +54,7 @@
     }
   },
   "verifyAttemptExhausted": "Kesempatan mencoba habis. Silakan kirim ulang kode.",
+  "verifyResendSending": "Mengirim...",
   "verifyResendSuccess": "Kode baru telah dikirim ke email Anda.",
   "verifySuccessTitle": "Selamat!",
   "verifySuccessMessage": "Email Anda telah berhasil diverifikasi. Anda sekarang dapat mengakses semua fitur aplikasi kami.",
@@ -121,6 +122,14 @@
   "completeProfileTitle": "Lengkapi Profil",
   "completeProfileSubtitle": "Sedikit lagi. Lengkapi data dirimu untuk mulai memakai Barberstuff.",
   "completeProfileSubmit": "Lanjutkan",
+  "completeProfileEmailLocked": "Email dari Google tidak bisa diubah",
+
+  "avatarSheetTitle": "Foto Profil",
+  "avatarSheetCamera": "Ambil Foto",
+  "avatarSheetGallery": "Pilih dari Galeri",
+  "avatarSheetRemove": "Hapus Foto",
+  "avatarPickFailed": "Gagal membuka galeri atau kamera. Coba lagi.",
+  "avatarPermissionDenied": "Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.",
 
   "comingSoonTitle": "Segera hadir",
   "comingSoonMessage": "Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.",

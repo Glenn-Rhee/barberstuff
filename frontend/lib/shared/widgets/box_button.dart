@@ -25,7 +25,9 @@ class BoxButton extends StatefulWidget {
   final String? iconPath;
   final BoxButtonVariant variant;
 
-  /// Menampilkan spinner menggantikan label, sekaligus menonaktifkan tombol.
+  /// Menonaktifkan tombol selama request berjalan. Tombol tetap menampilkan
+  /// labelnya: umpan balik loading ditangani [LoadingOverlay] di level halaman
+  /// agar seluruh aplikasi hanya punya satu gaya loader, yaitu [BoxLoader].
   final bool isLoading;
 
   @override
@@ -39,7 +41,10 @@ class _BoxButtonState extends State<BoxButton> {
 
   bool get _isEnabled => widget.onPressed != null && !widget.isLoading;
 
-  bool get _isDisabled => widget.onPressed == null && !widget.isLoading;
+  /// Tombol yang tidak bisa ditekan, baik karena form belum lengkap maupun
+  /// karena request sedang berjalan. Keduanya tampil sama supaya tidak ada
+  /// perubahan bentuk yang mengagetkan saat tombol ditekan.
+  bool get _isInactive => !_isEnabled;
 
   void _setPressed(bool value) {
     if (!_isEnabled) return;
@@ -52,14 +57,14 @@ class _BoxButtonState extends State<BoxButton> {
   Widget build(BuildContext context) {
     final double radius = _isFilled ? BoxButton.minHeight / 2 : 12;
     final Color background = _isFilled
-        ? (_isDisabled ? AppColor.disabled : AppColor.orangeLight)
+        ? (_isInactive ? AppColor.disabled : AppColor.orangeLight)
         : AppColor.surface;
     final Color foreground = _isFilled
         ? AppColor.surface
-        : (_isDisabled ? AppColor.inkFaint : AppColor.ink);
+        : (_isInactive ? AppColor.inkFaint : AppColor.ink);
 
     return Opacity(
-      opacity: _isDisabled && !_isFilled ? 0.6 : 1,
+      opacity: _isInactive && !_isFilled ? 0.6 : 1,
       child: AnimatedScale(
         scale: _pressed ? 0.97 : 1,
         duration: AppDuration.pressFeedback,
@@ -109,45 +114,30 @@ class _BoxButtonState extends State<BoxButton> {
                   horizontal: 16,
                   vertical: 12,
                 ),
-                child: widget.isLoading
-                    ? Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    if (widget.iconPath != null) ...<Widget>[
+                      Image.asset(widget.iconPath!, width: 22, height: 22),
+                      const SizedBox(width: 10),
+                    ],
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          widget.label,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: AppTextStyle.labelLarge.copyWith(
                             color: foreground,
                           ),
                         ),
-                      )
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          if (widget.iconPath != null) ...<Widget>[
-                            Image.asset(
-                              widget.iconPath!,
-                              width: 22,
-                              height: 22,
-                            ),
-                            const SizedBox(width: 10),
-                          ],
-                          Flexible(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.center,
-                              child: Text(
-                                widget.label,
-                                maxLines: 1,
-                                softWrap: false,
-                                style: AppTextStyle.labelLarge.copyWith(
-                                  color: foreground,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

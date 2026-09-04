@@ -12,10 +12,10 @@ import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_dropdo
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_picker.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_source_sheet.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
@@ -120,7 +120,8 @@ class _CompleteProfileView extends StatelessWidget {
                   Center(
                     child: AvatarPicker(
                       imageUrl: p.imageUrl,
-                      onEdit: () => showComingSoonDialog(context),
+                      imageFile: p.imageFile,
+                      onEdit: () => editAvatar(context, p),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -133,18 +134,44 @@ class _CompleteProfileView extends StatelessWidget {
                   ),
                   const SizedBox(height: _gapSection),
 
+                  // Nama dari Google hanya jadi nilai awal: pengguna sering
+                  // memakai nama panggilan atau nama akun yang tidak sesuai.
                   AppTextField(
                     hint: l10n.registerNameLabel,
                     controller: p.nameController,
-                    enabled: false,
+                    keyboardType: TextInputType.name,
+                    validator: (String? v) =>
+                        validators.required(v, label: l10n.registerNameLabel),
                   ),
                   const SizedBox(height: AppField.gap),
 
+                  // Email adalah identitas akun yang sudah diverifikasi Google
+                  // dan dipakai server untuk mencocokkan temp token, jadi
+                  // dikunci.
                   AppTextField(
                     hint: l10n.registerEmailLabel,
                     iconPath: AppAssets.mailIcon,
                     controller: p.emailController,
                     enabled: false,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: <Widget>[
+                      const Icon(
+                        Icons.lock_outline_rounded,
+                        size: 13,
+                        color: AppColor.inkFaint,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          l10n.completeProfileEmailLocked,
+                          style: AppTextStyle.bodySmall.copyWith(
+                            color: AppColor.inkFaint,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: AppField.gap),
 

@@ -15,6 +15,10 @@ class AppAssets {
   static const String emailVerification = '$_images/email_verification.png';
   static const String checkVerification = '$_images/check_verification.png';
   static const String forgotPassword = '$_images/forgot_image.png';
+  
+
+
+
 
   static const String googleIcon = '$_icon/google_icon.png';
   static const String phoneIcon = '$_icon/telephone_icon.png';
@@ -39,6 +43,7 @@ class AppAssets {
   static const String storeDashboard = '$_icon/store_dashboard_icon.png';
   static const String historyRoundedDashboard =
       '$_icon/history_rounded_dashboard.png';
+  static const String starDashboard = '$_icon/star_dashboard_icon.png';
 
   static const String userBottom = '$_icon/user_bottom.png';
   static const String historyBottom = '$_icon/history_bottom.png';

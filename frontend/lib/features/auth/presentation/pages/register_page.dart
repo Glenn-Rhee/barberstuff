@@ -12,11 +12,11 @@ import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_dropdo
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_picker.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_source_sheet.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/password_toggle.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
@@ -103,7 +103,8 @@ class _RegisterView extends StatelessWidget {
                   Center(
                     child: AvatarPicker(
                       imageUrl: p.imageUrl,
-                      onEdit: () => showComingSoonDialog(context),
+                      imageFile: p.imageFile,
+                      onEdit: () => editAvatar(context, p),
                     ),
                   ),
                   const SizedBox(height: _gapSection),

@@ -5,8 +5,9 @@ import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/login_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/oauth_register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
 
-class CompleteProfileProvider extends ChangeNotifier {
+class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
   CompleteProfileProvider(
     this._repository,
     this._session, {
@@ -17,7 +18,8 @@ class CompleteProfileProvider extends ChangeNotifier {
   }) {
     nameController.text = name;
     emailController.text = email;
-    _imageUrl = imageUrl;
+    initialImageUrl = imageUrl;
+    nameController.addListener(_syncComplete);
     phoneController.addListener(_syncComplete);
   }
 
@@ -35,7 +37,6 @@ class CompleteProfileProvider extends ChangeNotifier {
 
   DateTime? _dateOfBirth;
   String? _gender;
-  String? _imageUrl;
   bool _isLoading = false;
   bool _isComplete = false;
   ApiException? _error;
@@ -43,7 +44,6 @@ class CompleteProfileProvider extends ChangeNotifier {
 
   DateTime? get dateOfBirth => _dateOfBirth;
   String? get gender => _gender;
-  String? get imageUrl => _imageUrl;
   bool get isLoading => _isLoading;
   bool get isComplete => _isComplete;
   ApiException? get error => _error;
@@ -53,6 +53,7 @@ class CompleteProfileProvider extends ChangeNotifier {
     final bool next =
         _dateOfBirth != null &&
         _gender != null &&
+        nameController.text.trim().isNotEmpty &&
         phoneController.text.trim().isNotEmpty;
 
     if (_isComplete != next) {
@@ -75,11 +76,6 @@ class CompleteProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setImageUrl(String? v) {
-    _imageUrl = v;
-    notifyListeners();
-  }
-
   Future<bool> submit() async {
     if (!(formKey.currentState?.validate() ?? false)) return false;
     if (_dateOfBirth == null || _gender == null) return false;
@@ -91,12 +87,14 @@ class CompleteProfileProvider extends ChangeNotifier {
     try {
       _result = await _repository.registerOauth(
         OauthRegisterRequestApi(
-          name: name,
+          // Nama boleh diubah pengguna, jadi yang dikirim adalah isi field,
+          // bukan nama bawaan dari akun Google.
+          name: nameController.text.trim(),
           tempToken: tempToken,
           phoneNumber: phoneController.text.trim(),
           dateOfBirth: _dateOfBirth!,
           gender: _gender!,
-          imageUrl: _imageUrl,
+          imageUrl: imageUrl,
         ),
       );
       await _session.saveSession(_result!.accessToken);

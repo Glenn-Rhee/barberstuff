@@ -27,16 +27,25 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColor.surface,
       appBar: AppBar(
-        backgroundColor: AppColor.surface,
+        backgroundColor: AppColor.ink,
         elevation: 0,
         actions: <Widget>[
+          Text(
+            "Halo, ",
+            style: AppTextStyle.headlineSmall,
+            
+            
+          ),
+
           IconButton(
+
             onPressed: () => _logout(context),
             tooltip: l10n.commonLogout,
             icon: const Icon(Icons.logout_rounded, color: AppColor.ink),
           ),
         ],
       ),
+
       body: Center(
         child: Text(
           l10n.comingSoonTitle,

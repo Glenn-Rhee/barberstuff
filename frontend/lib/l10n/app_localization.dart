@@ -308,6 +308,12 @@ abstract class AppLocalizations {
   /// **'Kesempatan mencoba habis. Silakan kirim ulang kode.'**
   String get verifyAttemptExhausted;
 
+  /// No description provided for @verifyResendSending.
+  ///
+  /// In id, this message translates to:
+  /// **'Mengirim...'**
+  String get verifyResendSending;
+
   /// No description provided for @verifyResendSuccess.
   ///
   /// In id, this message translates to:
@@ -553,6 +559,48 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Lanjutkan'**
   String get completeProfileSubmit;
+
+  /// No description provided for @completeProfileEmailLocked.
+  ///
+  /// In id, this message translates to:
+  /// **'Email dari Google tidak bisa diubah'**
+  String get completeProfileEmailLocked;
+
+  /// No description provided for @avatarSheetTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Foto Profil'**
+  String get avatarSheetTitle;
+
+  /// No description provided for @avatarSheetCamera.
+  ///
+  /// In id, this message translates to:
+  /// **'Ambil Foto'**
+  String get avatarSheetCamera;
+
+  /// No description provided for @avatarSheetGallery.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih dari Galeri'**
+  String get avatarSheetGallery;
+
+  /// No description provided for @avatarSheetRemove.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Foto'**
+  String get avatarSheetRemove;
+
+  /// No description provided for @avatarPickFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal membuka galeri atau kamera. Coba lagi.'**
+  String get avatarPickFailed;
+
+  /// No description provided for @avatarPermissionDenied.
+  ///
+  /// In id, this message translates to:
+  /// **'Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.'**
+  String get avatarPermissionDenied;
 
   /// No description provided for @comingSoonTitle.
   ///

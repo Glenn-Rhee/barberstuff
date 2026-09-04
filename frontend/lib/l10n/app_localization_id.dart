@@ -122,6 +122,9 @@ class AppLocalizationsId extends AppLocalizations {
       'Kesempatan mencoba habis. Silakan kirim ulang kode.';
 
   @override
+  String get verifyResendSending => 'Mengirim...';
+
+  @override
   String get verifyResendSuccess => 'Kode baru telah dikirim ke email Anda.';
 
   @override
@@ -259,6 +262,29 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get completeProfileSubmit => 'Lanjutkan';
+
+  @override
+  String get completeProfileEmailLocked =>
+      'Email dari Google tidak bisa diubah';
+
+  @override
+  String get avatarSheetTitle => 'Foto Profil';
+
+  @override
+  String get avatarSheetCamera => 'Ambil Foto';
+
+  @override
+  String get avatarSheetGallery => 'Pilih dari Galeri';
+
+  @override
+  String get avatarSheetRemove => 'Hapus Foto';
+
+  @override
+  String get avatarPickFailed => 'Gagal membuka galeri atau kamera. Coba lagi.';
+
+  @override
+  String get avatarPermissionDenied =>
+      'Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.';
 
   @override
   String get comingSoonTitle => 'Segera hadir';

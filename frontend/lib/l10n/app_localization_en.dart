@@ -122,6 +122,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'No attempts left. Please request a new code.';
 
   @override
+  String get verifyResendSending => 'Sending...';
+
+  @override
   String get verifyResendSuccess => 'A new code has been sent to your email.';
 
   @override
@@ -258,6 +261,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get completeProfileSubmit => 'Continue';
+
+  @override
+  String get completeProfileEmailLocked =>
+      'Email from Google cannot be changed';
+
+  @override
+  String get avatarSheetTitle => 'Profile Photo';
+
+  @override
+  String get avatarSheetCamera => 'Take a Photo';
+
+  @override
+  String get avatarSheetGallery => 'Choose from Gallery';
+
+  @override
+  String get avatarSheetRemove => 'Remove Photo';
+
+  @override
+  String get avatarPickFailed =>
+      'Could not open the gallery or camera. Please try again.';
+
+  @override
+  String get avatarPermissionDenied =>
+      'Photo or camera access was denied. Enable it in your device settings.';
 
   @override
   String get comingSoonTitle => 'Coming soon';

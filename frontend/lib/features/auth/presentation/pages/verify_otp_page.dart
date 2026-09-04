@@ -12,6 +12,7 @@ import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/r
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class VerifyOtpArgs {
@@ -112,72 +113,77 @@ class _VerifyOtpView extends StatelessWidget {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final VerifyOtpProvider p = context.watch<VerifyOtpProvider>();
 
-    return Scaffold(
-      backgroundColor: AppColor.surface,
-      appBar: AppBar(
+    return LoadingOverlay(
+      isVisible: p.isLoading,
+      child: Scaffold(
         backgroundColor: AppColor.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        title: Text(
-          p.purpose == OtpPurpose.forgotPassword
-              ? l10n.forgotPageBarText
-              : l10n.verifyPageBarText,
-          style: AppTextStyle.titleMedium,
+        appBar: AppBar(
+          backgroundColor: AppColor.surface,
+          elevation: 0,
+          titleSpacing: 0,
+          title: Text(
+            p.purpose == OtpPurpose.forgotPassword
+                ? l10n.forgotPageBarText
+                : l10n.verifyPageBarText,
+            style: AppTextStyle.titleMedium,
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const SizedBox(height: 24),
-              Image.asset(
-                AppAssets.emailVerification,
-                width: 140,
-                height: 140,
-                filterQuality: FilterQuality.medium,
-              ),
-              const SizedBox(height: 32),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const SizedBox(height: 24),
+                Image.asset(
+                  AppAssets.emailVerification,
+                  width: 140,
+                  height: 140,
+                  filterQuality: FilterQuality.medium,
+                ),
+                const SizedBox(height: 32),
 
-              Text(
-                l10n.verifyHeadline,
-                textAlign: TextAlign.center,
-                style: AppTextStyle.headlineSmall,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                l10n.verifyDescription(p.email),
-                textAlign: TextAlign.center,
-                style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkSoft),
-              ),
-              const SizedBox(height: 28),
+                Text(
+                  l10n.verifyHeadline,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.headlineSmall,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  l10n.verifyDescription(p.email),
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.bodySmall.copyWith(
+                    color: AppColor.inkSoft,
+                  ),
+                ),
+                const SizedBox(height: 28),
 
-              OtpField(
-                controllers: p.controllers,
-                focusNodes: p.focusNodes,
-                hasError: p.hasError,
-                enabled: !p.isLoading,
-                onCompleted: () => _submit(context, p),
-              ),
-              const SizedBox(height: 28),
+                OtpField(
+                  controllers: p.controllers,
+                  focusNodes: p.focusNodes,
+                  hasError: p.hasError,
+                  enabled: !p.isLoading,
+                  onCompleted: () => _submit(context, p),
+                ),
+                const SizedBox(height: 28),
 
-              BoxButton(
-                label: l10n.verifySubmitButton,
-                isLoading: p.isLoading,
-                onPressed: p.isLoading || !p.isComplete
-                    ? null
-                    : () => _submit(context, p),
-              ),
-              const SizedBox(height: 24),
+                BoxButton(
+                  label: l10n.verifySubmitButton,
+                  isLoading: p.isLoading,
+                  onPressed: p.isLoading || !p.isComplete
+                      ? null
+                      : () => _submit(context, p),
+                ),
+                const SizedBox(height: 24),
 
-              _ResendRow(
-                onPressed: () => _resend(context, p),
-                canResend: p.canResend,
-                isResending: p.isResending,
-                secondsLeft: p.secondsLeft,
-              ),
-            ],
+                _ResendRow(
+                  onPressed: () => _resend(context, p),
+                  canResend: p.canResend,
+                  isResending: p.isResending,
+                  secondsLeft: p.secondsLeft,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -222,14 +228,13 @@ class _ResendRow extends StatelessWidget {
           style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
         ),
         if (isResending)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            child: SizedBox(
-              width: 14,
-              height: 14,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColor.orangeLight,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            child: Text(
+              l10n.verifyResendSending,
+              style: AppTextStyle.bodySmall.copyWith(
+                color: AppColor.inkFaint,
+                fontWeight: FontWeight.w700,
               ),
             ),
           )

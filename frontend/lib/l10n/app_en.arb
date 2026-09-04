@@ -44,6 +44,7 @@
   "verifyResendAction": "Resend code",
   "verifyResendCountdown": "Resend in {time}",
   "verifyAttemptExhausted": "No attempts left. Please request a new code.",
+  "verifyResendSending": "Sending...",
   "verifyResendSuccess": "A new code has been sent to your email.",
   "verifySuccessTitle": "Congratulations!",
   "verifySuccessMessage": "Your email has been verified successfully. You can now access all features of our app.",
@@ -91,6 +92,14 @@
   "completeProfileTitle": "Complete Your Profile",
   "completeProfileSubtitle": "Almost there. Fill in your details to start using Barberstuff.",
   "completeProfileSubmit": "Continue",
+  "completeProfileEmailLocked": "Email from Google cannot be changed",
+
+  "avatarSheetTitle": "Profile Photo",
+  "avatarSheetCamera": "Take a Photo",
+  "avatarSheetGallery": "Choose from Gallery",
+  "avatarSheetRemove": "Remove Photo",
+  "avatarPickFailed": "Could not open the gallery or camera. Please try again.",
+  "avatarPermissionDenied": "Photo or camera access was denied. Enable it in your device settings.",
 
   "comingSoonTitle": "Coming soon",
   "comingSoonMessage": "We are still working on this feature. In the meantime, feel free to use the available features. Thank you.",
