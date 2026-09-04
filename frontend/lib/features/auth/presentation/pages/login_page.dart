@@ -10,6 +10,7 @@ import 'package:mobile_barberstuff/features/auth/data/repositories/auth_reposito
 import 'package:mobile_barberstuff/features/auth/presentation/provider/login_provider.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/password_toggle.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
@@ -89,14 +90,8 @@ class _LoginView extends StatelessWidget {
                   controller: p.passwordController,
                   obscureText: p.obscurePassword,
                   validator: validators.password,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      p.obscurePassword
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      size: 20,
-                      color: AppColor.inkFaint,
-                    ),
+                  suffixIcon: PasswordToggle(
+                    obscured: p.obscurePassword,
                     onPressed: p.toggleObscurePassword,
                   ),
                 ),

@@ -54,9 +54,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseLoginTextLink => 'Sign Up';
 
   @override
-  String get commonProcessing => 'Processing...';
-
-  @override
   String get genderMale => 'Male';
 
   @override

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/shared/widgets/animated_brand_logo.dart';
+import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
 
 class LoadingOverlay extends StatelessWidget {
   const LoadingOverlay({
     super.key,
     required this.isVisible,
-    required this.message,
     required this.child,
   });
 
+  static const Duration fadeOut = Duration(milliseconds: 250);
+
   final bool isVisible;
-  final String message;
   final Widget child;
 
   @override
@@ -20,32 +19,25 @@ class LoadingOverlay extends StatelessWidget {
     return Stack(
       children: <Widget>[
         child,
-        if (isVisible)
-          Positioned.fill(
-            child: AbsorbPointer(
+        Positioned.fill(
+          child: IgnorePointer(
+            ignoring: !isVisible,
+            child: AnimatedOpacity(
+              opacity: isVisible ? 1 : 0,
+              duration: LoadingOverlay.fadeOut,
+              curve: Curves.easeOut,
               child: Material(
-                color: AppColor.ink.withValues(alpha: 0.92),
+                color: AppColor.backdrop.withValues(alpha: 0.72),
                 child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const AnimatedBrandLogo(
-                        width: 130,
-                        tint: AppColor.orangeLight,
-                      ),
-                      const SizedBox(height: 28),
-                      Text(
-                        message,
-                        style: AppTextStyle.bodyMedium.copyWith(
-                          color: AppColor.cream,
-                        ),
-                      ),
-                    ],
+                  child: TickerMode(
+                    enabled: isVisible,
+                    child: const BoxLoader(),
                   ),
                 ),
               ),
             ),
           ),
+        ),
       ],
     );
   }

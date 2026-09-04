@@ -54,9 +54,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get chooseLoginTextLink => 'Daftar';
 
   @override
-  String get commonProcessing => 'Memproses...';
-
-  @override
   String get genderMale => 'Laki-laki';
 
   @override

@@ -182,12 +182,6 @@ abstract class AppLocalizations {
   /// **'Daftar'**
   String get chooseLoginTextLink;
 
-  /// No description provided for @commonProcessing.
-  ///
-  /// In id, this message translates to:
-  /// **'Memproses...'**
-  String get commonProcessing;
-
   /// No description provided for @genderMale.
   ///
   /// In id, this message translates to:

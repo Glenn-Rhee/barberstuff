@@ -7,7 +7,7 @@ class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
     required this.hint,
-    required this.iconPath,
+    this.iconPath,
     this.controller,
     this.validator,
     this.keyboardType,
@@ -18,7 +18,7 @@ class AppTextField extends StatefulWidget {
   });
 
   final String hint;
-  final String iconPath;
+  final String? iconPath;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;

@@ -7,15 +7,15 @@ class AppDropdownField<T> extends StatefulWidget {
   const AppDropdownField({
     super.key,
     required this.hint,
-    required this.iconPath,
     required this.items,
     required this.onChanged,
+    this.iconPath,
     this.value,
     this.validator,
   });
 
   final String hint;
-  final String iconPath;
+  final String? iconPath;
   final List<DropdownMenuItem<T>> items;
   final ValueChanged<T?> onChanged;
   final T? value;

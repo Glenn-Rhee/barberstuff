@@ -31,6 +31,7 @@ class RegisterProvider extends ChangeNotifier {
 
   DateTime? _dateOfBirth;
   String? _gender;
+  String? _imageUrl;
   bool _obscurePassword = true;
   bool _isLoading = false;
   bool _isComplete = false;
@@ -41,6 +42,7 @@ class RegisterProvider extends ChangeNotifier {
   RegisterRequestApi? get lastRequest => _lastRequest;
   DateTime? get dateOfBirth => _dateOfBirth;
   String? get gender => _gender;
+  String? get imageUrl => _imageUrl;
   bool get obscurePassword => _obscurePassword;
   bool get isLoading => _isLoading;
   bool get isComplete => _isComplete;
@@ -66,6 +68,11 @@ class RegisterProvider extends ChangeNotifier {
     String two(int n) => n.toString().padLeft(2, '0');
     birthDateController.text = '${two(v.day)}/${two(v.month)}/${v.year}';
     _syncComplete();
+    notifyListeners();
+  }
+
+  void setImageUrl(String? v) {
+    _imageUrl = v;
     notifyListeners();
   }
 
@@ -95,6 +102,7 @@ class RegisterProvider extends ChangeNotifier {
       gender: _gender!,
       email: emailController.text.trim(),
       password: passwordController.text,
+      imageUrl: _imageUrl,
     );
 
     try {

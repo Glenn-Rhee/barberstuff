@@ -31,8 +31,8 @@ class AppField {
 
   static InputDecoration decoration({
     required String hint,
-    required String iconPath,
     required bool focused,
+    String? iconPath,
     Widget? suffixIcon,
   }) {
     return InputDecoration(
@@ -41,8 +41,13 @@ class AppField {
       filled: true,
       fillColor: focused ? AppColor.cream : AppColor.surface,
       isDense: true,
-      contentPadding: const EdgeInsets.only(right: 16, top: 18, bottom: 18),
-      prefixIcon: icon(iconPath, focused: focused),
+      contentPadding: EdgeInsets.only(
+        left: iconPath == null ? 16 : 0,
+        right: 16,
+        top: 18,
+        bottom: 18,
+      ),
+      prefixIcon: iconPath == null ? null : icon(iconPath, focused: focused),
       prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
       suffixIcon: suffixIcon,
       suffixIconConstraints: const BoxConstraints(minWidth: 48, minHeight: 0),

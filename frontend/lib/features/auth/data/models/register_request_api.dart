@@ -5,7 +5,8 @@ class RegisterRequestApi {
     required this.dateOfBirth,
     required this.gender,
     required this.email,
-    required this.password
+    required this.password,
+    this.imageUrl,
   });
 
   final String name;
@@ -14,6 +15,7 @@ class RegisterRequestApi {
   final String gender;
   final String email;
   final String password;
+  final String? imageUrl;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'name': name,
@@ -21,7 +23,8 @@ class RegisterRequestApi {
     'date_of_birth': _iso(dateOfBirth),
     'gender': gender,
     'email': email,
-    'password': password
+    'password': password,
+    if (imageUrl != null && imageUrl!.isNotEmpty) 'image_url': imageUrl,
   };
 
   // helper to convert

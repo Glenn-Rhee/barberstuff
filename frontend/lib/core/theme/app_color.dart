@@ -7,6 +7,7 @@ class AppColor {
   static const Color orange = Color(0xFFC9882A);
   static const Color orangeDark = Color(0xFFA96F1E);
 
+  static const Color backdrop = Color(0xFF080A0B);
   static const Color ink = Color(0xFF141414);
   static const Color inkSoft = Color(0xFF6B6B6B);
   static const Color inkFaint = Color(0xFF9C9C9C);
