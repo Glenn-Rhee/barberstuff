@@ -7,4 +7,8 @@ class ApiEndpoint {
 
   static const String authProvider = '/auth/provider';
   static const String registerOauth = '/auth/register/oauth';
+
+
+  static const String forgotPassword = '/auth/forgot';
+  static const String resetPassword = '/auth/reset';
 }

@@ -4,11 +4,14 @@ import 'package:mobile_barberstuff/core/config/api_endpoint.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/api_response.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/auth_provider_result.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_request_api.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/login_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/login_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/oauth_register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_result.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/reset_password_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_result.dart';
 

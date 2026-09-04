@@ -5,13 +5,20 @@ import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_request_api.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/forgot_password/domain/models/forgot_password_request_api.dart';
+import 'package:mobile_barberstuff/features/forgot_password/domain/models/forgot_password_result.dart';
+
+enum OtpPurpose { register, forgotPassword }
 
 class VerifyOtpProvider extends ChangeNotifier {
   VerifyOtpProvider(
     this._repository, {
     required String userId,
-    required this.registerRequest,
+    required this.email,
+    required this.purpose,
+    this.registerRequest,
   }) : _userId = userId {
     for (final TextEditingController c in controllers) {
       c.addListener(_onDigitChanged);
@@ -22,7 +29,9 @@ class VerifyOtpProvider extends ChangeNotifier {
   static const int resendCooldown = 180;
 
   final AuthRepository _repository;
-  final RegisterRequestApi registerRequest;
+  final RegisterRequestApi? registerRequest;
+  final String email;
+  final OtpPurpose purpose;
 
   final List<TextEditingController> controllers =
       List<TextEditingController>.generate(
@@ -45,10 +54,9 @@ class VerifyOtpProvider extends ChangeNotifier {
   bool _hasError = false;
   int _secondsLeft = 0;
   ApiException? _error;
-  String? _infoMessage;
+  String? _resetToken;
 
   String get userId => _userId;
-  String get email => registerRequest.email;
   bool get isLoading => _isLoading;
   bool get isResending => _isResending;
   bool get isComplete => _isComplete;
@@ -56,7 +64,7 @@ class VerifyOtpProvider extends ChangeNotifier {
   bool get canResend => _secondsLeft == 0 && !_isResending && !_isLoading;
   int get secondsLeft => _secondsLeft;
   ApiException? get error => _error;
-  String? get infoMessage => _infoMessage;
+  String? get resetToken => _resetToken;
 
   String get otp => controllers.map((TextEditingController c) => c.text).join();
 
@@ -105,14 +113,14 @@ class VerifyOtpProvider extends ChangeNotifier {
 
     _isLoading = true;
     _error = null;
-    _infoMessage = null;
     _hasError = false;
     notifyListeners();
 
     try {
-      await _repository.verifyOtp(
+      final VerifyOtpResult result = await _repository.verifyOtp(
         VerifyOtpRequestApi(userId: _userId, otp: otp),
       );
+      _resetToken = result.resetToken;
       _isLoading = false;
       notifyListeners();
       return true;
@@ -131,12 +139,21 @@ class VerifyOtpProvider extends ChangeNotifier {
 
     _isResending = true;
     _error = null;
-    _infoMessage = null;
     notifyListeners();
 
     try {
-      final RegisterResult result = await _repository.register(registerRequest);
-      _userId = result.id;
+      if (purpose == OtpPurpose.register) {
+        final RegisterResult result = await _repository.register(
+          registerRequest!,
+        );
+        _userId = result.id;
+      } else {
+        final ForgotPasswordResult result = await _repository.forgotPassword(
+          ForgotPasswordRequestApi(email: email),
+        );
+        _userId = result.userId;
+      }
+
       _isResending = false;
       _hasError = false;
       _clearOtp();
