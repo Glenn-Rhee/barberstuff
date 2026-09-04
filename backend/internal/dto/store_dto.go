@@ -34,12 +34,11 @@ type StoreData struct {
 	BannerUrl    string                 `json:"banner_url"`
 	Address      string                 `json:"address"`
 	Description  string                 `json:"description"`
-	TotalService int64                    `json:"total_service"`
-	TotalCapster int64                    `json:"total_capster"`
-	TotalPackage int64                    `json:"total_package"`
+	TotalService int64                  `json:"total_service"`
+	TotalCapster int64                  `json:"total_capster"`
+	TotalPackage int64                  `json:"total_package"`
 	Status       entity.StoreStatusEnum `json:"status"`
 	CreatedAt    time.Time              `json:"created_at"`
-	DeletedAt    *time.Time             `json:"deleted_at"`
 }
 
 type StoreResponse struct {

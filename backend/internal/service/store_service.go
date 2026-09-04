@@ -165,6 +165,9 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		Description: *dataStore.Description,
 		Status:      dataStore.Status,
 		CreatedAt:   dataStore.CreatedAt,
+		TotalService: dataStore.TotalService,
+		TotalCapster: dataStore.TotalCapster,
+		TotalPackage: dataStore.TotalPackage,
 	}
 
 	var scopes []func(*gorm.DB) *gorm.DB
