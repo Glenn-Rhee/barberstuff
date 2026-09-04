@@ -52,10 +52,16 @@ class _OtpFieldState extends State<OtpField> {
     if (mounted) setState(() {});
   }
 
-  void _distribute(String value) {
-    final String digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+  void _write(int index, String text) {
+    widget.controllers[index].value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
+  void _distribute(String digits) {
     for (int i = 0; i < _length; i++) {
-      widget.controllers[i].text = i < digits.length ? digits[i] : '';
+      _write(i, i < digits.length ? digits[i] : '');
     }
     final int next = digits.length >= _length ? _length - 1 : digits.length;
     widget.focusNodes[next].requestFocus();
@@ -70,11 +76,17 @@ class _OtpFieldState extends State<OtpField> {
   }
 
   void _onChanged(int index, String value) {
-    if (value.length > 1) {
-      _distribute(value);
+    final String digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (digits.length >= _length) {
+      _distribute(digits);
       return;
     }
-    if (value.isNotEmpty && index < _length - 1) {
+
+    final String digit = digits.isEmpty ? '' : digits[digits.length - 1];
+    if (value != digit) _write(index, digit);
+
+    if (digit.isNotEmpty && index < _length - 1) {
       widget.focusNodes[index + 1].requestFocus();
     }
     _notifyIfCompleted();

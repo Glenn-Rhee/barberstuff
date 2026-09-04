@@ -114,7 +114,7 @@ void main() {
     _fill(t.provider, '000000');
     expect(await t.provider.submit(), isFalse);
     expect(
-      t.provider.errorMessage,
+      t.provider.error?.rawMessage,
       'OTP tidak valid, silahkan coba lagi. Sisa percobaan 3 kali',
     );
     expect(t.provider.hasError, isTrue);
@@ -148,6 +148,43 @@ void main() {
     expect(t.provider.secondsLeft, VerifyOtpProvider.resendCooldown);
 
     t.provider.dispose();
+  });
+
+  testWidgets('ketik ulang di kotak terisi tidak menghapus digit lain', (
+    WidgetTester tester,
+  ) async {
+    final List<TextEditingController> controllers =
+        List<TextEditingController>.generate(6, (_) => TextEditingController());
+    final List<FocusNode> nodes = List<FocusNode>.generate(
+      6,
+      (_) => FocusNode(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: OtpField(controllers: controllers, focusNodes: nodes),
+        ),
+      ),
+    );
+
+    String code() =>
+        controllers.map((TextEditingController c) => c.text).join();
+
+    await tester.enterText(find.byType(TextField).at(0), '754173');
+    await tester.pump();
+    expect(code(), '754173');
+
+    await tester.enterText(find.byType(TextField).at(0), '79');
+    await tester.pump();
+    expect(code(), '954173');
+
+    for (final TextEditingController c in controllers) {
+      c.dispose();
+    }
+    for (final FocusNode n in nodes) {
+      n.dispose();
+    }
   });
 
   testWidgets('kotak otp maju otomatis dan mundur saat backspace', (

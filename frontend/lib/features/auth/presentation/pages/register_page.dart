@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
@@ -13,6 +14,7 @@ import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_f
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -21,7 +23,8 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<RegisterProvider>(
-      create: (BuildContext ctx) => RegisterProvider(ctx.read<AuthRepository>()),
+      create: (BuildContext ctx) =>
+          RegisterProvider(ctx.read<AuthRepository>()),
       child: const _RegisterView(),
     );
   }
@@ -63,161 +66,157 @@ class _RegisterView extends StatelessWidget {
           registerRequest: p.lastRequest!,
         ),
       );
-    } else if (p.errorMessage != null) {
-      AppToast.show(context, message: p.errorMessage!);
+    } else if (p.error != null) {
+      AppToast.show(context, message: p.error!.message(l10n));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final Validators validators = Validators(l10n);
     final RegisterProvider p = context.watch<RegisterProvider>();
 
-    return Scaffold(
-      backgroundColor: AppColor.surface,
-      appBar: AppBar(
+    return LoadingOverlay(
+      isVisible: p.isLoading,
+      message: l10n.commonProcessing,
+      child: Scaffold(
         backgroundColor: AppColor.surface,
-        elevation: 0,
-        title: Text(l10n.registerPageBarText, style: AppTextStyle.titleLarge),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-          child: Form(
-            key: p.formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Text(l10n.registerHeadline, style: AppTextStyle.headlineSmall),
-                const SizedBox(height: 6),
-                Text(
-                  l10n.registerSubheadline,
-                  style: AppTextStyle.bodyMedium.copyWith(
-                    color: AppColor.inkFaint,
+        appBar: AppBar(
+          backgroundColor: AppColor.surface,
+          elevation: 0,
+          titleSpacing: 0,
+          leading: const BackButton(color: AppColor.ink),
+          title: Text(l10n.registerHeadline, style: AppTextStyle.titleLarge),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+            child: Form(
+              key: p.formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  AppTextField(
+                    hint: l10n.registerNameLabel,
+                    iconPath: AppAssets.nameIcon,
+                    controller: p.nameController,
+                    keyboardType: TextInputType.name,
+                    validator: (String? v) =>
+                        validators.required(v, label: l10n.registerNameLabel),
                   ),
-                ),
-                const SizedBox(height: _gapSection),
+                  const SizedBox(height: AppField.gap),
 
-                AppTextField(
-                  hint: l10n.registerNameLabel,
-                  iconPath: AppAssets.nameIcon,
-                  controller: p.nameController,
-                  keyboardType: TextInputType.name,
-                  validator: (String? v) =>
-                      Validators.required(v, label: l10n.registerNameLabel),
-                ),
-                const SizedBox(height: AppField.gap),
-
-                AppTextField(
-                  hint: l10n.registerPhoneLabel,
-                  iconPath: AppAssets.phoneIcon,
-                  controller: p.phoneController,
-                  keyboardType: TextInputType.phone,
-                  validator: Validators.phoneNumber,
-                ),
-                const SizedBox(height: AppField.gap),
-
-                AppTextField(
-                  hint: l10n.registerBirthDateLabel,
-                  iconPath: AppAssets.birthDateIcon,
-                  controller: p.birthDateController,
-                  readOnly: true,
-                  onTap: () => _pickDate(context, p),
-                  validator: (String? v) => Validators.required(
-                    v,
-                    label: l10n.registerBirthDateLabel,
+                  AppTextField(
+                    hint: l10n.registerEmailLabel,
+                    iconPath: AppAssets.mailIcon,
+                    controller: p.emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: validators.email,
                   ),
-                ),
-                const SizedBox(height: AppField.gap),
+                  const SizedBox(height: AppField.gap),
 
-                AppDropdownField<String>(
-                  hint: l10n.registerGenderLabel,
-                  iconPath: AppAssets.genderIcon,
-                  value: p.gender,
-                  onChanged: p.setGender,
-                  validator: (String? v) =>
-                      Validators.required(v, label: l10n.registerGenderLabel),
-                  items: <DropdownMenuItem<String>>[
-                    DropdownMenuItem<String>(
-                      value: 'male',
-                      child: Text(l10n.genderMale),
-                    ),
-                    DropdownMenuItem<String>(
-                      value: 'female',
-                      child: Text(l10n.genderFemale),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppField.gap),
-
-                AppTextField(
-                  hint: l10n.registerEmailLabel,
-                  iconPath: AppAssets.mailIcon,
-                  controller: p.emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: Validators.email,
-                ),
-                const SizedBox(height: AppField.gap),
-
-                AppTextField(
-                  hint: l10n.registerPasswordLabel,
-                  iconPath: AppAssets.lockIcon,
-                  controller: p.passwordController,
-                  obscureText: p.obscurePassword,
-                  validator: Validators.password,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      p.obscurePassword
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      size: 20,
-                      color: AppColor.inkFaint,
-                    ),
-                    onPressed: p.toggleObscurePassword,
-                  ),
-                ),
-                const SizedBox(height: _gapSection),
-
-                BoxButton(
-                  label: l10n.registerSubmitButton,
-                  isLoading: p.isLoading,
-                  onPressed: p.isLoading || !p.isComplete
-                      ? null
-                      : () => _submit(context, p),
-                ),
-                const SizedBox(height: 20),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      l10n.registerHaveAccountQuestion,
-                      style: AppTextStyle.bodyMedium.copyWith(
+                  AppTextField(
+                    hint: l10n.registerPasswordLabel,
+                    iconPath: AppAssets.lockIcon,
+                    controller: p.passwordController,
+                    obscureText: p.obscurePassword,
+                    validator: validators.password,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        p.obscurePassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        size: 20,
                         color: AppColor.inkFaint,
                       ),
+                      onPressed: p.toggleObscurePassword,
                     ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      behavior: HitTestBehavior.opaque,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 4,
+                  ),
+                  const SizedBox(height: AppField.gap),
+
+                  AppTextField(
+                    hint: l10n.registerBirthDateLabel,
+                    iconPath: AppAssets.birthDateIcon,
+                    controller: p.birthDateController,
+                    readOnly: true,
+                    onTap: () => _pickDate(context, p),
+                    validator: (String? v) => validators.required(
+                      v,
+                      label: l10n.registerBirthDateLabel,
+                    ),
+                  ),
+                  const SizedBox(height: AppField.gap),
+
+                  AppTextField(
+                    hint: l10n.registerPhoneLabel,
+                    iconPath: AppAssets.phoneIcon,
+                    controller: p.phoneController,
+                    keyboardType: TextInputType.phone,
+                    validator: validators.phoneNumber,
+                  ),
+                  const SizedBox(height: AppField.gap),
+
+                  AppDropdownField<String>(
+                    hint: l10n.registerGenderLabel,
+                    iconPath: AppAssets.genderIcon,
+                    value: p.gender,
+                    onChanged: p.setGender,
+                    validator: (String? v) =>
+                        validators.required(v, label: l10n.registerGenderLabel),
+                    items: <DropdownMenuItem<String>>[
+                      DropdownMenuItem<String>(
+                        value: 'male',
+                        child: Text(l10n.genderMale),
+                      ),
+                      DropdownMenuItem<String>(
+                        value: 'female',
+                        child: Text(l10n.genderFemale),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: _gapSection),
+
+                  BoxButton(
+                    label: l10n.registerSubmitButton,
+                    isLoading: p.isLoading,
+                    onPressed: p.isLoading || !p.isComplete
+                        ? null
+                        : () => _submit(context, p),
+                  ),
+                  const SizedBox(height: 20),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        l10n.registerHaveAccountQuestion,
+                        style: AppTextStyle.bodyMedium.copyWith(
+                          color: AppColor.inkFaint,
                         ),
-                        child: Text(
-                          l10n.registerLoginAction,
-                          style: AppTextStyle.bodyMedium.copyWith(
-                            color: AppColor.orangeLight,
-                            fontWeight: FontWeight.w700,
+                      ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        behavior: HitTestBehavior.opaque,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 4,
+                          ),
+                          child: Text(
+                            l10n.registerLoginAction,
+                            style: AppTextStyle.bodyMedium.copyWith(
+                              color: AppColor.orangeLight,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

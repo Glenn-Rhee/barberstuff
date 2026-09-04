@@ -1,15 +1,6 @@
 {
   "@@locale": "id",
   "appTitle": "Barberstuff",
-  "bookingTitle": "Pesan Layanan",
-  "greeting": "Halo, {name}!",
-  "@greeting": {
-    "placeholders": { "name": { "type": "String" } }
-  },
-  "queueCount": "{count, plural, =0{Antrean kosong} =1{1 orang mengantre} other{{count} orang mengantre}}",
-  "@queueCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
 
   "onboardingFirstTitle": "Gaya yang pas untuk keseharianmu",
   "onboardingFirstDescription": "Temukan gaya rambut yang sesuai dengan karakter dan aktivitas harianmu.",
@@ -30,22 +21,18 @@
   "chooseLoginTextLink": "Daftar",
 
   "commonProcessing": "Memproses...",
-  "commonSuccess": "Berhasil",
-  "commonRetry": "Coba lagi",
 
   "genderMale": "Laki-laki",
   "genderFemale": "Perempuan",
 
-  "registerPageBarText": "Daftar",
   "registerHeadline": "Buat Akun Anda",
-  "registerSubheadline": "Isi data diri kamu untuk jadi Barberstuff.",
   "registerNameLabel": "Nama Lengkap",
   "registerPhoneLabel": "Nomor Telepon",
   "registerBirthDateLabel": "Tanggal Lahir",
   "registerGenderLabel": "Jenis Kelamin",
   "registerEmailLabel": "Email",
   "registerPasswordLabel": "Kata Sandi",
-  "registerSubmitButton": "Daftar",
+  "registerSubmitButton": "Lanjutkan",
   "registerHaveAccountQuestion": "Sudah punya akun?",
   "registerLoginAction": "Masuk",
   "registerOtpSentMessage": "OTP telah dikirim ke email Anda.",
@@ -61,12 +48,13 @@
   "verifySubmitButton": "Verifikasi",
   "verifyResendQuestion": "Tidak menerima kode?",
   "verifyResendAction": "Kirim ulang kode",
-  "verifyResendCountdown": "Kirim ulang dalam {seconds} detik",
+  "verifyResendCountdown": "Kirim ulang dalam {time}",
   "@verifyResendCountdown": {
     "placeholders": {
-      "seconds": { "type": "int" }
+      "time": { "type": "String" }
     }
   },
+  "verifyAttemptExhausted": "Kesempatan mencoba habis. Silakan kirim ulang kode.",
   "verifyResendSuccess": "Kode baru telah dikirim ke email Anda.",
   "verifySuccessTitle": "Selamat!",
   "verifySuccessMessage": "Email Anda telah berhasil diverifikasi. Anda sekarang dapat mengakses semua fitur aplikasi kami.",
@@ -80,7 +68,38 @@
   "loginForgotQuestion": "Lupa kata sandi?",
   "loginForgotAction": "Klik disini",
   "loginWithGoogle": "Masuk dengan Google",
-  "homeComingSoon": "Coming soon",
+
+  "exceptionReceiveTimeout": "Koneksi timeout. Periksa jaringan Anda.",
+  "exceptionConnectionError": "Tidak dapat terhubung ke server.",
+  "exceptionDefaultType": "Terjadi kesalahan pada server.",
+  "exceptionDefault": "Terjadi Kesalahan yang tak terduga.",
+
+  "validatorRequired": "{label} wajib diisi",
+  "@validatorRequired": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "validatorEmailInvalid": "Format email tidak valid",
+  "validatorPasswordMin": "Kata Sandi minimal {min} karakter",
+  "@validatorPasswordMin": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "validatorPhoneMin": "Nomor Telepon minimal {min} digit",
+  "@validatorPhoneMin": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "validatorPhoneMax": "Nomor Telepon maksimal {max} digit",
+  "@validatorPhoneMax": {
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "validatorPhoneDigits": "Hanya boleh angka",
 
   "comingSoonTitle": "Segera hadir",
   "comingSoonMessage": "Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.",

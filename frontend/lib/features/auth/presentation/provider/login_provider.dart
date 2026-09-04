@@ -28,14 +28,14 @@ class LoginProvider extends ChangeNotifier {
   bool _rememberMe = false;
   bool _isLoading = false;
   bool _isComplete = false;
-  String? _errorMessage;
+  ApiException? _error;
   LoginResult? _result;
 
   bool get obscurePassword => _obscurePassword;
   bool get rememberMe => _rememberMe;
   bool get isLoading => _isLoading;
   bool get isComplete => _isComplete;
-  String? get errorMessage => _errorMessage;
+  ApiException? get error => _error;
   LoginResult? get result => _result;
 
   void _syncComplete() {
@@ -63,7 +63,7 @@ class LoginProvider extends ChangeNotifier {
     if (!(formKey.currentState?.validate() ?? false)) return false;
 
     _isLoading = true;
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
 
     final String email = emailController.text.trim();
@@ -79,7 +79,7 @@ class LoginProvider extends ChangeNotifier {
       return true;
     } on ApiException catch (e) {
       _isLoading = false;
-      _errorMessage = e.message;
+      _error = e;
       notifyListeners();
       return false;
     }

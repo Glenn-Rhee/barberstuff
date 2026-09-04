@@ -14,6 +14,12 @@ class AuthRemoteDataSource {
   AuthRemoteDataSource(this._dio);
   final Dio _dio;
 
+  ApiException _failure(ApiResponse<Object?> res) => ApiException(
+    ApiErrorType.server,
+    statusCode: res.statusCode,
+    rawMessage: res.message,
+  );
+
   Future<RegisterResult> registerCredential(RegisterRequestApi request) async {
     final Response<dynamic> res = await _dio.post<dynamic>(
       ApiEndpoint.registerCredential,
@@ -28,10 +34,7 @@ class AuthRemoteDataSource {
 
     final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;
     if (!ok || parsed.data == null) {
-      throw ApiException(
-        parsed.message.isNotEmpty ? parsed.message : 'Gagal mendaftar.',
-        statusCode: parsed.statusCode,
-      );
+      throw _failure(parsed);
     }
     return parsed.data!;
   }
@@ -50,10 +53,7 @@ class AuthRemoteDataSource {
 
     final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;
     if (!ok) {
-      throw ApiException(
-        parsed.message.isNotEmpty ? parsed.message : 'Gagal verifikasi OTP.',
-        statusCode: parsed.statusCode,
-      );
+      throw _failure(parsed);
     }
     return parsed.data ?? const VerifyOtpResult();
   }
@@ -71,10 +71,7 @@ class AuthRemoteDataSource {
 
     final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;
     if (!ok || parsed.data == null) {
-      throw ApiException(
-        parsed.message.isNotEmpty ? parsed.message : 'Gagal masuk.',
-        statusCode: parsed.statusCode,
-      );
+      throw _failure(parsed);
     }
     return parsed.data!;
   }

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_theme.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
+import 'package:mobile_barberstuff/features/onboarding/presentation/widgets/onboarding_action.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 /// Layar uji: lebar fisik, tinggi fisik, devicePixelRatio.
@@ -97,4 +98,37 @@ void main() {
       }
     }
   }
+
+  testWidgets('tombol onboarding tidak tertimpa navigasi bawah', (
+    WidgetTester tester,
+  ) async {
+    const double navBar = 48;
+    tester.view.physicalSize = const Size(1080, 2160);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        locale: const Locale('id'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (BuildContext context, Widget? child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            padding: const EdgeInsets.only(bottom: navBar),
+            viewPadding: const EdgeInsets.only(bottom: navBar),
+          ),
+          child: child!,
+        ),
+        home: const OnboardingPage(),
+      ),
+    );
+    await tester.pump();
+
+    final double safeBottom = 2160 / 3.0 - navBar;
+    expect(
+      tester.getRect(find.byType(OnboardingAction)).bottom,
+      lessThanOrEqualTo(safeBottom),
+    );
+  });
 }

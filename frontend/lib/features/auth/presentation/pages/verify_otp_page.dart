@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
@@ -45,14 +46,21 @@ class _VerifyOtpView extends StatelessWidget {
     final bool ok = await p.submit();
     if (!context.mounted) return;
 
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     if (ok) {
       Navigator.of(
         context,
       ).pushNamedAndRemoveUntil(AppRoute.verifySuccess, (Route<dynamic> r) => r.isFirst);
-    } else if (p.errorMessage != null) {
-      AppToast.show(context, message: p.errorMessage!);
+    } else if (p.error != null) {
+      AppToast.show(context, message: _errorText(p, l10n));
     }
   }
+
+  String _errorText(VerifyOtpProvider p, AppLocalizations l10n) =>
+      p.isAttemptExhausted
+      ? l10n.verifyAttemptExhausted
+      : p.error!.message(l10n);
 
   Future<void> _resend(BuildContext context, VerifyOtpProvider p) async {
     final bool ok = await p.resend();
@@ -66,8 +74,8 @@ class _VerifyOtpView extends StatelessWidget {
         message: l10n.verifyResendSuccess,
         type: AppToastType.success,
       );
-    } else if (p.errorMessage != null) {
-      AppToast.show(context, message: p.errorMessage!);
+    } else if (p.error != null) {
+      AppToast.show(context, message: _errorText(p, l10n));
     }
   }
 
@@ -159,8 +167,10 @@ class _ResendRow extends StatelessWidget {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     if (secondsLeft > 0) {
+      final String seconds = (secondsLeft % 60).toString().padLeft(2, '0');
+
       return Text(
-        l10n.verifyResendCountdown(secondsLeft),
+        l10n.verifyResendCountdown('${secondsLeft ~/ 60}:$seconds'),
         textAlign: TextAlign.center,
         style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
       );
