@@ -16,26 +16,51 @@ func main() {
 	lib.RedisInit()
 	h := bootstrap.InitHandlers(db)
 
-	router := gin.Default()
+	r := gin.Default()
 
-	// Customer register
-	router.POST("/auth/register/credential", h.CustomerHandler.CredentialRegister)
-	router.POST("/auth/register/oauth", h.CustomerHandler.OauthRegister)
+	auth := r.Group("/auth")
+	{
+		register := auth.Group("/register")
+		{
+			register.POST("/credential", h.CustomerHandler.CredentialRegister)
+			register.POST("/oauth", h.CustomerHandler.OauthRegister)
+			register.POST("/admin", h.StaffHandler.CreateAdmin)
+		}
 
-	// Verify OTP
-	router.POST("/auth/verify-credential", h.CustomerHandler.VerifyCredential)
+		auth.POST("/verify-credential", h.CustomerHandler.VerifyCredential)
+		auth.POST("/login/credential", h.AuthHandler.CredentialLogin)
+		auth.POST("/provider", h.AuthHandler.AuthProvider)
+		auth.POST("/forgot", h.CustomerHandler.ForgotPassword)
+		auth.POST("/reset", h.AuthHandler.ResetPassword)
+		auth.POST("/refresh-token", h.AuthHandler.RefreshToken)
+	}
 
-	// User Login
-	router.POST("/auth/login/credential", h.AuthHandler.CredentialLogin)
+	store := r.Group("/store")
+	{
+		store.Use(h.AuthMiddleware)
+		store.POST("/", h.StoreHandler.CreateNewStore)
+		store.GET("/", h.StoreHandler.GetStores)
+		store.GET("/:id", h.StoreHandler.GetStore)
+		store.PUT("/:id", h.StoreHandler.UpdateStore)
+		store.DELETE("/:id", h.StoreHandler.DeleteStore)
+	}
 
-	// Validate Provider
-	router.POST("/auth/provider", h.AuthHandler.AuthProvider)
+	staff := r.Group("/staff")
+	{
+		staff.Use(h.AuthMiddleware)
+		staff.POST("/", h.StaffHandler.CreateAccountStaff)
+		staff.GET("/", h.StaffHandler.GetAccountStaffes)
+		staff.PATCH("/:id", h.StaffHandler.UpdateAccountStaff)
+		staff.DELETE("/:id", h.StaffHandler.DeleteAccountStaff)
+	}
 
-	// Forgot Password
-	router.POST("/auth/forgot", h.CustomerHandler.ForgotPassword)
-	// Reset Passsword
-	router.POST("/auth/reset", h.AuthHandler.ResetPassword)
+	profile := r.Group("/profile")
+	{
+		profile.Use(h.AuthMiddleware)
+		profile.GET("/customer", h.CustomerHandler.GetProfile)
+		profile.GET("/staff", h.StaffHandler.GetProfile)
+	}
 
 	fmt.Println("Server running on http://localhost:8080")
-	router.Run(":8080")
+	r.Run(":8080")
 }

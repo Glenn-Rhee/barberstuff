@@ -27,8 +27,8 @@ type Booking struct {
 	TotalPrice     decimal.Decimal   `gorm:"column:total_price;not null;default:0"`
 	ScheduledAt    *time.Time        `gorm:"column:scheduled_at"`
 	QRCode         *string           `gorm:"column:qr_code"`
-	CreatedAt      time.Time         `gorm:"column:created_at;not null"`
-	UpdatedAt      time.Time         `gorm:"column:updated_at;not null"`
+	CreatedAt      time.Time         `gorm:"column:created_at;not null;autoCreateTime"`
+	UpdatedAt      time.Time         `gorm:"column:updated_at;not null;autoUpdateTime"`
 }
 
 func (Booking) TableName() string {
@@ -41,7 +41,7 @@ type BookingStatusHistory struct {
 	OldStatus *BookingStatusEnum `gorm:"column:old_status"`
 	NewStatus BookingStatusEnum  `gorm:"column:new_status;not null"`
 	ChangedBy *uuid.UUID         `gorm:"column:changed_by"`
-	CreatedAt time.Time          `gorm:"column:created_at;not null"`
+	CreatedAt time.Time          `gorm:"column:created_at;not null;;autoCreateTime"`
 }
 
 func (BookingStatusHistory) TableName() string {

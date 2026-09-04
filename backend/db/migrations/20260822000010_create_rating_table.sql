@@ -7,10 +7,9 @@ CREATE TYPE rating_type_enum AS ENUM ('store', 'capster');
 -- dikaitkan ke booking (UNIQUE) supaya 1 booking cuma bisa dirating 1x.
 CREATE TABLE rating (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    id_booking UUID UNIQUE REFERENCES booking(id) ON DELETE CASCADE,
     id_user UUID NOT NULL REFERENCES customer(id),
-    id_store UUID REFERENCES store(id) ON DELETE CASCADE,
-    id_capster UUID REFERENCES capster(id) ON DELETE CASCADE,
+    id_store UUID REFERENCES store(id)  ,
+    id_capster UUID REFERENCES capster(id)  ,
     type rating_type_enum NOT NULL,
     score SMALLINT NOT NULL CHECK (score BETWEEN 1 AND 5),
     message TEXT,

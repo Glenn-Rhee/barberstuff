@@ -23,6 +23,7 @@ type CustomerService interface {
 	VerifyOTP(ctx context.Context, dataOTPCust dto.VerifyCredentialRequest) (dto.VerifyOTPResponse, error)
 	OauthRegister(dataNewCustomer dto.OauthCustomerRequest, ctx context.Context) (dto.AuthenticationResponse, error)
 	ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) (dto.ForgotPassswordResponse, error)
+	GetProfile(claims *lib.CustomClaims) (dto.ProfileCustomerResponse, error)
 }
 
 type customerService struct {
@@ -92,6 +93,7 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		DateOfBirth:  &dataNewCustomer.DateOfBirth,
 		Gender:       dataNewCustomer.Gender,
 		MemberPoints: 100,
+		ImageCustomer: dataNewCustomer.ImageUrl,
 	}
 
 	auth := &entity.Authentication{
@@ -214,7 +216,9 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		DateOfBirth:  &dataNewCustomer.DateOfBirth,
 		Gender:       dataNewCustomer.Gender,
 		MemberPoints: 100,
+		ImageCustomer: dataNewCustomer.ImageUrl,
 	}
+
 	auth := &entity.Authentication{
 		ID:            uuid.New(),
 		IDCustomer:    &custId,
@@ -237,9 +241,6 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 	if err != nil {
 		return c.failRegister(tx, "ISSUE OTP", err)
 	}
-
-	log.Println("otp:", otp)
-
 	err = c.sendOtp(ctx, custId, otp, auth.Email, customer.Name, descriptionOTP)
 	if err != nil {
 		return c.failRegister(tx, "Send OTP", err)
@@ -323,6 +324,10 @@ func (c *customerService) VerifyOTP(ctx context.Context, dataOTPCust dto.VerifyC
 		if err != nil {
 			helper.Logger("Failed convert string to int", BASE_PATH, err)
 			return dto.VerifyOTPResponse{}, errors.New(MESSAGE_ERROR)
+		}
+
+		if totalAttempts == 5 {
+			return dto.VerifyOTPResponse{}, errors.New("Anda telah melakukan percobaan sebanyak 5 kali. Coba lagi nanti!")
 		}
 
 		return dto.VerifyOTPResponse{}, fmt.Errorf("OTP tidak valid, silahkan coba lagi. Sisa percobaan %d kali", 5-totalAttempts)
@@ -431,6 +436,38 @@ func (c *customerService) ForgotPassword(ctx context.Context, dataForgotPassword
 		UserId: dataAuth.IDCustomer.String(),
 	}, nil
 }
+
+func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCustomerResponse, error) {
+	dataCustomers, err := c.customerRepo.FindProfile(claims.UserId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.ProfileCustomerResponse{}, errors.New("Akun anda tidak ditemukan!")
+		}
+
+		helper.Logger("Find data profile", "get profile", err)
+		return dto.ProfileCustomerResponse{}, errors.New("Terdapat kesalahan saat mengambil data profile!")
+	}
+
+	dataResult := dto.ProfileCustomerResponse{
+		Id:            dataCustomers.ID,
+		Name:          dataCustomers.Name,
+		PhoneNumber:   *dataCustomers.PhoneNumber,
+		DateOfBirth:   *dataCustomers.DateOfBirth,
+		Gender:        dataCustomers.Gender,
+		MemberPoints:  dataCustomers.MemberPoints,
+		PremiumType:   dataCustomers.PremiumType,
+		ImageUrl:      &dataCustomers.ImageCustomer,
+		CreatedAt:     dataCustomers.CreatedAt,
+		Role:          dataCustomers.Authentication.Role,
+		Email:         dataCustomers.Authentication.Email,
+		IsVerified:    dataCustomers.Authentication.IsVerified,
+		LoginType:     dataCustomers.Authentication.LoginType,
+		OauthProvider: dataCustomers.Authentication.OAuthProvider,
+	}
+
+	return dataResult, nil
+}
+
 func (c *customerService) sendOtp(ctx context.Context, userId uuid.UUID, otpPlain string, email string, name string, description string) error {
 	key := fmt.Sprintf("OTP:%v", userId.String())
 

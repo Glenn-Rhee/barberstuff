@@ -28,8 +28,8 @@ CREATE TRIGGER trg_promo_updated_at
 -- many-to-many antara promo & customer, sekaligus melacak status klaim
 CREATE TABLE promo_claimed (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    id_promo UUID NOT NULL REFERENCES promo(id) ON DELETE CASCADE,
-    id_user UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
+    id_promo UUID NOT NULL REFERENCES promo(id)  ,
+    id_user UUID NOT NULL REFERENCES customer(id)  ,
     is_used BOOLEAN NOT NULL DEFAULT FALSE,
     used_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),

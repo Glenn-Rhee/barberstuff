@@ -12,7 +12,7 @@ const (
 	RoleCustomer RoleEnum = "customer"
 	RoleCashier  RoleEnum = "cashier"
 	RoleAdmin    RoleEnum = "admin"
-	RoleOwner    RoleEnum = "owner"
+	RoleMitra    RoleEnum = "mitra"
 )
 
 type LoginType string
@@ -29,7 +29,7 @@ type Authentication struct {
 	Password      string     `gorm:"column:password;not null"`
 	Role          RoleEnum   `gorm:"column:role;not null"`
 	Email         string     `gorm:"column:email;not null;unique"`
-	CreatedAt     time.Time  `gorm:"column:created_at;not null"`
+	CreatedAt     time.Time  `gorm:"column:created_at;not null;autoCreateTime"`
 	IsVerified    bool       `gorm:"column:is_verified;not null"`
 	LoginType     LoginType  `gorm:"column:login_type;not null"`
 	OAuthProvider string     `gorm:"column:oauth_provider;not null"`

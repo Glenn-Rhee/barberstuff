@@ -19,6 +19,7 @@ type AuthenticationService interface {
 	CredentialLogin(credentialData dto.CredentialLoginRequest) (*dto.AuthenticationResponse, error)
 	AuthProvider(dataAuthProvider dto.AuthProviderRequest, ctx context.Context) (dto.AuthProviderResponse, error)
 	ResetPassword(ctx context.Context, req dto.ResetPasswordRequest) error
+	RefreshToken(token string) (dto.RefreshTokenBody, error)
 }
 
 type authenticationService struct {
@@ -163,4 +164,22 @@ func (c *authenticationService) ResetPassword(ctx context.Context, req dto.Reset
 	}
 
 	return c.authenticationRepo.ResetPassword(hashed, email)
+}
+
+func (c *authenticationService) RefreshToken(token string) (dto.RefreshTokenBody, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data admin"
+	expiresIn := 30 * 24 * time.Hour
+	newToken, err := lib.RefreshToken(token, expiresIn)
+
+	if err != nil {
+		if errors.Is(err, lib.ErrTokenInvalid) {
+			return dto.RefreshTokenBody{}, err
+		}
+		helper.Logger("Refresh token", "Refresh token at authentication service", err)
+		return dto.RefreshTokenBody{}, errors.New(BASE_MESSAGE)
+	}
+
+	return dto.RefreshTokenBody{
+		RefreshToken: newToken,
+	}, nil
 }

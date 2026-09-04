@@ -3,6 +3,7 @@ package helper
 import (
 	"fmt"
 	"regexp"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -52,4 +53,10 @@ func ValidatePhoneNumber(phoneNumber string) bool {
 func ValidateOTP(otp string) bool {
 	var otpRegex = regexp.MustCompile(`^\d{6}$`)
 	return otpRegex.MatchString(otp)
+}
+
+func ValidateMinAge(dateOfBirth time.Time) bool {
+	minBirthDate := time.Now().AddDate(0, -6, 0)
+
+	return !dateOfBirth.After(minBirthDate)
 }

@@ -96,3 +96,29 @@ func (h *AuthHandler) ResetPassword(ctx *gin.Context) {
 		StatusCode: http.StatusOK,
 	})
 }
+
+func (h *AuthHandler) RefreshToken(ctx *gin.Context) {
+	var dataRequst dto.RefreshTokenBody
+	if err := ctx.ShouldBindJSON(&dataRequst); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, err := h.service.RefreshToken(dataRequst.RefreshToken)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.RefreshTokenBody]{
+		Data:       result,
+		Message:    "Berhasil",
+		StatusCode: http.StatusOK,
+	})
+}

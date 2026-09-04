@@ -3,6 +3,8 @@ package dto
 import (
 	"barberstuff_backend/internal/entity"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type CredentialCustomerRequest struct {
@@ -12,6 +14,7 @@ type CredentialCustomerRequest struct {
 	Gender      entity.Gender `json:"gender" binding:"required,oneof=male female"`
 	Email       string        `json:"email" binding:"required,email"`
 	Password    string        `json:"password" binding:"required,min=5"`
+	ImageUrl    string        `json:"image_url" binding:"omitempty,url"`
 }
 
 type CredentialCustomerResponse struct {
@@ -25,6 +28,7 @@ type OauthCustomerRequest struct {
 	PhoneNumber string        `json:"phoneNumber" binding:"required,min=9,max=15"`
 	DateOfBirth time.Time     `json:"date_of_birth" binding:"required"`
 	Gender      entity.Gender `json:"gender" binding:"required,oneof=male female"`
+	ImageUrl    string        `json:"image_url" binding:"omitempty,url"`
 }
 
 type VerifyCredentialRequest struct {
@@ -51,9 +55,33 @@ type ForgotPasswordRequest struct {
 }
 
 type ForgotPassswordResponse struct {
-	UserId    string `json:"user_id"`
+	UserId string `json:"user_id"`
 }
 
 type VerifyOTPResponse struct {
 	ResetToken string `json:"reset_token,omitempty"`
+}
+
+type CustomerResponseRating struct {
+	Id          uuid.UUID          `json:"id"`
+	Name        string             `json:"name"`
+	ImageUrl    string             `json:"image_url"`
+	PremiumType entity.PremiumType `json:"premium_type"`
+}
+
+type ProfileCustomerResponse struct {
+	Id            uuid.UUID          `json:"id"`
+	Name          string             `json:"name"`
+	PhoneNumber   string             `json:"phone_number"`
+	DateOfBirth   time.Time          `json:"date_of_birth"`
+	Gender        entity.Gender      `json:"gender"`
+	MemberPoints  int                `json:"member_points"`
+	PremiumType   entity.PremiumType `json:"premium_type"`
+	ImageUrl      *string            `json:"image_url"`
+	CreatedAt     time.Time          `json:"created_at"`
+	Role          entity.RoleEnum    `json:"role"`
+	Email         string             `json:"email"`
+	IsVerified    bool               `json:"is_verified"`
+	LoginType     entity.LoginType   `json:"login_type"`
+	OauthProvider string             `json:"oauth_provider"`
 }
