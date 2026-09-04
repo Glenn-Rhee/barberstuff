@@ -93,6 +93,7 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		DateOfBirth:  &dataNewCustomer.DateOfBirth,
 		Gender:       dataNewCustomer.Gender,
 		MemberPoints: 100,
+		ImageCustomer: dataNewCustomer.ImageUrl,
 	}
 
 	auth := &entity.Authentication{
@@ -215,7 +216,9 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		DateOfBirth:  &dataNewCustomer.DateOfBirth,
 		Gender:       dataNewCustomer.Gender,
 		MemberPoints: 100,
+		ImageCustomer: dataNewCustomer.ImageUrl,
 	}
+
 	auth := &entity.Authentication{
 		ID:            uuid.New(),
 		IDCustomer:    &custId,
@@ -446,19 +449,19 @@ func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCusto
 	}
 
 	dataResult := dto.ProfileCustomerResponse{
-		Id: dataCustomers.ID,
-		Name: dataCustomers.Name,
-		PhoneNumber: *dataCustomers.PhoneNumber,
-		DateOfBirth: *dataCustomers.DateOfBirth,
-		Gender: dataCustomers.Gender,
-		MemberPoints: dataCustomers.MemberPoints,
-		PremiumType: dataCustomers.PremiumType,
-		ImageUrl: &dataCustomers.ImageCustomer,
-		CreatedAt: dataCustomers.CreatedAt,
-		Role: dataCustomers.Authentication.Role,
-		Email: dataCustomers.Authentication.Email,
-		IsVerified: dataCustomers.Authentication.IsVerified,
-		LoginType: dataCustomers.Authentication.LoginType,
+		Id:            dataCustomers.ID,
+		Name:          dataCustomers.Name,
+		PhoneNumber:   *dataCustomers.PhoneNumber,
+		DateOfBirth:   *dataCustomers.DateOfBirth,
+		Gender:        dataCustomers.Gender,
+		MemberPoints:  dataCustomers.MemberPoints,
+		PremiumType:   dataCustomers.PremiumType,
+		ImageUrl:      &dataCustomers.ImageCustomer,
+		CreatedAt:     dataCustomers.CreatedAt,
+		Role:          dataCustomers.Authentication.Role,
+		Email:         dataCustomers.Authentication.Email,
+		IsVerified:    dataCustomers.Authentication.IsVerified,
+		LoginType:     dataCustomers.Authentication.LoginType,
 		OauthProvider: dataCustomers.Authentication.OAuthProvider,
 	}
 

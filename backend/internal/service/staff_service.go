@@ -243,14 +243,20 @@ func (s *staffService) GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.St
 
 	if query.Email != nil {
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			q := "%"
+			q += *query.Email
+			q += "%"
 			return d.Joins("JOIN authentication ON authentication.id_staff = staff.id").
-				Where("authentication.email = ?", *query.Email)
+				Where("authentication.email ILIKE ?", q)
 		})
 	}
 
 	if query.Name != nil {
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-			return d.Where("staff.name = ?", *query.Name)
+			q := "%"
+			q += *query.Name
+			q += "%"
+			return d.Where("staff.name = ?", q)
 		})
 	}
 
@@ -342,7 +348,7 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 	if claims.Role != entity.RoleAdmin && idStaff != claims.UserId {
 		return errors.New("Oops! Anda tidak bisa mengubah data milik orang lain")
 	}
-	
+
 	hashedPassword, err := helper.HashPassword(req.Password)
 	if err != nil {
 		helper.Logger("Hash password", filePath, err)

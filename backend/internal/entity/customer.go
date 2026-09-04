@@ -14,10 +14,10 @@ const (
 	GenderFemale Gender = "Female"
 )
 const (
-	PremiumNewbie Gender = "newbie"
-	PremiumBestie Gender = "bestie"
-	PremiumRoyal  Gender = "royal"
-	PremiumCrazy  Gender = "crazy"
+	PremiumNewbie PremiumType = "newbie"
+	PremiumBestie PremiumType = "bestie"
+	PremiumRoyal  PremiumType = "royal"
+	PremiumCrazy  PremiumType = "crazy"
 )
 
 type Customer struct {
