@@ -49,9 +49,10 @@ class _VerifyOtpView extends StatelessWidget {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     if (ok) {
-      Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(AppRoute.verifySuccess, (Route<dynamic> r) => r.isFirst);
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoute.verifySuccess,
+        (Route<dynamic> r) => r.isFirst,
+      );
     } else if (p.error != null) {
       AppToast.show(context, message: _errorText(p, l10n));
     }
@@ -141,6 +142,7 @@ class _VerifyOtpView extends StatelessWidget {
               _ResendRow(
                 onPressed: () => _resend(context, p),
                 canResend: p.canResend,
+                isResending: p.isResending,
                 secondsLeft: p.secondsLeft,
               ),
             ],
@@ -155,11 +157,13 @@ class _ResendRow extends StatelessWidget {
   const _ResendRow({
     required this.onPressed,
     required this.canResend,
+    required this.isResending,
     required this.secondsLeft,
   });
 
   final VoidCallback onPressed;
   final bool canResend;
+  final bool isResending;
   final int secondsLeft;
 
   @override
@@ -176,28 +180,42 @@ class _ResendRow extends StatelessWidget {
       );
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 4,
       children: <Widget>[
         Text(
           l10n.verifyResendQuestion,
           style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
         ),
-        const SizedBox(width: 4),
-        GestureDetector(
-          onTap: canResend ? onPressed : null,
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-            child: Text(
-              l10n.verifyResendAction,
-              style: AppTextStyle.bodySmall.copyWith(
-                color: canResend ? AppColor.orangeLight : AppColor.inkFaint,
-                fontWeight: FontWeight.w700,
+        if (isResending)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            child: SizedBox(
+              width: 14,
+              height: 14,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColor.orangeLight,
+              ),
+            ),
+          )
+        else
+          GestureDetector(
+            onTap: canResend ? onPressed : null,
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              child: Text(
+                l10n.verifyResendAction,
+                style: AppTextStyle.bodySmall.copyWith(
+                  color: canResend ? AppColor.orangeLight : AppColor.inkFaint,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }

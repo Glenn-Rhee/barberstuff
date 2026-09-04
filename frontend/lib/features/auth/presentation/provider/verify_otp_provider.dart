@@ -57,7 +57,7 @@ class VerifyOtpProvider extends ChangeNotifier {
   String get otp => controllers.map((TextEditingController c) => c.text).join();
 
   static final RegExp _noAttemptLeft = RegExp(
-    r'sisa percobaan\s*0',
+    r'sisa percobaan\s*0(?!\d)',
     caseSensitive: false,
   );
 
