@@ -62,7 +62,10 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
       style: AppTextStyle.bodyMedium,
       icon: const Padding(
         padding: EdgeInsets.only(right: 8),
-        child: Icon(Icons.keyboard_arrow_down_rounded, color: AppColor.inkFaint),
+        child: Icon(
+          Icons.keyboard_arrow_down_rounded,
+          color: AppColor.inkFaint,
+        ),
       ),
       hint: Text(
         widget.hint,

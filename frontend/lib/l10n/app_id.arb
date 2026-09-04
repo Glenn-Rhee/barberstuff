@@ -100,6 +100,11 @@
   },
   "validatorPhoneDigits": "Hanya boleh angka",
 
+  "googleSignInFailed": "Gagal masuk dengan Google. Silakan coba lagi.",
+  "completeProfileTitle": "Lengkapi Profil",
+  "completeProfileSubtitle": "Sedikit lagi. Lengkapi data dirimu untuk mulai memakai Barberstuff.",
+  "completeProfileSubmit": "Lanjutkan",
+
   "comingSoonTitle": "Segera hadir",
   "comingSoonMessage": "Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.",
   "commonUnderstood": "Mengerti"

@@ -24,8 +24,12 @@ class VerifyOtpProvider extends ChangeNotifier {
   final AuthRepository _repository;
   final RegisterRequestApi registerRequest;
 
-  final List<TextEditingController> controllers = List<TextEditingController>
-      .generate(otpLength, (_) => TextEditingController(), growable: false);
+  final List<TextEditingController> controllers =
+      List<TextEditingController>.generate(
+        otpLength,
+        (_) => TextEditingController(),
+        growable: false,
+      );
 
   final List<FocusNode> focusNodes = List<FocusNode>.generate(
     otpLength,

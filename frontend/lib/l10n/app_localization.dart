@@ -440,6 +440,30 @@ abstract class AppLocalizations {
   /// **'Hanya boleh angka'**
   String get validatorPhoneDigits;
 
+  /// No description provided for @googleSignInFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal masuk dengan Google. Silakan coba lagi.'**
+  String get googleSignInFailed;
+
+  /// No description provided for @completeProfileTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Lengkapi Profil'**
+  String get completeProfileTitle;
+
+  /// No description provided for @completeProfileSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Sedikit lagi. Lengkapi data dirimu untuk mulai memakai Barberstuff.'**
+  String get completeProfileSubtitle;
+
+  /// No description provided for @completeProfileSubmit.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjutkan'**
+  String get completeProfileSubmit;
+
   /// No description provided for @comingSoonTitle.
   ///
   /// In id, this message translates to:

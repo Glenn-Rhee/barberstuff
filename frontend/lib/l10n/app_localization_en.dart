@@ -198,6 +198,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validatorPhoneDigits => 'Numbers only';
 
   @override
+  String get googleSignInFailed => 'Google sign-in failed. Please try again.';
+
+  @override
+  String get completeProfileTitle => 'Complete Your Profile';
+
+  @override
+  String get completeProfileSubtitle =>
+      'Almost there. Fill in your details to start using Barberstuff.';
+
+  @override
+  String get completeProfileSubmit => 'Continue';
+
+  @override
   String get comingSoonTitle => 'Coming soon';
 
   @override

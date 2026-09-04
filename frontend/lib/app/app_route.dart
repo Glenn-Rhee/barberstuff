@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/choose_login_page.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/pages/complete_profile_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/login_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
@@ -9,6 +11,7 @@ import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboar
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
 import 'package:mobile_barberstuff/shared/transitions/circular_reveal_route.dart';
+import 'package:provider/provider.dart';
 
 class AppRoute {
   const AppRoute._();
@@ -22,6 +25,7 @@ class AppRoute {
   static const String home = '/home';
   static const String verifyOtp = '/verify-otp';
   static const String verifySuccess = '/verify-success';
+  static const String completeProfile = '/complete-profile';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -34,8 +38,9 @@ class AppRoute {
         return CircularRevealRoute<void>(
           settings: settings,
           builder: (BuildContext context) => SplashBrandPage(
-            onFinished: () =>
-                Navigator.of(context).pushReplacementNamed(onboarding),
+            onFinished: () => Navigator.of(context).pushReplacementNamed(
+              context.read<AppSession>().hasValidSession ? home : onboarding,
+            ),
           ),
         );
       case onboarding:
@@ -59,6 +64,13 @@ class AppRoute {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (BuildContext context) => VerifyOtpPage(args: args),
+        );
+      case completeProfile:
+        final Object? args = settings.arguments;
+        if (args is! CompleteProfileArgs) return null;
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => CompleteProfilePage(args: args),
         );
       case login:
         return MaterialPageRoute<void>(

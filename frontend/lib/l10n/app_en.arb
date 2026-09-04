@@ -70,6 +70,11 @@
   "validatorPhoneMax": "Phone Number must be at most {max} digits",
   "validatorPhoneDigits": "Numbers only",
 
+  "googleSignInFailed": "Google sign-in failed. Please try again.",
+  "completeProfileTitle": "Complete Your Profile",
+  "completeProfileSubtitle": "Almost there. Fill in your details to start using Barberstuff.",
+  "completeProfileSubmit": "Continue",
+
   "comingSoonTitle": "Coming soon",
   "comingSoonMessage": "We are still working on this feature. In the meantime, feel free to use the available features. Thank you.",
   "commonUnderstood": "Got it"

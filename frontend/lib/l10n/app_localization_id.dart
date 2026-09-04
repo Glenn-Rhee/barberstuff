@@ -198,6 +198,20 @@ class AppLocalizationsId extends AppLocalizations {
   String get validatorPhoneDigits => 'Hanya boleh angka';
 
   @override
+  String get googleSignInFailed =>
+      'Gagal masuk dengan Google. Silakan coba lagi.';
+
+  @override
+  String get completeProfileTitle => 'Lengkapi Profil';
+
+  @override
+  String get completeProfileSubtitle =>
+      'Sedikit lagi. Lengkapi data dirimu untuk mulai memakai Barberstuff.';
+
+  @override
+  String get completeProfileSubmit => 'Lanjutkan';
+
+  @override
   String get comingSoonTitle => 'Segera hadir';
 
   @override

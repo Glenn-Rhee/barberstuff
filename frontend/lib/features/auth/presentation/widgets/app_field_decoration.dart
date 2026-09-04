@@ -32,6 +32,7 @@ class AppField {
   static InputDecoration decoration({
     required String hint,
     required bool focused,
+    bool enabled = true,
     String? iconPath,
     Widget? suffixIcon,
   }) {
@@ -39,7 +40,9 @@ class AppField {
       hintText: hint,
       hintStyle: AppTextStyle.bodyMedium.copyWith(color: AppColor.inkFaint),
       filled: true,
-      fillColor: focused ? AppColor.cream : AppColor.surface,
+      fillColor: !enabled
+          ? AppColor.cream
+          : (focused ? AppColor.cream : AppColor.surface),
       isDense: true,
       contentPadding: EdgeInsets.only(
         left: iconPath == null ? 16 : 0,
@@ -54,6 +57,7 @@ class AppField {
       border: _border(AppColor.border, 1),
       enabledBorder: _border(AppColor.border, 1),
       focusedBorder: _border(AppColor.orangeLight, 1.5),
+      disabledBorder: _border(AppColor.border, 1),
       errorBorder: _border(AppColor.danger, 1),
       focusedErrorBorder: _border(AppColor.danger, 1.5),
       errorStyle: AppTextStyle.bodySmall.copyWith(color: AppColor.danger),

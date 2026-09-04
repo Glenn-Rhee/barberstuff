@@ -3,10 +3,10 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/google_sign_in_scope.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_text_link.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:mobile_barberstuff/shared/widgets/divider_or.dart';
 
 class ChooseLoginPage extends StatelessWidget {
@@ -59,11 +59,15 @@ class ChooseLoginPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 28),
-                        BoxButton(
-                          variant: BoxButtonVariant.outlined,
-                          iconPath: AppAssets.googleIcon,
-                          label: l10n.chooseLoginGoogleText,
-                          onPressed: () => showComingSoonDialog(context),
+                        GoogleSignInScope(
+                          builder: (bool loading, VoidCallback onPressed) =>
+                              BoxButton(
+                                variant: BoxButtonVariant.outlined,
+                                iconPath: AppAssets.googleIcon,
+                                label: l10n.chooseLoginGoogleText,
+                                isLoading: loading,
+                                onPressed: onPressed,
+                              ),
                         ),
                         const DividerOr(),
                         BoxButton(
@@ -76,7 +80,9 @@ class ChooseLoginPage extends StatelessWidget {
                           message: l10n.chooseLoginTextMessage,
                           actionLabel: l10n.chooseLoginTextLink,
                           onPressed: () => {
-                            Navigator.of(context).pushNamed(AppRoute.registerPage),
+                            Navigator.of(
+                              context,
+                            ).pushNamed(AppRoute.registerPage),
                           },
                         ),
                       ],

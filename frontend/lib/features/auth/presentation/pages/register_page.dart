@@ -199,7 +199,8 @@ class _RegisterView extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(
-                        onTap: () => Navigator.of(context).pushNamed(AppRoute.login),
+                        onTap: () =>
+                            Navigator.of(context).pushNamed(AppRoute.login),
                         behavior: HitTestBehavior.opaque,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(

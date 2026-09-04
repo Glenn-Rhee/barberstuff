@@ -14,6 +14,7 @@ class AppTextField extends StatefulWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.readOnly = false,
+    this.enabled = true,
     this.onTap,
   });
 
@@ -25,6 +26,7 @@ class AppTextField extends StatefulWidget {
   final bool obscureText;
   final Widget? suffixIcon;
   final bool readOnly;
+  final bool enabled;
   final VoidCallback? onTap;
 
   @override
@@ -63,6 +65,7 @@ class _AppTextFieldState extends State<AppTextField> {
       keyboardType: widget.keyboardType,
       obscureText: widget.obscureText,
       readOnly: widget.readOnly,
+      enabled: widget.enabled,
       onTap: widget.onTap,
       style: AppTextStyle.bodyMedium,
       cursorColor: AppColor.orange,
@@ -70,6 +73,7 @@ class _AppTextFieldState extends State<AppTextField> {
         hint: widget.hint,
         iconPath: widget.iconPath,
         focused: _focused,
+        enabled: widget.enabled,
         suffixIcon: widget.suffixIcon,
       ),
     );

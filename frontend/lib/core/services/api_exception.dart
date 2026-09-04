@@ -1,4 +1,4 @@
-enum ApiErrorType { timeout, connection, server, unknown }
+enum ApiErrorType { timeout, connection, server, google, unknown }
 
 class ApiException implements Exception {
   const ApiException(this.type, {this.statusCode, this.rawMessage});

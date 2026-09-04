@@ -1,9 +1,16 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/services/google_auth_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_theme.dart';
+import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/choose_login_page.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 const List<List<double>> _devices = <List<double>>[
   <double>[720, 1280, 2.25],
@@ -34,18 +41,27 @@ void main() {
           };
 
           await tester.pumpWidget(
-            MaterialApp(
-              theme: AppTheme.light,
-              locale: Locale(lang),
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              builder: (BuildContext context, Widget? child) => MediaQuery(
-                data: MediaQuery.of(
-                  context,
-                ).copyWith(textScaler: TextScaler.linear(scale)),
-                child: child!,
+            MultiProvider(
+              providers: <SingleChildWidget>[
+                Provider<AuthRepository>(
+                  create: (_) => AuthRepository(AuthRemoteDataSource(Dio())),
+                ),
+                Provider<GoogleAuthService>(create: (_) => GoogleAuthService()),
+                Provider<AppSession>(create: (_) => AppSession()),
+              ],
+              child: MaterialApp(
+                theme: AppTheme.light,
+                locale: Locale(lang),
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                builder: (BuildContext context, Widget? child) => MediaQuery(
+                  data: MediaQuery.of(
+                    context,
+                  ).copyWith(textScaler: TextScaler.linear(scale)),
+                  child: child!,
+                ),
+                home: const ChooseLoginPage(),
               ),
-              home: const ChooseLoginPage(),
             ),
           );
           await tester.pump();
@@ -80,12 +96,21 @@ void main() {
     addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        locale: const Locale('id'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: const ChooseLoginPage(),
+      MultiProvider(
+        providers: <SingleChildWidget>[
+          Provider<AuthRepository>(
+            create: (_) => AuthRepository(AuthRemoteDataSource(Dio())),
+          ),
+          Provider<GoogleAuthService>(create: (_) => GoogleAuthService()),
+          Provider<AppSession>(create: (_) => AppSession()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          locale: const Locale('id'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ChooseLoginPage(),
+        ),
       ),
     );
     await tester.pump();

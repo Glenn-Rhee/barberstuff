@@ -10,6 +10,7 @@ import 'package:mobile_barberstuff/features/auth/data/repositories/auth_reposito
 import 'package:mobile_barberstuff/features/auth/presentation/provider/login_provider.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/google_sign_in_scope.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/password_toggle.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
@@ -115,10 +116,13 @@ class _LoginView extends StatelessWidget {
                 const DividerOr(),
 
                 Center(
-                  child: CircleIconButton(
-                    iconPath: AppAssets.googleIcon,
-                    tooltip: l10n.loginWithGoogle,
-                    onPressed: () => showComingSoonDialog(context),
+                  child: GoogleSignInScope(
+                    builder: (bool loading, VoidCallback onPressed) =>
+                        CircleIconButton(
+                          iconPath: AppAssets.googleIcon,
+                          tooltip: l10n.loginWithGoogle,
+                          onPressed: onPressed,
+                        ),
                   ),
                 ),
                 const SizedBox(height: 28),
