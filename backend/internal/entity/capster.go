@@ -16,7 +16,6 @@ const (
 type Capster struct {
 	ID        uuid.UUID         `gorm:"column:id;primaryKey"`
 	Name      string            `gorm:"column:name;not null"`
-	Title     string            `gorm:"column:title;not null"`
 	Status    CapsterStatusEnum `gorm:"column:status;not null"`
 	ImageUrl  *string           `gorm:"column:image_url"`
 	IDStore   uuid.UUID         `gorm:"column:id_store;not null"`

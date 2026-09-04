@@ -249,7 +249,6 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 			capsters = append(capsters, dto.CapsterDataResponse{
 				Id:        v.ID,
 				Name:      v.Name,
-				Title:     v.Title,
 				Status:    v.Status,
 				ImageUrl:  *v.ImageUrl,
 				AvgRating: avgRating,
