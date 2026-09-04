@@ -34,7 +34,7 @@ class RegisterProvider extends ChangeNotifier {
   bool _obscurePassword = true;
   bool _isLoading = false;
   bool _isComplete = false;
-  String? _errorMessage;
+  ApiException? _error;
   RegisterResult? _result;
   RegisterRequestApi? _lastRequest;
 
@@ -44,7 +44,7 @@ class RegisterProvider extends ChangeNotifier {
   bool get obscurePassword => _obscurePassword;
   bool get isLoading => _isLoading;
   bool get isComplete => _isComplete;
-  String? get errorMessage => _errorMessage;
+  ApiException? get error => _error;
   RegisterResult? get result => _result;
 
   void _syncComplete() {
@@ -82,11 +82,10 @@ class RegisterProvider extends ChangeNotifier {
 
   Future<bool> submit() async {
     if (!(formKey.currentState?.validate() ?? false)) return false;
-    if (_dateOfBirth == null) return _fail('Tanggal lahir wajib diisi');
-    if (_gender == null) return _fail('Jenis kelamin wajib dipilih');
+    if (_dateOfBirth == null || _gender == null) return false;
 
     _isLoading = true;
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
 
     final RegisterRequestApi request = RegisterRequestApi(
@@ -106,12 +105,12 @@ class RegisterProvider extends ChangeNotifier {
       return true;
     } on ApiException catch (e) {
       _isLoading = false;
-      return _fail(e.message);
+      return _fail(e);
     }
   }
 
-  bool _fail(String message) {
-    _errorMessage = message;
+  bool _fail(ApiException e) {
+    _error = e;
     notifyListeners();
     return false;
   }

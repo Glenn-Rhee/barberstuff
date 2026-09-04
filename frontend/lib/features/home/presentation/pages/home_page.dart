@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
       backgroundColor: AppColor.surface,
       body: Center(
         child: Text(
-          AppLocalizations.of(context).homeComingSoon,
+          AppLocalizations.of(context).comingSoonTitle,
           style: AppTextStyle.headlineMedium.copyWith(color: AppColor.inkSoft),
         ),
       ),

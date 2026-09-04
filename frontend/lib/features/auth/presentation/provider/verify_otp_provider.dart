@@ -19,7 +19,7 @@ class VerifyOtpProvider extends ChangeNotifier {
   }
 
   static const int otpLength = 6;
-  static const int resendCooldown = 60;
+  static const int resendCooldown = 180;
 
   final AuthRepository _repository;
   final RegisterRequestApi registerRequest;
@@ -40,7 +40,7 @@ class VerifyOtpProvider extends ChangeNotifier {
   bool _isComplete = false;
   bool _hasError = false;
   int _secondsLeft = 0;
-  String? _errorMessage;
+  ApiException? _error;
   String? _infoMessage;
 
   String get userId => _userId;
@@ -51,10 +51,18 @@ class VerifyOtpProvider extends ChangeNotifier {
   bool get hasError => _hasError;
   bool get canResend => _secondsLeft == 0 && !_isResending && !_isLoading;
   int get secondsLeft => _secondsLeft;
-  String? get errorMessage => _errorMessage;
+  ApiException? get error => _error;
   String? get infoMessage => _infoMessage;
 
   String get otp => controllers.map((TextEditingController c) => c.text).join();
+
+  static final RegExp _noAttemptLeft = RegExp(
+    r'sisa percobaan\s*0',
+    caseSensitive: false,
+  );
+
+  bool get isAttemptExhausted =>
+      _error != null && _noAttemptLeft.hasMatch(_error!.rawMessage ?? '');
 
   void _onDigitChanged() {
     final bool next = otp.length == otpLength;
@@ -92,7 +100,7 @@ class VerifyOtpProvider extends ChangeNotifier {
     if (otp.length != otpLength || _isLoading) return false;
 
     _isLoading = true;
-    _errorMessage = null;
+    _error = null;
     _infoMessage = null;
     _hasError = false;
     notifyListeners();
@@ -108,7 +116,7 @@ class VerifyOtpProvider extends ChangeNotifier {
       _clearOtp();
       _isLoading = false;
       _hasError = true;
-      _errorMessage = e.message;
+      _error = e;
       notifyListeners();
       return false;
     }
@@ -118,7 +126,7 @@ class VerifyOtpProvider extends ChangeNotifier {
     if (!canResend) return false;
 
     _isResending = true;
-    _errorMessage = null;
+    _error = null;
     _infoMessage = null;
     notifyListeners();
 
@@ -133,7 +141,7 @@ class VerifyOtpProvider extends ChangeNotifier {
       return true;
     } on ApiException catch (e) {
       _isResending = false;
-      _errorMessage = e.message;
+      _error = e;
       notifyListeners();
       return false;
     }

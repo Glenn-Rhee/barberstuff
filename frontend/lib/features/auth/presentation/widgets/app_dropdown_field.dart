@@ -52,7 +52,7 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
       focusNode: _focusNode,
-      value: widget.value,
+      initialValue: widget.value,
       validator: widget.validator,
       items: widget.items,
       onChanged: widget.onChanged,

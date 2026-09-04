@@ -12,26 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Barberstuff';
 
   @override
-  String get bookingTitle => 'Book a Service';
-
-  @override
-  String greeting(String name) {
-    return 'Hi, $name!';
-  }
-
-  @override
-  String queueCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count people in queue',
-      one: '1 person in queue',
-      zero: 'No one in queue',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get onboardingFirstTitle => 'Style that fits your day';
 
   @override
@@ -77,26 +57,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonProcessing => 'Processing...';
 
   @override
-  String get commonSuccess => 'Success';
-
-  @override
-  String get commonRetry => 'Try again';
-
-  @override
   String get genderMale => 'Male';
 
   @override
   String get genderFemale => 'Female';
 
   @override
-  String get registerPageBarText => 'Sign Up';
-
-  @override
   String get registerHeadline => 'Create Your Account';
-
-  @override
-  String get registerSubheadline =>
-      'Fill in your details to become a Barberstuff.';
 
   @override
   String get registerNameLabel => 'Full Name';
@@ -117,7 +84,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerPasswordLabel => 'Password';
 
   @override
-  String get registerSubmitButton => 'Sign Up';
+  String get registerSubmitButton => 'Continue';
 
   @override
   String get registerHaveAccountQuestion => 'Already have an account?';
@@ -149,9 +116,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verifyResendAction => 'Resend code';
 
   @override
-  String verifyResendCountdown(int seconds) {
-    return 'Resend in $seconds seconds';
+  String verifyResendCountdown(String time) {
+    return 'Resend in $time';
   }
+
+  @override
+  String get verifyAttemptExhausted =>
+      'No attempts left. Please request a new code.';
 
   @override
   String get verifyResendSuccess => 'A new code has been sent to your email.';
@@ -191,7 +162,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginWithGoogle => 'Sign in with Google';
 
   @override
-  String get homeComingSoon => 'Coming soon';
+  String get exceptionReceiveTimeout =>
+      'Connection timed out. Please check your network.';
+
+  @override
+  String get exceptionConnectionError => 'Unable to connect to the server.';
+
+  @override
+  String get exceptionDefaultType => 'A server error occurred.';
+
+  @override
+  String get exceptionDefault => 'An unexpected error occurred.';
+
+  @override
+  String validatorRequired(String label) {
+    return '$label is required';
+  }
+
+  @override
+  String get validatorEmailInvalid => 'Invalid email format';
+
+  @override
+  String validatorPasswordMin(int min) {
+    return 'Password must be at least $min characters';
+  }
+
+  @override
+  String validatorPhoneMin(int min) {
+    return 'Phone Number must be at least $min digits';
+  }
+
+  @override
+  String validatorPhoneMax(int max) {
+    return 'Phone Number must be at most $max digits';
+  }
+
+  @override
+  String get validatorPhoneDigits => 'Numbers only';
 
   @override
   String get comingSoonTitle => 'Coming soon';

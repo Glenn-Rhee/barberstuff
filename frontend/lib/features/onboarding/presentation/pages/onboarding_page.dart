@@ -60,11 +60,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-   
       value: SystemUiOverlayStyle.light.copyWith(
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor: AppColor.surface,
-        systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
         backgroundColor: AppColor.surface,
@@ -90,15 +87,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
             const SizedBox(height: 24),
             OnboardingIndicator(length: _items.length, activeIndex: _index),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(32, 24, 32, 0),
-              child: OnboardingAction(
-                isExpanded: _isLastSlide,
-                label: AppLocalizations.of(context).onboardingStart,
-                onPressed: _handleAction,
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(32, 24, 32, 24),
+                child: OnboardingAction(
+                  isExpanded: _isLastSlide,
+                  label: AppLocalizations.of(context).onboardingStart,
+                  onPressed: _handleAction,
+                ),
               ),
             ),
-            SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
           ],
         ),
       ),

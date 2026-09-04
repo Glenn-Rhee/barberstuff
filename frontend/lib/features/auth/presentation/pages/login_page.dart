@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
@@ -38,18 +39,21 @@ class _LoginView extends StatelessWidget {
     final bool ok = await p.submit();
     if (!context.mounted) return;
 
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     if (ok) {
       Navigator.of(
         context,
       ).pushNamedAndRemoveUntil(AppRoute.home, (Route<dynamic> r) => false);
-    } else if (p.errorMessage != null) {
-      AppToast.show(context, message: p.errorMessage!);
+    } else if (p.error != null) {
+      AppToast.show(context, message: p.error!.message(l10n));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final Validators validators = Validators(l10n);
     final LoginProvider p = context.watch<LoginProvider>();
 
     return Scaffold(
@@ -75,7 +79,7 @@ class _LoginView extends StatelessWidget {
                   iconPath: AppAssets.mailIcon,
                   controller: p.emailController,
                   keyboardType: TextInputType.emailAddress,
-                  validator: Validators.email,
+                  validator: validators.email,
                 ),
                 const SizedBox(height: AppField.gap),
 
@@ -84,7 +88,7 @@ class _LoginView extends StatelessWidget {
                   iconPath: AppAssets.lockIcon,
                   controller: p.passwordController,
                   obscureText: p.obscurePassword,
-                  validator: Validators.password,
+                  validator: validators.password,
                   suffixIcon: IconButton(
                     icon: Icon(
                       p.obscurePassword

@@ -1,41 +1,54 @@
+import 'package:mobile_barberstuff/l10n/app_localization.dart';
+
 class Validators {
-  const Validators._();
+  const Validators(this._l10n);
 
-  // semua kolom jangan kosong
-  static String? required(String? value, {String label = "Field ini"}) {
-    if (value == null || value.trim().isEmpty) return "$label wajib diisi";
-    return null;
-  }
+  final AppLocalizations _l10n;
 
-  // email valid
-  static String? email(String? value) {
+  static const int passwordMinLength = 5;
+  static const int phoneMinLength = 9;
+  static const int phoneMaxLength = 15;
+
+  static final RegExp _emailPattern = RegExp(
+    r'^[\w\.\-]+@([\w\-]+\.)+[a-zA-Z]{2,}$',
+  );
+  static final RegExp _digitsPattern = RegExp(r'^[0-9]+$');
+
+  String? required(String? value, {required String label}) {
     if (value == null || value.trim().isEmpty) {
-      return "Email wajib diisi";
+      return _l10n.validatorRequired(label);
     }
-
-    final RegExp re = RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[a-zA-Z]{2,}$');
-
-    if (!re.hasMatch(value.trim())) {
-      return "Format email tidak valid";
-    }
-
     return null;
   }
 
-  static String? password(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Password wajib diisi';
-
-    if (value.length < 5) return "Password minimal 5 karakter";
-
+  String? email(String? value) {
+    final String v = value?.trim() ?? '';
+    if (v.isEmpty) return _l10n.validatorRequired(_l10n.registerEmailLabel);
+    if (!_emailPattern.hasMatch(v)) return _l10n.validatorEmailInvalid;
     return null;
   }
 
-  static String? phoneNumber(String? v) {
-    if (v == null || v.trim().isEmpty) return 'Nomor telepon wajib diisi';
-    final String p = v.trim();
-    if (p.length < 9) return 'Nomor telepon minimal 9 digit';
-    if (p.length > 15) return 'Nomor telepon maksimal 15 digit';
-    if (!RegExp(r'^[0-9]+$').hasMatch(p)) return 'Hanya boleh angka';
+  String? password(String? value) {
+    final String v = value ?? '';
+    if (v.trim().isEmpty) {
+      return _l10n.validatorRequired(_l10n.registerPasswordLabel);
+    }
+    if (v.length < passwordMinLength) {
+      return _l10n.validatorPasswordMin(passwordMinLength);
+    }
+    return null;
+  }
+
+  String? phoneNumber(String? value) {
+    final String v = value?.trim() ?? '';
+    if (v.isEmpty) return _l10n.validatorRequired(_l10n.registerPhoneLabel);
+    if (v.length < phoneMinLength) {
+      return _l10n.validatorPhoneMin(phoneMinLength);
+    }
+    if (v.length > phoneMaxLength) {
+      return _l10n.validatorPhoneMax(phoneMaxLength);
+    }
+    if (!_digitsPattern.hasMatch(v)) return _l10n.validatorPhoneDigits;
     return null;
   }
 }

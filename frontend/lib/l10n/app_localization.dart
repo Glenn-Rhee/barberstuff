@@ -104,24 +104,6 @@ abstract class AppLocalizations {
   /// **'Barberstuff'**
   String get appTitle;
 
-  /// No description provided for @bookingTitle.
-  ///
-  /// In id, this message translates to:
-  /// **'Pesan Layanan'**
-  String get bookingTitle;
-
-  /// No description provided for @greeting.
-  ///
-  /// In id, this message translates to:
-  /// **'Halo, {name}!'**
-  String greeting(String name);
-
-  /// No description provided for @queueCount.
-  ///
-  /// In id, this message translates to:
-  /// **'{count, plural, =0{Antrean kosong} =1{1 orang mengantre} other{{count} orang mengantre}}'**
-  String queueCount(int count);
-
   /// No description provided for @onboardingFirstTitle.
   ///
   /// In id, this message translates to:
@@ -206,18 +188,6 @@ abstract class AppLocalizations {
   /// **'Memproses...'**
   String get commonProcessing;
 
-  /// No description provided for @commonSuccess.
-  ///
-  /// In id, this message translates to:
-  /// **'Berhasil'**
-  String get commonSuccess;
-
-  /// No description provided for @commonRetry.
-  ///
-  /// In id, this message translates to:
-  /// **'Coba lagi'**
-  String get commonRetry;
-
   /// No description provided for @genderMale.
   ///
   /// In id, this message translates to:
@@ -230,23 +200,11 @@ abstract class AppLocalizations {
   /// **'Perempuan'**
   String get genderFemale;
 
-  /// No description provided for @registerPageBarText.
-  ///
-  /// In id, this message translates to:
-  /// **'Daftar'**
-  String get registerPageBarText;
-
   /// No description provided for @registerHeadline.
   ///
   /// In id, this message translates to:
   /// **'Buat Akun Anda'**
   String get registerHeadline;
-
-  /// No description provided for @registerSubheadline.
-  ///
-  /// In id, this message translates to:
-  /// **'Isi data diri kamu untuk jadi Barberstuff.'**
-  String get registerSubheadline;
 
   /// No description provided for @registerNameLabel.
   ///
@@ -287,7 +245,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerSubmitButton.
   ///
   /// In id, this message translates to:
-  /// **'Daftar'**
+  /// **'Lanjutkan'**
   String get registerSubmitButton;
 
   /// No description provided for @registerHaveAccountQuestion.
@@ -347,8 +305,14 @@ abstract class AppLocalizations {
   /// No description provided for @verifyResendCountdown.
   ///
   /// In id, this message translates to:
-  /// **'Kirim ulang dalam {seconds} detik'**
-  String verifyResendCountdown(int seconds);
+  /// **'Kirim ulang dalam {time}'**
+  String verifyResendCountdown(String time);
+
+  /// No description provided for @verifyAttemptExhausted.
+  ///
+  /// In id, this message translates to:
+  /// **'Kesempatan mencoba habis. Silakan kirim ulang kode.'**
+  String get verifyAttemptExhausted;
 
   /// No description provided for @verifyResendSuccess.
   ///
@@ -422,11 +386,65 @@ abstract class AppLocalizations {
   /// **'Masuk dengan Google'**
   String get loginWithGoogle;
 
-  /// No description provided for @homeComingSoon.
+  /// No description provided for @exceptionReceiveTimeout.
   ///
   /// In id, this message translates to:
-  /// **'Coming soon'**
-  String get homeComingSoon;
+  /// **'Koneksi timeout. Periksa jaringan Anda.'**
+  String get exceptionReceiveTimeout;
+
+  /// No description provided for @exceptionConnectionError.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak dapat terhubung ke server.'**
+  String get exceptionConnectionError;
+
+  /// No description provided for @exceptionDefaultType.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan pada server.'**
+  String get exceptionDefaultType;
+
+  /// No description provided for @exceptionDefault.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi Kesalahan yang tak terduga.'**
+  String get exceptionDefault;
+
+  /// No description provided for @validatorRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'{label} wajib diisi'**
+  String validatorRequired(String label);
+
+  /// No description provided for @validatorEmailInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Format email tidak valid'**
+  String get validatorEmailInvalid;
+
+  /// No description provided for @validatorPasswordMin.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata Sandi minimal {min} karakter'**
+  String validatorPasswordMin(int min);
+
+  /// No description provided for @validatorPhoneMin.
+  ///
+  /// In id, this message translates to:
+  /// **'Nomor Telepon minimal {min} digit'**
+  String validatorPhoneMin(int min);
+
+  /// No description provided for @validatorPhoneMax.
+  ///
+  /// In id, this message translates to:
+  /// **'Nomor Telepon maksimal {max} digit'**
+  String validatorPhoneMax(int max);
+
+  /// No description provided for @validatorPhoneDigits.
+  ///
+  /// In id, this message translates to:
+  /// **'Hanya boleh angka'**
+  String get validatorPhoneDigits;
 
   /// No description provided for @comingSoonTitle.
   ///

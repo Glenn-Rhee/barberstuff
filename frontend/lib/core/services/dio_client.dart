@@ -35,13 +35,13 @@ class DioClient {
         case DioExceptionType.connectionTimeout:
         case DioExceptionType.sendTimeout:
         case DioExceptionType.receiveTimeout:
-          return const ApiException('Koneksi timeout. Periksa jaringan Anda.');
-        case DioException.connectionError:
-          return const ApiException('Tidak dapat terhubung ke server.');
+          return const ApiException(ApiErrorType.timeout);
+        case DioExceptionType.connectionError:
+          return const ApiException(ApiErrorType.connection);
         default:
-          return const ApiException('Terjadi kesalahan pada server.');
+          return const ApiException(ApiErrorType.server);
       }
     }
-    return const ApiException("Terjadi Kesalahan yang tak terduga.");
+    return const ApiException(ApiErrorType.unknown);
   }
 }

@@ -12,26 +12,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get appTitle => 'Barberstuff';
 
   @override
-  String get bookingTitle => 'Pesan Layanan';
-
-  @override
-  String greeting(String name) {
-    return 'Halo, $name!';
-  }
-
-  @override
-  String queueCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count orang mengantre',
-      one: '1 orang mengantre',
-      zero: 'Antrean kosong',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get onboardingFirstTitle => 'Gaya yang pas untuk keseharianmu';
 
   @override
@@ -77,26 +57,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get commonProcessing => 'Memproses...';
 
   @override
-  String get commonSuccess => 'Berhasil';
-
-  @override
-  String get commonRetry => 'Coba lagi';
-
-  @override
   String get genderMale => 'Laki-laki';
 
   @override
   String get genderFemale => 'Perempuan';
 
   @override
-  String get registerPageBarText => 'Daftar';
-
-  @override
   String get registerHeadline => 'Buat Akun Anda';
-
-  @override
-  String get registerSubheadline =>
-      'Isi data diri kamu untuk jadi Barberstuff.';
 
   @override
   String get registerNameLabel => 'Nama Lengkap';
@@ -117,7 +84,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get registerPasswordLabel => 'Kata Sandi';
 
   @override
-  String get registerSubmitButton => 'Daftar';
+  String get registerSubmitButton => 'Lanjutkan';
 
   @override
   String get registerHaveAccountQuestion => 'Sudah punya akun?';
@@ -149,9 +116,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get verifyResendAction => 'Kirim ulang kode';
 
   @override
-  String verifyResendCountdown(int seconds) {
-    return 'Kirim ulang dalam $seconds detik';
+  String verifyResendCountdown(String time) {
+    return 'Kirim ulang dalam $time';
   }
+
+  @override
+  String get verifyAttemptExhausted =>
+      'Kesempatan mencoba habis. Silakan kirim ulang kode.';
 
   @override
   String get verifyResendSuccess => 'Kode baru telah dikirim ke email Anda.';
@@ -191,7 +162,43 @@ class AppLocalizationsId extends AppLocalizations {
   String get loginWithGoogle => 'Masuk dengan Google';
 
   @override
-  String get homeComingSoon => 'Coming soon';
+  String get exceptionReceiveTimeout =>
+      'Koneksi timeout. Periksa jaringan Anda.';
+
+  @override
+  String get exceptionConnectionError => 'Tidak dapat terhubung ke server.';
+
+  @override
+  String get exceptionDefaultType => 'Terjadi kesalahan pada server.';
+
+  @override
+  String get exceptionDefault => 'Terjadi Kesalahan yang tak terduga.';
+
+  @override
+  String validatorRequired(String label) {
+    return '$label wajib diisi';
+  }
+
+  @override
+  String get validatorEmailInvalid => 'Format email tidak valid';
+
+  @override
+  String validatorPasswordMin(int min) {
+    return 'Kata Sandi minimal $min karakter';
+  }
+
+  @override
+  String validatorPhoneMin(int min) {
+    return 'Nomor Telepon minimal $min digit';
+  }
+
+  @override
+  String validatorPhoneMax(int max) {
+    return 'Nomor Telepon maksimal $max digit';
+  }
+
+  @override
+  String get validatorPhoneDigits => 'Hanya boleh angka';
 
   @override
   String get comingSoonTitle => 'Segera hadir';

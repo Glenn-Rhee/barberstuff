@@ -1,9 +1,12 @@
-class ApiException implements Exception {
-  const ApiException(this.message, {this.statusCode});
+enum ApiErrorType { timeout, connection, server, unknown }
 
-  final String message;
+class ApiException implements Exception {
+  const ApiException(this.type, {this.statusCode, this.rawMessage});
+
+  final ApiErrorType type;
   final int? statusCode;
+  final String? rawMessage;
 
   @override
-  String toString() => message;
+  String toString() => 'ApiException(${type.name}, $statusCode, $rawMessage)';
 }
