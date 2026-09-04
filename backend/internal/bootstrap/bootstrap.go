@@ -16,6 +16,7 @@ type Handlers struct {
 	AuthHandler     *handler.AuthHandler
 	StaffHandler    *handler.StaffHandler
 	StoreHandler    *handler.StoreHandler
+	CapsterHandler  *handler.CapsterHandler
 	AuthMiddleware  gin.HandlerFunc
 }
 
@@ -35,12 +36,14 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	authService := service.NewAuthService(authRepo, lib.ClientRedis)
 	staffService := service.NewStaffService(storeRepo, staffRepo, authRepo, db)
 	storeService := service.NewStoreService(storeRepo, serviceRepo, packageRepo, ratingRepo, capsterRepo, staffRepo)
+	capsterService := service.NewCapsterService(capsterRepo, storeRepo)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
 	authHandler := handler.NewAuthHandler(authService)
 	staffHandler := handler.NewStaffHandler(staffService)
 	storeHandler := handler.NewStoreHandler(storeService)
+	capsterHandler := handler.NewCapsterHandler(capsterService)
 
 	// middleware
 	authMiddleware := middleware.AuthMiddleware(authRepo, staffRepo, customerRepo)
@@ -51,5 +54,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 		StaffHandler:    staffHandler,
 		StoreHandler:    storeHandler,
 		AuthMiddleware:  authMiddleware,
+		CapsterHandler:  capsterHandler,
 	}
 }

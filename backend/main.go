@@ -61,6 +61,12 @@ func main() {
 		profile.GET("/staff", h.StaffHandler.GetProfile)
 	}
 
+	capster := r.Group("/capster")
+	{
+		capster.Use(h.AuthMiddleware)
+		capster.POST("/", h.CapsterHandler.Create)
+	}
+
 	fmt.Println("Server running on http://localhost:8080")
 	r.Run(":8080")
 }

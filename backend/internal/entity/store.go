@@ -29,6 +29,13 @@ type Store struct {
 	DeletedAt   *time.Time      `gorm:"column:deleted_at"`
 }
 
+type StoreWithTotal struct {
+	Store
+	TotalService int64 `gorm:"column:total_service"`
+	TotalPackage int64 `gorm:"column:total_package"`
+	TotalCapster int64 `gorm:"column:total_capster"`
+}
+
 func (Store) TableName() string {
 	return "store"
 }

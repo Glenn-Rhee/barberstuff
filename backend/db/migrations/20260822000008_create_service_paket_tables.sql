@@ -13,7 +13,8 @@ CREATE TABLE service (
     status product_status_enum NOT NULL DEFAULT 'active',
     id_store UUID NOT NULL REFERENCES store(id)  ,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP
 );
 
 CREATE TRIGGER trg_service_updated_at
@@ -30,7 +31,8 @@ CREATE TABLE package (
     status product_status_enum NOT NULL DEFAULT 'active',
     id_store UUID NOT NULL REFERENCES store(id)  ,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP
 );
 
 CREATE TRIGGER trg_package_updated_at

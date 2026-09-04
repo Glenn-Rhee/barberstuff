@@ -8,6 +8,8 @@ import (
 
 type CapsterRepository interface {
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Capster, error)
+	FindOne(where string, args...interface{}) (entity.Capster, error)
+	Create(c *entity.Capster) error
 }
 
 type capsterRepository struct {
@@ -27,4 +29,19 @@ func (r *capsterRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 		Scopes(scopes...).
 		Find(&dataCapster)
 	return dataCapster, result.Error
+}
+
+func (r *capsterRepository) FindOne(where string, args ...interface{}) (entity.Capster, error) {
+	var dataCapster entity.Capster
+	result := r.db.
+		Where(where, args...).
+		Where("deleted_at IS NULL").
+		First(&dataCapster)
+	
+	return dataCapster, result.Error
+}
+
+func (r *capsterRepository) Create(c *entity.Capster) error {
+	result := r.db.Model(&c).Create(c)
+	return result.Error
 }

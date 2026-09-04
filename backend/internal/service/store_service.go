@@ -49,6 +49,13 @@ func NewStoreService(
 	}
 }
 
+func derefString(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
 func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data toko!"
 	_, filePath, _, _ := runtime.Caller(0)
@@ -109,7 +116,27 @@ func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, 
 		return []dto.StoreData{}, errors.New(BASE_MESSAGE)
 	}
 
-	return dto.ToStoreResponseList(stores), nil
+	dataStores := make([]dto.StoreData, 0, len(stores))
+	for _, s := range stores {
+		dataStores = append(dataStores, dto.StoreData{
+			Id:          s.ID,
+			Name:        s.Name,
+			PhoneNumber: derefString(s.PhoneNumber),
+			Coordinate:  derefString(s.Coordinate),
+			OpenHour:    s.OpenHour,
+			CloseHour:   s.CloseHour,
+			BannerUrl:   derefString(s.BannerUrl),
+			Address:     derefString(s.Address),
+			Status:      s.Status,
+			Description: derefString(s.Description),
+			CreatedAt:   s.CreatedAt,	
+			TotalPackage: s.TotalPackage,
+			TotalCapster: s.TotalCapster,
+			TotalService: s.TotalService,
+		})
+	}
+
+	return dataStores, nil
 }
 
 func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.StoreResponse, error) {
@@ -138,6 +165,9 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		Description: *dataStore.Description,
 		Status:      dataStore.Status,
 		CreatedAt:   dataStore.CreatedAt,
+		TotalService: dataStore.TotalService,
+		TotalCapster: dataStore.TotalCapster,
+		TotalPackage: dataStore.TotalPackage,
 	}
 
 	var scopes []func(*gorm.DB) *gorm.DB
@@ -249,7 +279,6 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 			capsters = append(capsters, dto.CapsterDataResponse{
 				Id:        v.ID,
 				Name:      v.Name,
-				Title:     v.Title,
 				Status:    v.Status,
 				ImageUrl:  *v.ImageUrl,
 				AvgRating: avgRating,

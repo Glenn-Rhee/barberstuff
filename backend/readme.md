@@ -1066,24 +1066,28 @@ GET /store
 
 ```json
 {
-  "data": [
-    {
-      "id": "51c45423-5f2a-4067-b8c9-5a2513059ea1",
-      "name": "Barberstuff Cabang Pondok Gede",
-      "phone_number": "081234567890",
-      "coordinate": "-6.260278,106.813889",
-      "open_hour": "2026-08-31T09:00:00Z",
-      "close_hour": "2026-08-31T21:00:00Z",
-      "banner_url": "https://example.com/images/store-kemang-banner.jpg",
-      "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
-      "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
-      "status": "close",
-      "created_at": "2026-09-01T07:24:12.256445Z"
-    }
-  ],
-  "message": "Succes get data stores!",
-  "statusCode": 200,
-  "status": "success"
+    "data": [
+        {
+            "id": "ccbfc173-3074-4a7d-8784-d87eb3a1d9aa",
+            "name": "Barberstuff Cabang Tebet",
+            "phone_number": "081234567890",
+            "coordinate": "-6.260278,106.813889",
+            "open_hour": "2026-08-31T09:00:00Z",
+            "close_hour": "2026-08-31T21:00:00Z",
+            "banner_url": "https://example.com/images/store-kemang-banner.jpg",
+            "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
+            "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
+            "total_service": 0,
+            "total_capster": 2,
+            "total_package": 0,
+            "status": "open",
+            "created_at": "2026-09-04T02:03:23.455453Z",
+            "deleted_at": null
+        }
+    ],
+    "message": "Succes get data stores!",
+    "statusCode": 200,
+    "status": "success"
 }
 ```
 
@@ -1142,73 +1146,49 @@ GET /store/:id
 
 ```json
 {
-  "data": {
-    "store": {
-      "id": "51c45423-5f2a-4067-b8c9-5a2513059ea1",
-      "name": "Barberstuff Cabang Pondok Gede",
-      "phone_number": "081234567890",
-      "coordinate": "-6.260278,106.813889",
-      "open_hour": "2026-08-31T09:00:00Z",
-      "close_hour": "2026-08-31T21:00:00Z",
-      "banner_url": "https://example.com/images/store-kemang-banner.jpg",
-      "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
-      "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
-      "status": "close",
-      "created_at": "2026-09-01T07:24:12.256445Z",
-      "deleted_at": null
+    "data": {
+        "store": {
+            "id": "ccbfc173-3074-4a7d-8784-d87eb3a1d9aa",
+            "name": "Barberstuff Cabang Tebet",
+            "phone_number": "081234567890",
+            "coordinate": "-6.260278,106.813889",
+            "open_hour": "2026-08-31T09:00:00Z",
+            "close_hour": "2026-08-31T21:00:00Z",
+            "banner_url": "https://example.com/images/store-kemang-banner.jpg",
+            "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
+            "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
+            "total_service": 0,
+            "total_capster": 2,
+            "total_package": 0,
+            "status": "open",
+            "created_at": "2026-09-04T02:03:23.455453Z"
+        },
+        "service": null,
+        "package": null,
+        "rating": {
+            "avg_rating": 0,
+            "review": null
+        },
+        "capster": [
+            {
+                "id": "9ff9291f-a463-4b7e-981c-1a6076141387",
+                "name": "Ariel Capster",
+                "status": "active",
+                "image_url": "",
+                "avg_rating": 0
+            },
+            {
+                "id": "f6600b24-7d5f-482c-89dc-6462721fd061",
+                "name": "Ariel Cihuy",
+                "status": "active",
+                "image_url": "https://i.pinimg.com/736x/b7/bf/d2/b7bfd20831fd88c285f6451ae54f66e6.jpg",
+                "avg_rating": 0
+            }
+        ]
     },
-    "service": [
-      {
-        "id": "8c1e2a3b-1234-4a5b-9c6d-7e8f9a0b1c2d",
-        "name": "Haircut",
-        "price": "50000",
-        "duration_minutes": 30,
-        "do_dont": "Datang 10 menit sebelum jadwal.",
-        "description": "Potong rambut standar.",
-        "status": "active"
-      }
-    ],
-    "package": [
-      {
-        "id": "9d2f3b4c-2345-4b6c-8d7e-9f0a1b2c3d4e",
-        "name": "Haircut + Shaving",
-        "price": "80000",
-        "duration_minutes": 60,
-        "do_dont": "Datang 10 menit sebelum jadwal.",
-        "description": "Paket potong rambut dan cukur.",
-        "status": "active"
-      }
-    ],
-    "rating": {
-      "avg_rating": 4.5,
-      "review": [
-        {
-          "id": "1a2b3c4d-3456-4c7d-9e8f-0a1b2c3d4e5f",
-          "message": "Pelayanan ramah dan hasil rapi.",
-          "rating": 5,
-          "user": {
-            "id": "2b3c4d5e-4567-4d8e-0f1a-2b3c4d5e6f7a",
-            "name": "Budi Santoso",
-            "image_url": "https://example.com/images/user-budi.jpg",
-            "premium_type": "bestie"
-          }
-        }
-      ]
-    },
-    "capster": [
-      {
-        "id": "3c4d5e6f-5678-4e9f-1a2b-3c4d5e6f7a8b",
-        "name": "Andi Wijaya",
-        "title": "Senior Capster",
-        "status": "active",
-        "image_url": "https://example.com/images/capster-andi.jpg",
-        "avg_rating": 4.8
-      }
-    ]
-  },
-  "message": "Succes get store detail!",
-  "statusCode": 200,
-  "status": "success"
+    "message": "Succes get data store!",
+    "statusCode": 200,
+    "status": "success"
 }
 ```
 
@@ -1957,6 +1937,91 @@ GET /profile/staff
 
 ---
 
+# Capster API
+
+## 21. Create Capster
+
+Digunakan untuk membuat capster baru berdasarkan toko cabang tertentu. Jadi capster ini terikat dengan satu toko cabang. Endpoint ini hanya bisa diakses oleh **admin**
+
+### Endpoint
+
+```http
+POST /capster
+```
+
+### Headers
+
+| Key | Required | Keterangan |
+| --- | --- | --- |
+| `Authorization` | Ya | Access token milik admin, dengan format `Bearer <token>`. |
+
+### Request Body
+
+```json
+{
+    "id_store": "ccbfc173-3074-4a7d-8784-d87eb3a1d9aa",
+    "name": "Ariel Capster",
+    "image_url": "//example.com/images/store-kemang-banner.jpg"
+}
+```
+
+### Request Body Parameters
+
+| Key | Tipe Data | Required | Keterangan |
+| --- | --- | --- | --- |
+| `id_store` | String | Ya | Id toko cabang |
+| `name` | String | Ya | Nama capster yang ingin ditambahkan |
+| `image_url` | String | Tidak | Gambar capster jika ingin ditambahkan |
+
+### Aturan Validasi
+
+- Header `Authorization` wajib disertakan dengan format `Bearer <token>`, dan token harus milik user dengan role `admin`.
+- `id_store` wajib diisi.
+- `name` wajib diisi dan memiliki panjang minimal 3 karakter.
+- `image_url` opsional hanya jika admin mau menambahkan foto capster.
+
+### Response Sukses
+
+```json
+{
+    "data": null,
+    "message": "Berhasil membuat capster baru!",
+    "statusCode": 200,
+    "status": "success"
+}
+```
+
+### Response Gagal
+
+```json
+{
+    "data": null,
+    "message": "Nama capster ini sudah ada!",
+    "statusCode": 400,
+    "status": "failed"
+}
+```
+
+```json
+{
+    "data": null,
+    "message": "Format id toko tidak valid!",
+    "statusCode": 400,
+    "status": "failed"
+}
+```
+
+```json
+{
+    "data": null,
+    "message": "Toko untuk membuat capster ini tidak ditemukan!",
+    "statusCode": 400,
+    "status": "failed"
+}
+```
+
+---
+
 # API Summary
 
 | Method | Endpoint | Fungsi |
@@ -1981,3 +2046,4 @@ GET /profile/staff
 | DELETE | `/staff/:id` | Menghapus data akun staff (soft delete). Hanya admin, dan admin tidak dapat menghapus akunnya sendiri. |
 | GET | `/profile/customer` | Mendapatkan data profil akun customer yang sedang login. |
 | GET | `/profile/staff` | Mendapatkan data profil akun staff (admin/cashier/mitra) yang sedang login. |
+| POST | `/capster` | Membuat capster baru yang hanya bisa dilakukan oleh admin. |
