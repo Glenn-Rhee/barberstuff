@@ -220,4 +220,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get commonUnderstood => 'Mengerti';
+
+  @override
+  String get commonLogout => 'Keluar';
 }

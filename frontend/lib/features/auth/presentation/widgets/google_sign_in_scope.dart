@@ -60,6 +60,7 @@ class _GoogleSignInHost extends StatelessWidget {
           name: result.name,
           email: result.email,
           tempToken: result.tempToken ?? '',
+          imageUrl: p.photoUrl,
         ),
       );
       return;

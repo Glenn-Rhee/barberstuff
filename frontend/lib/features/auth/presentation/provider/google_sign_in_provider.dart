@@ -16,10 +16,19 @@ class GoogleSignInProvider extends ChangeNotifier {
   bool _isLoading = false;
   ApiException? _error;
   AuthProviderResult? _result;
+  String? _photoUrl;
 
   bool get isLoading => _isLoading;
   ApiException? get error => _error;
   AuthProviderResult? get result => _result;
+  String? get photoUrl => _photoUrl;
+
+  bool _stop({ApiException? error}) {
+    _isLoading = false;
+    _error = error;
+    notifyListeners();
+    return false;
+  }
 
   Future<bool> signIn() async {
     if (_isLoading) return false;
@@ -30,28 +39,37 @@ class GoogleSignInProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final String? idToken = await _google.signIn();
-      if (idToken == null) {
-        _isLoading = false;
-        notifyListeners();
-        return false;
+      final GoogleCredential? credential = await _google.signIn();
+      if (credential == null) return _stop();
+
+      final AuthProviderResult result = await _repository.authProvider(
+        credential.idToken,
+      );
+
+      final String token = result.accessToken ?? '';
+      final String tempToken = result.tempToken ?? '';
+
+      switch (result.status) {
+        case AuthProviderStatus.success:
+          if (token.isEmpty) {
+            return _stop(error: const ApiException(ApiErrorType.server));
+          }
+          await _session.saveSession(token);
+        case AuthProviderStatus.needCompleteProfile:
+          if (tempToken.isEmpty) {
+            return _stop(error: const ApiException(ApiErrorType.server));
+          }
+        case AuthProviderStatus.unknown:
+          return _stop(error: const ApiException(ApiErrorType.server));
       }
 
-      _result = await _repository.authProvider(idToken);
-
-      final String? token = _result!.accessToken;
-      if (_result!.status == AuthProviderStatus.success && token != null) {
-        await _session.saveSession(token);
-      }
-
+      _result = result;
+      _photoUrl = credential.photoUrl;
       _isLoading = false;
       notifyListeners();
       return true;
     } on ApiException catch (e) {
-      _isLoading = false;
-      _error = e;
-      notifyListeners();
-      return false;
+      return _stop(error: e);
     }
   }
 }

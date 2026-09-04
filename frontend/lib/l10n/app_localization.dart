@@ -481,6 +481,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Mengerti'**
   String get commonUnderstood;
+
+  /// No description provided for @commonLogout.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar'**
+  String get commonLogout;
 }
 
 class _AppLocalizationsDelegate

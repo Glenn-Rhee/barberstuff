@@ -219,4 +219,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonUnderstood => 'Got it';
+
+  @override
+  String get commonLogout => 'Log out';
 }

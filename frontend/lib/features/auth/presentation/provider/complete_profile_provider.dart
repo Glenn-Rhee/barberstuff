@@ -13,9 +13,11 @@ class CompleteProfileProvider extends ChangeNotifier {
     required this.name,
     required this.email,
     required this.tempToken,
+    String? imageUrl,
   }) {
     nameController.text = name;
     emailController.text = email;
+    _imageUrl = imageUrl;
     phoneController.addListener(_syncComplete);
   }
 

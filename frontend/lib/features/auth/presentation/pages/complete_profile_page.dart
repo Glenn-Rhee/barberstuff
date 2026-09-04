@@ -24,11 +24,13 @@ class CompleteProfileArgs {
     required this.name,
     required this.email,
     required this.tempToken,
+    this.imageUrl,
   });
 
   final String name;
   final String email;
   final String tempToken;
+  final String? imageUrl;
 }
 
 class CompleteProfilePage extends StatelessWidget {
@@ -45,6 +47,7 @@ class CompleteProfilePage extends StatelessWidget {
         name: args.name,
         email: args.email,
         tempToken: args.tempToken,
+        imageUrl: args.imageUrl,
       ),
       child: const _CompleteProfileView(),
     );
