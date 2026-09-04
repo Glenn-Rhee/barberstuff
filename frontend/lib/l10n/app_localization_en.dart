@@ -159,6 +159,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginWithGoogle => 'Sign in with Google';
 
   @override
+  String get forgotPageBarText => 'Forgot Password';
+
+  @override
+  String get forgotHeadline => 'Forgot Password?';
+
+  @override
+  String get forgotDescription =>
+      'Enter your account email. We will send a verification code so you can reset your password.';
+
+  @override
+  String get forgotSubmitButton => 'Send Code';
+
+  @override
+  String get resetPageBarText => 'New Password';
+
+  @override
+  String get resetHeadline => 'Create New Password';
+
+  @override
+  String get resetDescription =>
+      'Your new password must be different from any password you have used before.';
+
+  @override
+  String get resetPasswordHint => 'New Password';
+
+  @override
+  String get resetConfirmHint => 'Repeat New Password';
+
+  @override
+  String get resetSubmitButton => 'Save Password';
+
+  @override
+  String get resetSignInFailed =>
+      'Your password was changed, but we could not sign you in automatically. Please sign in again.';
+
+  @override
+  String get resetSuccessTitle => 'Congratulations!';
+
+  @override
+  String get resetSuccessMessage =>
+      'Your password has been updated. You will be taken to the home page.';
+
+  @override
+  String get resetSuccessButton => 'Go to Home';
+
+  @override
   String get exceptionReceiveTimeout =>
       'Connection timed out. Please check your network.';
 
@@ -196,6 +242,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get validatorPhoneDigits => 'Numbers only';
+
+  @override
+  String get validatorPasswordMismatch => 'Passwords do not match';
 
   @override
   String get googleSignInFailed => 'Google sign-in failed. Please try again.';

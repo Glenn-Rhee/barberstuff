@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
-import 'package:mobile_barberstuff/features/forgot_password/domain/models/forgot_password_request_api.dart';
 
 class ForgotPasswordProvider extends ChangeNotifier {
   ForgotPasswordProvider(this._repository) {
@@ -25,6 +23,7 @@ class ForgotPasswordProvider extends ChangeNotifier {
   bool get isComplete => _isComplete;
   ApiException? get error => _error;
   ForgotPasswordResult? get result => _result;
+
   String get email => emailController.text.trim();
 
   void _syncComplete() {
@@ -36,6 +35,7 @@ class ForgotPasswordProvider extends ChangeNotifier {
   }
 
   Future<bool> submit() async {
+    if (_isLoading) return false;
     if (!(formKey.currentState?.validate() ?? false)) return false;
 
     _isLoading = true;

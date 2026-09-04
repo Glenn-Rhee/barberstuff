@@ -159,6 +159,52 @@ class AppLocalizationsId extends AppLocalizations {
   String get loginWithGoogle => 'Masuk dengan Google';
 
   @override
+  String get forgotPageBarText => 'Lupa Kata Sandi';
+
+  @override
+  String get forgotHeadline => 'Lupa Kata Sandi?';
+
+  @override
+  String get forgotDescription =>
+      'Masukkan email akun Anda. Kami akan mengirimkan kode verifikasi untuk mengatur ulang kata sandi.';
+
+  @override
+  String get forgotSubmitButton => 'Kirim Kode';
+
+  @override
+  String get resetPageBarText => 'Kata Sandi Baru';
+
+  @override
+  String get resetHeadline => 'Buat Kata Sandi Baru';
+
+  @override
+  String get resetDescription =>
+      'Kata sandi baru harus berbeda dari kata sandi yang pernah Anda pakai sebelumnya.';
+
+  @override
+  String get resetPasswordHint => 'Kata Sandi Baru';
+
+  @override
+  String get resetConfirmHint => 'Ulangi Kata Sandi Baru';
+
+  @override
+  String get resetSubmitButton => 'Simpan Kata Sandi';
+
+  @override
+  String get resetSignInFailed =>
+      'Kata sandi berhasil diubah, tetapi kami gagal masuk otomatis. Silakan masuk kembali.';
+
+  @override
+  String get resetSuccessTitle => 'Selamat!';
+
+  @override
+  String get resetSuccessMessage =>
+      'Kata sandi Anda berhasil diperbarui. Anda akan diarahkan ke halaman beranda.';
+
+  @override
+  String get resetSuccessButton => 'Ke Beranda';
+
+  @override
   String get exceptionReceiveTimeout =>
       'Koneksi timeout. Periksa jaringan Anda.';
 
@@ -196,6 +242,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get validatorPhoneDigits => 'Hanya boleh angka';
+
+  @override
+  String get validatorPasswordMismatch => 'Kata sandi tidak sama';
 
   @override
   String get googleSignInFailed =>

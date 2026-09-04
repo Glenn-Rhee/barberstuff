@@ -14,7 +14,7 @@ class AppAssets {
   static const String topBox = '$_images/TopBox.png';
   static const String emailVerification = '$_images/email_verification.png';
   static const String checkVerification = '$_images/check_verification.png';
-  static const String forgotPassowrdImage = '$_images/forgot_image.png';
+  static const String forgotPassword = '$_images/forgot_image.png';
 
   static const String googleIcon = '$_icon/google_icon.png';
   static const String phoneIcon = '$_icon/telephone_icon.png';
@@ -23,5 +23,25 @@ class AppAssets {
   static const String lockIcon = '$_icon/lock_icon.png';
   static const String eyeIcon = '$_icon/eye_icon.png';
   static const String pencilIcon = '$_icon/pencil_icon.png';
-  
+
+  static const String bellDashboard = '$_icon/bell_dashboard_icon.png';
+  static const String symbolStarDashboard =
+      '$_icon/symbol_star_dashboard_icon.png';
+  static const String arrowFilledDashboard =
+      '$_icon/arrow_filled_dashboard_icon.png';
+  static const String cakeDashboard = '$_icon/cake_dashboard_icon.png';
+  static const String scissorsDashboard = '$_icon/scissors_dashboard_icon.png';
+  static const String tagDashboard = '$_icon/tag_dashboard_icon.png';
+  static const String giftDashboard = '$_icon/gift_dashboard_icon.png';
+  static const String barcodeDashboard = '$_icon/barcode_dashboard_icon.png';
+  static const String checkYelllowDashboard =
+      '$_icon/check_yellow_dashboard.png';
+  static const String storeDashboard = '$_icon/store_dashboard_icon.png';
+  static const String historyRoundedDashboard =
+      '$_icon/history_rounded_dashboard.png';
+
+  static const String userBottom = '$_icon/user_bottom.png';
+  static const String historyBottom = '$_icon/history_bottom.png';
+  static const String scissorsBottom = '$_icon/scissors_bottom.png';
+  static const String homeBottom = '$_icon/home_bottom.png';
 }

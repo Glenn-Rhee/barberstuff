@@ -380,6 +380,90 @@ abstract class AppLocalizations {
   /// **'Masuk dengan Google'**
   String get loginWithGoogle;
 
+  /// No description provided for @forgotPageBarText.
+  ///
+  /// In id, this message translates to:
+  /// **'Lupa Kata Sandi'**
+  String get forgotPageBarText;
+
+  /// No description provided for @forgotHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Lupa Kata Sandi?'**
+  String get forgotHeadline;
+
+  /// No description provided for @forgotDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan email akun Anda. Kami akan mengirimkan kode verifikasi untuk mengatur ulang kata sandi.'**
+  String get forgotDescription;
+
+  /// No description provided for @forgotSubmitButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim Kode'**
+  String get forgotSubmitButton;
+
+  /// No description provided for @resetPageBarText.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata Sandi Baru'**
+  String get resetPageBarText;
+
+  /// No description provided for @resetHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat Kata Sandi Baru'**
+  String get resetHeadline;
+
+  /// No description provided for @resetDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi baru harus berbeda dari kata sandi yang pernah Anda pakai sebelumnya.'**
+  String get resetDescription;
+
+  /// No description provided for @resetPasswordHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata Sandi Baru'**
+  String get resetPasswordHint;
+
+  /// No description provided for @resetConfirmHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Ulangi Kata Sandi Baru'**
+  String get resetConfirmHint;
+
+  /// No description provided for @resetSubmitButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Kata Sandi'**
+  String get resetSubmitButton;
+
+  /// No description provided for @resetSignInFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi berhasil diubah, tetapi kami gagal masuk otomatis. Silakan masuk kembali.'**
+  String get resetSignInFailed;
+
+  /// No description provided for @resetSuccessTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Selamat!'**
+  String get resetSuccessTitle;
+
+  /// No description provided for @resetSuccessMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi Anda berhasil diperbarui. Anda akan diarahkan ke halaman beranda.'**
+  String get resetSuccessMessage;
+
+  /// No description provided for @resetSuccessButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Ke Beranda'**
+  String get resetSuccessButton;
+
   /// No description provided for @exceptionReceiveTimeout.
   ///
   /// In id, this message translates to:
@@ -439,6 +523,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Hanya boleh angka'**
   String get validatorPhoneDigits;
+
+  /// No description provided for @validatorPasswordMismatch.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi tidak sama'**
+  String get validatorPasswordMismatch;
 
   /// No description provided for @googleSignInFailed.
   ///

@@ -12,11 +12,11 @@ import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/google_sign_in_scope.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/password_toggle.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/remember_me_checkbox.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/circle_icon_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:mobile_barberstuff/shared/widgets/divider_or.dart';
 import 'package:provider/provider.dart';
 
@@ -98,7 +98,7 @@ class _LoginView extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                _RememberMe(
+                RememberMeCheckbox(
                   value: p.rememberMe,
                   onChanged: p.setRememberMe,
                   label: l10n.loginRememberMe,
@@ -138,7 +138,9 @@ class _LoginView extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
-                      onTap: () => showComingSoonDialog(context),
+                      onTap: () => Navigator.of(
+                        context,
+                      ).pushNamed(AppRoute.forgotPassword),
                       behavior: HitTestBehavior.opaque,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -160,49 +162,6 @@ class _LoginView extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _RememberMe extends StatelessWidget {
-  const _RememberMe({
-    required this.value,
-    required this.onChanged,
-    required this.label,
-  });
-
-  final bool value;
-  final ValueChanged<bool> onChanged;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onChanged(!value),
-      behavior: HitTestBehavior.opaque,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SizedBox(
-            width: 22,
-            height: 22,
-            child: Checkbox(
-              value: value,
-              onChanged: (bool? v) => onChanged(v ?? false),
-              activeColor: AppColor.orangeLight,
-              checkColor: AppColor.surface,
-              side: const BorderSide(color: AppColor.inkFaint),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              visualDensity: VisualDensity.compact,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Text(label, style: AppTextStyle.bodyMedium),
-        ],
       ),
     );
   }

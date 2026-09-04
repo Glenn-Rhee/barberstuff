@@ -68,6 +68,22 @@
   "loginForgotAction": "Klik disini",
   "loginWithGoogle": "Masuk dengan Google",
 
+  "forgotPageBarText": "Lupa Kata Sandi",
+  "forgotHeadline": "Lupa Kata Sandi?",
+  "forgotDescription": "Masukkan email akun Anda. Kami akan mengirimkan kode verifikasi untuk mengatur ulang kata sandi.",
+  "forgotSubmitButton": "Kirim Kode",
+
+  "resetPageBarText": "Kata Sandi Baru",
+  "resetHeadline": "Buat Kata Sandi Baru",
+  "resetDescription": "Kata sandi baru harus berbeda dari kata sandi yang pernah Anda pakai sebelumnya.",
+  "resetPasswordHint": "Kata Sandi Baru",
+  "resetConfirmHint": "Ulangi Kata Sandi Baru",
+  "resetSubmitButton": "Simpan Kata Sandi",
+  "resetSignInFailed": "Kata sandi berhasil diubah, tetapi kami gagal masuk otomatis. Silakan masuk kembali.",
+  "resetSuccessTitle": "Selamat!",
+  "resetSuccessMessage": "Kata sandi Anda berhasil diperbarui. Anda akan diarahkan ke halaman beranda.",
+  "resetSuccessButton": "Ke Beranda",
+
   "exceptionReceiveTimeout": "Koneksi timeout. Periksa jaringan Anda.",
   "exceptionConnectionError": "Tidak dapat terhubung ke server.",
   "exceptionDefaultType": "Terjadi kesalahan pada server.",
@@ -99,6 +115,7 @@
     }
   },
   "validatorPhoneDigits": "Hanya boleh angka",
+  "validatorPasswordMismatch": "Kata sandi tidak sama",
 
   "googleSignInFailed": "Gagal masuk dengan Google. Silakan coba lagi.",
   "completeProfileTitle": "Lengkapi Profil",

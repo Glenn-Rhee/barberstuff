@@ -66,6 +66,7 @@ class _RegisterView extends StatelessWidget {
         AppRoute.verifyOtp,
         arguments: VerifyOtpArgs(
           userId: p.result!.id,
+          email: p.lastRequest!.email,
           registerRequest: p.lastRequest!,
         ),
       );

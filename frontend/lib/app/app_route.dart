@@ -6,6 +6,9 @@ import 'package:mobile_barberstuff/features/auth/presentation/pages/login_page.d
 import 'package:mobile_barberstuff/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_success_page.dart';
+import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/forgot_password_page.dart';
+import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_password_page.dart';
+import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_success_page.dart';
 import 'package:mobile_barberstuff/features/home/presentation/pages/home_page.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
@@ -26,6 +29,9 @@ class AppRoute {
   static const String verifyOtp = '/verify-otp';
   static const String verifySuccess = '/verify-success';
   static const String completeProfile = '/complete-profile';
+  static const String forgotPassword = '/forgot-password';
+  static const String resetPassword = '/reset-password';
+  static const String resetSuccess = '/reset-success';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -86,6 +92,23 @@ class AppRoute {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (BuildContext context) => const VerifySuccessPage(),
+        );
+      case forgotPassword:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => const ForgotPasswordPage(),
+        );
+      case resetPassword:
+        final Object? args = settings.arguments;
+        if (args is! ResetPasswordArgs) return null;
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => ResetPasswordPage(args: args),
+        );
+      case resetSuccess:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => const ResetSuccessPage(),
         );
 
       default:

@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_request_api.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
-import 'package:mobile_barberstuff/features/forgot_password/domain/models/forgot_password_request_api.dart';
-import 'package:mobile_barberstuff/features/forgot_password/domain/models/forgot_password_result.dart';
 
 enum OtpPurpose { register, forgotPassword }
 

@@ -58,6 +58,22 @@
   "loginForgotAction": "Click here",
   "loginWithGoogle": "Sign in with Google",
 
+  "forgotPageBarText": "Forgot Password",
+  "forgotHeadline": "Forgot Password?",
+  "forgotDescription": "Enter your account email. We will send a verification code so you can reset your password.",
+  "forgotSubmitButton": "Send Code",
+
+  "resetPageBarText": "New Password",
+  "resetHeadline": "Create New Password",
+  "resetDescription": "Your new password must be different from any password you have used before.",
+  "resetPasswordHint": "New Password",
+  "resetConfirmHint": "Repeat New Password",
+  "resetSubmitButton": "Save Password",
+  "resetSignInFailed": "Your password was changed, but we could not sign you in automatically. Please sign in again.",
+  "resetSuccessTitle": "Congratulations!",
+  "resetSuccessMessage": "Your password has been updated. You will be taken to the home page.",
+  "resetSuccessButton": "Go to Home",
+
   "exceptionReceiveTimeout": "Connection timed out. Please check your network.",
   "exceptionConnectionError": "Unable to connect to the server.",
   "exceptionDefaultType": "A server error occurred.",
@@ -69,6 +85,7 @@
   "validatorPhoneMin": "Phone Number must be at least {min} digits",
   "validatorPhoneMax": "Phone Number must be at most {max} digits",
   "validatorPhoneDigits": "Numbers only",
+  "validatorPasswordMismatch": "Passwords do not match",
 
   "googleSignInFailed": "Google sign-in failed. Please try again.",
   "completeProfileTitle": "Complete Your Profile",

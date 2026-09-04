@@ -8,16 +8,27 @@ import 'package:mobile_barberstuff/features/auth/data/models/register_request_ap
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/verify_otp_provider.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/otp_field.dart';
+import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_password_page.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:provider/provider.dart';
 
 class VerifyOtpArgs {
-  const VerifyOtpArgs({required this.userId, required this.registerRequest});
+  const VerifyOtpArgs({
+    required this.userId,
+    required this.email,
+    this.purpose = OtpPurpose.register,
+    this.registerRequest,
+  });
 
   final String userId;
-  final RegisterRequestApi registerRequest;
+  final String email;
+  final OtpPurpose purpose;
+
+  /// Hanya dipakai alur registrasi, untuk mengulang POST /auth/register saat
+  /// pengguna menekan "kirim ulang kode".
+  final RegisterRequestApi? registerRequest;
 }
 
 class VerifyOtpPage extends StatelessWidget {
@@ -31,6 +42,8 @@ class VerifyOtpPage extends StatelessWidget {
       create: (BuildContext ctx) => VerifyOtpProvider(
         ctx.read<AuthRepository>(),
         userId: args.userId,
+        email: args.email,
+        purpose: args.purpose,
         registerRequest: args.registerRequest,
       ),
       child: const _VerifyOtpView(),
@@ -48,14 +61,28 @@ class _VerifyOtpView extends StatelessWidget {
 
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    if (ok) {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        AppRoute.verifySuccess,
-        (Route<dynamic> r) => r.isFirst,
-      );
-    } else if (p.error != null) {
-      AppToast.show(context, message: _errorText(p, l10n));
+    if (!ok) {
+      if (p.error != null) {
+        AppToast.show(context, message: _errorText(p, l10n));
+      }
+      return;
     }
+
+    if (p.purpose == OtpPurpose.forgotPassword) {
+      Navigator.of(context).pushNamed(
+        AppRoute.resetPassword,
+        arguments: ResetPasswordArgs(
+          email: p.email,
+          resetToken: p.resetToken ?? '',
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoute.verifySuccess,
+      (Route<dynamic> r) => r.isFirst,
+    );
   }
 
   String _errorText(VerifyOtpProvider p, AppLocalizations l10n) =>
@@ -91,7 +118,12 @@ class _VerifyOtpView extends StatelessWidget {
         backgroundColor: AppColor.surface,
         elevation: 0,
         titleSpacing: 0,
-        title: Text(l10n.verifyPageBarText, style: AppTextStyle.titleMedium),
+        title: Text(
+          p.purpose == OtpPurpose.forgotPassword
+              ? l10n.forgotPageBarText
+              : l10n.verifyPageBarText,
+          style: AppTextStyle.titleMedium,
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
