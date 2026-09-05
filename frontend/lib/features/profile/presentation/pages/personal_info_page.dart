@@ -154,7 +154,6 @@ class _PhotoRow extends StatelessWidget {
         AvatarPicker(
           imageUrl: provider.imageUrl,
           imageFile: provider.imageFile,
-          onEdit: () => editAvatar(context, provider),
         ),
         const SizedBox(width: 18),
         Expanded(
