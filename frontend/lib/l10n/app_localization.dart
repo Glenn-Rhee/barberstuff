@@ -842,23 +842,35 @@ abstract class AppLocalizations {
   /// **'Anda perlu masuk lagi untuk memakai Barberstuff.'**
   String get profileLogoutMessage;
 
-  /// No description provided for @languageSheetTitle.
+  /// No description provided for @languagePageTitle.
   ///
   /// In id, this message translates to:
   /// **'Pilih Bahasa'**
-  String get languageSheetTitle;
+  String get languagePageTitle;
+
+  /// No description provided for @languagePageDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Silakan pilih bahasa yang nyaman bagi Anda untuk menikmati pengalaman terbaik bersama kami.'**
+  String get languagePageDescription;
 
   /// No description provided for @languageIndonesian.
   ///
   /// In id, this message translates to:
-  /// **'Indonesia'**
+  /// **'Bahasa Indonesia'**
   String get languageIndonesian;
 
   /// No description provided for @languageEnglish.
   ///
   /// In id, this message translates to:
-  /// **'English'**
+  /// **'Inggris'**
   String get languageEnglish;
+
+  /// No description provided for @languageSelectAction.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih'**
+  String get languageSelectAction;
 
   /// No description provided for @commonCancel.
   ///

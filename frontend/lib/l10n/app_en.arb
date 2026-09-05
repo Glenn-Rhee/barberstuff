@@ -150,9 +150,11 @@
   "profileLogoutTitle": "Log out of your account?",
   "profileLogoutMessage": "You will need to sign in again to use Barberstuff.",
 
-  "languageSheetTitle": "Choose Language",
-  "languageIndonesian": "Indonesia",
+  "languagePageTitle": "Choose Language",
+  "languagePageDescription": "Please choose the language you are most comfortable with so you can get the best experience with us.",
+  "languageIndonesian": "Indonesian",
   "languageEnglish": "English",
+  "languageSelectAction": "Select",
 
   "commonCancel": "Cancel",
 

@@ -419,13 +419,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'You will need to sign in again to use Barberstuff.';
 
   @override
-  String get languageSheetTitle => 'Choose Language';
+  String get languagePageTitle => 'Choose Language';
 
   @override
-  String get languageIndonesian => 'Indonesia';
+  String get languagePageDescription =>
+      'Please choose the language you are most comfortable with so you can get the best experience with us.';
+
+  @override
+  String get languageIndonesian => 'Indonesian';
 
   @override
   String get languageEnglish => 'English';
+
+  @override
+  String get languageSelectAction => 'Select';
 
   @override
   String get commonCancel => 'Cancel';

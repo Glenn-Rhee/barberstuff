@@ -13,6 +13,7 @@ class BoxButton extends StatefulWidget {
     this.iconPath,
     this.variant = BoxButtonVariant.filled,
     this.isLoading = false,
+    this.radius,
   });
 
   static const double minHeight = 52;
@@ -26,6 +27,8 @@ class BoxButton extends StatefulWidget {
   final BoxButtonVariant variant;
 
   final bool isLoading;
+
+  final double? radius;
 
   @override
   State<BoxButton> createState() => _BoxButtonState();
@@ -49,7 +52,8 @@ class _BoxButtonState extends State<BoxButton> {
 
   @override
   Widget build(BuildContext context) {
-    final double radius = _isFilled ? BoxButton.minHeight / 2 : 12;
+    final double radius =
+        widget.radius ?? (_isFilled ? BoxButton.minHeight / 2 : 12);
     final Color background = _isFilled
         ? (_isInactive ? AppColor.disabled : AppColor.orangeLight)
         : AppColor.surface;

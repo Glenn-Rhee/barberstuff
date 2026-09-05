@@ -205,9 +205,11 @@
   "profileLogoutTitle": "Keluar dari akun?",
   "profileLogoutMessage": "Anda perlu masuk lagi untuk memakai Barberstuff.",
 
-  "languageSheetTitle": "Pilih Bahasa",
-  "languageIndonesian": "Indonesia",
-  "languageEnglish": "English",
+  "languagePageTitle": "Pilih Bahasa",
+  "languagePageDescription": "Silakan pilih bahasa yang nyaman bagi Anda untuk menikmati pengalaman terbaik bersama kami.",
+  "languageIndonesian": "Bahasa Indonesia",
+  "languageEnglish": "Inggris",
+  "languageSelectAction": "Pilih",
 
   "commonCancel": "Batal",
 

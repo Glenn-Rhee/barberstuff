@@ -12,6 +12,7 @@ import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/r
 import 'package:mobile_barberstuff/features/main/presentation/pages/main_shell_page.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/pages/language_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
@@ -36,6 +37,7 @@ class AppRoute {
   static const String resetSuccess = '/reset-success';
   static const String barberstuffCard = '/barberstuff-card';
   static const String personalInfo = '/personal-info';
+  static const String language = '/language';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -74,6 +76,11 @@ class AppRoute {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (BuildContext context) => VerifyOtpPage(args: args),
+        );
+      case language:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => const LanguagePage(),
         );
       case personalInfo:
         final Object? args = settings.arguments;

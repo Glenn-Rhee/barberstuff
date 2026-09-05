@@ -11,7 +11,6 @@ import 'package:mobile_barberstuff/features/profile/data/models/customer_profile
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
-import 'package:mobile_barberstuff/features/profile/presentation/widgets/language_sheet.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/profile_menu_tile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
@@ -140,7 +139,8 @@ class ProfilePage extends StatelessWidget {
                   ProfileMenuTile(
                     iconPath: AppAssets.globeProfile,
                     label: l10n.profileMenuLanguage,
-                    onTap: () => showLanguageSheet(context),
+                    onTap: () =>
+                        Navigator.of(context).pushNamed(AppRoute.language),
                   ),
                   ProfileMenuTile(
                     iconPath: AppAssets.idCardProfile,

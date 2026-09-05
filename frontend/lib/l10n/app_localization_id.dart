@@ -419,13 +419,20 @@ class AppLocalizationsId extends AppLocalizations {
       'Anda perlu masuk lagi untuk memakai Barberstuff.';
 
   @override
-  String get languageSheetTitle => 'Pilih Bahasa';
+  String get languagePageTitle => 'Pilih Bahasa';
 
   @override
-  String get languageIndonesian => 'Indonesia';
+  String get languagePageDescription =>
+      'Silakan pilih bahasa yang nyaman bagi Anda untuk menikmati pengalaman terbaik bersama kami.';
 
   @override
-  String get languageEnglish => 'English';
+  String get languageIndonesian => 'Bahasa Indonesia';
+
+  @override
+  String get languageEnglish => 'Inggris';
+
+  @override
+  String get languageSelectAction => 'Pilih';
 
   @override
   String get commonCancel => 'Batal';
