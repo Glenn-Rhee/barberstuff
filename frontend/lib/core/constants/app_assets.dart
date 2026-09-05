@@ -21,6 +21,8 @@ class AppAssets {
   static const String storeBatujimbaran = '$_images/store_batu_jimbaran.png';
   static const String storePondokgede = '$_images/store_pondokgede_image.png';
 
+  static const String vectorCard = '$_images/vector_card.png';
+
   static const String googleIcon = '$_icon/google_icon.png';
   static const String phoneIcon = '$_icon/telephone_icon.png';
   static const String birthDateIcon = '$_icon/date-of-birth_icon.png';

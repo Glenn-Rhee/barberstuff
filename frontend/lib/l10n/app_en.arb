@@ -156,6 +156,9 @@
 
   "commonCancel": "Cancel",
 
+  "cardPageTitle": "Barberstuff Card",
+  "cardIdLabel": "User ID",
+
   "comingSoonMessage": "Comming soon!",
   "commonRetry": "Try Again",
   "commonUnderstood": "Oke",

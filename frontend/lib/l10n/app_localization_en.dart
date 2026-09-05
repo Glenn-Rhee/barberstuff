@@ -431,6 +431,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonCancel => 'Cancel';
 
   @override
+  String get cardPageTitle => 'Barberstuff Card';
+
+  @override
+  String get cardIdLabel => 'User ID';
+
+  @override
   String get comingSoonMessage => 'Comming soon!';
 
   @override

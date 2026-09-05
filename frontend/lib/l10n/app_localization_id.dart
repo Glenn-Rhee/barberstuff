@@ -431,6 +431,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get commonCancel => 'Batal';
 
   @override
+  String get cardPageTitle => 'Barberstuff Card';
+
+  @override
+  String get cardIdLabel => 'ID User';
+
+  @override
   String get comingSoonMessage => 'Segera hadir!';
 
   @override

@@ -866,6 +866,18 @@ abstract class AppLocalizations {
   /// **'Batal'**
   String get commonCancel;
 
+  /// No description provided for @cardPageTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff Card'**
+  String get cardPageTitle;
+
+  /// No description provided for @cardIdLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'ID User'**
+  String get cardIdLabel;
+
   /// No description provided for @comingSoonMessage.
   ///
   /// In id, this message translates to:

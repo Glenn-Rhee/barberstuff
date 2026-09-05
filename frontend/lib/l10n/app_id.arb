@@ -211,6 +211,9 @@
 
   "commonCancel": "Batal",
 
+  "cardPageTitle": "Barberstuff Card",
+  "cardIdLabel": "ID User",
+
   "comingSoonMessage": "Segera hadir!",
   "commonRetry": "Coba Lagi",
   "commonUnderstood": "Oke",

@@ -7,9 +7,11 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/phone_formatter.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/language_sheet.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/profile_menu_tile.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
@@ -138,7 +140,10 @@ class ProfilePage extends StatelessWidget {
                   ProfileMenuTile(
                     iconPath: AppAssets.idCardProfile,
                     label: l10n.profileMenuCard,
-                    onTap: () => showComingSoonDialog(context),
+                    onTap: () => Navigator.of(context).pushNamed(
+                      AppRoute.barberstuffCard,
+                      arguments: BarberstuffCardArgs(profile: profile),
+                    ),
                   ),
                   ProfileMenuTile(
                     iconPath: AppAssets.bellProfile,
@@ -258,19 +263,6 @@ class _TierBadge extends StatelessWidget {
 
   final MemberTier tier;
 
-  String _label(AppLocalizations l10n) {
-    switch (tier) {
-      case MemberTier.newbie:
-        return l10n.profileTierNewbie;
-      case MemberTier.bestie:
-        return l10n.profileTierBestie;
-      case MemberTier.royal:
-        return l10n.profileTierRoyal;
-      case MemberTier.crazy:
-        return l10n.profileTierCrazy;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -280,7 +272,7 @@ class _TierBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        _label(AppLocalizations.of(context)),
+        tierLabel(tier, AppLocalizations.of(context)),
         style: AppTextStyle.titleSmall.copyWith(letterSpacing: 0.6),
       ),
     );
