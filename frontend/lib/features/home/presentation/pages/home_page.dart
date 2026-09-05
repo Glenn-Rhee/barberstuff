@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
-import 'package:mobile_barberstuff/features/home/presentation/provider/home_provider.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/active_booking_card.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/benefit_card.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/birthday_promo_card.dart';
-import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_header.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/history_tile.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/nearby_store_list.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/points_card.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/section_header.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
-import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
@@ -26,70 +21,37 @@ import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<HomeProvider>(
-      create: (BuildContext ctx) => HomeProvider(ctx.read<ProfileRepository>()),
-      child: const _HomeView(),
-    );
-  }
-}
-
-class _HomeView extends StatelessWidget {
-  const _HomeView();
+  const HomePage({super.key, this.onProfileTap});
 
   static const double sidePadding = 20;
   static const int birthdayDiscount = 30;
 
-  Future<void> _logout(BuildContext context) async {
-    final NavigatorState navigator = Navigator.of(context);
-
-    await context.read<AppSession>().clearSession();
-
-    navigator.pushNamedAndRemoveUntil(
-      AppRoute.chooseLogin,
-      (Route<dynamic> r) => false,
-    );
-  }
+  final VoidCallback? onProfileTap;
 
   @override
   Widget build(BuildContext context) {
-    final HomeProvider p = context.watch<HomeProvider>();
+    final ProfileProvider p = context.watch<ProfileProvider>();
     final CustomerProfile? profile = p.profile;
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: Scaffold(
-        backgroundColor: AppColor.ink,
-        body: Column(
-          children: <Widget>[
-            DashboardHeader(
-              name: profile?.name ?? '',
-              photoUrl: profile?.imageUrl,
-              onNotificationTap: () {
-                showComingSoonDialog(context);
-              },
-              onProfileTap: () => _logout(context),
-            ),
-            Expanded(
-              child: ColoredBox(
-                color: AppColor.surface,
-                child: profile == null
-                    ? _PlaceholderBody(provider: p)
-                    : _DashboardBody(profile: profile, onRefresh: p.load),
-              ),
-            ),
-            DashboardBottomNav(
-              current: DashboardTab.home,
-              onSelect: (DashboardTab tab) {
-                if (tab != DashboardTab.home) showComingSoonDialog(context);
-              },
-            ),
-          ],
+    return Column(
+      children: <Widget>[
+        DashboardHeader(
+          name: profile?.name ?? '',
+          photoUrl: profile?.imageUrl,
+          onNotificationTap: () {
+            showComingSoonDialog(context);
+          },
+          onProfileTap: onProfileTap ?? () {},
         ),
-      ),
+        Expanded(
+          child: ColoredBox(
+            color: AppColor.surface,
+            child: profile == null
+                ? _PlaceholderBody(provider: p)
+                : _DashboardBody(profile: profile, onRefresh: p.load),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -179,7 +141,7 @@ class _DashboardBody extends StatelessWidget {
           const SizedBox(height: 16),
           _Inset(
             child: BirthdayPromoCard(
-              discountPercent: _HomeView.birthdayDiscount,
+              discountPercent: HomePage.birthdayDiscount,
               onSeePromo: () {
                 showComingSoonDialog(context);
               },
@@ -216,7 +178,7 @@ class _DashboardBody extends StatelessWidget {
           const SizedBox(height: 12),
           NearbyStoreList(
             stores: _stores,
-            horizontalPadding: _HomeView.sidePadding,
+            horizontalPadding: HomePage.sidePadding,
             onSelect: (NearbyStore _) {
               showComingSoonDialog(context);
             },
@@ -258,7 +220,7 @@ class _Inset extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: _HomeView.sidePadding),
+      padding: const EdgeInsets.symmetric(horizontal: HomePage.sidePadding),
       child: child,
     );
   }
@@ -267,7 +229,7 @@ class _Inset extends StatelessWidget {
 class _PlaceholderBody extends StatelessWidget {
   const _PlaceholderBody({required this.provider});
 
-  final HomeProvider provider;
+  final ProfileProvider provider;
 
   @override
   Widget build(BuildContext context) {

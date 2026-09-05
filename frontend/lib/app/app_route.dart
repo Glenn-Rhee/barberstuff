@@ -9,7 +9,7 @@ import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_succe
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/forgot_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_success_page.dart';
-import 'package:mobile_barberstuff/features/home/presentation/pages/home_page.dart';
+import 'package:mobile_barberstuff/features/main/presentation/pages/main_shell_page.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
@@ -86,7 +86,7 @@ class AppRoute {
       case home:
         return MaterialPageRoute<void>(
           settings: settings,
-          builder: (BuildContext context) => const HomePage(),
+          builder: (BuildContext context) => const MainShellPage(),
         );
       case verifySuccess:
         return MaterialPageRoute<void>(

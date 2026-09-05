@@ -379,6 +379,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
+  String get profileTierNewbie => 'LITE MEMBER';
+
+  @override
+  String get profileTierBestie => 'BESTIE MEMBER';
+
+  @override
+  String get profileTierRoyal => 'ROYAL MEMBER';
+
+  @override
+  String get profileTierCrazy => 'CRAZY MEMBER';
+
+  @override
+  String get profileMenuPersonalInfo => 'Personal Information';
+
+  @override
+  String get profileMenuLanguage => 'Language';
+
+  @override
+  String get profileMenuCard => 'Barberstuff Card';
+
+  @override
+  String get profileMenuNotification => 'Notifications';
+
+  @override
+  String get profileMenuHelp => 'Help Center';
+
+  @override
+  String get profileMenuAbout => 'About the App';
+
+  @override
+  String get profileMenuLogout => 'Log out';
+
+  @override
+  String get profileLogoutTitle => 'Log out of your account?';
+
+  @override
+  String get profileLogoutMessage =>
+      'You will need to sign in again to use Barberstuff.';
+
+  @override
+  String get languageSheetTitle => 'Choose Language';
+
+  @override
+  String get languageIndonesian => 'Indonesia';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
   String get comingSoonMessage => 'Comming soon!';
 
   @override

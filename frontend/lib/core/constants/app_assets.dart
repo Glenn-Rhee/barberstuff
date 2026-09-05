@@ -52,4 +52,12 @@ class AppAssets {
   static const String homeBottom = '$_icon/home_bottom.png';
 
   static const String toolsMaintenance = '$_icon/tools_maintenance.png';
+
+  static const String userProfile = '$_icon/user_profile.png';
+  static const String globeProfile = '$_icon/globe_profile.png';
+  static const String idCardProfile = '$_icon/id-card_profile.png';
+  static const String bellProfile = '$_icon/bell_profile.png';
+  static const String helpCircleProfile = '$_icon/help-circle_profile.png';
+  static const String infoProfile = '$_icon/info.png';
+  static const String logOutProfile = '$_icon/log-out_profile.png';
 }

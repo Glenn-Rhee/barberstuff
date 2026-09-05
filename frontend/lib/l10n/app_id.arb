@@ -189,6 +189,28 @@
   "navHistory": "Riwayat",
   "navProfile": "Profil",
 
+  "profileTierNewbie": "LITE MEMBER",
+  "profileTierBestie": "BESTIE MEMBER",
+  "profileTierRoyal": "ROYAL MEMBER",
+  "profileTierCrazy": "CRAZY MEMBER",
+
+  "profileMenuPersonalInfo": "Informasi Pribadi",
+  "profileMenuLanguage": "Bahasa",
+  "profileMenuCard": "Barberstuff Card",
+  "profileMenuNotification": "Notifikasi",
+  "profileMenuHelp": "Pusat Bantuan",
+  "profileMenuAbout": "Tentang Aplikasi",
+  "profileMenuLogout": "Keluar",
+
+  "profileLogoutTitle": "Keluar dari akun?",
+  "profileLogoutMessage": "Anda perlu masuk lagi untuk memakai Barberstuff.",
+
+  "languageSheetTitle": "Pilih Bahasa",
+  "languageIndonesian": "Indonesia",
+  "languageEnglish": "English",
+
+  "commonCancel": "Batal",
+
   "comingSoonMessage": "Segera hadir!",
   "commonRetry": "Coba Lagi",
   "commonUnderstood": "Oke",

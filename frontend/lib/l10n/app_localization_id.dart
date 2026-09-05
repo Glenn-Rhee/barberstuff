@@ -379,6 +379,58 @@ class AppLocalizationsId extends AppLocalizations {
   String get navProfile => 'Profil';
 
   @override
+  String get profileTierNewbie => 'LITE MEMBER';
+
+  @override
+  String get profileTierBestie => 'BESTIE MEMBER';
+
+  @override
+  String get profileTierRoyal => 'ROYAL MEMBER';
+
+  @override
+  String get profileTierCrazy => 'CRAZY MEMBER';
+
+  @override
+  String get profileMenuPersonalInfo => 'Informasi Pribadi';
+
+  @override
+  String get profileMenuLanguage => 'Bahasa';
+
+  @override
+  String get profileMenuCard => 'Barberstuff Card';
+
+  @override
+  String get profileMenuNotification => 'Notifikasi';
+
+  @override
+  String get profileMenuHelp => 'Pusat Bantuan';
+
+  @override
+  String get profileMenuAbout => 'Tentang Aplikasi';
+
+  @override
+  String get profileMenuLogout => 'Keluar';
+
+  @override
+  String get profileLogoutTitle => 'Keluar dari akun?';
+
+  @override
+  String get profileLogoutMessage =>
+      'Anda perlu masuk lagi untuk memakai Barberstuff.';
+
+  @override
+  String get languageSheetTitle => 'Pilih Bahasa';
+
+  @override
+  String get languageIndonesian => 'Indonesia';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get commonCancel => 'Batal';
+
+  @override
   String get comingSoonMessage => 'Segera hadir!';
 
   @override

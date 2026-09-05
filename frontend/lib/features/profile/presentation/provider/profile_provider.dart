@@ -4,8 +4,8 @@ import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
 
-class HomeProvider extends ChangeNotifier {
-  HomeProvider(this._repository) {
+class ProfileProvider extends ChangeNotifier {
+  ProfileProvider(this._repository) {
     load();
   }
 
@@ -20,7 +20,6 @@ class HomeProvider extends ChangeNotifier {
   ApiException? get error => _error;
 
   bool get isFirstLoad => _profile == null && _isLoading;
-  bool get isEmpty => _profile == null && !_isLoading;
 
   Future<void> load() async {
     if (_isLoading) return;

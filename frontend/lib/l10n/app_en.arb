@@ -134,6 +134,28 @@
   "navHistory": "History",
   "navProfile": "Profile",
 
+  "profileTierNewbie": "LITE MEMBER",
+  "profileTierBestie": "BESTIE MEMBER",
+  "profileTierRoyal": "ROYAL MEMBER",
+  "profileTierCrazy": "CRAZY MEMBER",
+
+  "profileMenuPersonalInfo": "Personal Information",
+  "profileMenuLanguage": "Language",
+  "profileMenuCard": "Barberstuff Card",
+  "profileMenuNotification": "Notifications",
+  "profileMenuHelp": "Help Center",
+  "profileMenuAbout": "About the App",
+  "profileMenuLogout": "Log out",
+
+  "profileLogoutTitle": "Log out of your account?",
+  "profileLogoutMessage": "You will need to sign in again to use Barberstuff.",
+
+  "languageSheetTitle": "Choose Language",
+  "languageIndonesian": "Indonesia",
+  "languageEnglish": "English",
+
+  "commonCancel": "Cancel",
+
   "comingSoonMessage": "Comming soon!",
   "commonRetry": "Try Again",
   "commonUnderstood": "Oke",

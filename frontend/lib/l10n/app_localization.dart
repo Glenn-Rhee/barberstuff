@@ -764,6 +764,108 @@ abstract class AppLocalizations {
   /// **'Profil'**
   String get navProfile;
 
+  /// No description provided for @profileTierNewbie.
+  ///
+  /// In id, this message translates to:
+  /// **'LITE MEMBER'**
+  String get profileTierNewbie;
+
+  /// No description provided for @profileTierBestie.
+  ///
+  /// In id, this message translates to:
+  /// **'BESTIE MEMBER'**
+  String get profileTierBestie;
+
+  /// No description provided for @profileTierRoyal.
+  ///
+  /// In id, this message translates to:
+  /// **'ROYAL MEMBER'**
+  String get profileTierRoyal;
+
+  /// No description provided for @profileTierCrazy.
+  ///
+  /// In id, this message translates to:
+  /// **'CRAZY MEMBER'**
+  String get profileTierCrazy;
+
+  /// No description provided for @profileMenuPersonalInfo.
+  ///
+  /// In id, this message translates to:
+  /// **'Informasi Pribadi'**
+  String get profileMenuPersonalInfo;
+
+  /// No description provided for @profileMenuLanguage.
+  ///
+  /// In id, this message translates to:
+  /// **'Bahasa'**
+  String get profileMenuLanguage;
+
+  /// No description provided for @profileMenuCard.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff Card'**
+  String get profileMenuCard;
+
+  /// No description provided for @profileMenuNotification.
+  ///
+  /// In id, this message translates to:
+  /// **'Notifikasi'**
+  String get profileMenuNotification;
+
+  /// No description provided for @profileMenuHelp.
+  ///
+  /// In id, this message translates to:
+  /// **'Pusat Bantuan'**
+  String get profileMenuHelp;
+
+  /// No description provided for @profileMenuAbout.
+  ///
+  /// In id, this message translates to:
+  /// **'Tentang Aplikasi'**
+  String get profileMenuAbout;
+
+  /// No description provided for @profileMenuLogout.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar'**
+  String get profileMenuLogout;
+
+  /// No description provided for @profileLogoutTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar dari akun?'**
+  String get profileLogoutTitle;
+
+  /// No description provided for @profileLogoutMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda perlu masuk lagi untuk memakai Barberstuff.'**
+  String get profileLogoutMessage;
+
+  /// No description provided for @languageSheetTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Bahasa'**
+  String get languageSheetTitle;
+
+  /// No description provided for @languageIndonesian.
+  ///
+  /// In id, this message translates to:
+  /// **'Indonesia'**
+  String get languageIndonesian;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In id, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In id, this message translates to:
+  /// **'Batal'**
+  String get commonCancel;
+
   /// No description provided for @comingSoonMessage.
   ///
   /// In id, this message translates to:
