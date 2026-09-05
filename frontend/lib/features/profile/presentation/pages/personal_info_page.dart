@@ -240,16 +240,16 @@ class _PasswordCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColor.orangeDashboard.withValues(alpha: 0.35),
+                  color: AppColor.customKeyProfileInfo.withValues(alpha: 0.35),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Image.asset(
                     AppAssets.keyIcon,
-                    width: 22,
-                    height: 22,
+                    width: 25,
+                    height: 25,
                     fit: BoxFit.contain,
-                    color: AppColor.orangeDark,
+                    color: AppColor.customKeyProfileInfo2,
                     filterQuality: FilterQuality.medium,
                   ),
                 ),

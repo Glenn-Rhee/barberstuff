@@ -481,6 +481,114 @@ class AppLocalizationsEn extends AppLocalizations {
   String get personalInfoSave => 'Save Changes';
 
   @override
+  String get helpTitle => 'Help Center';
+
+  @override
+  String get helpHeadline => 'Need Help? Tell Us What\'s Going On';
+
+  @override
+  String get helpSubtitle =>
+      'Fill out the form below and our team will get back to you as soon as possible.';
+
+  @override
+  String get helpNameLabel => 'Name';
+
+  @override
+  String get helpProblemLabel => 'Tell Us Your Problem';
+
+  @override
+  String get helpProblemHint => 'Tell us what\'s your problem';
+
+  @override
+  String get helpSubmit => 'Submit';
+
+  @override
+  String get aboutTitle => 'About the App';
+
+  @override
+  String aboutLastUpdated(String date) {
+    return 'Last Updated: $date';
+  }
+
+  @override
+  String get aboutIntro =>
+      'By accessing or using the Barberstuff application, you agree to be bound by these Terms of Use.';
+
+  @override
+  String get aboutAcceptanceTitle => '1. Acceptance of Terms';
+
+  @override
+  String get aboutAcceptanceBody =>
+      'By using Barberstuff, you confirm that you have read, understood, and agreed to these Terms of Use.';
+
+  @override
+  String get aboutEligibilityTitle => '2. Eligibility';
+
+  @override
+  String get aboutEligibilityBody =>
+      'You must be at least 17 years old or have legal permission from a parent or guardian to use Barberstuff.';
+
+  @override
+  String get aboutAccountTitle => '3. User Accounts';
+
+  @override
+  String get aboutAccountPoint1 =>
+      'You are responsible for maintaining the confidentiality of your account';
+
+  @override
+  String get aboutAccountPoint2 =>
+      'All information provided must be accurate and up to date';
+
+  @override
+  String get aboutAccountPoint3 =>
+      'Barberstuff is not responsible for unauthorized access caused by user negligence';
+
+  @override
+  String get aboutUsageTitle => '4. Use of Services';
+
+  @override
+  String get aboutUsageIntro => 'You agree not to:';
+
+  @override
+  String get aboutUsagePoint1 => 'Use Barberstuff for unlawful purposes';
+
+  @override
+  String get aboutUsagePoint2 =>
+      'Copy, distribute, or exploit platform content without permission';
+
+  @override
+  String get aboutUsagePoint3 =>
+      'Upload content that violates laws or third-party rights';
+
+  @override
+  String get aboutIpTitle => '5. Intellectual Property';
+
+  @override
+  String get aboutIpBody =>
+      'All platform content, systems, and designs are owned by Barberstuff. Any data or materials created by users remain the user\'s property.';
+
+  @override
+  String get aboutTerminationTitle => '6. Account Termination';
+
+  @override
+  String get aboutTerminationBody =>
+      'Barberstuff reserves the right to suspend or terminate accounts that violate these Terms.';
+
+  @override
+  String get aboutDisclaimerTitle => '7. Disclaimer';
+
+  @override
+  String get aboutDisclaimerBody =>
+      'Barberstuff is provided on an \"as is\" and \"as available\" basis without warranties of any kind.';
+
+  @override
+  String get aboutChangesTitle => '8. Changes to Terms';
+
+  @override
+  String get aboutChangesBody =>
+      'Barberstuff may update these Terms at any time. Continued use of the platform indicates acceptance of the updated Terms.';
+
+  @override
   String get comingSoonMessage => 'Comming soon!';
 
   @override

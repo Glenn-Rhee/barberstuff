@@ -481,6 +481,115 @@ class AppLocalizationsId extends AppLocalizations {
   String get personalInfoSave => 'Simpan Perubahan';
 
   @override
+  String get helpTitle => 'Pusat Bantuan';
+
+  @override
+  String get helpHeadline => 'Butuh Bantuan? Ceritakan Masalah Anda';
+
+  @override
+  String get helpSubtitle =>
+      'Isi formulir di bawah ini dan tim kami akan menghubungi Anda secepatnya.';
+
+  @override
+  String get helpNameLabel => 'Nama';
+
+  @override
+  String get helpProblemLabel => 'Ceritakan Masalah Anda';
+
+  @override
+  String get helpProblemHint => 'Tulis masalah yang Anda alami';
+
+  @override
+  String get helpSubmit => 'Kirim';
+
+  @override
+  String get aboutTitle => 'Tentang Aplikasi';
+
+  @override
+  String aboutLastUpdated(String date) {
+    return 'Terakhir diperbarui: $date';
+  }
+
+  @override
+  String get aboutIntro =>
+      'Dengan mengakses atau menggunakan aplikasi Barberstuff, Anda setuju untuk terikat pada Ketentuan Penggunaan ini.';
+
+  @override
+  String get aboutAcceptanceTitle => '1. Penerimaan Ketentuan';
+
+  @override
+  String get aboutAcceptanceBody =>
+      'Dengan menggunakan Barberstuff, Anda menyatakan telah membaca, memahami, dan menyetujui Ketentuan Penggunaan ini.';
+
+  @override
+  String get aboutEligibilityTitle => '2. Kelayakan';
+
+  @override
+  String get aboutEligibilityBody =>
+      'Anda harus berusia minimal 17 tahun atau memiliki izin dari orang tua maupun wali untuk menggunakan Barberstuff.';
+
+  @override
+  String get aboutAccountTitle => '3. Akun Pengguna';
+
+  @override
+  String get aboutAccountPoint1 =>
+      'Anda bertanggung jawab menjaga kerahasiaan akun Anda';
+
+  @override
+  String get aboutAccountPoint2 =>
+      'Seluruh informasi yang diberikan harus akurat dan terkini';
+
+  @override
+  String get aboutAccountPoint3 =>
+      'Barberstuff tidak bertanggung jawab atas akses tidak sah yang disebabkan kelalaian pengguna';
+
+  @override
+  String get aboutUsageTitle => '4. Penggunaan Layanan';
+
+  @override
+  String get aboutUsageIntro => 'Anda setuju untuk tidak:';
+
+  @override
+  String get aboutUsagePoint1 =>
+      'Menggunakan Barberstuff untuk tujuan melanggar hukum';
+
+  @override
+  String get aboutUsagePoint2 =>
+      'Menyalin, menyebarkan, atau mengeksploitasi konten platform tanpa izin';
+
+  @override
+  String get aboutUsagePoint3 =>
+      'Mengunggah konten yang melanggar hukum atau hak pihak ketiga';
+
+  @override
+  String get aboutIpTitle => '5. Hak Kekayaan Intelektual';
+
+  @override
+  String get aboutIpBody =>
+      'Seluruh konten, sistem, dan desain platform dimiliki oleh Barberstuff. Data dan materi yang dibuat pengguna tetap menjadi milik pengguna.';
+
+  @override
+  String get aboutTerminationTitle => '6. Penghentian Akun';
+
+  @override
+  String get aboutTerminationBody =>
+      'Barberstuff berhak menangguhkan atau menghentikan akun yang melanggar Ketentuan ini.';
+
+  @override
+  String get aboutDisclaimerTitle => '7. Penafian';
+
+  @override
+  String get aboutDisclaimerBody =>
+      'Barberstuff disediakan sebagaimana adanya dan sebagaimana tersedia, tanpa jaminan dalam bentuk apa pun.';
+
+  @override
+  String get aboutChangesTitle => '8. Perubahan Ketentuan';
+
+  @override
+  String get aboutChangesBody =>
+      'Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.';
+
+  @override
   String get comingSoonMessage => 'Segera hadir!';
 
   @override

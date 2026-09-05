@@ -9,6 +9,7 @@ import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/core/utils/phone_formatter.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/pages/help_center_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/profile_menu_tile.dart';
@@ -158,7 +159,10 @@ class ProfilePage extends StatelessWidget {
                   ProfileMenuTile(
                     iconPath: AppAssets.helpCircleProfile,
                     label: l10n.profileMenuHelp,
-                    onTap: () => showComingSoonDialog(context),
+                    onTap: () => Navigator.of(context).pushNamed(
+                      AppRoute.helpCenter,
+                      arguments: HelpCenterArgs(profile: profile),
+                    ),
                   ),
                 ],
               ),
@@ -168,7 +172,8 @@ class ProfilePage extends StatelessWidget {
                   ProfileMenuTile(
                     iconPath: AppAssets.infoProfile,
                     label: l10n.profileMenuAbout,
-                    onTap: () => showComingSoonDialog(context),
+                    onTap: () =>
+                        Navigator.of(context).pushNamed(AppRoute.about),
                   ),
                 ],
               ),

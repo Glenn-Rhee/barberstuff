@@ -962,6 +962,192 @@ abstract class AppLocalizations {
   /// **'Simpan Perubahan'**
   String get personalInfoSave;
 
+  /// No description provided for @helpTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pusat Bantuan'**
+  String get helpTitle;
+
+  /// No description provided for @helpHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Butuh Bantuan? Ceritakan Masalah Anda'**
+  String get helpHeadline;
+
+  /// No description provided for @helpSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Isi formulir di bawah ini dan tim kami akan menghubungi Anda secepatnya.'**
+  String get helpSubtitle;
+
+  /// No description provided for @helpNameLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama'**
+  String get helpNameLabel;
+
+  /// No description provided for @helpProblemLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Ceritakan Masalah Anda'**
+  String get helpProblemLabel;
+
+  /// No description provided for @helpProblemHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Tulis masalah yang Anda alami'**
+  String get helpProblemHint;
+
+  /// No description provided for @helpSubmit.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim'**
+  String get helpSubmit;
+
+  /// No description provided for @aboutTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tentang Aplikasi'**
+  String get aboutTitle;
+
+  /// No description provided for @aboutLastUpdated.
+  ///
+  /// In id, this message translates to:
+  /// **'Terakhir diperbarui: {date}'**
+  String aboutLastUpdated(String date);
+
+  /// No description provided for @aboutIntro.
+  ///
+  /// In id, this message translates to:
+  /// **'Dengan mengakses atau menggunakan aplikasi Barberstuff, Anda setuju untuk terikat pada Ketentuan Penggunaan ini.'**
+  String get aboutIntro;
+
+  /// No description provided for @aboutAcceptanceTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'1. Penerimaan Ketentuan'**
+  String get aboutAcceptanceTitle;
+
+  /// No description provided for @aboutAcceptanceBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Dengan menggunakan Barberstuff, Anda menyatakan telah membaca, memahami, dan menyetujui Ketentuan Penggunaan ini.'**
+  String get aboutAcceptanceBody;
+
+  /// No description provided for @aboutEligibilityTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'2. Kelayakan'**
+  String get aboutEligibilityTitle;
+
+  /// No description provided for @aboutEligibilityBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda harus berusia minimal 17 tahun atau memiliki izin dari orang tua maupun wali untuk menggunakan Barberstuff.'**
+  String get aboutEligibilityBody;
+
+  /// No description provided for @aboutAccountTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'3. Akun Pengguna'**
+  String get aboutAccountTitle;
+
+  /// No description provided for @aboutAccountPoint1.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda bertanggung jawab menjaga kerahasiaan akun Anda'**
+  String get aboutAccountPoint1;
+
+  /// No description provided for @aboutAccountPoint2.
+  ///
+  /// In id, this message translates to:
+  /// **'Seluruh informasi yang diberikan harus akurat dan terkini'**
+  String get aboutAccountPoint2;
+
+  /// No description provided for @aboutAccountPoint3.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff tidak bertanggung jawab atas akses tidak sah yang disebabkan kelalaian pengguna'**
+  String get aboutAccountPoint3;
+
+  /// No description provided for @aboutUsageTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'4. Penggunaan Layanan'**
+  String get aboutUsageTitle;
+
+  /// No description provided for @aboutUsageIntro.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda setuju untuk tidak:'**
+  String get aboutUsageIntro;
+
+  /// No description provided for @aboutUsagePoint1.
+  ///
+  /// In id, this message translates to:
+  /// **'Menggunakan Barberstuff untuk tujuan melanggar hukum'**
+  String get aboutUsagePoint1;
+
+  /// No description provided for @aboutUsagePoint2.
+  ///
+  /// In id, this message translates to:
+  /// **'Menyalin, menyebarkan, atau mengeksploitasi konten platform tanpa izin'**
+  String get aboutUsagePoint2;
+
+  /// No description provided for @aboutUsagePoint3.
+  ///
+  /// In id, this message translates to:
+  /// **'Mengunggah konten yang melanggar hukum atau hak pihak ketiga'**
+  String get aboutUsagePoint3;
+
+  /// No description provided for @aboutIpTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'5. Hak Kekayaan Intelektual'**
+  String get aboutIpTitle;
+
+  /// No description provided for @aboutIpBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Seluruh konten, sistem, dan desain platform dimiliki oleh Barberstuff. Data dan materi yang dibuat pengguna tetap menjadi milik pengguna.'**
+  String get aboutIpBody;
+
+  /// No description provided for @aboutTerminationTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'6. Penghentian Akun'**
+  String get aboutTerminationTitle;
+
+  /// No description provided for @aboutTerminationBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff berhak menangguhkan atau menghentikan akun yang melanggar Ketentuan ini.'**
+  String get aboutTerminationBody;
+
+  /// No description provided for @aboutDisclaimerTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'7. Penafian'**
+  String get aboutDisclaimerTitle;
+
+  /// No description provided for @aboutDisclaimerBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff disediakan sebagaimana adanya dan sebagaimana tersedia, tanpa jaminan dalam bentuk apa pun.'**
+  String get aboutDisclaimerBody;
+
+  /// No description provided for @aboutChangesTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'8. Perubahan Ketentuan'**
+  String get aboutChangesTitle;
+
+  /// No description provided for @aboutChangesBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.'**
+  String get aboutChangesBody;
+
   /// No description provided for @comingSoonMessage.
   ///
   /// In id, this message translates to:
