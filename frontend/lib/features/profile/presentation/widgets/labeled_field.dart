@@ -6,8 +6,10 @@ class LabeledField extends StatelessWidget {
   const LabeledField({
     super.key,
     required this.label,
-    required this.iconPath,
     required this.controller,
+    this.iconPath,
+    this.hintText,
+    this.maxLines = 1,
     this.validator,
     this.keyboardType,
     this.enabled = true,
@@ -17,7 +19,9 @@ class LabeledField extends StatelessWidget {
   });
 
   final String label;
-  final String iconPath;
+  final String? iconPath;
+  final String? hintText;
+  final int maxLines;
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
@@ -42,6 +46,8 @@ class LabeledField extends StatelessWidget {
           enabled: enabled,
           readOnly: readOnly,
           onTap: onTap,
+          maxLines: maxLines,
+          textAlignVertical: TextAlignVertical.top,
           style: AppTextStyle.bodyMedium.copyWith(
             color: enabled ? AppColor.ink : AppColor.inkSoft,
           ),
@@ -50,12 +56,19 @@ class LabeledField extends StatelessWidget {
             filled: true,
             fillColor: enabled ? AppColor.surface : AppColor.cream,
             isDense: true,
-            contentPadding: const EdgeInsets.only(
+            hintText: hintText,
+            hintStyle: AppTextStyle.bodyMedium.copyWith(
+              color: AppColor.inkFaint,
+            ),
+            contentPadding: EdgeInsets.only(
+              left: iconPath == null ? 16 : 0,
               right: 16,
               top: 17,
               bottom: 17,
             ),
-            prefixIcon: _Prefix(iconPath: iconPath, enabled: enabled),
+            prefixIcon: iconPath == null
+                ? null
+                : _Prefix(iconPath: iconPath!, enabled: enabled),
             prefixIconConstraints: const BoxConstraints(
               minWidth: 0,
               minHeight: 0,

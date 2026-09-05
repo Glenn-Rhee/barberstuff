@@ -23,6 +23,8 @@ class AppAssets {
 
   static const String vectorCard = '$_images/vector_card.png';
 
+  static const String dummyCapster = '$_images/dummy_avatar_capster.png';
+
   static const String googleIcon = '$_icon/google_icon.png';
   static const String phoneIcon = '$_icon/telephone_icon.png';
   static const String birthDateIcon = '$_icon/date-of-birth_icon.png';

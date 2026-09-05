@@ -20,7 +20,7 @@ class TierTheme {
     colors: <Color>[base, deep],
   );
 
-  static const TierTheme _lite = TierTheme(
+  static const TierTheme _newbie = TierTheme(
     base: Color(0xFF2E3338),
     deep: Color(0xFF15181B),
     accent: Color(0xFFC3CCD6),
@@ -51,7 +51,7 @@ class TierTheme {
   static TierTheme of(MemberTier tier) {
     switch (tier) {
       case MemberTier.newbie:
-        return _lite;
+        return _newbie;
       case MemberTier.bestie:
         return _bestie;
       case MemberTier.royal:

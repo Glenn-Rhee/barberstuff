@@ -155,6 +155,11 @@
   "homeBirthdayDescription": "Diskon potongan rambut berlaku s/d 7 hari setelah ultah.",
   "homeSeePromo": "Lihat Promo",
 
+  "homeActionBooking": "Booking",
+  "homeActionPackage": "Paket",
+  "homeActionPromo": "Promo",
+  "homeActionHistory": "Riwayat",
+
   "homeBenefitTitle": "Benefit Barberstuff",
   "homeBenefitPoints": "Poin reward setiap kali potong rambut",
   "homeBenefitBirthday": "Diskon khusus dan penawaran ulang tahun",
@@ -189,7 +194,7 @@
   "navHistory": "Riwayat",
   "navProfile": "Profil",
 
-  "profileTierNewbie": "LITE MEMBER",
+  "profileTierNewbie": "NEWBIE MEMBER",
   "profileTierBestie": "BESTIE MEMBER",
   "profileTierRoyal": "ROYAL MEMBER",
   "profileTierCrazy": "CRAZY MEMBER",

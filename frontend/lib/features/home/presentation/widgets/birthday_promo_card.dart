@@ -60,11 +60,18 @@ class BirthdayPromoCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(
-                '$discountPercent%',
-                style: AppTextStyle.displaySmall.copyWith(
-                  color: AppColor.surface,
-                  fontWeight: FontWeight.w700,
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 110),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '$discountPercent%',
+                    maxLines: 1,
+                    style: AppTextStyle.displaySmall.copyWith(
+                      color: AppColor.surface,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 6),

@@ -650,6 +650,30 @@ abstract class AppLocalizations {
   /// **'Lihat Promo'**
   String get homeSeePromo;
 
+  /// No description provided for @homeActionBooking.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking'**
+  String get homeActionBooking;
+
+  /// No description provided for @homeActionPackage.
+  ///
+  /// In id, this message translates to:
+  /// **'Paket'**
+  String get homeActionPackage;
+
+  /// No description provided for @homeActionPromo.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo'**
+  String get homeActionPromo;
+
+  /// No description provided for @homeActionHistory.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat'**
+  String get homeActionHistory;
+
   /// No description provided for @homeBenefitTitle.
   ///
   /// In id, this message translates to:
@@ -767,7 +791,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileTierNewbie.
   ///
   /// In id, this message translates to:
-  /// **'LITE MEMBER'**
+  /// **'NEWBIE MEMBER'**
   String get profileTierNewbie;
 
   /// No description provided for @profileTierBestie.

@@ -110,6 +110,11 @@
   "homeBirthdayDescription": "Haircut discount valid for up to 7 days after your birthday.",
   "homeSeePromo": "See Promo",
 
+  "homeActionBooking": "Booking",
+  "homeActionPackage": "Packages",
+  "homeActionPromo": "Promo",
+  "homeActionHistory": "History",
+
   "homeBenefitTitle": "Barberstuff Benefits",
   "homeBenefitPoints": "Reward points on every haircut",
   "homeBenefitBirthday": "Special discounts and birthday offers",
@@ -134,7 +139,7 @@
   "navHistory": "History",
   "navProfile": "Profile",
 
-  "profileTierNewbie": "LITE MEMBER",
+  "profileTierNewbie": "NEWBIE MEMBER",
   "profileTierBestie": "BESTIE MEMBER",
   "profileTierRoyal": "ROYAL MEMBER",
   "profileTierCrazy": "CRAZY MEMBER",

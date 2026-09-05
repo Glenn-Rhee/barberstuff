@@ -15,7 +15,7 @@ class NearbyStoreList extends StatelessWidget {
   });
 
   static const double _cardWidth = 190;
-  static const double _height = 200;
+  static const double _height = 205;
 
   final List<NearbyStore> stores;
   final void Function(NearbyStore store) onSelect;
@@ -23,8 +23,10 @@ class NearbyStoreList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double scale = MediaQuery.textScalerOf(context).scale(1);
+
     return SizedBox(
-      height: _height,
+      height: _height + (scale - 1) * 46,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: horizontalPadding),

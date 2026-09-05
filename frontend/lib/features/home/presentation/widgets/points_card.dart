@@ -73,15 +73,18 @@ class PointsCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      l10n.homePoints(format.format(points)),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyle.headlineSmall,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        l10n.homePoints(format.format(points)),
+                        maxLines: 1,
+                        style: AppTextStyle.headlineSmall,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _TierPill(tier: tier),
+                  Flexible(child: _TierPill(tier: tier)),
                 ],
               ),
               if (pointsToNextTier > 0) ...<Widget>[
@@ -141,6 +144,8 @@ class _TierPill extends StatelessWidget {
       ),
       child: Text(
         tierLabel(tier, AppLocalizations.of(context)),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: AppTextStyle.bodySmall.copyWith(
           color: TierTheme.of(tier).accent,
           fontWeight: FontWeight.w700,

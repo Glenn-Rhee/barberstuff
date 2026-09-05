@@ -318,6 +318,18 @@ class AppLocalizationsId extends AppLocalizations {
   String get homeSeePromo => 'Lihat Promo';
 
   @override
+  String get homeActionBooking => 'Booking';
+
+  @override
+  String get homeActionPackage => 'Paket';
+
+  @override
+  String get homeActionPromo => 'Promo';
+
+  @override
+  String get homeActionHistory => 'Riwayat';
+
+  @override
   String get homeBenefitTitle => 'Benefit Barberstuff';
 
   @override
@@ -379,7 +391,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get navProfile => 'Profil';
 
   @override
-  String get profileTierNewbie => 'LITE MEMBER';
+  String get profileTierNewbie => 'NEWBIE MEMBER';
 
   @override
   String get profileTierBestie => 'BESTIE MEMBER';

@@ -11,6 +11,7 @@ import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_
 import 'package:mobile_barberstuff/features/home/presentation/widgets/history_tile.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/nearby_store_list.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/points_card.dart';
+import 'package:mobile_barberstuff/features/home/presentation/widgets/quick_action_row.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/section_header.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
@@ -63,24 +64,25 @@ class _DashboardBody extends StatelessWidget {
   final Future<void> Function() onRefresh;
 
   static final ActiveBooking _booking = ActiveBooking(
-    orderId: '9821',
-    storeName: 'Jati Asih',
-    storeAddress: 'Jl. Jati Asih No. 20, Bekasi',
-    capsterName: 'Iqbal Apriand',
+    orderId: '0001',
+    storeName: 'Pondok Gede',
+    storeAddress:
+        'Gg. Leopard Jl. Jatimakmur No.49C, RT.001/RW.011, Jatimakmur, Kec. Pd. Gede, Kota Bks, Jawa Barat 17413',
+    capsterName: 'Danarmas',
     schedule: DateTime(2024, 5, 25, 16),
   );
 
   static const List<NearbyStore> _stores = <NearbyStore>[
     NearbyStore(
       id: '1',
-      name: 'Pondok Indah',
+      name: 'Depok',
       rating: 4.7,
       distanceKm: 3.2,
       imageAsset: AppAssets.storeDepok,
     ),
     NearbyStore(
       id: '2',
-      name: 'Kemang Raya',
+      name: 'Ciracas',
       rating: 4.8,
       distanceKm: 0.5,
       imageAsset: AppAssets.storeCiracas,
@@ -97,23 +99,23 @@ class _DashboardBody extends StatelessWidget {
   static final List<HaircutHistory> _histories = <HaircutHistory>[
     HaircutHistory(
       id: '1',
-      capsterName: 'Ariel Rizki Muhtamad Bakri',
-      date: DateTime(2024, 5, 8),
-      storeName: 'Kemang Raya',
+      capsterName: 'Danarmas',
+      date: DateTime(2026, 2, 30),
+      storeName: 'Depok',
       price: 95000,
     ),
     HaircutHistory(
       id: '2',
-      capsterName: 'Ariel Rizki Muhtamad Bakri',
-      date: DateTime(2024, 5, 8),
-      storeName: 'Kemang Raya',
+      capsterName: 'Kang iqbal',
+      date: DateTime(2026, 0, 28),
+      storeName: 'Pondok Gede',
       price: 55000,
     ),
     HaircutHistory(
       id: '3',
-      capsterName: 'Ariel Rizki Muhtamad Bakri',
-      date: DateTime(2024, 5, 8),
-      storeName: 'Kemang Raya',
+      capsterName: 'Mas Ariel',
+      date: DateTime(2026, 5, 8),
+      storeName: 'Ciracas',
       price: 25000,
     ),
   ];
@@ -144,6 +146,15 @@ class _DashboardBody extends StatelessWidget {
             child: BirthdayPromoCard(
               discountPercent: HomePage.birthdayDiscount,
               onSeePromo: () {
+                showComingSoonDialog(context);
+              },
+            ),
+          ),
+
+          const SizedBox(height: 26),
+          _Inset(
+            child: QuickActionRow(
+              onSelect: (QuickAction _) {
                 showComingSoonDialog(context);
               },
             ),

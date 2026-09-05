@@ -37,29 +37,38 @@ class ActiveBookingCard extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColor.orangeLight,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  l10n.homeBookingUpcoming,
-                  style: AppTextStyle.bodySmall.copyWith(
-                    color: AppColor.surface,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.4,
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColor.orangeLight,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    l10n.homeBookingUpcoming,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.bodySmall.copyWith(
+                      color: AppColor.surface,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.4,
+                    ),
                   ),
                 ),
               ),
-              const Spacer(),
-              Text(
-                l10n.homeBookingOrderId(booking.orderId),
-                style: AppTextStyle.bodySmall.copyWith(
-                  color: AppColor.inkFaint,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l10n.homeBookingOrderId(booking.orderId),
+                  textAlign: TextAlign.right,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.bodySmall.copyWith(
+                    color: AppColor.inkFaint,
+                  ),
                 ),
               ),
             ],
@@ -116,7 +125,7 @@ class ActiveBookingCard extends StatelessWidget {
           ),
           Row(
             children: <Widget>[
-              _CapsterAvatar(photoUrl: booking.capsterPhotoUrl),
+              _CapsterAvatar(photoUrl: AppAssets.dummyCapster),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -172,35 +181,38 @@ class _CapsterAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String? url = photoUrl;
+    final String? source = photoUrl;
 
     return ClipOval(
       child: SizedBox(
         width: _size,
         height: _size,
-        child: url == null
-            ? const ColoredBox(
-                color: AppColor.border,
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 20,
-                  color: AppColor.surface,
-                ),
-              )
-            : Image.network(
-                url,
-                fit: BoxFit.cover,
-                errorBuilder: (BuildContext _, Object _, StackTrace? _) =>
-                    const ColoredBox(
-                      color: AppColor.border,
-                      child: Icon(
-                        Icons.person_rounded,
-                        size: 20,
-                        color: AppColor.surface,
-                      ),
-                    ),
-              ),
+        child: source == null ? _fallback() : _image(source),
       ),
+    );
+  }
+
+  Widget _image(String source) {
+    if (source.startsWith('assets/')) {
+      return Image.asset(
+        source,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.medium,
+        errorBuilder: (BuildContext _, Object _, StackTrace? _) => _fallback(),
+      );
+    }
+
+    return Image.network(
+      source,
+      fit: BoxFit.cover,
+      errorBuilder: (BuildContext _, Object _, StackTrace? _) => _fallback(),
+    );
+  }
+
+  Widget _fallback() {
+    return const ColoredBox(
+      color: AppColor.border,
+      child: Icon(Icons.person_rounded, size: 20, color: AppColor.surface),
     );
   }
 }
