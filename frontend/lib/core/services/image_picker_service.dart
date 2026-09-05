@@ -5,8 +5,6 @@ import 'package:image_picker/image_picker.dart';
 
 enum AvatarSource { camera, gallery }
 
-/// Gagal mengambil gambar. [permissionDenied] dipakai halaman untuk memilih
-/// pesan yang tepat: menyuruh pengguna ke pengaturan, atau sekadar coba lagi.
 class ImagePickerFailure implements Exception {
   const ImagePickerFailure({required this.permissionDenied});
 
@@ -18,8 +16,6 @@ class ImagePickerService {
 
   final ImagePicker _picker;
 
-  /// Foto profil hanya ditampilkan sebesar 104px, jadi tidak ada gunanya
-  /// membawa hasil kamera 12MP: diturunkan di sisi perangkat sebelum dikirim.
   static const double _maxSide = 720;
   static const int _quality = 85;
 
@@ -28,7 +24,6 @@ class ImagePickerService {
     'photo_access_denied',
   };
 
-  /// Mengembalikan null bila pengguna menutup galeri/kamera tanpa memilih.
   Future<File?> pick(AvatarSource source) async {
     try {
       final XFile? picked = await _picker.pickImage(

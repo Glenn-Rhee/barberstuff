@@ -3,11 +3,13 @@ class ApiResponse<T> {
     required this.data,
     required this.message,
     required this.statusCode,
+    required this.isSuccess,
   });
 
   final T? data;
   final String message;
   final int statusCode;
+  final bool isSuccess;
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,
@@ -24,6 +26,7 @@ class ApiResponse<T> {
       data: parsed,
       message: (json['message'] as String?) ?? '',
       statusCode: (json['statusCode'] as num?)?.toInt() ?? 0,
+      isSuccess: json['status'] == 'success',
     );
   }
 }

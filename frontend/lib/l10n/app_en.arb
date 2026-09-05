@@ -101,9 +101,42 @@
   "avatarPickFailed": "Could not open the gallery or camera. Please try again.",
   "avatarPermissionDenied": "Photo or camera access was denied. Enable it in your device settings.",
 
-  "comingSoonTitle": "Coming soon",
-  "comingSoonMessage": "We are still working on this feature. In the meantime, feel free to use the available features. Thank you.",
-  "commonUnderstood": "Got it",
+  "homeGreeting": "Hi, {name}!",
+  "homeWelcomeBack": "Welcome back",
+  "homePoints": "{points} Points",
+  "homeMemberBadge": "MEMBER",
+  "homePointsToPremium": "{points} more points to premium level",
+  "homeBirthdayTitle": "Birthday Special!",
+  "homeBirthdayDescription": "Haircut discount valid for up to 7 days after your birthday.",
+  "homeSeePromo": "See Promo",
+
+  "homeBenefitTitle": "Barberstuff Benefits",
+  "homeBenefitPoints": "Reward points on every haircut",
+  "homeBenefitBirthday": "Special discounts and birthday offers",
+  "homeBenefitPriority": "Priority slots with no long queues",
+
+  "homeActiveBookingTitle": "Active Booking",
+  "homeBookingUpcoming": "UPCOMING",
+  "homeBookingOrderId": "Order ID #{id}",
+  "homeBookingDetail": "View Detail",
+  "homeBookingEmpty": "No active booking yet.",
+
+  "homeNearbyTitle": "Nearby Branches",
+  "homeNearbySeeAll": "See All",
+  "homeNearbyDistance": "{distance} km",
+
+  "homeHistoryTitle": "Haircut History",
+  "homeHistorySeeAll": "See History",
+  "homeHistoryEmpty": "No haircut history yet.",
+
+  "navHome": "Home",
+  "navBooking": "Booking",
+  "navHistory": "History",
+  "navProfile": "Profile",
+
+  "comingSoonMessage": "Comming soon!",
+  "commonRetry": "Try Again",
+  "commonUnderstood": "Oke",
   "commonLogout": "Log out"
 
 }

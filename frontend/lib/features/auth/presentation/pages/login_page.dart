@@ -59,8 +59,6 @@ class _LoginView extends StatelessWidget {
     final Validators validators = Validators(l10n);
     final LoginProvider p = context.watch<LoginProvider>();
 
-    // Scope diangkat ke level halaman supaya loading Google ikut memunculkan
-    // BoxLoader satu layar, bukan indikator terpisah di dalam tombolnya.
     return GoogleSignInScope(
       builder: (bool googleLoading, VoidCallback onGooglePressed) =>
           LoadingOverlay(

@@ -602,22 +602,184 @@ abstract class AppLocalizations {
   /// **'Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.'**
   String get avatarPermissionDenied;
 
-  /// No description provided for @comingSoonTitle.
+  /// No description provided for @homeGreeting.
   ///
   /// In id, this message translates to:
-  /// **'Segera hadir'**
-  String get comingSoonTitle;
+  /// **'Halo, {name}!'**
+  String homeGreeting(String name);
+
+  /// No description provided for @homeWelcomeBack.
+  ///
+  /// In id, this message translates to:
+  /// **'Selamat datang kembali'**
+  String get homeWelcomeBack;
+
+  /// No description provided for @homePoints.
+  ///
+  /// In id, this message translates to:
+  /// **'{points} Poin'**
+  String homePoints(String points);
+
+  /// No description provided for @homeMemberBadge.
+  ///
+  /// In id, this message translates to:
+  /// **'MEMBER'**
+  String get homeMemberBadge;
+
+  /// No description provided for @homePointsToPremium.
+  ///
+  /// In id, this message translates to:
+  /// **'{points} Poin lagi ke level premium'**
+  String homePointsToPremium(String points);
+
+  /// No description provided for @homeBirthdayTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Spesial Hari Ulang Tahun!'**
+  String get homeBirthdayTitle;
+
+  /// No description provided for @homeBirthdayDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Diskon potongan rambut berlaku s/d 7 hari setelah ultah.'**
+  String get homeBirthdayDescription;
+
+  /// No description provided for @homeSeePromo.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Promo'**
+  String get homeSeePromo;
+
+  /// No description provided for @homeBenefitTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Benefit Barberstuff'**
+  String get homeBenefitTitle;
+
+  /// No description provided for @homeBenefitPoints.
+  ///
+  /// In id, this message translates to:
+  /// **'Poin reward setiap kali potong rambut'**
+  String get homeBenefitPoints;
+
+  /// No description provided for @homeBenefitBirthday.
+  ///
+  /// In id, this message translates to:
+  /// **'Diskon khusus dan penawaran ulang tahun'**
+  String get homeBenefitBirthday;
+
+  /// No description provided for @homeBenefitPriority.
+  ///
+  /// In id, this message translates to:
+  /// **'Prioritas jadwal tanpa antre panjang'**
+  String get homeBenefitPriority;
+
+  /// No description provided for @homeActiveBookingTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking Aktif'**
+  String get homeActiveBookingTitle;
+
+  /// No description provided for @homeBookingUpcoming.
+  ///
+  /// In id, this message translates to:
+  /// **'MENDATANG'**
+  String get homeBookingUpcoming;
+
+  /// No description provided for @homeBookingOrderId.
+  ///
+  /// In id, this message translates to:
+  /// **'Order ID #{id}'**
+  String homeBookingOrderId(String id);
+
+  /// No description provided for @homeBookingDetail.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Detail'**
+  String get homeBookingDetail;
+
+  /// No description provided for @homeBookingEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada booking aktif.'**
+  String get homeBookingEmpty;
+
+  /// No description provided for @homeNearbyTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Cabang Terdekat'**
+  String get homeNearbyTitle;
+
+  /// No description provided for @homeNearbySeeAll.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Semua'**
+  String get homeNearbySeeAll;
+
+  /// No description provided for @homeNearbyDistance.
+  ///
+  /// In id, this message translates to:
+  /// **'{distance} km'**
+  String homeNearbyDistance(String distance);
+
+  /// No description provided for @homeHistoryTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat Potongan'**
+  String get homeHistoryTitle;
+
+  /// No description provided for @homeHistorySeeAll.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Riwayat'**
+  String get homeHistorySeeAll;
+
+  /// No description provided for @homeHistoryEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada riwayat potongan.'**
+  String get homeHistoryEmpty;
+
+  /// No description provided for @navHome.
+  ///
+  /// In id, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navBooking.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking'**
+  String get navBooking;
+
+  /// No description provided for @navHistory.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat'**
+  String get navHistory;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In id, this message translates to:
+  /// **'Profil'**
+  String get navProfile;
 
   /// No description provided for @comingSoonMessage.
   ///
   /// In id, this message translates to:
-  /// **'Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.'**
+  /// **'Segera hadir!'**
   String get comingSoonMessage;
+
+  /// No description provided for @commonRetry.
+  ///
+  /// In id, this message translates to:
+  /// **'Coba Lagi'**
+  String get commonRetry;
 
   /// No description provided for @commonUnderstood.
   ///
   /// In id, this message translates to:
-  /// **'Mengerti'**
+  /// **'Oke'**
   String get commonUnderstood;
 
   /// No description provided for @commonLogout.

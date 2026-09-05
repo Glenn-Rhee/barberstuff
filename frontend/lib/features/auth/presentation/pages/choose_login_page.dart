@@ -22,8 +22,6 @@ class ChooseLoginPage extends StatelessWidget {
     final double sidePadding = (screen.width * 0.07).clamp(20.0, 32.0);
     final double logoHeight = (screen.height * 0.24).clamp(120.0, 214.0);
 
-    // Scope diangkat ke level halaman supaya loading Google memunculkan
-    // BoxLoader satu layar, bukan indikator terpisah di dalam tombolnya.
     return GoogleSignInScope(
       builder: (bool googleLoading, VoidCallback onGooglePressed) =>
           LoadingOverlay(

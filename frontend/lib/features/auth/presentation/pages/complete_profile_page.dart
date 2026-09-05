@@ -134,8 +134,6 @@ class _CompleteProfileView extends StatelessWidget {
                   ),
                   const SizedBox(height: _gapSection),
 
-                  // Nama dari Google hanya jadi nilai awal: pengguna sering
-                  // memakai nama panggilan atau nama akun yang tidak sesuai.
                   AppTextField(
                     hint: l10n.registerNameLabel,
                     controller: p.nameController,
@@ -145,9 +143,6 @@ class _CompleteProfileView extends StatelessWidget {
                   ),
                   const SizedBox(height: AppField.gap),
 
-                  // Email adalah identitas akun yang sudah diverifikasi Google
-                  // dan dipakai server untuk mencocokkan temp token, jadi
-                  // dikunci.
                   AppTextField(
                     hint: l10n.registerEmailLabel,
                     iconPath: AppAssets.mailIcon,

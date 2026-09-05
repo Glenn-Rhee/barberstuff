@@ -87,8 +87,6 @@ class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
     try {
       _result = await _repository.registerOauth(
         OauthRegisterRequestApi(
-          // Nama boleh diubah pengguna, jadi yang dikirim adalah isi field,
-          // bukan nama bawaan dari akun Google.
           name: nameController.text.trim(),
           tempToken: tempToken,
           phoneNumber: phoneController.text.trim(),

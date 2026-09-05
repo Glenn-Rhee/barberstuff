@@ -25,9 +25,6 @@ class BoxButton extends StatefulWidget {
   final String? iconPath;
   final BoxButtonVariant variant;
 
-  /// Menonaktifkan tombol selama request berjalan. Tombol tetap menampilkan
-  /// labelnya: umpan balik loading ditangani [LoadingOverlay] di level halaman
-  /// agar seluruh aplikasi hanya punya satu gaya loader, yaitu [BoxLoader].
   final bool isLoading;
 
   @override
@@ -41,9 +38,6 @@ class _BoxButtonState extends State<BoxButton> {
 
   bool get _isEnabled => widget.onPressed != null && !widget.isLoading;
 
-  /// Tombol yang tidak bisa ditekan, baik karena form belum lengkap maupun
-  /// karena request sedang berjalan. Keduanya tampil sama supaya tidak ada
-  /// perubahan bentuk yang mengagetkan saat tombol ditekan.
   bool get _isInactive => !_isEnabled;
 
   void _setPressed(bool value) {

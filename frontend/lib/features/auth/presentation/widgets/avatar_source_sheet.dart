@@ -11,9 +11,6 @@ import 'package:provider/provider.dart';
 
 enum _SheetAction { camera, gallery, remove }
 
-/// Alur lengkap saat badge pensil pada avatar ditekan: pilih sumber, ambil
-/// gambar, lalu simpan ke [state]. Dipakai halaman registrasi maupun
-/// lengkapi profil supaya perilakunya persis sama di keduanya.
 Future<void> editAvatar(BuildContext context, AvatarFormMixin state) async {
   final ImagePickerService picker = context.read<ImagePickerService>();
   final _SheetAction? action = await _showSourceSheet(

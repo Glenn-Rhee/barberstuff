@@ -5,7 +5,7 @@ class AppAssets {
   static const String _icon = 'assets/icons';
 
   static const String logo = '$_images/logo_barberstuff.png';
-  static const String patternTile = '$_images/background_bottom.png';
+  static const String patternTile = '$_icon/background_bottom.png';
 
   static const String onboardingFirst = '$_images/slide_1.png';
   static const String onboardingSecond = '$_images/slide_2.png';
@@ -15,10 +15,11 @@ class AppAssets {
   static const String emailVerification = '$_images/email_verification.png';
   static const String checkVerification = '$_images/check_verification.png';
   static const String forgotPassword = '$_images/forgot_image.png';
-  
 
-
-
+  static const String storeDepok = '$_images/store_depok_image.png';
+  static const String storeCiracas = '$_images/store_ciracas_image.png';
+  static const String storeBatujimbaran = '$_images/store_batu_jimbaran.png';
+  static const String storePondokgede = '$_images/store_pondokgede_image.png';
 
   static const String googleIcon = '$_icon/google_icon.png';
   static const String phoneIcon = '$_icon/telephone_icon.png';
@@ -39,7 +40,7 @@ class AppAssets {
   static const String giftDashboard = '$_icon/gift_dashboard_icon.png';
   static const String barcodeDashboard = '$_icon/barcode_dashboard_icon.png';
   static const String checkYelllowDashboard =
-      '$_icon/check_yellow_dashboard.png';
+      '$_icon/chech_yellow_dashboard.png';
   static const String storeDashboard = '$_icon/store_dashboard_icon.png';
   static const String historyRoundedDashboard =
       '$_icon/history_rounded_dashboard.png';
@@ -49,4 +50,6 @@ class AppAssets {
   static const String historyBottom = '$_icon/history_bottom.png';
   static const String scissorsBottom = '$_icon/scissors_bottom.png';
   static const String homeBottom = '$_icon/home_bottom.png';
+
+  static const String toolsMaintenance = '$_icon/tools_maintenance.png';
 }

@@ -15,11 +15,7 @@ class AvatarPicker extends StatelessWidget {
   static const double _size = 104;
   static const double _badge = 32;
 
-  /// Foto bawaan akun, misalnya foto profil Google.
   final String? imageUrl;
-
-  /// Gambar yang baru dipilih pengguna. Selalu menang atas [imageUrl] supaya
-  /// pilihan terakhir pengguna yang terlihat.
   final File? imageFile;
 
   final VoidCallback onEdit;

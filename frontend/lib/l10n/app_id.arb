@@ -131,9 +131,67 @@
   "avatarPickFailed": "Gagal membuka galeri atau kamera. Coba lagi.",
   "avatarPermissionDenied": "Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.",
 
-  "comingSoonTitle": "Segera hadir",
-  "comingSoonMessage": "Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.",
-  "commonUnderstood": "Mengerti",
+  "homeGreeting": "Halo, {name}!",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "homeWelcomeBack": "Selamat datang kembali",
+  "homePoints": "{points} Poin",
+  "@homePoints": {
+    "placeholders": {
+      "points": { "type": "String" }
+    }
+  },
+  "homeMemberBadge": "MEMBER",
+  "homePointsToPremium": "{points} Poin lagi ke level premium",
+  "@homePointsToPremium": {
+    "placeholders": {
+      "points": { "type": "String" }
+    }
+  },
+  "homeBirthdayTitle": "Spesial Hari Ulang Tahun!",
+  "homeBirthdayDescription": "Diskon potongan rambut berlaku s/d 7 hari setelah ultah.",
+  "homeSeePromo": "Lihat Promo",
+
+  "homeBenefitTitle": "Benefit Barberstuff",
+  "homeBenefitPoints": "Poin reward setiap kali potong rambut",
+  "homeBenefitBirthday": "Diskon khusus dan penawaran ulang tahun",
+  "homeBenefitPriority": "Prioritas jadwal tanpa antre panjang",
+
+  "homeActiveBookingTitle": "Booking Aktif",
+  "homeBookingUpcoming": "MENDATANG",
+  "homeBookingOrderId": "Order ID #{id}",
+  "@homeBookingOrderId": {
+    "placeholders": {
+      "id": { "type": "String" }
+    }
+  },
+  "homeBookingDetail": "Lihat Detail",
+  "homeBookingEmpty": "Belum ada booking aktif.",
+
+  "homeNearbyTitle": "Cabang Terdekat",
+  "homeNearbySeeAll": "Lihat Semua",
+  "homeNearbyDistance": "{distance} km",
+  "@homeNearbyDistance": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+
+  "homeHistoryTitle": "Riwayat Potongan",
+  "homeHistorySeeAll": "Lihat Riwayat",
+  "homeHistoryEmpty": "Belum ada riwayat potongan.",
+
+  "navHome": "Home",
+  "navBooking": "Booking",
+  "navHistory": "Riwayat",
+  "navProfile": "Profil",
+
+  "comingSoonMessage": "Segera hadir!",
+  "commonRetry": "Coba Lagi",
+  "commonUnderstood": "Oke",
   "commonLogout": "Keluar"
 
 }

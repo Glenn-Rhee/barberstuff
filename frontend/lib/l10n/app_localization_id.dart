@@ -287,14 +287,105 @@ class AppLocalizationsId extends AppLocalizations {
       'Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.';
 
   @override
-  String get comingSoonTitle => 'Segera hadir';
+  String homeGreeting(String name) {
+    return 'Halo, $name!';
+  }
 
   @override
-  String get comingSoonMessage =>
-      'Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.';
+  String get homeWelcomeBack => 'Selamat datang kembali';
 
   @override
-  String get commonUnderstood => 'Mengerti';
+  String homePoints(String points) {
+    return '$points Poin';
+  }
+
+  @override
+  String get homeMemberBadge => 'MEMBER';
+
+  @override
+  String homePointsToPremium(String points) {
+    return '$points Poin lagi ke level premium';
+  }
+
+  @override
+  String get homeBirthdayTitle => 'Spesial Hari Ulang Tahun!';
+
+  @override
+  String get homeBirthdayDescription =>
+      'Diskon potongan rambut berlaku s/d 7 hari setelah ultah.';
+
+  @override
+  String get homeSeePromo => 'Lihat Promo';
+
+  @override
+  String get homeBenefitTitle => 'Benefit Barberstuff';
+
+  @override
+  String get homeBenefitPoints => 'Poin reward setiap kali potong rambut';
+
+  @override
+  String get homeBenefitBirthday => 'Diskon khusus dan penawaran ulang tahun';
+
+  @override
+  String get homeBenefitPriority => 'Prioritas jadwal tanpa antre panjang';
+
+  @override
+  String get homeActiveBookingTitle => 'Booking Aktif';
+
+  @override
+  String get homeBookingUpcoming => 'MENDATANG';
+
+  @override
+  String homeBookingOrderId(String id) {
+    return 'Order ID #$id';
+  }
+
+  @override
+  String get homeBookingDetail => 'Lihat Detail';
+
+  @override
+  String get homeBookingEmpty => 'Belum ada booking aktif.';
+
+  @override
+  String get homeNearbyTitle => 'Cabang Terdekat';
+
+  @override
+  String get homeNearbySeeAll => 'Lihat Semua';
+
+  @override
+  String homeNearbyDistance(String distance) {
+    return '$distance km';
+  }
+
+  @override
+  String get homeHistoryTitle => 'Riwayat Potongan';
+
+  @override
+  String get homeHistorySeeAll => 'Lihat Riwayat';
+
+  @override
+  String get homeHistoryEmpty => 'Belum ada riwayat potongan.';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navBooking => 'Booking';
+
+  @override
+  String get navHistory => 'Riwayat';
+
+  @override
+  String get navProfile => 'Profil';
+
+  @override
+  String get comingSoonMessage => 'Segera hadir!';
+
+  @override
+  String get commonRetry => 'Coba Lagi';
+
+  @override
+  String get commonUnderstood => 'Oke';
 
   @override
   String get commonLogout => 'Keluar';

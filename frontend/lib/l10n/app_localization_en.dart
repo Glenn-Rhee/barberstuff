@@ -287,14 +287,105 @@ class AppLocalizationsEn extends AppLocalizations {
       'Photo or camera access was denied. Enable it in your device settings.';
 
   @override
-  String get comingSoonTitle => 'Coming soon';
+  String homeGreeting(String name) {
+    return 'Hi, $name!';
+  }
 
   @override
-  String get comingSoonMessage =>
-      'We are still working on this feature. In the meantime, feel free to use the available features. Thank you.';
+  String get homeWelcomeBack => 'Welcome back';
 
   @override
-  String get commonUnderstood => 'Got it';
+  String homePoints(String points) {
+    return '$points Points';
+  }
+
+  @override
+  String get homeMemberBadge => 'MEMBER';
+
+  @override
+  String homePointsToPremium(String points) {
+    return '$points more points to premium level';
+  }
+
+  @override
+  String get homeBirthdayTitle => 'Birthday Special!';
+
+  @override
+  String get homeBirthdayDescription =>
+      'Haircut discount valid for up to 7 days after your birthday.';
+
+  @override
+  String get homeSeePromo => 'See Promo';
+
+  @override
+  String get homeBenefitTitle => 'Barberstuff Benefits';
+
+  @override
+  String get homeBenefitPoints => 'Reward points on every haircut';
+
+  @override
+  String get homeBenefitBirthday => 'Special discounts and birthday offers';
+
+  @override
+  String get homeBenefitPriority => 'Priority slots with no long queues';
+
+  @override
+  String get homeActiveBookingTitle => 'Active Booking';
+
+  @override
+  String get homeBookingUpcoming => 'UPCOMING';
+
+  @override
+  String homeBookingOrderId(String id) {
+    return 'Order ID #$id';
+  }
+
+  @override
+  String get homeBookingDetail => 'View Detail';
+
+  @override
+  String get homeBookingEmpty => 'No active booking yet.';
+
+  @override
+  String get homeNearbyTitle => 'Nearby Branches';
+
+  @override
+  String get homeNearbySeeAll => 'See All';
+
+  @override
+  String homeNearbyDistance(String distance) {
+    return '$distance km';
+  }
+
+  @override
+  String get homeHistoryTitle => 'Haircut History';
+
+  @override
+  String get homeHistorySeeAll => 'See History';
+
+  @override
+  String get homeHistoryEmpty => 'No haircut history yet.';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navBooking => 'Booking';
+
+  @override
+  String get navHistory => 'History';
+
+  @override
+  String get navProfile => 'Profile';
+
+  @override
+  String get comingSoonMessage => 'Comming soon!';
+
+  @override
+  String get commonRetry => 'Try Again';
+
+  @override
+  String get commonUnderstood => 'Oke';
 
   @override
   String get commonLogout => 'Log out';
