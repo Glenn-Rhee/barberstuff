@@ -63,6 +63,20 @@ class CustomerProfile {
     return ((memberPoints - tier.threshold) / span).clamp(0.0, 1.0);
   }
 
+  CustomerProfile copyWith({MemberTier? tier, int? memberPoints}) {
+    return CustomerProfile(
+      id: id,
+      name: name,
+      email: email,
+      phoneNumber: phoneNumber,
+      gender: gender,
+      memberPoints: memberPoints ?? this.memberPoints,
+      tier: tier ?? this.tier,
+      imageUrl: imageUrl,
+      dateOfBirth: dateOfBirth,
+    );
+  }
+
   factory CustomerProfile.fromJson(Map<String, dynamic> json) {
     final String? image = json['image_url'] as String?;
 

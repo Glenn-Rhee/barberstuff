@@ -5,9 +5,11 @@ import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/core/utils/phone_formatter.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/language_sheet.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/profile_menu_tile.dart';
@@ -130,7 +132,10 @@ class ProfilePage extends StatelessWidget {
                   ProfileMenuTile(
                     iconPath: AppAssets.userProfile,
                     label: l10n.profileMenuPersonalInfo,
-                    onTap: () => showComingSoonDialog(context),
+                    onTap: () => Navigator.of(context).pushNamed(
+                      AppRoute.personalInfo,
+                      arguments: PersonalInfoArgs(profile: profile),
+                    ),
                   ),
                   ProfileMenuTile(
                     iconPath: AppAssets.globeProfile,
@@ -268,12 +273,15 @@ class _TierBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
       decoration: BoxDecoration(
-        color: AppColor.orangeDashboard,
+        color: TierTheme.of(tier).accent,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         tierLabel(tier, AppLocalizations.of(context)),
-        style: AppTextStyle.titleSmall.copyWith(letterSpacing: 0.6),
+        style: AppTextStyle.titleSmall.copyWith(
+          color: TierTheme.of(tier).onAccent,
+          letterSpacing: 0.6,
+        ),
       ),
     );
   }

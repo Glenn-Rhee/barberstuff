@@ -878,6 +878,54 @@ abstract class AppLocalizations {
   /// **'ID User'**
   String get cardIdLabel;
 
+  /// No description provided for @personalInfoTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Informasi Pribadi'**
+  String get personalInfoTitle;
+
+  /// No description provided for @personalInfoChangePhoto.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Foto Profil'**
+  String get personalInfoChangePhoto;
+
+  /// No description provided for @personalInfoPhotoFormat.
+  ///
+  /// In id, this message translates to:
+  /// **'Support Format: JPEG, PNG, JPG'**
+  String get personalInfoPhotoFormat;
+
+  /// No description provided for @personalInfoEmailLocked.
+  ///
+  /// In id, this message translates to:
+  /// **'Email dipakai untuk masuk dan tidak bisa diubah'**
+  String get personalInfoEmailLocked;
+
+  /// No description provided for @personalInfoPasswordTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Password Saya'**
+  String get personalInfoPasswordTitle;
+
+  /// No description provided for @personalInfoPasswordSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Password Saya'**
+  String get personalInfoPasswordSubtitle;
+
+  /// No description provided for @personalInfoPasswordAction.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Sekarang'**
+  String get personalInfoPasswordAction;
+
+  /// No description provided for @personalInfoSave.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Perubahan'**
+  String get personalInfoSave;
+
   /// No description provided for @comingSoonMessage.
   ///
   /// In id, this message translates to:

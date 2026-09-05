@@ -214,6 +214,15 @@
   "cardPageTitle": "Barberstuff Card",
   "cardIdLabel": "ID User",
 
+  "personalInfoTitle": "Informasi Pribadi",
+  "personalInfoChangePhoto": "Ganti Foto Profil",
+  "personalInfoPhotoFormat": "Support Format: JPEG, PNG, JPG",
+  "personalInfoEmailLocked": "Email dipakai untuk masuk dan tidak bisa diubah",
+  "personalInfoPasswordTitle": "Password Saya",
+  "personalInfoPasswordSubtitle": "Ganti Password Saya",
+  "personalInfoPasswordAction": "Ganti Sekarang",
+  "personalInfoSave": "Simpan Perubahan",
+
   "comingSoonMessage": "Segera hadir!",
   "commonRetry": "Coba Lagi",
   "commonUnderstood": "Oke",

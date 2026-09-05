@@ -159,6 +159,15 @@
   "cardPageTitle": "Barberstuff Card",
   "cardIdLabel": "User ID",
 
+  "personalInfoTitle": "Personal Information",
+  "personalInfoChangePhoto": "Change Profile Photo",
+  "personalInfoPhotoFormat": "Supported Format: JPEG, PNG, JPG",
+  "personalInfoEmailLocked": "Email is used to sign in and cannot be changed",
+  "personalInfoPasswordTitle": "My Password",
+  "personalInfoPasswordSubtitle": "Change My Password",
+  "personalInfoPasswordAction": "Change Now",
+  "personalInfoSave": "Save Changes",
+
   "comingSoonMessage": "Comming soon!",
   "commonRetry": "Try Again",
   "commonUnderstood": "Oke",

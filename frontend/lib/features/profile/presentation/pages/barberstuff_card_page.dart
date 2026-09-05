@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
@@ -62,12 +63,13 @@ class MemberCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final TierTheme theme = TierTheme.of(profile.tier);
 
     return AspectRatio(
       aspectRatio: 16 / 10,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColor.ink,
+          gradient: theme.gradient,
           borderRadius: BorderRadius.circular(_radius),
         ),
         clipBehavior: Clip.antiAlias,
@@ -78,10 +80,11 @@ class MemberCard extends StatelessWidget {
               top: -6,
               bottom: -6,
               child: Opacity(
-                opacity: 0.07,
+                opacity: 0.12,
                 child: Image.asset(
                   AppAssets.vectorCard,
                   fit: BoxFit.fitHeight,
+                  color: theme.accent,
                   filterQuality: FilterQuality.medium,
                 ),
               ),
@@ -93,7 +96,11 @@ class MemberCard extends StatelessWidget {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      _CardAvatar(photoUrl: profile.imageUrl, size: _avatar),
+                      _CardAvatar(
+                        photoUrl: profile.imageUrl,
+                        size: _avatar,
+                        ringColor: theme.accent,
+                      ),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(
@@ -105,7 +112,9 @@ class MemberCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyle.bodySmall.copyWith(
-                                color: AppColor.inkFaint,
+                                color: theme.accent,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
                               ),
                             ),
                             const SizedBox(height: 3),
@@ -126,7 +135,7 @@ class MemberCard extends StatelessWidget {
                   Text(
                     l10n.cardIdLabel,
                     style: AppTextStyle.bodySmall.copyWith(
-                      color: AppColor.inkFaint,
+                      color: AppColor.surface.withValues(alpha: 0.65),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -153,10 +162,15 @@ class MemberCard extends StatelessWidget {
 }
 
 class _CardAvatar extends StatelessWidget {
-  const _CardAvatar({required this.photoUrl, required this.size});
+  const _CardAvatar({
+    required this.photoUrl,
+    required this.size,
+    required this.ringColor,
+  });
 
   final String? photoUrl;
   final double size;
+  final Color ringColor;
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +181,7 @@ class _CardAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppColor.surface, width: 2),
+        border: Border.all(color: ringColor, width: 2),
       ),
       child: ClipOval(
         child: url == null

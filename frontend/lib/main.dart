@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile_barberstuff/app/app.dart';
+import 'package:mobile_barberstuff/core/debug/debug_overrides.dart';
 import 'package:mobile_barberstuff/core/localization/local_controller.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/services/dio_client.dart';
@@ -38,6 +39,7 @@ Future<void> main() async {
     MultiProvider(
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<LocalController>.value(value: localController),
+        ChangeNotifierProvider<DebugOverrides>(create: (_) => DebugOverrides()),
         Provider<AppSession>.value(value: session),
         Provider<DioClient>(create: (_) => DioClient(session: session)),
         Provider<GoogleAuthService>(create: (_) => GoogleAuthService()),

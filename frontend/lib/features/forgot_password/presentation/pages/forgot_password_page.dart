@@ -17,13 +17,17 @@ import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
-  const ForgotPasswordPage({super.key});
+  const ForgotPasswordPage({super.key, this.initialEmail});
+
+  final String? initialEmail;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ForgotPasswordProvider>(
-      create: (BuildContext ctx) =>
-          ForgotPasswordProvider(ctx.read<AuthRepository>()),
+      create: (BuildContext ctx) => ForgotPasswordProvider(
+        ctx.read<AuthRepository>(),
+        initialEmail: initialEmail,
+      ),
       child: const _ForgotPasswordView(),
     );
   }

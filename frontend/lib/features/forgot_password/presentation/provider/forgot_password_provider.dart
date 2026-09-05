@@ -5,8 +5,10 @@ import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_res
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
 
 class ForgotPasswordProvider extends ChangeNotifier {
-  ForgotPasswordProvider(this._repository) {
+  ForgotPasswordProvider(this._repository, {String? initialEmail}) {
+    if (initialEmail != null) emailController.text = initialEmail;
     emailController.addListener(_syncComplete);
+    _syncComplete();
   }
 
   final AuthRepository _repository;

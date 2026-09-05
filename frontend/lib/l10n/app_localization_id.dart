@@ -437,6 +437,31 @@ class AppLocalizationsId extends AppLocalizations {
   String get cardIdLabel => 'ID User';
 
   @override
+  String get personalInfoTitle => 'Informasi Pribadi';
+
+  @override
+  String get personalInfoChangePhoto => 'Ganti Foto Profil';
+
+  @override
+  String get personalInfoPhotoFormat => 'Support Format: JPEG, PNG, JPG';
+
+  @override
+  String get personalInfoEmailLocked =>
+      'Email dipakai untuk masuk dan tidak bisa diubah';
+
+  @override
+  String get personalInfoPasswordTitle => 'Password Saya';
+
+  @override
+  String get personalInfoPasswordSubtitle => 'Ganti Password Saya';
+
+  @override
+  String get personalInfoPasswordAction => 'Ganti Sekarang';
+
+  @override
+  String get personalInfoSave => 'Simpan Perubahan';
+
+  @override
   String get comingSoonMessage => 'Segera hadir!';
 
   @override

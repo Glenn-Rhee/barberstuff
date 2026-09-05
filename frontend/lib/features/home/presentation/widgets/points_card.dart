@@ -3,6 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
+import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 class PointsCard extends StatelessWidget {
@@ -11,6 +14,7 @@ class PointsCard extends StatelessWidget {
     required this.points,
     required this.pointsToNextTier,
     required this.progress,
+    required this.tier,
     required this.onTap,
   });
 
@@ -23,6 +27,8 @@ class PointsCard extends StatelessWidget {
   final int pointsToNextTier;
 
   final double progress;
+
+  final MemberTier tier;
 
   final VoidCallback onTap;
 
@@ -75,7 +81,7 @@ class PointsCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const _MemberBadge(),
+                  _TierPill(tier: tier),
                 ],
               ),
               if (pointsToNextTier > 0) ...<Widget>[
@@ -120,8 +126,10 @@ class PointsCard extends StatelessWidget {
   }
 }
 
-class _MemberBadge extends StatelessWidget {
-  const _MemberBadge();
+class _TierPill extends StatelessWidget {
+  const _TierPill({required this.tier});
+
+  final MemberTier tier;
 
   @override
   Widget build(BuildContext context) {
@@ -132,9 +140,9 @@ class _MemberBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        AppLocalizations.of(context).homeMemberBadge,
+        tierLabel(tier, AppLocalizations.of(context)),
         style: AppTextStyle.bodySmall.copyWith(
-          color: AppColor.surface,
+          color: TierTheme.of(tier).accent,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.4,
         ),

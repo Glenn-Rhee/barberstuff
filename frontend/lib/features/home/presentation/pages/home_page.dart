@@ -133,6 +133,7 @@ class _DashboardBody extends StatelessWidget {
               points: profile.memberPoints,
               pointsToNextTier: profile.pointsToNextTier,
               progress: profile.tierProgress,
+              tier: profile.tier,
               onTap: () {
                 showComingSoonDialog(context);
               },

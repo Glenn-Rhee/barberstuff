@@ -62,4 +62,7 @@ class AppAssets {
   static const String helpCircleProfile = '$_icon/help-circle_profile.png';
   static const String infoProfile = '$_icon/info.png';
   static const String logOutProfile = '$_icon/log-out_profile.png';
+
+  static const String keyIcon = '$_icon/key_icon.png';
+  static const String uploadIcon = '$_icon/upload_icon.png';
 }

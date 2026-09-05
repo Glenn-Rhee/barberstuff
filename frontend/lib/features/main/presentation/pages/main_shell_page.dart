@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_barberstuff/core/debug/debug_overrides.dart';
+import 'package:mobile_barberstuff/core/debug/debug_panel.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/features/home/presentation/pages/home_page.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
@@ -15,8 +18,10 @@ class MainShellPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ProfileProvider>(
-      create: (BuildContext ctx) =>
-          ProfileProvider(ctx.read<ProfileRepository>()),
+      create: (BuildContext ctx) => ProfileProvider(
+        ctx.read<ProfileRepository>(),
+        ctx.read<DebugOverrides>(),
+      ),
       child: const _MainShellView(),
     );
   }
@@ -55,6 +60,15 @@ class _MainShellViewState extends State<_MainShellView> {
             const ProfilePage(),
           ],
         ),
+        floatingActionButton: kDebugMode
+            ? FloatingActionButton.small(
+                heroTag: 'debug-preview',
+                backgroundColor: AppColor.ink,
+                foregroundColor: AppColor.surface,
+                onPressed: () => showDebugPanel(context),
+                child: const Icon(Icons.bug_report_rounded, size: 20),
+              )
+            : null,
         bottomNavigationBar: DashboardBottomNav(
           current: _tab,
           onSelect: _select,

@@ -12,6 +12,7 @@ import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/r
 import 'package:mobile_barberstuff/features/main/presentation/pages/main_shell_page.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
 import 'package:mobile_barberstuff/shared/transitions/circular_reveal_route.dart';
@@ -34,6 +35,7 @@ class AppRoute {
   static const String resetPassword = '/reset-password';
   static const String resetSuccess = '/reset-success';
   static const String barberstuffCard = '/barberstuff-card';
+  static const String personalInfo = '/personal-info';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -73,6 +75,13 @@ class AppRoute {
           settings: settings,
           builder: (BuildContext context) => VerifyOtpPage(args: args),
         );
+      case personalInfo:
+        final Object? args = settings.arguments;
+        if (args is! PersonalInfoArgs) return null;
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => PersonalInfoPage(args: args),
+        );
       case barberstuffCard:
         final Object? args = settings.arguments;
         if (args is! BarberstuffCardArgs) return null;
@@ -105,7 +114,8 @@ class AppRoute {
       case forgotPassword:
         return MaterialPageRoute<void>(
           settings: settings,
-          builder: (BuildContext context) => const ForgotPasswordPage(),
+          builder: (BuildContext context) =>
+              ForgotPasswordPage(initialEmail: settings.arguments as String?),
         );
       case resetPassword:
         final Object? args = settings.arguments;

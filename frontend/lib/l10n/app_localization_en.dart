@@ -437,6 +437,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cardIdLabel => 'User ID';
 
   @override
+  String get personalInfoTitle => 'Personal Information';
+
+  @override
+  String get personalInfoChangePhoto => 'Change Profile Photo';
+
+  @override
+  String get personalInfoPhotoFormat => 'Supported Format: JPEG, PNG, JPG';
+
+  @override
+  String get personalInfoEmailLocked =>
+      'Email is used to sign in and cannot be changed';
+
+  @override
+  String get personalInfoPasswordTitle => 'My Password';
+
+  @override
+  String get personalInfoPasswordSubtitle => 'Change My Password';
+
+  @override
+  String get personalInfoPasswordAction => 'Change Now';
+
+  @override
+  String get personalInfoSave => 'Save Changes';
+
+  @override
   String get comingSoonMessage => 'Comming soon!';
 
   @override
