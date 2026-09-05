@@ -17,8 +17,9 @@ Color? _buttonColor(WidgetTester tester) {
   return (container.decoration as BoxDecoration?)?.color;
 }
 
-Widget _host(Widget child) =>
-    MaterialApp(home: Scaffold(body: Center(child: child)));
+Widget _host(Widget child) => MaterialApp(
+  home: Scaffold(body: Center(child: child)),
+);
 
 void main() {
   late RegisterProvider provider;

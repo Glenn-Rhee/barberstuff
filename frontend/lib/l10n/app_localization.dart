@@ -1250,6 +1250,132 @@ abstract class AppLocalizations {
   /// **'Lanjutkan'**
   String get commonContinue;
 
+  /// No description provided for @bookingScheduleTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Jadwal'**
+  String get bookingScheduleTitle;
+
+  /// No description provided for @bookingServiceTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Layanan'**
+  String get bookingServiceTitle;
+
+  /// No description provided for @bookingDateLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal'**
+  String get bookingDateLabel;
+
+  /// No description provided for @bookingTimeLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Jam'**
+  String get bookingTimeLabel;
+
+  /// No description provided for @bookingSingleServiceLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Jasa Satuan'**
+  String get bookingSingleServiceLabel;
+
+  /// No description provided for @bookingPackageLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Paket'**
+  String get bookingPackageLabel;
+
+  /// No description provided for @bookingServiceEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada layanan tersedia.'**
+  String get bookingServiceEmpty;
+
+  /// No description provided for @bookingSuccessTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemesanan Berhasil!'**
+  String get bookingSuccessTitle;
+
+  /// No description provided for @bookingSuccessMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemesanan Anda telah berhasil dilakukan'**
+  String get bookingSuccessMessage;
+
+  /// No description provided for @bookingSuccessReceipt.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Bukti Pesanan'**
+  String get bookingSuccessReceipt;
+
+  /// No description provided for @bookingSuccessHome.
+  ///
+  /// In id, this message translates to:
+  /// **'Beranda'**
+  String get bookingSuccessHome;
+
+  /// No description provided for @receiptTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'E-Receipt'**
+  String get receiptTitle;
+
+  /// No description provided for @receiptStore.
+  ///
+  /// In id, this message translates to:
+  /// **'Barber/Salon'**
+  String get receiptStore;
+
+  /// No description provided for @receiptAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat'**
+  String get receiptAddress;
+
+  /// No description provided for @receiptName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama'**
+  String get receiptName;
+
+  /// No description provided for @receiptPhone.
+  ///
+  /// In id, this message translates to:
+  /// **'No Telepon'**
+  String get receiptPhone;
+
+  /// No description provided for @receiptDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Tgl Booking'**
+  String get receiptDate;
+
+  /// No description provided for @receiptTime.
+  ///
+  /// In id, this message translates to:
+  /// **'Jam Booking'**
+  String get receiptTime;
+
+  /// No description provided for @receiptSpecialist.
+  ///
+  /// In id, this message translates to:
+  /// **'Specialist'**
+  String get receiptSpecialist;
+
+  /// No description provided for @receiptTotal.
+  ///
+  /// In id, this message translates to:
+  /// **'Total Harga'**
+  String get receiptTotal;
+
+  /// No description provided for @receiptDownload.
+  ///
+  /// In id, this message translates to:
+  /// **'Download E-Receipt'**
+  String get receiptDownload;
+
   /// No description provided for @comingSoonMessage.
   ///
   /// In id, this message translates to:

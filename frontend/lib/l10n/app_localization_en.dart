@@ -644,6 +644,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonContinue => 'Continue';
 
   @override
+  String get bookingScheduleTitle => 'Choose Schedule';
+
+  @override
+  String get bookingServiceTitle => 'Choose Service';
+
+  @override
+  String get bookingDateLabel => 'Date';
+
+  @override
+  String get bookingTimeLabel => 'Time';
+
+  @override
+  String get bookingSingleServiceLabel => 'Single Services';
+
+  @override
+  String get bookingPackageLabel => 'Packages';
+
+  @override
+  String get bookingServiceEmpty => 'No service available yet.';
+
+  @override
+  String get bookingSuccessTitle => 'Booking Confirmed!';
+
+  @override
+  String get bookingSuccessMessage => 'Your booking has been made successfully';
+
+  @override
+  String get bookingSuccessReceipt => 'View Booking Proof';
+
+  @override
+  String get bookingSuccessHome => 'Home';
+
+  @override
+  String get receiptTitle => 'E-Receipt';
+
+  @override
+  String get receiptStore => 'Barber/Salon';
+
+  @override
+  String get receiptAddress => 'Address';
+
+  @override
+  String get receiptName => 'Name';
+
+  @override
+  String get receiptPhone => 'Phone Number';
+
+  @override
+  String get receiptDate => 'Booking Date';
+
+  @override
+  String get receiptTime => 'Booking Time';
+
+  @override
+  String get receiptSpecialist => 'Specialist';
+
+  @override
+  String get receiptTotal => 'Total Price';
+
+  @override
+  String get receiptDownload => 'Download E-Receipt';
+
+  @override
   String get comingSoonMessage => 'Comming soon!';
 
   @override

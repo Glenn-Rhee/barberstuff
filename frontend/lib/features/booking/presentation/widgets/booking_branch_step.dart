@@ -178,9 +178,9 @@ class _StoreTile extends StatelessWidget {
                             style: AppTextStyle.titleMedium,
                           ),
                         ),
-                        if (store.isLite) ...<Widget>[
+                        if (store.isNewbie) ...<Widget>[
                           const SizedBox(width: 8),
-                          const _LiteBadge(),
+                          const _NewbieBadge(),
                         ],
                         const SizedBox(width: 8),
                         Text(
@@ -222,8 +222,8 @@ class _StoreTile extends StatelessWidget {
   }
 }
 
-class _LiteBadge extends StatelessWidget {
-  const _LiteBadge();
+class _NewbieBadge extends StatelessWidget {
+  const _NewbieBadge();
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +234,7 @@ class _LiteBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        'LITE',
+        'NEWBIE',
         style: AppTextStyle.bodySmall.copyWith(
           fontSize: 10,
           fontWeight: FontWeight.w700,

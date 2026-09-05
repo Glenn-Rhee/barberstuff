@@ -646,6 +646,69 @@ class AppLocalizationsId extends AppLocalizations {
   String get commonContinue => 'Lanjutkan';
 
   @override
+  String get bookingScheduleTitle => 'Pilih Jadwal';
+
+  @override
+  String get bookingServiceTitle => 'Pilih Layanan';
+
+  @override
+  String get bookingDateLabel => 'Tanggal';
+
+  @override
+  String get bookingTimeLabel => 'Jam';
+
+  @override
+  String get bookingSingleServiceLabel => 'Jasa Satuan';
+
+  @override
+  String get bookingPackageLabel => 'Paket';
+
+  @override
+  String get bookingServiceEmpty => 'Belum ada layanan tersedia.';
+
+  @override
+  String get bookingSuccessTitle => 'Pemesanan Berhasil!';
+
+  @override
+  String get bookingSuccessMessage => 'Pemesanan Anda telah berhasil dilakukan';
+
+  @override
+  String get bookingSuccessReceipt => 'Lihat Bukti Pesanan';
+
+  @override
+  String get bookingSuccessHome => 'Beranda';
+
+  @override
+  String get receiptTitle => 'E-Receipt';
+
+  @override
+  String get receiptStore => 'Barber/Salon';
+
+  @override
+  String get receiptAddress => 'Alamat';
+
+  @override
+  String get receiptName => 'Nama';
+
+  @override
+  String get receiptPhone => 'No Telepon';
+
+  @override
+  String get receiptDate => 'Tgl Booking';
+
+  @override
+  String get receiptTime => 'Jam Booking';
+
+  @override
+  String get receiptSpecialist => 'Specialist';
+
+  @override
+  String get receiptTotal => 'Total Harga';
+
+  @override
+  String get receiptDownload => 'Download E-Receipt';
+
+  @override
   String get comingSoonMessage => 'Segera hadir!';
 
   @override
