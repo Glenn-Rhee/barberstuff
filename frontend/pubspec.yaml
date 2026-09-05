@@ -48,12 +48,12 @@ flutter:
           weight: 700
 
 flutter_launcher_icons:
-  image_path: "assets/icon/icon_barberstuff.png"
+  image_path: "assets/icons/icon_barberstuff.png"
 
   android: "launcher_icon"
   min_sdk_android: 21
-  adaptive_icon_background: "#E0E0E0"
-  adaptive_icon_foreground: "assets/icon/icon_barberstuff_fg.png"
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/icons/icon_barberstuff_fg.png"
 
   ios: true
   remove_alpha_ios: true
