@@ -1148,6 +1148,108 @@ abstract class AppLocalizations {
   /// **'Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.'**
   String get aboutChangesBody;
 
+  /// No description provided for @bookingBranchTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Cabang'**
+  String get bookingBranchTitle;
+
+  /// No description provided for @bookingBarberTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Barber'**
+  String get bookingBarberTitle;
+
+  /// No description provided for @bookingTermsHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'📋 Ketentuan Booking Barberstuff'**
+  String get bookingTermsHeadline;
+
+  /// No description provided for @bookingTermsIntro.
+  ///
+  /// In id, this message translates to:
+  /// **'Untuk memberikan pelayanan terbaik dan menjaga jadwal tetap teratur, setiap pelanggan diharapkan mengikuti ketentuan booking yang berlaku.'**
+  String get bookingTermsIntro;
+
+  /// No description provided for @bookingTermsRulesLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'💡 Aturan Booking:'**
+  String get bookingTermsRulesLabel;
+
+  /// No description provided for @bookingTermsRule1.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking dilakukan minimal 1 jam sebelum jadwal kedatangan'**
+  String get bookingTermsRule1;
+
+  /// No description provided for @bookingTermsRule2.
+  ///
+  /// In id, this message translates to:
+  /// **'Pelanggan diharapkan datang sesuai waktu yang telah dipilih'**
+  String get bookingTermsRule2;
+
+  /// No description provided for @bookingTermsRule3.
+  ///
+  /// In id, this message translates to:
+  /// **'Toleransi keterlambatan maksimal 5 menit'**
+  String get bookingTermsRule3;
+
+  /// No description provided for @bookingTermsRule4.
+  ///
+  /// In id, this message translates to:
+  /// **'Keterlambatan lebih dari 5 menit dapat menyebabkan booking dibatalkan secara otomatis'**
+  String get bookingTermsRule4;
+
+  /// No description provided for @bookingTermsOutro.
+  ///
+  /// In id, this message translates to:
+  /// **'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya!'**
+  String get bookingTermsOutro;
+
+  /// No description provided for @bookingTermsAgree.
+  ///
+  /// In id, this message translates to:
+  /// **'Saya sudah baca ketentuan'**
+  String get bookingTermsAgree;
+
+  /// No description provided for @bookingNearbyHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Barberstuff Terdekat!'**
+  String get bookingNearbyHeadline;
+
+  /// No description provided for @bookingSearchHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Ketik disini!'**
+  String get bookingSearchHint;
+
+  /// No description provided for @bookingViewStore.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Toko'**
+  String get bookingViewStore;
+
+  /// No description provided for @bookingStoreEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Cabang tidak ditemukan.'**
+  String get bookingStoreEmpty;
+
+  /// No description provided for @bookingCapsterEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada capster di cabang ini.'**
+  String get bookingCapsterEmpty;
+
+  /// No description provided for @commonContinue.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjutkan'**
+  String get commonContinue;
+
   /// No description provided for @comingSoonMessage.
   ///
   /// In id, this message translates to:

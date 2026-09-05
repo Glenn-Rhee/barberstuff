@@ -3,11 +3,14 @@ import 'package:mobile_barberstuff/core/debug/debug_overrides.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
+import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 Future<void> showDebugPanel(BuildContext context) {
   final DebugOverrides overrides = context.read<DebugOverrides>();
+  final BookingCatalog catalog = context.read<BookingCatalog>();
 
   return showModalBottomSheet<void>(
     context: context,
@@ -16,11 +19,13 @@ Future<void> showDebugPanel(BuildContext context) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    builder: (BuildContext sheetContext) =>
-        ChangeNotifierProvider<DebugOverrides>.value(
-          value: overrides,
-          child: const _DebugPanel(),
-        ),
+    builder: (BuildContext sheetContext) => MultiProvider(
+      providers: <SingleChildWidget>[
+        ChangeNotifierProvider<DebugOverrides>.value(value: overrides),
+        ChangeNotifierProvider<BookingCatalog>.value(value: catalog),
+      ],
+      child: const _DebugPanel(),
+    ),
   );
 }
 
@@ -40,9 +45,10 @@ class _DebugPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DebugOverrides d = context.watch<DebugOverrides>();
+    final BookingCatalog catalog = context.watch<BookingCatalog>();
 
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -152,7 +158,101 @@ class _DebugPanel extends StatelessWidget {
               label: '${d.points ?? 0}',
               onChanged: (double v) => d.setPoints(v.round()),
             ),
+
+            const Divider(height: 32, color: AppColor.border),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    'Katalog booking',
+                    style: AppTextStyle.titleSmall,
+                  ),
+                ),
+                TextButton(
+                  onPressed: catalog.reset,
+                  child: Text(
+                    'Reset',
+                    style: AppTextStyle.labelMedium.copyWith(
+                      color: AppColor.danger,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            _CounterRow(
+              label: 'Cabang',
+              count: catalog.stores.length,
+              onAdd: catalog.addStore,
+              onRemove: catalog.removeLastStore,
+            ),
+            const SizedBox(height: 10),
+            _CounterRow(
+              label: 'Capster',
+              count: catalog.capsters.length,
+              onAdd: catalog.addCapster,
+              onRemove: catalog.removeLastCapster,
+            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CounterRow extends StatelessWidget {
+  const _CounterRow({
+    required this.label,
+    required this.count,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  final String label;
+  final int count;
+  final VoidCallback onAdd;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Expanded(child: Text(label, style: AppTextStyle.bodyMedium)),
+        _StepButton(icon: Icons.remove_rounded, onTap: onRemove),
+        SizedBox(
+          width: 44,
+          child: Text(
+            '$count',
+            textAlign: TextAlign.center,
+            style: AppTextStyle.titleSmall,
+          ),
+        ),
+        _StepButton(icon: Icons.add_rounded, onTap: onAdd),
+      ],
+    );
+  }
+}
+
+class _StepButton extends StatelessWidget {
+  const _StepButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColor.surface,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: AppColor.border),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(6),
+          child: Icon(icon, size: 18, color: AppColor.ink),
         ),
       ),
     );

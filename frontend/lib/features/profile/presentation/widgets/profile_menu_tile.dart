@@ -47,8 +47,8 @@ class ProfileMenuTile extends StatelessWidget {
                 child: Center(
                   child: Image.asset(
                     iconPath,
-                    width: 18,
-                    height: 18,
+                    width: 20,
+                    height: 20,
                     fit: BoxFit.contain,
                     color: tint,
                     filterQuality: FilterQuality.medium,

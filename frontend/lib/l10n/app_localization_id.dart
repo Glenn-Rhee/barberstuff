@@ -590,6 +590,62 @@ class AppLocalizationsId extends AppLocalizations {
       'Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.';
 
   @override
+  String get bookingBranchTitle => 'Pilih Cabang';
+
+  @override
+  String get bookingBarberTitle => 'Pilih Barber';
+
+  @override
+  String get bookingTermsHeadline => '📋 Ketentuan Booking Barberstuff';
+
+  @override
+  String get bookingTermsIntro =>
+      'Untuk memberikan pelayanan terbaik dan menjaga jadwal tetap teratur, setiap pelanggan diharapkan mengikuti ketentuan booking yang berlaku.';
+
+  @override
+  String get bookingTermsRulesLabel => '💡 Aturan Booking:';
+
+  @override
+  String get bookingTermsRule1 =>
+      'Booking dilakukan minimal 1 jam sebelum jadwal kedatangan';
+
+  @override
+  String get bookingTermsRule2 =>
+      'Pelanggan diharapkan datang sesuai waktu yang telah dipilih';
+
+  @override
+  String get bookingTermsRule3 => 'Toleransi keterlambatan maksimal 5 menit';
+
+  @override
+  String get bookingTermsRule4 =>
+      'Keterlambatan lebih dari 5 menit dapat menyebabkan booking dibatalkan secara otomatis';
+
+  @override
+  String get bookingTermsOutro =>
+      'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya!';
+
+  @override
+  String get bookingTermsAgree => 'Saya sudah baca ketentuan';
+
+  @override
+  String get bookingNearbyHeadline => 'Pilih Barberstuff Terdekat!';
+
+  @override
+  String get bookingSearchHint => 'Ketik disini!';
+
+  @override
+  String get bookingViewStore => 'Lihat Toko';
+
+  @override
+  String get bookingStoreEmpty => 'Cabang tidak ditemukan.';
+
+  @override
+  String get bookingCapsterEmpty => 'Belum ada capster di cabang ini.';
+
+  @override
+  String get commonContinue => 'Lanjutkan';
+
+  @override
   String get comingSoonMessage => 'Segera hadir!';
 
   @override

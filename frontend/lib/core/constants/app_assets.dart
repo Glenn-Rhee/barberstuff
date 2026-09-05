@@ -24,6 +24,10 @@ class AppAssets {
   static const String vectorCard = '$_images/vector_card.png';
 
   static const String dummyCapster = '$_images/dummy_avatar_capster.png';
+  static const String capster1 = '$_images/capster1.png';
+  static const String capster2 = '$_images/capster2.png';
+  static const String capster3 = '$_images/capster3.png';
+  static const String capster4 = '$_images/capster4.png';
 
   static const String googleIcon = '$_icon/google_icon.png';
   static const String phoneIcon = '$_icon/telephone_icon.png';
@@ -67,4 +71,9 @@ class AppAssets {
 
   static const String keyIcon = '$_icon/key_icon.png';
   static const String uploadIcon = '$_icon/upload_icon.png';
+
+  static const String searchBookingIcon = '$_icon/search_booking_icon.png';
+  static const String arrowRightBooking = '$_icon/arrow-right_booking.png';
+  static const String checklistBookingIcon =
+      '$_icon/checklist_booking_icon.png';
 }

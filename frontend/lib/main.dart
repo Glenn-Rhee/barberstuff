@@ -10,6 +10,7 @@ import 'package:mobile_barberstuff/core/services/google_auth_service.dart';
 import 'package:mobile_barberstuff/core/services/image_picker_service.dart';
 import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,7 @@ Future<void> main() async {
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<LocalController>.value(value: localController),
         ChangeNotifierProvider<DebugOverrides>(create: (_) => DebugOverrides()),
+        ChangeNotifierProvider<BookingCatalog>(create: (_) => BookingCatalog()),
         Provider<AppSession>.value(value: session),
         Provider<DioClient>(create: (_) => DioClient(session: session)),
         Provider<GoogleAuthService>(create: (_) => GoogleAuthService()),

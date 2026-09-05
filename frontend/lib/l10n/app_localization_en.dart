@@ -589,6 +589,61 @@ class AppLocalizationsEn extends AppLocalizations {
       'Barberstuff may update these Terms at any time. Continued use of the platform indicates acceptance of the updated Terms.';
 
   @override
+  String get bookingBranchTitle => 'Choose Branch';
+
+  @override
+  String get bookingBarberTitle => 'Choose Barber';
+
+  @override
+  String get bookingTermsHeadline => '📋 Barberstuff Booking Terms';
+
+  @override
+  String get bookingTermsIntro =>
+      'To give you the best service and keep our schedule running smoothly, every customer is expected to follow the booking terms below.';
+
+  @override
+  String get bookingTermsRulesLabel => '💡 Booking Rules:';
+
+  @override
+  String get bookingTermsRule1 =>
+      'Book at least 1 hour before your arrival time';
+
+  @override
+  String get bookingTermsRule2 => 'Please arrive at the time slot you selected';
+
+  @override
+  String get bookingTermsRule3 => 'A maximum of 5 minutes late is tolerated';
+
+  @override
+  String get bookingTermsRule4 =>
+      'Being more than 5 minutes late may cancel your booking automatically';
+
+  @override
+  String get bookingTermsOutro =>
+      'Please arrive on time so your service can run comfortably and on schedule. Thank you for understanding!';
+
+  @override
+  String get bookingTermsAgree => 'I have read the terms';
+
+  @override
+  String get bookingNearbyHeadline => 'Pick the Nearest Barberstuff!';
+
+  @override
+  String get bookingSearchHint => 'Type here!';
+
+  @override
+  String get bookingViewStore => 'View Store';
+
+  @override
+  String get bookingStoreEmpty => 'No branch found.';
+
+  @override
+  String get bookingCapsterEmpty => 'No barber available at this branch yet.';
+
+  @override
+  String get commonContinue => 'Continue';
+
+  @override
   String get comingSoonMessage => 'Comming soon!';
 
   @override

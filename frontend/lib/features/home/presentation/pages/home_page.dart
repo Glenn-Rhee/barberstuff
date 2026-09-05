@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
@@ -154,7 +155,11 @@ class _DashboardBody extends StatelessWidget {
           const SizedBox(height: 26),
           _Inset(
             child: QuickActionRow(
-              onSelect: (QuickAction _) {
+              onSelect: (QuickAction action) {
+                if (action == QuickAction.booking) {
+                  Navigator.of(context).pushNamed(AppRoute.booking);
+                  return;
+                }
                 showComingSoonDialog(context);
               },
             ),

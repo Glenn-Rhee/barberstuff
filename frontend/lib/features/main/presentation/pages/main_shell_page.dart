@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/debug/debug_overrides.dart';
 import 'package:mobile_barberstuff/core/debug/debug_panel.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
@@ -38,7 +39,11 @@ class _MainShellViewState extends State<_MainShellView> {
   DashboardTab _tab = DashboardTab.home;
 
   void _select(DashboardTab tab) {
-    if (tab == DashboardTab.booking || tab == DashboardTab.history) {
+    if (tab == DashboardTab.booking) {
+      Navigator.of(context).pushNamed(AppRoute.booking);
+      return;
+    }
+    if (tab == DashboardTab.history) {
       showComingSoonDialog(context);
       return;
     }

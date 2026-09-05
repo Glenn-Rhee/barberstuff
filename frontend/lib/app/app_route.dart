@@ -6,6 +6,7 @@ import 'package:mobile_barberstuff/features/auth/presentation/pages/login_page.d
 import 'package:mobile_barberstuff/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_success_page.dart';
+import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_flow_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/forgot_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_success_page.dart';
@@ -42,6 +43,7 @@ class AppRoute {
   static const String language = '/language';
   static const String helpCenter = '/help-center';
   static const String about = '/about';
+  static const String booking = '/booking';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -87,6 +89,11 @@ class AppRoute {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (BuildContext context) => HelpCenterPage(args: args),
+        );
+      case booking:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => const BookingFlowPage(),
         );
       case about:
         return MaterialPageRoute<void>(
