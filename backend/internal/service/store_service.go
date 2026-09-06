@@ -119,17 +119,17 @@ func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, 
 	dataStores := make([]dto.StoreData, 0, len(stores))
 	for _, s := range stores {
 		dataStores = append(dataStores, dto.StoreData{
-			Id:          s.ID,
-			Name:        s.Name,
-			PhoneNumber: derefString(s.PhoneNumber),
-			Coordinate:  derefString(s.Coordinate),
-			OpenHour:    s.OpenHour,
-			CloseHour:   s.CloseHour,
-			BannerUrl:   derefString(s.BannerUrl),
-			Address:     derefString(s.Address),
-			Status:      s.Status,
-			Description: derefString(s.Description),
-			CreatedAt:   s.CreatedAt,	
+			Id:           s.ID,
+			Name:         s.Name,
+			PhoneNumber:  derefString(s.PhoneNumber),
+			Coordinate:   derefString(s.Coordinate),
+			OpenHour:     s.OpenHour,
+			CloseHour:    s.CloseHour,
+			BannerUrl:    derefString(s.BannerUrl),
+			Address:      derefString(s.Address),
+			Status:       s.Status,
+			Description:  derefString(s.Description),
+			CreatedAt:    s.CreatedAt,
 			TotalPackage: s.TotalPackage,
 			TotalCapster: s.TotalCapster,
 			TotalService: s.TotalService,
@@ -151,23 +151,6 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 
 		helper.Logger("Find one data store", filePath, err)
 		return dto.StoreResponse{}, errors.New(BASE_MESSAGE)
-	}
-
-	store := dto.StoreData{
-		Id:          dataStore.ID,
-		Name:        dataStore.Name,
-		PhoneNumber: *dataStore.PhoneNumber,
-		Coordinate:  *dataStore.Coordinate,
-		OpenHour:    dataStore.OpenHour,
-		CloseHour:   dataStore.CloseHour,
-		BannerUrl:   *dataStore.BannerUrl,
-		Address:     *dataStore.Address,
-		Description: *dataStore.Description,
-		Status:      dataStore.Status,
-		CreatedAt:   dataStore.CreatedAt,
-		TotalService: dataStore.TotalService,
-		TotalCapster: dataStore.TotalCapster,
-		TotalPackage: dataStore.TotalPackage,
 	}
 
 	var scopes []func(*gorm.DB) *gorm.DB
@@ -206,7 +189,7 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 	var packages []dto.PackageData
 	dataPackages, err := s.packageRepo.FindAll(scopes...)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		helper.Logger("Find all packaages", filePath, err)
+		helper.Logger("Find all packages", filePath, err)
 		return dto.StoreResponse{}, errors.New(BASE_MESSAGE)
 	}
 
@@ -230,7 +213,7 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		return dto.StoreResponse{}, errors.New(BASE_MESSAGE)
 	}
 
-	var avgRating float64
+	var avgRating float64 = 5.0
 	var reviews []dto.Review
 	if err == nil {
 		var totalRatings int16
@@ -254,6 +237,25 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		}
 	}
 
+	store := dto.StoreData{
+		Id:           dataStore.ID,
+		Name:         dataStore.Name,
+		PhoneNumber:  *dataStore.PhoneNumber,
+		Coordinate:   *dataStore.Coordinate,
+		OpenHour:     dataStore.OpenHour,
+		CloseHour:    dataStore.CloseHour,
+		BannerUrl:    *dataStore.BannerUrl,
+		Address:      *dataStore.Address,
+		Description:  *dataStore.Description,
+		Status:       dataStore.Status,
+		CreatedAt:    dataStore.CreatedAt,
+		TotalService: dataStore.TotalService,
+		TotalCapster: dataStore.TotalCapster,
+		TotalPackage: dataStore.TotalPackage,
+		AvgRating:    avgRating,
+		Review:       reviews,
+	}
+
 	dataCapsters, err := s.capsterRepo.FindAll(scopes...)
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -270,7 +272,7 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 				totalRatings += (rating.Score)
 			}
 
-			var avgRating float64
+			var avgRating float64 = 5.0
 
 			if len(v.Ratings) > 0 {
 				avgRating = float64(totalRatings) / float64(len(v.Ratings))
@@ -290,10 +292,6 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		Store:   store,
 		Service: services,
 		Package: packages,
-		Rating: dto.RatingResponseData{
-			AvgRating: avgRating,
-			Review:    reviews,
-		},
 		Capster: capsters,
 	}, nil
 }

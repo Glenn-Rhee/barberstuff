@@ -1,6 +1,35 @@
 -- +goose Up
 -- +goose StatementBegin
 
+-- ============ AUTHENTICATION ============
+CREATE TYPE role_enum AS ENUM ('customer', 'cashier', 'admin', 'mitra');
+
+-- id_user sebelumnya polymorphic tanpa FK asli (rawan orphan data).
+-- Dipecah jadi 2 kolom nullable + CHECK, integritas dijaga DB:
+--   - role = 'customer'                   -> id_customer terisi, id_staff NULL
+--   - role IN ('cashier','admin','mitra') -> id_staff terisi, id_customer NULL
+CREATE TABLE authentication (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_customer UUID REFERENCES customer(id)  ,
+    id_staff UUID REFERENCES staff(id)  ,
+    password VARCHAR(255) NOT NULL, -- simpan hash (bcrypt/argon2), bukan plaintext
+    role role_enum NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    login_type VARCHAR(20) NOT NULL DEFAULT 'credential',
+    oauth_provider VARCHAR(20),
+    CONSTRAINT chk_authentication_user_role CHECK (
+        (role = 'customer' AND id_customer IS NOT NULL AND id_staff IS NULL)
+        OR
+        (role IN ('cashier', 'admin', 'mitra') AND id_staff IS NOT NULL AND id_customer IS NULL)
+    )
+);
+
+CREATE INDEX idx_authentication_id_customer ON authentication(id_customer);
+CREATE INDEX idx_authentication_id_staff ON authentication(id_staff);
+-- index email dihapus, sudah otomatis ada dari UNIQUE
+
 CREATE TYPE booking_status_enum AS ENUM ('ongoing', 'completed', 'canceled');
 
 -- id_product polymorphic sebelumnya diganti 2 kolom nullable + CHECK:
@@ -55,6 +84,8 @@ CREATE INDEX idx_booking_status_history_id_booking ON booking_status_history(id_
 
 -- +goose Down
 -- +goose StatementBegin
+DROP TABLE IF EXISTS authentication;
+DROP TYPE IF EXISTS role_enum;
 DROP TABLE IF EXISTS booking_status_history;
 DROP TABLE IF EXISTS booking;
 DROP TYPE IF EXISTS booking_status_enum;

@@ -37,6 +37,8 @@ type StoreData struct {
 	TotalService int64                  `json:"total_service"`
 	TotalCapster int64                  `json:"total_capster"`
 	TotalPackage int64                  `json:"total_package"`
+	AvgRating    float64                `json:"avg_rating"`
+	Review       []Review               `json:"review"`
 	Status       entity.StoreStatusEnum `json:"status"`
 	CreatedAt    time.Time              `json:"created_at"`
 }
@@ -45,7 +47,6 @@ type StoreResponse struct {
 	Store   StoreData             `json:"store"`
 	Service []ServiceData         `json:"service"`
 	Package []PackageData         `json:"package"`
-	Rating  RatingResponseData    `json:"rating"`
 	Capster []CapsterDataResponse `json:"capster"`
 }
 

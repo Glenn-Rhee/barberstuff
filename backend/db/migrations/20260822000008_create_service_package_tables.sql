@@ -7,8 +7,6 @@ CREATE TABLE service (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     price NUMERIC(12,2) NOT NULL DEFAULT 0,
-    duration_minutes INT, -- estimasi durasi, dipakai utk penjadwalan booking
-    do_dont TEXT,
     description TEXT,
     status product_status_enum NOT NULL DEFAULT 'active',
     id_store UUID NOT NULL REFERENCES store(id)  ,
@@ -25,11 +23,9 @@ CREATE TABLE package (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     price NUMERIC(12,2) NOT NULL DEFAULT 0,
-    do_dont TEXT,
     description TEXT,
-    duration_minutes INT,
     status product_status_enum NOT NULL DEFAULT 'active',
-    id_store UUID NOT NULL REFERENCES store(id)  ,
+    id_store UUID NOT NULL REFERENCES store(id),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP
@@ -41,10 +37,9 @@ CREATE TRIGGER trg_package_updated_at
 
 CREATE TABLE package_service (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    id_service UUID NOT NULL REFERENCES service(id)  ,
-    id_package UUID NOT NULL REFERENCES package(id)  ,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    UNIQUE(id_service, id_package)
+    id_service UUID NOT NULL REFERENCES service(id),
+    id_package UUID NOT NULL REFERENCES package(id),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_package_service_id_service ON package_service(id_service);
