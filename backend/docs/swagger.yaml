@@ -32,6 +32,23 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserAuth'
     type: object
+  dto.CapsterDataResponse:
+    properties:
+      avg_rating:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: string
+      id_store:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/entity.CapsterStatusEnum'
+    type: object
   dto.CreateAccountStaffRequest:
     properties:
       email:
@@ -446,6 +463,14 @@ definitions:
       reset_token:
         type: string
     type: object
+  entity.CapsterStatusEnum:
+    enum:
+    - active
+    - inactive
+    type: string
+    x-enum-varnames:
+    - CapsterStatusActive
+    - CapsterStatusInactive
   entity.Gender:
     enum:
     - Male
@@ -790,6 +815,63 @@ paths:
       tags:
       - Customer
   /capster:
+    get:
+      description: Mengambil semua data capster serta dapat melakukan filter serta
+        pagination. Hanya dapat diakses oleh admin
+      parameters:
+      - description: Nama toko
+        in: query
+        name: name
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: name
+        description: Sort By
+        enum:
+        - name
+        - created_at
+        in: query
+        name: sortBy
+        type: string
+      - default: asc
+        description: Order By
+        enum:
+        - asc
+        - desc
+        in: query
+        name: orderBy
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Succes get data capsters!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CapsterDataResponse'
+              type: object
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mengambil semua data capster
+      tags:
+      - Capster
     post:
       consumes:
       - application/json

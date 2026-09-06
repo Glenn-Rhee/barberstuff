@@ -1062,13 +1062,23 @@ GET /store
 | --- | --- | --- |
 | `Authorization` | Ya | Access token yang valid, dengan format `Bearer <token>`. |
 
+### Query Parameters
+
+| Key | Tipe Data | Required | Keterangan |
+| --- | --- | --- | --- |
+| `name` | String | Tidak | Nama Toko |
+| `sort_by` | String (name, created_at) | Tidak | Mengurutkan data toko berdasarkan name atau tanggal dibuat. default (name) |
+| `page` | int | Tidak | mengambil data di halaman tertentu. default (1) |
+| `limit` | int | Tidak | batasan pengambilan data. default (20) |
+| `order_by` | string (asc, desc) | Tidak | diurutkan ascending atau descending. default (asc) |
+
 ### Response Sukses
 
 ```json
 {
     "data": [
         {
-            "id": "ccbfc173-3074-4a7d-8784-d87eb3a1d9aa",
+            "id": "9122af3c-df26-48dd-b240-b6d17937a909",
             "name": "Barberstuff Cabang Tebet",
             "phone_number": "081234567890",
             "coordinate": "-6.260278,106.813889",
@@ -1077,17 +1087,25 @@ GET /store
             "banner_url": "https://example.com/images/store-kemang-banner.jpg",
             "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
             "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
+            "store_type": "lite",
             "total_service": 0,
-            "total_capster": 2,
+            "total_capster": 3,
             "total_package": 0,
+            "avg_rating": 5,
+            "review": null,
             "status": "open",
-            "created_at": "2026-09-04T02:03:23.455453Z",
-            "deleted_at": null
+            "created_at": "2026-09-06T06:32:11.690052Z"
         }
     ],
     "message": "Succes get data stores!",
     "statusCode": 200,
-    "status": "success"
+    "status": "success",
+    "meta": {
+        "page": 1,
+        "limit": 20,
+        "total_data": 1,
+        "total_pages": 1
+    }
 }
 ```
 
@@ -1147,44 +1165,23 @@ GET /store/:id
 ```json
 {
     "data": {
-        "store": {
-            "id": "ccbfc173-3074-4a7d-8784-d87eb3a1d9aa",
-            "name": "Barberstuff Cabang Tebet",
-            "phone_number": "081234567890",
-            "coordinate": "-6.260278,106.813889",
-            "open_hour": "2026-08-31T09:00:00Z",
-            "close_hour": "2026-08-31T21:00:00Z",
-            "banner_url": "https://example.com/images/store-kemang-banner.jpg",
-            "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
-            "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
-            "total_service": 0,
-            "total_capster": 2,
-            "total_package": 0,
-            "status": "open",
-            "created_at": "2026-09-04T02:03:23.455453Z"
-        },
-        "service": null,
-        "package": null,
-        "rating": {
-            "avg_rating": 0,
-            "review": null
-        },
-        "capster": [
-            {
-                "id": "9ff9291f-a463-4b7e-981c-1a6076141387",
-                "name": "Ariel Capster",
-                "status": "active",
-                "image_url": "",
-                "avg_rating": 0
-            },
-            {
-                "id": "f6600b24-7d5f-482c-89dc-6462721fd061",
-                "name": "Ariel Cihuy",
-                "status": "active",
-                "image_url": "https://i.pinimg.com/736x/b7/bf/d2/b7bfd20831fd88c285f6451ae54f66e6.jpg",
-                "avg_rating": 0
-            }
-        ]
+        "id": "9122af3c-df26-48dd-b240-b6d17937a909",
+        "name": "Barberstuff Cabang Tebet",
+        "phone_number": "081234567890",
+        "coordinate": "-6.260278,106.813889",
+        "open_hour": "2026-08-31T09:00:00Z",
+        "close_hour": "2026-08-31T21:00:00Z",
+        "banner_url": "https://example.com/images/store-kemang-banner.jpg",
+        "address": "Jl. Kemang Raya No. 45, Jakarta Selatan",
+        "description": "Cabang baru di kawasan Kemang, Jakarta Selatan",
+        "store_type": "lite",
+        "total_service": 0,
+        "total_capster": 3,
+        "total_package": 0,
+        "avg_rating": 5,
+        "review": null,
+        "status": "open",
+        "created_at": "2026-09-06T06:32:11.690052Z"
     },
     "message": "Succes get data store!",
     "statusCode": 200,
@@ -2022,6 +2019,91 @@ POST /capster
 
 ---
 
+## 22. Get Capsters
+
+Digunakan untuk mengambil data seluruh capster berdasarkan toko tertentu. Semua role dapat mengakses endpoint ini
+
+### Endpoint
+
+```http
+GET /capster
+```
+
+### Headers
+
+| Key | Required | Keterangan |
+| --- | --- | --- |
+| `Authorization` | Ya | Access token yang valid, dengan format `Bearer <token>`. |
+
+### Query Parameters
+
+| Key | Tipe Data | Required | Keterangan |
+| --- | --- | --- | --- |
+| `id_store` | String | Ya | Id toko untuk mencari data capster berdasarkan toko tertentu. |
+| `name` | String | Tidak | Mencari capster berdasarkan kecocokan nama |
+| `sort_by` | String (name, created_at) | Tidak | Mengurutkan data toko berdasarkan name atau tanggal dibuat. default (name) |
+| `page` | int | Tidak | mengambil data di halaman tertentu. default (1) |
+| `limit` | int | Tidak | batasan pengambilan data. default (20) |
+| `order_by` | String (asc, desc) | Tidak | diurutkan ascending atau descending. default (asc) |
+
+### Response Sukses
+
+```json
+{
+    "data": [
+        {
+            "id": "91b19f40-aa77-48a7-af9f-ba596f5c960b",
+            "name": "Ariel Cihuy2",
+            "status": "active",
+            "image_url": "https://i.pinimg.com/736x/b7/bf/d2/b7bfd20831fd88c285f6451ae54f66e6.jpg",
+            "avg_rating": 5,
+            "id_store": "9122af3c-df26-48dd-b240-b6d17937a909",
+            "created_at": "2026-09-06T12:49:07.661718Z"
+        },
+        {
+            "id": "8058631f-023f-4fac-98a4-ca9630bd7dfe",
+            "name": "Danar Capster",
+            "status": "active",
+            "image_url": "https://i.pinimg.com/736x/b7/bf/d2/b7bfd20831fd88c285f6451ae54f66e6.jpg",
+            "avg_rating": 5,
+            "id_store": "9122af3c-df26-48dd-b240-b6d17937a909",
+            "created_at": "2026-09-06T12:49:20.087862Z"
+        },
+        {
+            "id": "c69c4d93-46f9-4d11-b468-cacdb75d9994",
+            "name": "Iqbal Capster",
+            "status": "active",
+            "image_url": "https://i.pinimg.com/736x/b7/bf/d2/b7bfd20831fd88c285f6451ae54f66e6.jpg",
+            "avg_rating": 5,
+            "id_store": "9122af3c-df26-48dd-b240-b6d17937a909",
+            "created_at": "2026-09-06T12:49:25.706207Z"
+        }
+    ],
+    "message": "Succes get data capsters!",
+    "statusCode": 200,
+    "status": "success",
+    "meta": {
+        "page": 1,
+        "limit": 20,
+        "total_data": 3,
+        "total_pages": 1
+    }
+}
+```
+
+### Response Gagal
+
+```json
+{
+    "data": null,
+    "message": "Terjadi kesalahan saat mengambil data capster!",
+    "statusCode": 424,
+    "status": "failed"
+}
+```
+
+---
+
 # API Summary
 
 | Method | Endpoint | Fungsi |
@@ -2047,3 +2129,4 @@ POST /capster
 | GET | `/profile/customer` | Mendapatkan data profil akun customer yang sedang login. |
 | GET | `/profile/staff` | Mendapatkan data profil akun staff (admin/cashier/mitra) yang sedang login. |
 | POST | `/capster` | Membuat capster baru yang hanya bisa dilakukan oleh admin. |
+| GET | `/capster` | Mengambil data seluruh capster |

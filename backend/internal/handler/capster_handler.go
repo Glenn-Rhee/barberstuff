@@ -82,3 +82,46 @@ func (h *CapsterHandler) Create(ctx *gin.Context) {
 		StatusCode: http.StatusOK,
 	})
 }
+
+// GetCapsters godoc
+// @Summary      Mengambil semua data capster
+// @Description  Mengambil semua data capster serta dapat melakukan filter serta pagination. Dapat diakses oleh semua user yang telah terauthentikasi
+// @Tags         Capster
+// @Produce      json
+// @Security     BearerAuth
+// @Param        name    query string false "Nama capster"
+// @Param        page    query int    false "Page"
+// @Param        limit   query int    false "Limit"
+// @Param        sortBy  query string false "Sort By"  Enums(name, created_at) default(name)
+// @Param        orderBy query string false "Order By" Enums(asc, desc)        default(asc)
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.CapsterDataResponse,meta=dto.PaginationData} "Succes get data capsters!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data"
+// @Router       /capster [get]
+func (h *CapsterHandler) GetCapsters(ctx *gin.Context) {
+	var query dto.QueryParamsCapsters
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, paginationData, err := h.service.GetCapsters(query)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusFailedDependency,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[[]dto.CapsterDataResponse]{
+		Data:       result,
+		Message:    "Succes get data capsters!",
+		StatusCode: http.StatusOK,
+		Meta:       &paginationData,
+	})
+}

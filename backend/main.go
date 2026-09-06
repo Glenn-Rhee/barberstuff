@@ -79,6 +79,7 @@ func main() {
 	{
 		capster.Use(h.AuthMiddleware)
 		capster.POST("/", h.CapsterHandler.Create)
+		capster.GET("/", h.CapsterHandler.GetCapsters)
 	}
 
 	fmt.Println("Server running on http://localhost:8080")

@@ -29,6 +29,12 @@ type ResponsePagination struct {
 	TotalPages int `json:"total_pages"`
 }
 
+type RequestParamsPagination struct {
+	Page    *int       `form:"page" binding:"omitempty,min=1"`
+	Limit   *int       `form:"limit" binding:"omitempty,min=1,max=50"`
+	OrderBy *OrderBy   `form:"order" binding:"omitempty,oneof=asc desc"`
+}
+
 // SwaggerResponse hanya dipakai untuk keperluan dokumentasi Swagger (swag).
 // Bentuk JSON-nya identik dengan ResponseApi[T], tapi tanpa generic Go,
 // karena dukungan generic pada swag masih tidak konsisten antar versi.
@@ -39,6 +45,7 @@ type ResponsePagination struct {
 //	@Failure 400 {object} dto.SwaggerResponse
 type SwaggerResponse struct {
 	Data       interface{}    `json:"data"`
+	Meta       interface{}    `json:"meta,omitempty"`
 	Message    string         `json:"message"`
 	StatusCode int            `json:"statusCode"`
 	Status     StatusResponse `json:"status"`

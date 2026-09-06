@@ -14,11 +14,12 @@ import (
 
 type CapsterService interface {
 	Create(req dto.CreateCapsterRequest) error
+	GetCapsters(query dto.QueryParamsCapsters) ([]dto.CapsterDataResponse, dto.ResponsePagination, error)
 }
 
 type capsterService struct {
 	capsterRepo repository.CapsterRepository
-	storeRepo repository.StoreRepository
+	storeRepo   repository.StoreRepository
 }
 
 func NewCapsterService(cr repository.CapsterRepository, sr repository.StoreRepository) CapsterService {
@@ -54,11 +55,11 @@ func (s *capsterService) Create(req dto.CreateCapsterRequest) error {
 	}
 
 	capster := entity.Capster{
-		ID: uuid.New(),
-		Name: req.Name,
-		Status: entity.CapsterStatusActive,
+		ID:       uuid.New(),
+		Name:     req.Name,
+		Status:   entity.CapsterStatusActive,
 		ImageUrl: &req.ImageUrl,
-		IDStore: idStore,
+		IDStore:  idStore,
 	}
 
 	err = s.capsterRepo.Create(&capster)
@@ -68,4 +69,105 @@ func (s *capsterService) Create(req dto.CreateCapsterRequest) error {
 	}
 
 	return nil
+}
+
+func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters) ([]dto.CapsterDataResponse, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data capster!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idStore, err := uuid.Parse(query.IdStore)
+	if err != nil {
+		helper.Logger("parse id store", filePath, err)
+		return []dto.CapsterDataResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	_, err = s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []dto.CapsterDataResponse{}, dto.ResponsePagination{}, errors.New("Data toko tidak ditemukan atau telah dihapus!")
+		}
+		helper.Logger("find one store", filePath, err)
+		return []dto.CapsterDataResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	if query.CapsterName != nil {
+		q := "%"
+		q += *query.CapsterName
+		q += "%"
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("name ILIKE ?", q)
+		})
+	}
+
+	var page = 1
+	var limit = 20
+	var sortBy = dto.CapsterByName
+	var orderBy = dto.OrderAsc
+
+	if query.Page != nil {
+		page = *query.Page
+	}
+
+	if query.Limit != nil {
+		limit = *query.Limit
+	}
+
+	if query.SortBy != nil {
+		sortBy = *query.SortBy
+	}
+
+	if query.OrderBy != nil {
+		orderBy = *query.OrderBy
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Where("deleted_at IS NULL").Where("id_store = ?", idStore)
+	})
+
+	totalData, err := s.capsterRepo.Count(scopes...)
+	if err != nil {
+		helper.Logger("counted capster data", filePath, err)
+		return []dto.CapsterDataResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Order(sortBy + " " + dto.SortCapster(orderBy)).
+			Offset((page - 1) * limit).
+			Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
+
+	capsters, err := s.capsterRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("Find all data capster", filePath, err)
+		return []dto.CapsterDataResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataCapsters := make([]dto.CapsterDataResponse, 0, len(capsters))
+
+	for _, v := range capsters {
+		var totalRating = 0
+		var avgRating float64 = 5.0
+		for _, r := range v.Ratings {
+			totalRating += int(r.Score)
+		}
+
+		if len(v.Ratings) > 0 {
+			avgRating = float64(totalRating) / float64(len(v.Ratings))
+		}
+
+		dataCapsters = append(dataCapsters, dto.CapsterDataResponse{
+			Id: v.ID,
+			Name: v.Name,
+			Status: v.Status,
+			ImageUrl: *v.ImageUrl,
+			AvgRating: avgRating,
+			IdStore: v.IDStore,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+
+	return dataCapsters, paginationData, nil
 }
