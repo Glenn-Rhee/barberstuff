@@ -1,0 +1,1196 @@
+basePath: /
+definitions:
+  dto.AuthProviderRequest:
+    properties:
+      id_token:
+        type: string
+      provider:
+        allOf:
+        - $ref: '#/definitions/dto.Provider'
+        enum:
+        - google
+    required:
+    - id_token
+    type: object
+  dto.AuthProviderResponse:
+    properties:
+      access_token:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/dto.StatusAuth'
+      temp_token:
+        type: string
+    type: object
+  dto.AuthenticationResponse:
+    properties:
+      access_token:
+        type: string
+      user:
+        $ref: '#/definitions/dto.UserAuth'
+    type: object
+  dto.CreateAccountStaffRequest:
+    properties:
+      email:
+        type: string
+      id_store:
+        type: string
+      name:
+        minLength: 3
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/entity.RoleEnum'
+        enum:
+        - cashier
+        - mitra
+    required:
+    - email
+    - id_store
+    - name
+    - role
+    type: object
+  dto.CreateCapsterRequest:
+    properties:
+      id_store:
+        type: string
+      image_url:
+        type: string
+      name:
+        minLength: 3
+        type: string
+    required:
+    - id_store
+    - name
+    type: object
+  dto.CredentialCustomerRequest:
+    properties:
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      gender:
+        allOf:
+        - $ref: '#/definitions/entity.Gender'
+        enum:
+        - male
+        - female
+      image_url:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 5
+        type: string
+      phoneNumber:
+        maxLength: 15
+        minLength: 9
+        type: string
+    required:
+    - date_of_birth
+    - email
+    - gender
+    - name
+    - password
+    - phoneNumber
+    type: object
+  dto.CredentialCustomerResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+    type: object
+  dto.CredentialLoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 5
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.CustomerResponseRating:
+    properties:
+      id:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      premium_type:
+        type: string
+    type: object
+  dto.ForgotPassswordResponse:
+    properties:
+      user_id:
+        type: string
+    type: object
+  dto.ForgotPasswordRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  dto.NewStoreRequest:
+    properties:
+      address:
+        type: string
+      banner_url:
+        type: string
+      close_hour:
+        type: string
+      description:
+        type: string
+      lat:
+        type: number
+      long:
+        type: number
+      name:
+        type: string
+      open_hour:
+        type: string
+      phone_number:
+        maxLength: 15
+        minLength: 9
+        type: string
+      store_type:
+        allOf:
+        - $ref: '#/definitions/entity.StoreTypeEnum'
+        enum:
+        - lite
+        - premium
+    required:
+    - address
+    - banner_url
+    - close_hour
+    - lat
+    - long
+    - name
+    - open_hour
+    - phone_number
+    - store_type
+    type: object
+  dto.OauthCustomerRequest:
+    properties:
+      date_of_birth:
+        type: string
+      gender:
+        allOf:
+        - $ref: '#/definitions/entity.Gender'
+        enum:
+        - male
+        - female
+      image_url:
+        type: string
+      name:
+        type: string
+      phoneNumber:
+        maxLength: 15
+        minLength: 9
+        type: string
+      temp_token:
+        type: string
+    required:
+    - date_of_birth
+    - gender
+    - name
+    - phoneNumber
+    - temp_token
+    type: object
+  dto.ProfileCustomerResponse:
+    properties:
+      created_at:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      gender:
+        $ref: '#/definitions/entity.Gender'
+      id:
+        type: string
+      image_url:
+        type: string
+      is_verified:
+        type: boolean
+      login_type:
+        $ref: '#/definitions/entity.LoginType'
+      member_points:
+        type: integer
+      name:
+        type: string
+      oauth_provider:
+        type: string
+      phone_number:
+        type: string
+      premium_type:
+        type: string
+      role:
+        $ref: '#/definitions/entity.RoleEnum'
+    type: object
+  dto.Provider:
+    enum:
+    - google
+    type: string
+    x-enum-varnames:
+    - Google
+  dto.RefreshTokenBody:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  dto.ResetPasswordRequest:
+    properties:
+      new_password:
+        minLength: 5
+        type: string
+      reset_token:
+        type: string
+    required:
+    - new_password
+    - reset_token
+    type: object
+  dto.Review:
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      rating:
+        type: integer
+      user:
+        $ref: '#/definitions/dto.CustomerResponseRating'
+    type: object
+  dto.StaffAccountsResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      id_store:
+        type: string
+      name:
+        type: string
+      role:
+        $ref: '#/definitions/entity.RoleEnum'
+    type: object
+  dto.StaffRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 5
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  dto.StatusAuth:
+    enum:
+    - NEED_COMPLETE_PROFILE
+    - SUCCESS
+    type: string
+    x-enum-varnames:
+    - NEED_COMPLETE_PROFILE
+    - SUCCESS
+  dto.StatusResponse:
+    enum:
+    - success
+    - failed
+    type: string
+    x-enum-varnames:
+    - StatusSuccess
+    - StatusFailed
+  dto.StoreData:
+    properties:
+      address:
+        type: string
+      avg_rating:
+        type: number
+      banner_url:
+        type: string
+      close_hour:
+        type: string
+      coordinate:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      open_hour:
+        type: string
+      phone_number:
+        type: string
+      review:
+        items:
+          $ref: '#/definitions/dto.Review'
+        type: array
+      status:
+        $ref: '#/definitions/entity.StoreStatusEnum'
+      store_type:
+        $ref: '#/definitions/entity.StoreTypeEnum'
+      total_capster:
+        type: integer
+      total_package:
+        type: integer
+      total_service:
+        type: integer
+    type: object
+  dto.SwaggerResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        $ref: '#/definitions/dto.StatusResponse'
+      statusCode:
+        type: integer
+    type: object
+  dto.UpdateAccountStaffRequest:
+    properties:
+      name:
+        minLength: 3
+        type: string
+      password:
+        minLength: 5
+        type: string
+    required:
+    - name
+    - password
+    type: object
+  dto.UpdateStoreRequest:
+    properties:
+      address:
+        type: string
+      banner_url:
+        type: string
+      close_hour:
+        type: string
+      description:
+        type: string
+      lat:
+        type: number
+      long:
+        type: number
+      name:
+        type: string
+      open_hour:
+        type: string
+      phone_number:
+        maxLength: 15
+        minLength: 9
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/entity.StoreStatusEnum'
+        enum:
+        - open
+        - close
+      store_type:
+        allOf:
+        - $ref: '#/definitions/entity.StoreTypeEnum'
+        enum:
+        - lite
+        - premium
+    required:
+    - address
+    - banner_url
+    - close_hour
+    - lat
+    - long
+    - name
+    - open_hour
+    - phone_number
+    - status
+    - store_type
+    type: object
+  dto.UserAuth:
+    properties:
+      email:
+        type: string
+      role:
+        $ref: '#/definitions/entity.RoleEnum'
+      user_id:
+        type: string
+    type: object
+  dto.VerifyCredentialRequest:
+    properties:
+      otp:
+        type: string
+      user_id:
+        type: string
+    required:
+    - otp
+    - user_id
+    type: object
+  dto.VerifyOTPResponse:
+    properties:
+      reset_token:
+        type: string
+    type: object
+  entity.Gender:
+    enum:
+    - Male
+    - Female
+    type: string
+    x-enum-varnames:
+    - GenderMale
+    - GenderFemale
+  entity.LoginType:
+    enum:
+    - OAuth
+    - Credential
+    type: string
+    x-enum-varnames:
+    - LoginWithOAuth
+    - LoginWithCredential
+  entity.RoleEnum:
+    enum:
+    - customer
+    - cashier
+    - admin
+    - mitra
+    type: string
+    x-enum-varnames:
+    - RoleCustomer
+    - RoleCashier
+    - RoleAdmin
+    - RoleMitra
+  entity.StoreStatusEnum:
+    enum:
+    - open
+    - close
+    type: string
+    x-enum-varnames:
+    - StoreStatusOpen
+    - StoreStatusClose
+  entity.StoreTypeEnum:
+    enum:
+    - lite
+    - premium
+    type: string
+    x-enum-varnames:
+    - StoreLite
+    - StorePremium
+host: localhost:8080
+info:
+  contact: {}
+  description: Dokumentasi API untuk backend BarberStuff (auth, store, staff, capster,
+    customer).
+  title: BarberStuff Backend API
+  version: "1.0"
+paths:
+  /auth/forgot:
+    post:
+      consumes:
+      - application/json
+      description: Mengirimkan kode OTP ke email untuk proses reset password
+      parameters:
+      - description: Email customer
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ForgotPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil kirim otp
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ForgotPassswordResponse'
+              type: object
+        "406":
+          description: Gagal mengirim otp
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Lupa password
+      tags:
+      - Customer
+  /auth/login/credential:
+    post:
+      consumes:
+      - application/json
+      description: Melakukan autentikasi menggunakan kombinasi email dan password,
+        mengembalikan access token
+      parameters:
+      - description: Kredensial login
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CredentialLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login Berhasil!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AuthenticationResponse'
+              type: object
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Login menggunakan email & password
+      tags:
+      - Auth
+  /auth/provider:
+    post:
+      consumes:
+      - application/json
+      description: Melakukan autentikasi menggunakan provider pihak ketiga seperti
+        Google
+      parameters:
+      - description: Data ID token dan provider
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AuthProviderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login Berhasil!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AuthProviderResponse'
+              type: object
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Login/registrasi melalui OAuth provider
+      tags:
+      - Auth
+  /auth/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Membuat access token baru menggunakan refresh token yang masih
+        valid
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshTokenBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RefreshTokenBody'
+              type: object
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Perbarui access token
+      tags:
+      - Auth
+  /auth/register/admin:
+    post:
+      consumes:
+      - application/json
+      description: Membuat akun admin pertama kali menggunakan Secret-Key khusus pada
+        header
+      parameters:
+      - description: Secret key admin
+        in: header
+        name: Secret-Key
+        required: true
+        type: string
+      - description: Data akun admin
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StaffRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat akun admin
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Secret key tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Buat akun admin
+      tags:
+      - Staff
+  /auth/register/credential:
+    post:
+      consumes:
+      - application/json
+      description: Mendaftarkan customer baru menggunakan email dan password, OTP
+        akan dikirim ke email
+      parameters:
+      - description: Data registrasi customer
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CredentialCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OTP telah dikirim ke email Anda
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CredentialCustomerResponse'
+              type: object
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Registrasi gagal
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Registrasi customer baru
+      tags:
+      - Customer
+  /auth/register/oauth:
+    post:
+      consumes:
+      - application/json
+      description: Melengkapi data diri customer baru yang mendaftar melalui provider
+        OAuth (Google, dll)
+      parameters:
+      - description: Data registrasi OAuth
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OauthCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil registrasi dengan google!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AuthenticationResponse'
+              type: object
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Registrasi customer melalui OAuth
+      tags:
+      - Customer
+  /auth/reset:
+    post:
+      consumes:
+      - application/json
+      description: Mengganti password menggunakan reset token yang telah diverifikasi
+      parameters:
+      - description: Reset token dan password baru
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password berhasil direset!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Reset password
+      tags:
+      - Auth
+  /auth/verify-credential:
+    post:
+      consumes:
+      - application/json
+      description: Memverifikasi kode OTP yang dikirim saat proses registrasi customer
+      parameters:
+      - description: User ID dan kode OTP
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyCredentialRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil verifikasi!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.VerifyOTPResponse'
+              type: object
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Verifikasi gagal
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Verifikasi OTP registrasi
+      tags:
+      - Customer
+  /capster:
+    post:
+      consumes:
+      - application/json
+      description: Membuat data capster baru pada toko tertentu. Hanya dapat diakses
+        oleh admin
+      parameters:
+      - description: Data capster baru
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCapsterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat capster baru!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah capster baru
+      tags:
+      - Capster
+  /profile/customer:
+    get:
+      description: Mengambil data profil customer yang sedang login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil data!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProfileCustomerResponse'
+              type: object
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Ambil profil customer
+      tags:
+      - Customer
+  /profile/staff:
+    get:
+      description: Mengambil data profil staff/admin yang sedang login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil data akun staff!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.StaffAccountsResponse'
+              type: object
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Ambil profil staff
+      tags:
+      - Staff
+  /staff:
+    get:
+      description: Mengambil daftar akun staff, dapat difilter berdasarkan toko, nama,
+        atau email. Hanya dapat diakses oleh admin
+      parameters:
+      - description: ID toko
+        in: query
+        name: id_store
+        type: string
+      - description: Nama staff
+        in: query
+        name: name
+        type: string
+      - description: Email staff
+        in: query
+        name: email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil data akun staff!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.StaffAccountsResponse'
+                  type: array
+              type: object
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengambil data
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Daftar akun staff
+      tags:
+      - Staff
+    post:
+      consumes:
+      - application/json
+      description: Membuat akun staff baru (cashier/mitra) pada toko tertentu. Hanya
+        dapat diakses oleh admin
+      parameters:
+      - description: Data akun staff baru
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAccountStaffRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat akun staaff
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal membuat akun
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah akun staff
+      tags:
+      - Staff
+  /staff/{id}:
+    delete:
+      description: Menghapus akun staff berdasarkan ID. Hanya dapat diakses oleh admin
+      parameters:
+      - description: ID staff
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menghapus data akun staff!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal menghapus data
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus akun staff
+      tags:
+      - Staff
+    patch:
+      consumes:
+      - application/json
+      description: Mengubah nama dan password akun staff berdasarkan ID
+      parameters:
+      - description: ID staff
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data staff yang diubah
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAccountStaffRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengubah data akun staff!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengubah data
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Ubah akun staff
+      tags:
+      - Staff
+  /store:
+    get:
+      description: Mengambil daftar toko cabang, dapat difilter berdasarkan nama.
+        Hanya dapat diakses oleh admin
+      parameters:
+      - description: Nama toko
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Succes get data stores!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.StoreData'
+                  type: array
+              type: object
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "424":
+          description: Gagal mengambil data
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Daftar toko cabang
+      tags:
+      - Store
+    post:
+      consumes:
+      - application/json
+      description: Membuat data toko cabang baru. Hanya dapat diakses oleh admin
+      parameters:
+      - description: Data toko baru
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewStoreRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat toko cabang baru!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah toko cabang baru
+      tags:
+      - Store
+  /store/{id}:
+    delete:
+      description: Menghapus data toko cabang berdasarkan ID. Hanya dapat diakses
+        oleh admin
+      parameters:
+      - description: ID toko
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menghapus toko cabang!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Gagal menghapus data
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus toko cabang
+      tags:
+      - Store
+    get:
+      description: Mengambil detail satu toko cabang berdasarkan ID
+      parameters:
+      - description: ID toko
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Succes get data store!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.StoreData'
+              type: object
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "424":
+          description: Gagal mengambil data
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Detail toko cabang
+      tags:
+      - Store
+    put:
+      consumes:
+      - application/json
+      description: Mengubah data toko cabang berdasarkan ID. Hanya dapat diakses oleh
+        admin
+      parameters:
+      - description: ID toko
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data toko yang diubah
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateStoreRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengubah toko cabang!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Ubah toko cabang
+      tags:
+      - Store
+securityDefinitions:
+  BearerAuth:
+    description: 'Masukkan token dengan format: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

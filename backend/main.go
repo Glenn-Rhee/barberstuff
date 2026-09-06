@@ -2,14 +2,26 @@ package main
 
 import (
 	"barberstuff_backend/db"
+	_ "barberstuff_backend/docs" // docs digenerate oleh swag init, wajib di-import
 	"barberstuff_backend/internal/bootstrap"
 	"barberstuff_backend/internal/lib"
 	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title           BarberStuff Backend API
+// @version         1.0
+// @description     Dokumentasi API untuk backend BarberStuff (auth, store, staff, capster, customer).
+// @host            localhost:8080
+// @BasePath        /
+// @securityDefinitions.apikey  BearerAuth
+// @in                          header
+// @name                        Authorization
+// @description                 Masukkan token dengan format: Bearer {token}
 func main() {
 	log.Println("Server is starting...")
 	db := db.Connect()
@@ -17,6 +29,8 @@ func main() {
 	h := bootstrap.InitHandlers(db)
 
 	r := gin.Default()
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	auth := r.Group("/auth")
 	{

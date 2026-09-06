@@ -17,6 +17,16 @@ func NewAuthHandler(service service.AuthenticationService) *AuthHandler {
 	return &AuthHandler{service: service}
 }
 
+// CredentialLogin godoc
+// @Summary      Login menggunakan email & password
+// @Description  Melakukan autentikasi menggunakan kombinasi email dan password, mengembalikan access token
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.CredentialLoginRequest true "Kredensial login"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.AuthenticationResponse} "Login Berhasil!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Router       /auth/login/credential [post]
 func (h *AuthHandler) CredentialLogin(ctx *gin.Context) {
 	var dataCredential dto.CredentialLoginRequest
 
@@ -44,6 +54,16 @@ func (h *AuthHandler) CredentialLogin(ctx *gin.Context) {
 	})
 }
 
+// AuthProvider godoc
+// @Summary      Login/registrasi melalui OAuth provider
+// @Description  Melakukan autentikasi menggunakan provider pihak ketiga seperti Google
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.AuthProviderRequest true "Data ID token dan provider"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.AuthProviderResponse} "Login Berhasil!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Router       /auth/provider [post]
 func (h *AuthHandler) AuthProvider(ctx *gin.Context) {
 	var dataAuthProvider dto.AuthProviderRequest
 
@@ -71,6 +91,16 @@ func (h *AuthHandler) AuthProvider(ctx *gin.Context) {
 	})
 }
 
+// ResetPassword godoc
+// @Summary      Reset password
+// @Description  Mengganti password menggunakan reset token yang telah diverifikasi
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.ResetPasswordRequest true "Reset token dan password baru"
+// @Success      200 {object} dto.SwaggerResponse "Password berhasil direset!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Router       /auth/reset [post]
 func (h *AuthHandler) ResetPassword(ctx *gin.Context) {
 	var dataResetPassword dto.ResetPasswordRequest
 	if err := ctx.ShouldBindJSON(&dataResetPassword); err != nil {
@@ -97,6 +127,16 @@ func (h *AuthHandler) ResetPassword(ctx *gin.Context) {
 	})
 }
 
+// RefreshToken godoc
+// @Summary      Perbarui access token
+// @Description  Membuat access token baru menggunakan refresh token yang masih valid
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.RefreshTokenBody true "Refresh token"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.RefreshTokenBody} "Berhasil"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Router       /auth/refresh-token [post]
 func (h *AuthHandler) RefreshToken(ctx *gin.Context) {
 	var dataRequst dto.RefreshTokenBody
 	if err := ctx.ShouldBindJSON(&dataRequst); err != nil {

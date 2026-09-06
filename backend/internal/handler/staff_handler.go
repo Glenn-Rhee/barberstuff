@@ -22,6 +22,18 @@ func NewStaffHandler(service service.StaffService) *StaffHandler {
 	return &StaffHandler{service: service}
 }
 
+// CreateAdmin godoc
+// @Summary      Buat akun admin
+// @Description  Membuat akun admin pertama kali menggunakan Secret-Key khusus pada header
+// @Tags         Staff
+// @Accept       json
+// @Produce      json
+// @Param        Secret-Key header string true "Secret key admin"
+// @Param        request body dto.StaffRequest true "Data akun admin"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membuat akun admin"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Secret key tidak valid"
+// @Router       /auth/register/admin [post]
 func (h *StaffHandler) CreateAdmin(ctx *gin.Context) {
 	if _, err := os.Stat(".env"); err == nil {
 		if err := godotenv.Load(); err != nil {
@@ -64,6 +76,19 @@ func (h *StaffHandler) CreateAdmin(ctx *gin.Context) {
 	})
 }
 
+// CreateAccountStaff godoc
+// @Summary      Tambah akun staff
+// @Description  Membuat akun staff baru (cashier/mitra) pada toko tertentu. Hanya dapat diakses oleh admin
+// @Tags         Staff
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.CreateAccountStaffRequest true "Data akun staff baru"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membuat akun staaff"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal membuat akun"
+// @Router       /staff [post]
 func (h *StaffHandler) CreateAccountStaff(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -116,6 +141,19 @@ func (h *StaffHandler) CreateAccountStaff(ctx *gin.Context) {
 	})
 }
 
+// GetAccountStaffes godoc
+// @Summary      Daftar akun staff
+// @Description  Mengambil daftar akun staff, dapat difilter berdasarkan toko, nama, atau email. Hanya dapat diakses oleh admin
+// @Tags         Staff
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id_store query string false "ID toko"
+// @Param        name query string false "Nama staff"
+// @Param        email query string false "Email staff"
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.StaffAccountsResponse} "Berhasil mengambil data akun staff!"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengambil data"
+// @Router       /staff [get]
 func (h *StaffHandler) GetAccountStaffes(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -168,6 +206,15 @@ func (h *StaffHandler) GetAccountStaffes(ctx *gin.Context) {
 	})
 }
 
+// GetProfile godoc
+// @Summary      Ambil profil staff
+// @Description  Mengambil data profil staff/admin yang sedang login
+// @Tags         Staff
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} dto.SwaggerResponse{data=dto.StaffAccountsResponse} "Berhasil mengambil data akun staff!"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /profile/staff [get]
 func (h *StaffHandler) GetProfile(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -211,6 +258,20 @@ func (h *StaffHandler) GetProfile(ctx *gin.Context) {
 	})
 }
 
+// UpdateAccountStaff godoc
+// @Summary      Ubah akun staff
+// @Description  Mengubah nama dan password akun staff berdasarkan ID
+// @Tags         Staff
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path string true "ID staff"
+// @Param        request body dto.UpdateAccountStaffRequest true "Data staff yang diubah"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil mengubah data akun staff!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengubah data"
+// @Router       /staff/{id} [patch]
 func (h *StaffHandler) UpdateAccountStaff(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -265,7 +326,18 @@ func (h *StaffHandler) UpdateAccountStaff(ctx *gin.Context) {
 	})
 }
 
-func (h *StaffHandler) DeleteAccountStaff(ctx *gin.Context){
+// DeleteAccountStaff godoc
+// @Summary      Hapus akun staff
+// @Description  Menghapus akun staff berdasarkan ID. Hanya dapat diakses oleh admin
+// @Tags         Staff
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path string true "ID staff"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menghapus data akun staff!"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal menghapus data"
+// @Router       /staff/{id} [delete]
+func (h *StaffHandler) DeleteAccountStaff(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{

@@ -19,6 +19,18 @@ func NewCapsterHandler(s service.CapsterService) *CapsterHandler {
 	return &CapsterHandler{service: s}
 }
 
+// Create godoc
+// @Summary      Tambah capster baru
+// @Description  Membuat data capster baru pada toko tertentu. Hanya dapat diakses oleh admin
+// @Tags         Capster
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.CreateCapsterRequest true "Data capster baru"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membuat capster baru!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /capster [post]
 func (h *CapsterHandler) Create(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

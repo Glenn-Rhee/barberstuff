@@ -19,6 +19,16 @@ func NewCustomerHandler(service service.CustomerService) *CustomerHandler {
 	return &CustomerHandler{service: service}
 }
 
+// OauthRegister godoc
+// @Summary      Registrasi customer melalui OAuth
+// @Description  Melengkapi data diri customer baru yang mendaftar melalui provider OAuth (Google, dll)
+// @Tags         Customer
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.OauthCustomerRequest true "Data registrasi OAuth"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.AuthenticationResponse} "Berhasil registrasi dengan google!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Router       /auth/register/oauth [post]
 func (h *CustomerHandler) OauthRegister(ctx *gin.Context) {
 	var dataNewCustomer dto.OauthCustomerRequest
 
@@ -55,6 +65,17 @@ func (h *CustomerHandler) OauthRegister(ctx *gin.Context) {
 	})
 }
 
+// CredentialRegister godoc
+// @Summary      Registrasi customer baru
+// @Description  Mendaftarkan customer baru menggunakan email dan password, OTP akan dikirim ke email
+// @Tags         Customer
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.CredentialCustomerRequest true "Data registrasi customer"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.CredentialCustomerResponse} "OTP telah dikirim ke email Anda"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      406 {object} dto.SwaggerResponse "Registrasi gagal"
+// @Router       /auth/register/credential [post]
 func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
 	var dataNewCustomer dto.CredentialCustomerRequest
 	if err := ctx.ShouldBindJSON(&dataNewCustomer); err != nil {
@@ -97,6 +118,17 @@ func (h *CustomerHandler) CredentialRegister(ctx *gin.Context) {
 	})
 }
 
+// VerifyCredential godoc
+// @Summary      Verifikasi OTP registrasi
+// @Description  Memverifikasi kode OTP yang dikirim saat proses registrasi customer
+// @Tags         Customer
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.VerifyCredentialRequest true "User ID dan kode OTP"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.VerifyOTPResponse} "Berhasil verifikasi!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      406 {object} dto.SwaggerResponse "Verifikasi gagal"
+// @Router       /auth/verify-credential [post]
 func (h *CustomerHandler) VerifyCredential(ctx *gin.Context) {
 	var dataOtpCustomer dto.VerifyCredentialRequest
 
@@ -132,6 +164,16 @@ func (h *CustomerHandler) VerifyCredential(ctx *gin.Context) {
 	})
 }
 
+// ForgotPassword godoc
+// @Summary      Lupa password
+// @Description  Mengirimkan kode OTP ke email untuk proses reset password
+// @Tags         Customer
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.ForgotPasswordRequest true "Email customer"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.ForgotPassswordResponse} "Berhasil kirim otp"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengirim otp"
+// @Router       /auth/forgot [post]
 func (h *CustomerHandler) ForgotPassword(ctx *gin.Context) {
 	var dataResetPassword dto.ForgotPasswordRequest
 
@@ -159,6 +201,15 @@ func (h *CustomerHandler) ForgotPassword(ctx *gin.Context) {
 	})
 }
 
+// GetProfile godoc
+// @Summary      Ambil profil customer
+// @Description  Mengambil data profil customer yang sedang login
+// @Tags         Customer
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} dto.SwaggerResponse{data=dto.ProfileCustomerResponse} "Berhasil mengambil data!"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /profile/customer [get]
 func (h *CustomerHandler) GetProfile(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

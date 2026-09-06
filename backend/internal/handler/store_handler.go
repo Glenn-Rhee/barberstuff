@@ -19,6 +19,18 @@ func NewStoreHandler(service service.StoreService) *StoreHandler {
 	return &StoreHandler{service: service}
 }
 
+// CreateNewStore godoc
+// @Summary      Tambah toko cabang baru
+// @Description  Membuat data toko cabang baru. Hanya dapat diakses oleh admin
+// @Tags         Store
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.NewStoreRequest true "Data toko baru"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membuat toko cabang baru!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /store [post]
 func (h *StoreHandler) CreateNewStore(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -80,6 +92,17 @@ func (h *StoreHandler) CreateNewStore(ctx *gin.Context) {
 	})
 }
 
+// GetStores godoc
+// @Summary      Daftar toko cabang
+// @Description  Mengambil daftar toko cabang, dapat difilter berdasarkan nama. Hanya dapat diakses oleh admin
+// @Tags         Store
+// @Produce      json
+// @Security     BearerAuth
+// @Param        name query string false "Nama toko"
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.StoreData} "Succes get data stores!"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data"
+// @Router       /store [get]
 func (h *StoreHandler) GetStores(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -133,6 +156,17 @@ func (h *StoreHandler) GetStores(ctx *gin.Context) {
 	})
 }
 
+// GetStore godoc
+// @Summary      Detail toko cabang
+// @Description  Mengambil detail satu toko cabang berdasarkan ID
+// @Tags         Store
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path string true "ID toko"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.StoreData} "Succes get data store!"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data"
+// @Router       /store/{id} [get]
 func (h *StoreHandler) GetStore(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -177,6 +211,19 @@ func (h *StoreHandler) GetStore(ctx *gin.Context) {
 	})
 }
 
+// UpdateStore godoc
+// @Summary      Ubah toko cabang
+// @Description  Mengubah data toko cabang berdasarkan ID. Hanya dapat diakses oleh admin
+// @Tags         Store
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path string true "ID toko"
+// @Param        request body dto.UpdateStoreRequest true "Data toko yang diubah"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil mengubah toko cabang!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /store/{id} [put]
 func (h *StoreHandler) UpdateStore(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -241,6 +288,17 @@ func (h *StoreHandler) UpdateStore(ctx *gin.Context) {
 	})
 }
 
+// DeleteStore godoc
+// @Summary      Hapus toko cabang
+// @Description  Menghapus data toko cabang berdasarkan ID. Hanya dapat diakses oleh admin
+// @Tags         Store
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path string true "ID toko"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menghapus toko cabang!"
+// @Failure      400 {object} dto.SwaggerResponse "Gagal menghapus data"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /store/{id} [delete]
 func (h *StoreHandler) DeleteStore(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
