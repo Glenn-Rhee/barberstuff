@@ -878,6 +878,40 @@ const docTemplate = `{
                         "description": "Nama toko",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "name",
+                            "created_at"
+                        ],
+                        "type": "string",
+                        "default": "name",
+                        "description": "Sort By",
+                        "name": "sortBy",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "asc",
+                        "description": "Order By",
+                        "name": "orderBy",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1871,7 +1905,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "BarberStuff Backend API",
-	Description:      "Dokumentasi API untuk backend BarberStuff (auth, store, staff, capster, customer).",
+	Description:      "Dokumentasi API untuk backend BarberStuff",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

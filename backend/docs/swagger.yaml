@@ -493,8 +493,7 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: Dokumentasi API untuk backend BarberStuff (auth, store, staff, capster,
-    customer).
+  description: Dokumentasi API untuk backend BarberStuff
   title: BarberStuff Backend API
   version: "1.0"
 paths:
@@ -1028,6 +1027,30 @@ paths:
       - description: Nama toko
         in: query
         name: name
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: name
+        description: Sort By
+        enum:
+        - name
+        - created_at
+        in: query
+        name: sortBy
+        type: string
+      - default: asc
+        description: Order By
+        enum:
+        - asc
+        - desc
+        in: query
+        name: orderBy
         type: string
       produces:
       - application/json

@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Dokumentasi API untuk backend BarberStuff (auth, store, staff, capster, customer).",
+        "description": "Dokumentasi API untuk backend BarberStuff",
         "title": "BarberStuff Backend API",
         "contact": {},
         "version": "1.0"
@@ -870,6 +870,40 @@
                         "type": "string",
                         "description": "Nama toko",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "name",
+                            "created_at"
+                        ],
+                        "type": "string",
+                        "default": "name",
+                        "description": "Sort By",
+                        "name": "sortBy",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "asc",
+                        "description": "Order By",
+                        "name": "orderBy",
                         "in": "query"
                     }
                 ],
