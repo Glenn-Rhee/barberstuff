@@ -54,9 +54,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get chooseLoginTextLink => 'Daftar';
 
   @override
-  String get commonProcessing => 'Memproses...';
-
-  @override
   String get genderMale => 'Laki-laki';
 
   @override
@@ -125,6 +122,9 @@ class AppLocalizationsId extends AppLocalizations {
       'Kesempatan mencoba habis. Silakan kirim ulang kode.';
 
   @override
+  String get verifyResendSending => 'Mengirim...';
+
+  @override
   String get verifyResendSuccess => 'Kode baru telah dikirim ke email Anda.';
 
   @override
@@ -160,6 +160,52 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get loginWithGoogle => 'Masuk dengan Google';
+
+  @override
+  String get forgotPageBarText => 'Lupa Kata Sandi';
+
+  @override
+  String get forgotHeadline => 'Lupa Kata Sandi?';
+
+  @override
+  String get forgotDescription =>
+      'Masukkan email akun Anda. Kami akan mengirimkan kode verifikasi untuk mengatur ulang kata sandi.';
+
+  @override
+  String get forgotSubmitButton => 'Kirim Kode';
+
+  @override
+  String get resetPageBarText => 'Kata Sandi Baru';
+
+  @override
+  String get resetHeadline => 'Buat Kata Sandi Baru';
+
+  @override
+  String get resetDescription =>
+      'Kata sandi baru harus berbeda dari kata sandi yang pernah Anda pakai sebelumnya.';
+
+  @override
+  String get resetPasswordHint => 'Kata Sandi Baru';
+
+  @override
+  String get resetConfirmHint => 'Ulangi Kata Sandi Baru';
+
+  @override
+  String get resetSubmitButton => 'Simpan Kata Sandi';
+
+  @override
+  String get resetSignInFailed =>
+      'Kata sandi berhasil diubah, tetapi kami gagal masuk otomatis. Silakan masuk kembali.';
+
+  @override
+  String get resetSuccessTitle => 'Selamat!';
+
+  @override
+  String get resetSuccessMessage =>
+      'Kata sandi Anda berhasil diperbarui. Anda akan diarahkan ke halaman beranda.';
+
+  @override
+  String get resetSuccessButton => 'Ke Beranda';
 
   @override
   String get exceptionReceiveTimeout =>
@@ -201,12 +247,476 @@ class AppLocalizationsId extends AppLocalizations {
   String get validatorPhoneDigits => 'Hanya boleh angka';
 
   @override
-  String get comingSoonTitle => 'Segera hadir';
+  String get validatorPasswordMismatch => 'Kata sandi tidak sama';
 
   @override
-  String get comingSoonMessage =>
-      'Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.';
+  String get googleSignInFailed =>
+      'Gagal masuk dengan Google. Silakan coba lagi.';
 
   @override
-  String get commonUnderstood => 'Mengerti';
+  String get completeProfileTitle => 'Lengkapi Profil';
+
+  @override
+  String get completeProfileSubtitle =>
+      'Sedikit lagi. Lengkapi data dirimu untuk mulai memakai Barberstuff.';
+
+  @override
+  String get completeProfileSubmit => 'Lanjutkan';
+
+  @override
+  String get completeProfileEmailLocked =>
+      'Email dari Google tidak bisa diubah';
+
+  @override
+  String get avatarSheetTitle => 'Foto Profil';
+
+  @override
+  String get avatarSheetCamera => 'Ambil Foto';
+
+  @override
+  String get avatarSheetGallery => 'Pilih dari Galeri';
+
+  @override
+  String get avatarSheetRemove => 'Hapus Foto';
+
+  @override
+  String get avatarPickFailed => 'Gagal membuka galeri atau kamera. Coba lagi.';
+
+  @override
+  String get avatarPermissionDenied =>
+      'Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Halo, $name!';
+  }
+
+  @override
+  String get homeWelcomeBack => 'Selamat datang kembali';
+
+  @override
+  String homePoints(String points) {
+    return '$points Poin';
+  }
+
+  @override
+  String get homeMemberBadge => 'MEMBER';
+
+  @override
+  String homePointsToPremium(String points) {
+    return '$points Poin lagi ke level premium';
+  }
+
+  @override
+  String get homeBirthdayTitle => 'Spesial Hari Ulang Tahun!';
+
+  @override
+  String get homeBirthdayDescription =>
+      'Diskon potongan rambut berlaku s/d 7 hari setelah ultah.';
+
+  @override
+  String get homeSeePromo => 'Lihat Promo';
+
+  @override
+  String get homeActionBooking => 'Booking';
+
+  @override
+  String get homeActionPackage => 'Paket';
+
+  @override
+  String get homeActionPromo => 'Promo';
+
+  @override
+  String get homeActionHistory => 'Riwayat';
+
+  @override
+  String get homeBenefitTitle => 'Benefit Barberstuff';
+
+  @override
+  String get homeBenefitPoints => 'Poin reward setiap kali potong rambut';
+
+  @override
+  String get homeBenefitBirthday => 'Diskon khusus dan penawaran ulang tahun';
+
+  @override
+  String get homeBenefitPriority => 'Prioritas jadwal tanpa antre panjang';
+
+  @override
+  String get homeActiveBookingTitle => 'Booking Aktif';
+
+  @override
+  String get homeBookingUpcoming => 'MENDATANG';
+
+  @override
+  String homeBookingOrderId(String id) {
+    return 'Order ID #$id';
+  }
+
+  @override
+  String get homeBookingDetail => 'Lihat Detail';
+
+  @override
+  String get homeBookingEmpty => 'Belum ada booking aktif.';
+
+  @override
+  String get homeNearbyTitle => 'Cabang Terdekat';
+
+  @override
+  String get homeNearbySeeAll => 'Lihat Semua';
+
+  @override
+  String homeNearbyDistance(String distance) {
+    return '$distance km';
+  }
+
+  @override
+  String get homeHistoryTitle => 'Riwayat Potongan';
+
+  @override
+  String get homeHistorySeeAll => 'Lihat Riwayat';
+
+  @override
+  String get homeHistoryEmpty => 'Belum ada riwayat potongan.';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navBooking => 'Booking';
+
+  @override
+  String get navHistory => 'Riwayat';
+
+  @override
+  String get navProfile => 'Profil';
+
+  @override
+  String get profileTierNewbie => 'NEWBIE MEMBER';
+
+  @override
+  String get profileTierBestie => 'BESTIE MEMBER';
+
+  @override
+  String get profileTierRoyal => 'ROYAL MEMBER';
+
+  @override
+  String get profileTierCrazy => 'CRAZY MEMBER';
+
+  @override
+  String get profileMenuPersonalInfo => 'Informasi Pribadi';
+
+  @override
+  String get profileMenuLanguage => 'Bahasa';
+
+  @override
+  String get profileMenuCard => 'Barberstuff Card';
+
+  @override
+  String get profileMenuNotification => 'Notifikasi';
+
+  @override
+  String get profileMenuHelp => 'Pusat Bantuan';
+
+  @override
+  String get profileMenuAbout => 'Tentang Aplikasi';
+
+  @override
+  String get profileMenuLogout => 'Keluar';
+
+  @override
+  String get profileLogoutTitle => 'Keluar dari akun?';
+
+  @override
+  String get profileLogoutMessage =>
+      'Anda perlu masuk lagi untuk memakai Barberstuff.';
+
+  @override
+  String get languagePageTitle => 'Pilih Bahasa';
+
+  @override
+  String get languagePageDescription =>
+      'Silakan pilih bahasa yang nyaman bagi Anda untuk menikmati pengalaman terbaik bersama kami.';
+
+  @override
+  String get languageIndonesian => 'Bahasa Indonesia';
+
+  @override
+  String get languageEnglish => 'Inggris';
+
+  @override
+  String get languageSelectAction => 'Pilih';
+
+  @override
+  String get commonCancel => 'Batal';
+
+  @override
+  String get cardPageTitle => 'Barberstuff Card';
+
+  @override
+  String get cardIdLabel => 'ID User';
+
+  @override
+  String get personalInfoTitle => 'Informasi Pribadi';
+
+  @override
+  String get personalInfoChangePhoto => 'Ganti Foto Profil';
+
+  @override
+  String get personalInfoPhotoFormat => 'Support Format: JPEG, PNG, JPG';
+
+  @override
+  String get personalInfoEmailLocked =>
+      'Email dipakai untuk masuk dan tidak bisa diubah';
+
+  @override
+  String get personalInfoPasswordTitle => 'Password Saya';
+
+  @override
+  String get personalInfoPasswordSubtitle => 'Ganti Password Saya';
+
+  @override
+  String get personalInfoPasswordAction => 'Ganti Sekarang';
+
+  @override
+  String get personalInfoSave => 'Simpan Perubahan';
+
+  @override
+  String get helpTitle => 'Pusat Bantuan';
+
+  @override
+  String get helpHeadline => 'Butuh Bantuan? Ceritakan Masalah Anda';
+
+  @override
+  String get helpSubtitle =>
+      'Isi formulir di bawah ini dan tim kami akan menghubungi Anda secepatnya.';
+
+  @override
+  String get helpNameLabel => 'Nama';
+
+  @override
+  String get helpProblemLabel => 'Ceritakan Masalah Anda';
+
+  @override
+  String get helpProblemHint => 'Tulis masalah yang Anda alami';
+
+  @override
+  String get helpSubmit => 'Kirim';
+
+  @override
+  String get aboutTitle => 'Tentang Aplikasi';
+
+  @override
+  String aboutLastUpdated(String date) {
+    return 'Terakhir diperbarui: $date';
+  }
+
+  @override
+  String get aboutIntro =>
+      'Dengan mengakses atau menggunakan aplikasi Barberstuff, Anda setuju untuk terikat pada Ketentuan Penggunaan ini.';
+
+  @override
+  String get aboutAcceptanceTitle => '1. Penerimaan Ketentuan';
+
+  @override
+  String get aboutAcceptanceBody =>
+      'Dengan menggunakan Barberstuff, Anda menyatakan telah membaca, memahami, dan menyetujui Ketentuan Penggunaan ini.';
+
+  @override
+  String get aboutEligibilityTitle => '2. Kelayakan';
+
+  @override
+  String get aboutEligibilityBody =>
+      'Anda harus berusia minimal 17 tahun atau memiliki izin dari orang tua maupun wali untuk menggunakan Barberstuff.';
+
+  @override
+  String get aboutAccountTitle => '3. Akun Pengguna';
+
+  @override
+  String get aboutAccountPoint1 =>
+      'Anda bertanggung jawab menjaga kerahasiaan akun Anda';
+
+  @override
+  String get aboutAccountPoint2 =>
+      'Seluruh informasi yang diberikan harus akurat dan terkini';
+
+  @override
+  String get aboutAccountPoint3 =>
+      'Barberstuff tidak bertanggung jawab atas akses tidak sah yang disebabkan kelalaian pengguna';
+
+  @override
+  String get aboutUsageTitle => '4. Penggunaan Layanan';
+
+  @override
+  String get aboutUsageIntro => 'Anda setuju untuk tidak:';
+
+  @override
+  String get aboutUsagePoint1 =>
+      'Menggunakan Barberstuff untuk tujuan melanggar hukum';
+
+  @override
+  String get aboutUsagePoint2 =>
+      'Menyalin, menyebarkan, atau mengeksploitasi konten platform tanpa izin';
+
+  @override
+  String get aboutUsagePoint3 =>
+      'Mengunggah konten yang melanggar hukum atau hak pihak ketiga';
+
+  @override
+  String get aboutIpTitle => '5. Hak Kekayaan Intelektual';
+
+  @override
+  String get aboutIpBody =>
+      'Seluruh konten, sistem, dan desain platform dimiliki oleh Barberstuff. Data dan materi yang dibuat pengguna tetap menjadi milik pengguna.';
+
+  @override
+  String get aboutTerminationTitle => '6. Penghentian Akun';
+
+  @override
+  String get aboutTerminationBody =>
+      'Barberstuff berhak menangguhkan atau menghentikan akun yang melanggar Ketentuan ini.';
+
+  @override
+  String get aboutDisclaimerTitle => '7. Penafian';
+
+  @override
+  String get aboutDisclaimerBody =>
+      'Barberstuff disediakan sebagaimana adanya dan sebagaimana tersedia, tanpa jaminan dalam bentuk apa pun.';
+
+  @override
+  String get aboutChangesTitle => '8. Perubahan Ketentuan';
+
+  @override
+  String get aboutChangesBody =>
+      'Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.';
+
+  @override
+  String get bookingBranchTitle => 'Pilih Cabang';
+
+  @override
+  String get bookingBarberTitle => 'Pilih Barber';
+
+  @override
+  String get bookingTermsHeadline => '📋 Ketentuan Booking Barberstuff';
+
+  @override
+  String get bookingTermsIntro =>
+      'Untuk memberikan pelayanan terbaik dan menjaga jadwal tetap teratur, setiap pelanggan diharapkan mengikuti ketentuan booking yang berlaku.';
+
+  @override
+  String get bookingTermsRulesLabel => '💡 Aturan Booking:';
+
+  @override
+  String get bookingTermsRule1 =>
+      'Booking dilakukan minimal 1 jam sebelum jadwal kedatangan';
+
+  @override
+  String get bookingTermsRule2 =>
+      'Pelanggan diharapkan datang sesuai waktu yang telah dipilih';
+
+  @override
+  String get bookingTermsRule3 => 'Toleransi keterlambatan maksimal 5 menit';
+
+  @override
+  String get bookingTermsRule4 =>
+      'Keterlambatan lebih dari 5 menit dapat menyebabkan booking dibatalkan secara otomatis';
+
+  @override
+  String get bookingTermsOutro =>
+      'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya!';
+
+  @override
+  String get bookingTermsAgree => 'Saya sudah baca ketentuan';
+
+  @override
+  String get bookingNearbyHeadline => 'Pilih Barberstuff Terdekat!';
+
+  @override
+  String get bookingSearchHint => 'Ketik disini!';
+
+  @override
+  String get bookingViewStore => 'Lihat Toko';
+
+  @override
+  String get bookingStoreEmpty => 'Cabang tidak ditemukan.';
+
+  @override
+  String get bookingCapsterEmpty => 'Belum ada capster di cabang ini.';
+
+  @override
+  String get commonContinue => 'Lanjutkan';
+
+  @override
+  String get bookingScheduleTitle => 'Pilih Jadwal';
+
+  @override
+  String get bookingServiceTitle => 'Pilih Layanan';
+
+  @override
+  String get bookingDateLabel => 'Tanggal';
+
+  @override
+  String get bookingTimeLabel => 'Jam';
+
+  @override
+  String get bookingSingleServiceLabel => 'Jasa Satuan';
+
+  @override
+  String get bookingPackageLabel => 'Paket';
+
+  @override
+  String get bookingServiceEmpty => 'Belum ada layanan tersedia.';
+
+  @override
+  String get bookingSuccessTitle => 'Pemesanan Berhasil!';
+
+  @override
+  String get bookingSuccessMessage => 'Pemesanan Anda telah berhasil dilakukan';
+
+  @override
+  String get bookingSuccessReceipt => 'Lihat Bukti Pesanan';
+
+  @override
+  String get bookingSuccessHome => 'Beranda';
+
+  @override
+  String get receiptTitle => 'E-Receipt';
+
+  @override
+  String get receiptStore => 'Barber/Salon';
+
+  @override
+  String get receiptAddress => 'Alamat';
+
+  @override
+  String get receiptName => 'Nama';
+
+  @override
+  String get receiptPhone => 'No Telepon';
+
+  @override
+  String get receiptDate => 'Tgl Booking';
+
+  @override
+  String get receiptTime => 'Jam Booking';
+
+  @override
+  String get receiptSpecialist => 'Specialist';
+
+  @override
+  String get receiptTotal => 'Total Harga';
+
+  @override
+  String get receiptDownload => 'Download E-Receipt';
+
+  @override
+  String get comingSoonMessage => 'Segera hadir!';
+
+  @override
+  String get commonRetry => 'Coba Lagi';
+
+  @override
+  String get commonUnderstood => 'Oke';
+
+  @override
+  String get commonLogout => 'Keluar';
 }

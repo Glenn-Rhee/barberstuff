@@ -3,7 +3,6 @@ import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 
 enum AppToastType { error, success, info }
 
-
 class AppToast {
   const AppToast._();
 
@@ -15,7 +14,6 @@ class AppToast {
     AppToastType type = AppToastType.error,
     Duration duration = const Duration(seconds: 3),
   }) {
-
     dismiss();
 
     final OverlayState overlay = Overlay.of(context, rootOverlay: true);
@@ -101,7 +99,10 @@ class _ToastViewState extends State<_ToastView>
       case AppToastType.error:
         return (background: const Color(0xFFD32F2F), icon: Icons.error_outline);
       case AppToastType.success:
-        return (background: const Color(0xFF2E7D32), icon: Icons.check_circle_outline);
+        return (
+          background: const Color(0xFF2E7D32),
+          icon: Icons.check_circle_outline,
+        );
       case AppToastType.info:
         return (background: const Color(0xFF1565C0), icon: Icons.info_outline);
     }

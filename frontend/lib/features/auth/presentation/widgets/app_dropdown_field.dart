@@ -7,15 +7,15 @@ class AppDropdownField<T> extends StatefulWidget {
   const AppDropdownField({
     super.key,
     required this.hint,
-    required this.iconPath,
     required this.items,
     required this.onChanged,
+    this.iconPath,
     this.value,
     this.validator,
   });
 
   final String hint;
-  final String iconPath;
+  final String? iconPath;
   final List<DropdownMenuItem<T>> items;
   final ValueChanged<T?> onChanged;
   final T? value;
@@ -62,7 +62,10 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
       style: AppTextStyle.bodyMedium,
       icon: const Padding(
         padding: EdgeInsets.only(right: 8),
-        child: Icon(Icons.keyboard_arrow_down_rounded, color: AppColor.inkFaint),
+        child: Icon(
+          Icons.keyboard_arrow_down_rounded,
+          color: AppColor.inkFaint,
+        ),
       ),
       hint: Text(
         widget.hint,

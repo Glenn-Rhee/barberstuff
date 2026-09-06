@@ -73,6 +73,7 @@ class LoginProvider extends ChangeNotifier {
         LoginRequestApi(email: email, password: passwordController.text),
       );
       await _session.rememberEmail(_rememberMe ? email : null);
+      await _session.saveSession(_result!.accessToken);
 
       _isLoading = false;
       notifyListeners();

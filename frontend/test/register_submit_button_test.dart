@@ -17,8 +17,9 @@ Color? _buttonColor(WidgetTester tester) {
   return (container.decoration as BoxDecoration?)?.color;
 }
 
-Widget _host(Widget child) =>
-    MaterialApp(home: Scaffold(body: Center(child: child)));
+Widget _host(Widget child) => MaterialApp(
+  home: Scaffold(body: Center(child: child)),
+);
 
 void main() {
   late RegisterProvider provider;
@@ -63,11 +64,15 @@ void main() {
     expect(_buttonColor(tester), AppColor.orangeLight);
   });
 
-  testWidgets('tombol tetap oranye saat loading', (WidgetTester tester) async {
+  testWidgets('saat loading tombol nonaktif, label tetap, tanpa spinner', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
-      _host(const BoxButton(label: 'Daftar', onPressed: null, isLoading: true)),
+      _host(BoxButton(label: 'Daftar', onPressed: () {}, isLoading: true)),
     );
-    expect(_buttonColor(tester), AppColor.orangeLight);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    expect(_buttonColor(tester), AppColor.disabled);
+    expect(find.text('Daftar'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 }

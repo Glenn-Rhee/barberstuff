@@ -7,24 +7,26 @@ class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
     required this.hint,
-    required this.iconPath,
+    this.iconPath,
     this.controller,
     this.validator,
     this.keyboardType,
     this.obscureText = false,
     this.suffixIcon,
     this.readOnly = false,
+    this.enabled = true,
     this.onTap,
   });
 
   final String hint;
-  final String iconPath;
+  final String? iconPath;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
   final bool obscureText;
   final Widget? suffixIcon;
   final bool readOnly;
+  final bool enabled;
   final VoidCallback? onTap;
 
   @override
@@ -63,6 +65,7 @@ class _AppTextFieldState extends State<AppTextField> {
       keyboardType: widget.keyboardType,
       obscureText: widget.obscureText,
       readOnly: widget.readOnly,
+      enabled: widget.enabled,
       onTap: widget.onTap,
       style: AppTextStyle.bodyMedium,
       cursorColor: AppColor.orange,
@@ -70,6 +73,7 @@ class _AppTextFieldState extends State<AppTextField> {
         hint: widget.hint,
         iconPath: widget.iconPath,
         focused: _focused,
+        enabled: widget.enabled,
         suffixIcon: widget.suffixIcon,
       ),
     );

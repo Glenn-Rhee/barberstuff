@@ -31,24 +31,33 @@ class AppField {
 
   static InputDecoration decoration({
     required String hint,
-    required String iconPath,
     required bool focused,
+    bool enabled = true,
+    String? iconPath,
     Widget? suffixIcon,
   }) {
     return InputDecoration(
       hintText: hint,
       hintStyle: AppTextStyle.bodyMedium.copyWith(color: AppColor.inkFaint),
       filled: true,
-      fillColor: focused ? AppColor.cream : AppColor.surface,
+      fillColor: !enabled
+          ? AppColor.cream
+          : (focused ? AppColor.cream : AppColor.surface),
       isDense: true,
-      contentPadding: const EdgeInsets.only(right: 16, top: 18, bottom: 18),
-      prefixIcon: icon(iconPath, focused: focused),
+      contentPadding: EdgeInsets.only(
+        left: iconPath == null ? 16 : 0,
+        right: 16,
+        top: 18,
+        bottom: 18,
+      ),
+      prefixIcon: iconPath == null ? null : icon(iconPath, focused: focused),
       prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
       suffixIcon: suffixIcon,
       suffixIconConstraints: const BoxConstraints(minWidth: 48, minHeight: 0),
       border: _border(AppColor.border, 1),
       enabledBorder: _border(AppColor.border, 1),
       focusedBorder: _border(AppColor.orangeLight, 1.5),
+      disabledBorder: _border(AppColor.border, 1),
       errorBorder: _border(AppColor.danger, 1),
       focusedErrorBorder: _border(AppColor.danger, 1.5),
       errorStyle: AppTextStyle.bodySmall.copyWith(color: AppColor.danger),

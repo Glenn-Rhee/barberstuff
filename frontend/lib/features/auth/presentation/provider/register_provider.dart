@@ -4,8 +4,9 @@ import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
 
-class RegisterProvider extends ChangeNotifier {
+class RegisterProvider extends ChangeNotifier with AvatarFormMixin {
   RegisterProvider(this._repository) {
     for (final TextEditingController c in _textFields) {
       c.addListener(_syncComplete);
@@ -95,6 +96,7 @@ class RegisterProvider extends ChangeNotifier {
       gender: _gender!,
       email: emailController.text.trim(),
       password: passwordController.text,
+      imageUrl: imageUrl,
     );
 
     try {

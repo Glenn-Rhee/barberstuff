@@ -182,12 +182,6 @@ abstract class AppLocalizations {
   /// **'Daftar'**
   String get chooseLoginTextLink;
 
-  /// No description provided for @commonProcessing.
-  ///
-  /// In id, this message translates to:
-  /// **'Memproses...'**
-  String get commonProcessing;
-
   /// No description provided for @genderMale.
   ///
   /// In id, this message translates to:
@@ -314,6 +308,12 @@ abstract class AppLocalizations {
   /// **'Kesempatan mencoba habis. Silakan kirim ulang kode.'**
   String get verifyAttemptExhausted;
 
+  /// No description provided for @verifyResendSending.
+  ///
+  /// In id, this message translates to:
+  /// **'Mengirim...'**
+  String get verifyResendSending;
+
   /// No description provided for @verifyResendSuccess.
   ///
   /// In id, this message translates to:
@@ -386,6 +386,90 @@ abstract class AppLocalizations {
   /// **'Masuk dengan Google'**
   String get loginWithGoogle;
 
+  /// No description provided for @forgotPageBarText.
+  ///
+  /// In id, this message translates to:
+  /// **'Lupa Kata Sandi'**
+  String get forgotPageBarText;
+
+  /// No description provided for @forgotHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Lupa Kata Sandi?'**
+  String get forgotHeadline;
+
+  /// No description provided for @forgotDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan email akun Anda. Kami akan mengirimkan kode verifikasi untuk mengatur ulang kata sandi.'**
+  String get forgotDescription;
+
+  /// No description provided for @forgotSubmitButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim Kode'**
+  String get forgotSubmitButton;
+
+  /// No description provided for @resetPageBarText.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata Sandi Baru'**
+  String get resetPageBarText;
+
+  /// No description provided for @resetHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat Kata Sandi Baru'**
+  String get resetHeadline;
+
+  /// No description provided for @resetDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi baru harus berbeda dari kata sandi yang pernah Anda pakai sebelumnya.'**
+  String get resetDescription;
+
+  /// No description provided for @resetPasswordHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata Sandi Baru'**
+  String get resetPasswordHint;
+
+  /// No description provided for @resetConfirmHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Ulangi Kata Sandi Baru'**
+  String get resetConfirmHint;
+
+  /// No description provided for @resetSubmitButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Kata Sandi'**
+  String get resetSubmitButton;
+
+  /// No description provided for @resetSignInFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi berhasil diubah, tetapi kami gagal masuk otomatis. Silakan masuk kembali.'**
+  String get resetSignInFailed;
+
+  /// No description provided for @resetSuccessTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Selamat!'**
+  String get resetSuccessTitle;
+
+  /// No description provided for @resetSuccessMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi Anda berhasil diperbarui. Anda akan diarahkan ke halaman beranda.'**
+  String get resetSuccessMessage;
+
+  /// No description provided for @resetSuccessButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Ke Beranda'**
+  String get resetSuccessButton;
+
   /// No description provided for @exceptionReceiveTimeout.
   ///
   /// In id, this message translates to:
@@ -446,23 +530,875 @@ abstract class AppLocalizations {
   /// **'Hanya boleh angka'**
   String get validatorPhoneDigits;
 
-  /// No description provided for @comingSoonTitle.
+  /// No description provided for @validatorPasswordMismatch.
   ///
   /// In id, this message translates to:
-  /// **'Segera hadir'**
-  String get comingSoonTitle;
+  /// **'Kata sandi tidak sama'**
+  String get validatorPasswordMismatch;
+
+  /// No description provided for @googleSignInFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal masuk dengan Google. Silakan coba lagi.'**
+  String get googleSignInFailed;
+
+  /// No description provided for @completeProfileTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Lengkapi Profil'**
+  String get completeProfileTitle;
+
+  /// No description provided for @completeProfileSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Sedikit lagi. Lengkapi data dirimu untuk mulai memakai Barberstuff.'**
+  String get completeProfileSubtitle;
+
+  /// No description provided for @completeProfileSubmit.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjutkan'**
+  String get completeProfileSubmit;
+
+  /// No description provided for @completeProfileEmailLocked.
+  ///
+  /// In id, this message translates to:
+  /// **'Email dari Google tidak bisa diubah'**
+  String get completeProfileEmailLocked;
+
+  /// No description provided for @avatarSheetTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Foto Profil'**
+  String get avatarSheetTitle;
+
+  /// No description provided for @avatarSheetCamera.
+  ///
+  /// In id, this message translates to:
+  /// **'Ambil Foto'**
+  String get avatarSheetCamera;
+
+  /// No description provided for @avatarSheetGallery.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih dari Galeri'**
+  String get avatarSheetGallery;
+
+  /// No description provided for @avatarSheetRemove.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Foto'**
+  String get avatarSheetRemove;
+
+  /// No description provided for @avatarPickFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal membuka galeri atau kamera. Coba lagi.'**
+  String get avatarPickFailed;
+
+  /// No description provided for @avatarPermissionDenied.
+  ///
+  /// In id, this message translates to:
+  /// **'Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.'**
+  String get avatarPermissionDenied;
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In id, this message translates to:
+  /// **'Halo, {name}!'**
+  String homeGreeting(String name);
+
+  /// No description provided for @homeWelcomeBack.
+  ///
+  /// In id, this message translates to:
+  /// **'Selamat datang kembali'**
+  String get homeWelcomeBack;
+
+  /// No description provided for @homePoints.
+  ///
+  /// In id, this message translates to:
+  /// **'{points} Poin'**
+  String homePoints(String points);
+
+  /// No description provided for @homeMemberBadge.
+  ///
+  /// In id, this message translates to:
+  /// **'MEMBER'**
+  String get homeMemberBadge;
+
+  /// No description provided for @homePointsToPremium.
+  ///
+  /// In id, this message translates to:
+  /// **'{points} Poin lagi ke level premium'**
+  String homePointsToPremium(String points);
+
+  /// No description provided for @homeBirthdayTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Spesial Hari Ulang Tahun!'**
+  String get homeBirthdayTitle;
+
+  /// No description provided for @homeBirthdayDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Diskon potongan rambut berlaku s/d 7 hari setelah ultah.'**
+  String get homeBirthdayDescription;
+
+  /// No description provided for @homeSeePromo.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Promo'**
+  String get homeSeePromo;
+
+  /// No description provided for @homeActionBooking.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking'**
+  String get homeActionBooking;
+
+  /// No description provided for @homeActionPackage.
+  ///
+  /// In id, this message translates to:
+  /// **'Paket'**
+  String get homeActionPackage;
+
+  /// No description provided for @homeActionPromo.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo'**
+  String get homeActionPromo;
+
+  /// No description provided for @homeActionHistory.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat'**
+  String get homeActionHistory;
+
+  /// No description provided for @homeBenefitTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Benefit Barberstuff'**
+  String get homeBenefitTitle;
+
+  /// No description provided for @homeBenefitPoints.
+  ///
+  /// In id, this message translates to:
+  /// **'Poin reward setiap kali potong rambut'**
+  String get homeBenefitPoints;
+
+  /// No description provided for @homeBenefitBirthday.
+  ///
+  /// In id, this message translates to:
+  /// **'Diskon khusus dan penawaran ulang tahun'**
+  String get homeBenefitBirthday;
+
+  /// No description provided for @homeBenefitPriority.
+  ///
+  /// In id, this message translates to:
+  /// **'Prioritas jadwal tanpa antre panjang'**
+  String get homeBenefitPriority;
+
+  /// No description provided for @homeActiveBookingTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking Aktif'**
+  String get homeActiveBookingTitle;
+
+  /// No description provided for @homeBookingUpcoming.
+  ///
+  /// In id, this message translates to:
+  /// **'MENDATANG'**
+  String get homeBookingUpcoming;
+
+  /// No description provided for @homeBookingOrderId.
+  ///
+  /// In id, this message translates to:
+  /// **'Order ID #{id}'**
+  String homeBookingOrderId(String id);
+
+  /// No description provided for @homeBookingDetail.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Detail'**
+  String get homeBookingDetail;
+
+  /// No description provided for @homeBookingEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada booking aktif.'**
+  String get homeBookingEmpty;
+
+  /// No description provided for @homeNearbyTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Cabang Terdekat'**
+  String get homeNearbyTitle;
+
+  /// No description provided for @homeNearbySeeAll.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Semua'**
+  String get homeNearbySeeAll;
+
+  /// No description provided for @homeNearbyDistance.
+  ///
+  /// In id, this message translates to:
+  /// **'{distance} km'**
+  String homeNearbyDistance(String distance);
+
+  /// No description provided for @homeHistoryTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat Potongan'**
+  String get homeHistoryTitle;
+
+  /// No description provided for @homeHistorySeeAll.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Riwayat'**
+  String get homeHistorySeeAll;
+
+  /// No description provided for @homeHistoryEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada riwayat potongan.'**
+  String get homeHistoryEmpty;
+
+  /// No description provided for @navHome.
+  ///
+  /// In id, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navBooking.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking'**
+  String get navBooking;
+
+  /// No description provided for @navHistory.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat'**
+  String get navHistory;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In id, this message translates to:
+  /// **'Profil'**
+  String get navProfile;
+
+  /// No description provided for @profileTierNewbie.
+  ///
+  /// In id, this message translates to:
+  /// **'NEWBIE MEMBER'**
+  String get profileTierNewbie;
+
+  /// No description provided for @profileTierBestie.
+  ///
+  /// In id, this message translates to:
+  /// **'BESTIE MEMBER'**
+  String get profileTierBestie;
+
+  /// No description provided for @profileTierRoyal.
+  ///
+  /// In id, this message translates to:
+  /// **'ROYAL MEMBER'**
+  String get profileTierRoyal;
+
+  /// No description provided for @profileTierCrazy.
+  ///
+  /// In id, this message translates to:
+  /// **'CRAZY MEMBER'**
+  String get profileTierCrazy;
+
+  /// No description provided for @profileMenuPersonalInfo.
+  ///
+  /// In id, this message translates to:
+  /// **'Informasi Pribadi'**
+  String get profileMenuPersonalInfo;
+
+  /// No description provided for @profileMenuLanguage.
+  ///
+  /// In id, this message translates to:
+  /// **'Bahasa'**
+  String get profileMenuLanguage;
+
+  /// No description provided for @profileMenuCard.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff Card'**
+  String get profileMenuCard;
+
+  /// No description provided for @profileMenuNotification.
+  ///
+  /// In id, this message translates to:
+  /// **'Notifikasi'**
+  String get profileMenuNotification;
+
+  /// No description provided for @profileMenuHelp.
+  ///
+  /// In id, this message translates to:
+  /// **'Pusat Bantuan'**
+  String get profileMenuHelp;
+
+  /// No description provided for @profileMenuAbout.
+  ///
+  /// In id, this message translates to:
+  /// **'Tentang Aplikasi'**
+  String get profileMenuAbout;
+
+  /// No description provided for @profileMenuLogout.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar'**
+  String get profileMenuLogout;
+
+  /// No description provided for @profileLogoutTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar dari akun?'**
+  String get profileLogoutTitle;
+
+  /// No description provided for @profileLogoutMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda perlu masuk lagi untuk memakai Barberstuff.'**
+  String get profileLogoutMessage;
+
+  /// No description provided for @languagePageTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Bahasa'**
+  String get languagePageTitle;
+
+  /// No description provided for @languagePageDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Silakan pilih bahasa yang nyaman bagi Anda untuk menikmati pengalaman terbaik bersama kami.'**
+  String get languagePageDescription;
+
+  /// No description provided for @languageIndonesian.
+  ///
+  /// In id, this message translates to:
+  /// **'Bahasa Indonesia'**
+  String get languageIndonesian;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In id, this message translates to:
+  /// **'Inggris'**
+  String get languageEnglish;
+
+  /// No description provided for @languageSelectAction.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih'**
+  String get languageSelectAction;
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In id, this message translates to:
+  /// **'Batal'**
+  String get commonCancel;
+
+  /// No description provided for @cardPageTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff Card'**
+  String get cardPageTitle;
+
+  /// No description provided for @cardIdLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'ID User'**
+  String get cardIdLabel;
+
+  /// No description provided for @personalInfoTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Informasi Pribadi'**
+  String get personalInfoTitle;
+
+  /// No description provided for @personalInfoChangePhoto.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Foto Profil'**
+  String get personalInfoChangePhoto;
+
+  /// No description provided for @personalInfoPhotoFormat.
+  ///
+  /// In id, this message translates to:
+  /// **'Support Format: JPEG, PNG, JPG'**
+  String get personalInfoPhotoFormat;
+
+  /// No description provided for @personalInfoEmailLocked.
+  ///
+  /// In id, this message translates to:
+  /// **'Email dipakai untuk masuk dan tidak bisa diubah'**
+  String get personalInfoEmailLocked;
+
+  /// No description provided for @personalInfoPasswordTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Password Saya'**
+  String get personalInfoPasswordTitle;
+
+  /// No description provided for @personalInfoPasswordSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Password Saya'**
+  String get personalInfoPasswordSubtitle;
+
+  /// No description provided for @personalInfoPasswordAction.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Sekarang'**
+  String get personalInfoPasswordAction;
+
+  /// No description provided for @personalInfoSave.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Perubahan'**
+  String get personalInfoSave;
+
+  /// No description provided for @helpTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pusat Bantuan'**
+  String get helpTitle;
+
+  /// No description provided for @helpHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Butuh Bantuan? Ceritakan Masalah Anda'**
+  String get helpHeadline;
+
+  /// No description provided for @helpSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Isi formulir di bawah ini dan tim kami akan menghubungi Anda secepatnya.'**
+  String get helpSubtitle;
+
+  /// No description provided for @helpNameLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama'**
+  String get helpNameLabel;
+
+  /// No description provided for @helpProblemLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Ceritakan Masalah Anda'**
+  String get helpProblemLabel;
+
+  /// No description provided for @helpProblemHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Tulis masalah yang Anda alami'**
+  String get helpProblemHint;
+
+  /// No description provided for @helpSubmit.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim'**
+  String get helpSubmit;
+
+  /// No description provided for @aboutTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tentang Aplikasi'**
+  String get aboutTitle;
+
+  /// No description provided for @aboutLastUpdated.
+  ///
+  /// In id, this message translates to:
+  /// **'Terakhir diperbarui: {date}'**
+  String aboutLastUpdated(String date);
+
+  /// No description provided for @aboutIntro.
+  ///
+  /// In id, this message translates to:
+  /// **'Dengan mengakses atau menggunakan aplikasi Barberstuff, Anda setuju untuk terikat pada Ketentuan Penggunaan ini.'**
+  String get aboutIntro;
+
+  /// No description provided for @aboutAcceptanceTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'1. Penerimaan Ketentuan'**
+  String get aboutAcceptanceTitle;
+
+  /// No description provided for @aboutAcceptanceBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Dengan menggunakan Barberstuff, Anda menyatakan telah membaca, memahami, dan menyetujui Ketentuan Penggunaan ini.'**
+  String get aboutAcceptanceBody;
+
+  /// No description provided for @aboutEligibilityTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'2. Kelayakan'**
+  String get aboutEligibilityTitle;
+
+  /// No description provided for @aboutEligibilityBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda harus berusia minimal 17 tahun atau memiliki izin dari orang tua maupun wali untuk menggunakan Barberstuff.'**
+  String get aboutEligibilityBody;
+
+  /// No description provided for @aboutAccountTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'3. Akun Pengguna'**
+  String get aboutAccountTitle;
+
+  /// No description provided for @aboutAccountPoint1.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda bertanggung jawab menjaga kerahasiaan akun Anda'**
+  String get aboutAccountPoint1;
+
+  /// No description provided for @aboutAccountPoint2.
+  ///
+  /// In id, this message translates to:
+  /// **'Seluruh informasi yang diberikan harus akurat dan terkini'**
+  String get aboutAccountPoint2;
+
+  /// No description provided for @aboutAccountPoint3.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff tidak bertanggung jawab atas akses tidak sah yang disebabkan kelalaian pengguna'**
+  String get aboutAccountPoint3;
+
+  /// No description provided for @aboutUsageTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'4. Penggunaan Layanan'**
+  String get aboutUsageTitle;
+
+  /// No description provided for @aboutUsageIntro.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda setuju untuk tidak:'**
+  String get aboutUsageIntro;
+
+  /// No description provided for @aboutUsagePoint1.
+  ///
+  /// In id, this message translates to:
+  /// **'Menggunakan Barberstuff untuk tujuan melanggar hukum'**
+  String get aboutUsagePoint1;
+
+  /// No description provided for @aboutUsagePoint2.
+  ///
+  /// In id, this message translates to:
+  /// **'Menyalin, menyebarkan, atau mengeksploitasi konten platform tanpa izin'**
+  String get aboutUsagePoint2;
+
+  /// No description provided for @aboutUsagePoint3.
+  ///
+  /// In id, this message translates to:
+  /// **'Mengunggah konten yang melanggar hukum atau hak pihak ketiga'**
+  String get aboutUsagePoint3;
+
+  /// No description provided for @aboutIpTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'5. Hak Kekayaan Intelektual'**
+  String get aboutIpTitle;
+
+  /// No description provided for @aboutIpBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Seluruh konten, sistem, dan desain platform dimiliki oleh Barberstuff. Data dan materi yang dibuat pengguna tetap menjadi milik pengguna.'**
+  String get aboutIpBody;
+
+  /// No description provided for @aboutTerminationTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'6. Penghentian Akun'**
+  String get aboutTerminationTitle;
+
+  /// No description provided for @aboutTerminationBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff berhak menangguhkan atau menghentikan akun yang melanggar Ketentuan ini.'**
+  String get aboutTerminationBody;
+
+  /// No description provided for @aboutDisclaimerTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'7. Penafian'**
+  String get aboutDisclaimerTitle;
+
+  /// No description provided for @aboutDisclaimerBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff disediakan sebagaimana adanya dan sebagaimana tersedia, tanpa jaminan dalam bentuk apa pun.'**
+  String get aboutDisclaimerBody;
+
+  /// No description provided for @aboutChangesTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'8. Perubahan Ketentuan'**
+  String get aboutChangesTitle;
+
+  /// No description provided for @aboutChangesBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.'**
+  String get aboutChangesBody;
+
+  /// No description provided for @bookingBranchTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Cabang'**
+  String get bookingBranchTitle;
+
+  /// No description provided for @bookingBarberTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Barber'**
+  String get bookingBarberTitle;
+
+  /// No description provided for @bookingTermsHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'📋 Ketentuan Booking Barberstuff'**
+  String get bookingTermsHeadline;
+
+  /// No description provided for @bookingTermsIntro.
+  ///
+  /// In id, this message translates to:
+  /// **'Untuk memberikan pelayanan terbaik dan menjaga jadwal tetap teratur, setiap pelanggan diharapkan mengikuti ketentuan booking yang berlaku.'**
+  String get bookingTermsIntro;
+
+  /// No description provided for @bookingTermsRulesLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'💡 Aturan Booking:'**
+  String get bookingTermsRulesLabel;
+
+  /// No description provided for @bookingTermsRule1.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking dilakukan minimal 1 jam sebelum jadwal kedatangan'**
+  String get bookingTermsRule1;
+
+  /// No description provided for @bookingTermsRule2.
+  ///
+  /// In id, this message translates to:
+  /// **'Pelanggan diharapkan datang sesuai waktu yang telah dipilih'**
+  String get bookingTermsRule2;
+
+  /// No description provided for @bookingTermsRule3.
+  ///
+  /// In id, this message translates to:
+  /// **'Toleransi keterlambatan maksimal 5 menit'**
+  String get bookingTermsRule3;
+
+  /// No description provided for @bookingTermsRule4.
+  ///
+  /// In id, this message translates to:
+  /// **'Keterlambatan lebih dari 5 menit dapat menyebabkan booking dibatalkan secara otomatis'**
+  String get bookingTermsRule4;
+
+  /// No description provided for @bookingTermsOutro.
+  ///
+  /// In id, this message translates to:
+  /// **'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya!'**
+  String get bookingTermsOutro;
+
+  /// No description provided for @bookingTermsAgree.
+  ///
+  /// In id, this message translates to:
+  /// **'Saya sudah baca ketentuan'**
+  String get bookingTermsAgree;
+
+  /// No description provided for @bookingNearbyHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Barberstuff Terdekat!'**
+  String get bookingNearbyHeadline;
+
+  /// No description provided for @bookingSearchHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Ketik disini!'**
+  String get bookingSearchHint;
+
+  /// No description provided for @bookingViewStore.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Toko'**
+  String get bookingViewStore;
+
+  /// No description provided for @bookingStoreEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Cabang tidak ditemukan.'**
+  String get bookingStoreEmpty;
+
+  /// No description provided for @bookingCapsterEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada capster di cabang ini.'**
+  String get bookingCapsterEmpty;
+
+  /// No description provided for @commonContinue.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjutkan'**
+  String get commonContinue;
+
+  /// No description provided for @bookingScheduleTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Jadwal'**
+  String get bookingScheduleTitle;
+
+  /// No description provided for @bookingServiceTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Layanan'**
+  String get bookingServiceTitle;
+
+  /// No description provided for @bookingDateLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal'**
+  String get bookingDateLabel;
+
+  /// No description provided for @bookingTimeLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Jam'**
+  String get bookingTimeLabel;
+
+  /// No description provided for @bookingSingleServiceLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Jasa Satuan'**
+  String get bookingSingleServiceLabel;
+
+  /// No description provided for @bookingPackageLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Paket'**
+  String get bookingPackageLabel;
+
+  /// No description provided for @bookingServiceEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada layanan tersedia.'**
+  String get bookingServiceEmpty;
+
+  /// No description provided for @bookingSuccessTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemesanan Berhasil!'**
+  String get bookingSuccessTitle;
+
+  /// No description provided for @bookingSuccessMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemesanan Anda telah berhasil dilakukan'**
+  String get bookingSuccessMessage;
+
+  /// No description provided for @bookingSuccessReceipt.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Bukti Pesanan'**
+  String get bookingSuccessReceipt;
+
+  /// No description provided for @bookingSuccessHome.
+  ///
+  /// In id, this message translates to:
+  /// **'Beranda'**
+  String get bookingSuccessHome;
+
+  /// No description provided for @receiptTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'E-Receipt'**
+  String get receiptTitle;
+
+  /// No description provided for @receiptStore.
+  ///
+  /// In id, this message translates to:
+  /// **'Barber/Salon'**
+  String get receiptStore;
+
+  /// No description provided for @receiptAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat'**
+  String get receiptAddress;
+
+  /// No description provided for @receiptName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama'**
+  String get receiptName;
+
+  /// No description provided for @receiptPhone.
+  ///
+  /// In id, this message translates to:
+  /// **'No Telepon'**
+  String get receiptPhone;
+
+  /// No description provided for @receiptDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Tgl Booking'**
+  String get receiptDate;
+
+  /// No description provided for @receiptTime.
+  ///
+  /// In id, this message translates to:
+  /// **'Jam Booking'**
+  String get receiptTime;
+
+  /// No description provided for @receiptSpecialist.
+  ///
+  /// In id, this message translates to:
+  /// **'Specialist'**
+  String get receiptSpecialist;
+
+  /// No description provided for @receiptTotal.
+  ///
+  /// In id, this message translates to:
+  /// **'Total Harga'**
+  String get receiptTotal;
+
+  /// No description provided for @receiptDownload.
+  ///
+  /// In id, this message translates to:
+  /// **'Download E-Receipt'**
+  String get receiptDownload;
 
   /// No description provided for @comingSoonMessage.
   ///
   /// In id, this message translates to:
-  /// **'Kami masih mengerjakan fitur ini. Sementara itu, silakan gunakan fitur-fitur yang sudah tersedia. Terima kasih.'**
+  /// **'Segera hadir!'**
   String get comingSoonMessage;
+
+  /// No description provided for @commonRetry.
+  ///
+  /// In id, this message translates to:
+  /// **'Coba Lagi'**
+  String get commonRetry;
 
   /// No description provided for @commonUnderstood.
   ///
   /// In id, this message translates to:
-  /// **'Mengerti'**
+  /// **'Oke'**
   String get commonUnderstood;
+
+  /// No description provided for @commonLogout.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar'**
+  String get commonLogout;
 }
 
 class _AppLocalizationsDelegate

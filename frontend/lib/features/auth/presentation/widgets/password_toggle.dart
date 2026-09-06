@@ -1,0 +1,35 @@
+import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
+
+class PasswordToggle extends StatelessWidget {
+  const PasswordToggle({
+    super.key,
+    required this.obscured,
+    required this.onPressed,
+  });
+
+  final bool obscured;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: obscured
+          ? Image.asset(
+              AppAssets.eyeIcon,
+              width: AppField.iconSize,
+              height: AppField.iconSize,
+              filterQuality: FilterQuality.medium,
+              color: AppColor.inkFaint,
+            )
+          : const Icon(
+              Icons.visibility_outlined,
+              size: AppField.iconSize,
+              color: AppColor.inkFaint,
+            ),
+    );
+  }
+}

@@ -1,0 +1,118 @@
+import 'package:flutter/material.dart';
+
+import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/login_result.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/oauth_register_request_api.dart';
+import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
+
+class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
+  CompleteProfileProvider(
+    this._repository,
+    this._session, {
+    required this.name,
+    required this.email,
+    required this.tempToken,
+    String? imageUrl,
+  }) {
+    nameController.text = name;
+    emailController.text = email;
+    initialImageUrl = imageUrl;
+    nameController.addListener(_syncComplete);
+    phoneController.addListener(_syncComplete);
+  }
+
+  final AuthRepository _repository;
+  final AppSession _session;
+  final String name;
+  final String email;
+  final String tempToken;
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController birthDateController = TextEditingController();
+
+  DateTime? _dateOfBirth;
+  String? _gender;
+  bool _isLoading = false;
+  bool _isComplete = false;
+  ApiException? _error;
+  LoginResult? _result;
+
+  DateTime? get dateOfBirth => _dateOfBirth;
+  String? get gender => _gender;
+  bool get isLoading => _isLoading;
+  bool get isComplete => _isComplete;
+  ApiException? get error => _error;
+  LoginResult? get result => _result;
+
+  void _syncComplete() {
+    final bool next =
+        _dateOfBirth != null &&
+        _gender != null &&
+        nameController.text.trim().isNotEmpty &&
+        phoneController.text.trim().isNotEmpty;
+
+    if (_isComplete != next) {
+      _isComplete = next;
+      notifyListeners();
+    }
+  }
+
+  void setDateOfBirth(DateTime v) {
+    _dateOfBirth = v;
+    String two(int n) => n.toString().padLeft(2, '0');
+    birthDateController.text = '${two(v.day)}/${two(v.month)}/${v.year}';
+    _syncComplete();
+    notifyListeners();
+  }
+
+  void setGender(String? v) {
+    _gender = v;
+    _syncComplete();
+    notifyListeners();
+  }
+
+  Future<bool> submit() async {
+    if (!(formKey.currentState?.validate() ?? false)) return false;
+    if (_dateOfBirth == null || _gender == null) return false;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _result = await _repository.registerOauth(
+        OauthRegisterRequestApi(
+          name: nameController.text.trim(),
+          tempToken: tempToken,
+          phoneNumber: phoneController.text.trim(),
+          dateOfBirth: _dateOfBirth!,
+          gender: _gender!,
+          imageUrl: imageUrl,
+        ),
+      );
+      await _session.saveSession(_result!.accessToken);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } on ApiException catch (e) {
+      _isLoading = false;
+      _error = e;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    birthDateController.dispose();
+    super.dispose();
+  }
+}

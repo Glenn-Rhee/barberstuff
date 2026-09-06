@@ -47,8 +47,8 @@ class VerifySuccessPage extends StatelessWidget {
                 const SizedBox(height: 32),
                 BoxButton(
                   label: l10n.verifySuccessButton,
-                  onPressed: () => Navigator.of(context)
-                      .pushNamedAndRemoveUntil(
+                  onPressed: () =>
+                      Navigator.of(context).pushNamedAndRemoveUntil(
                         AppRoute.login,
                         (Route<dynamic> r) => false,
                       ),

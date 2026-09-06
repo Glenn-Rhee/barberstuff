@@ -13,6 +13,7 @@ class BoxButton extends StatefulWidget {
     this.iconPath,
     this.variant = BoxButtonVariant.filled,
     this.isLoading = false,
+    this.radius,
   });
 
   static const double minHeight = 52;
@@ -25,8 +26,9 @@ class BoxButton extends StatefulWidget {
   final String? iconPath;
   final BoxButtonVariant variant;
 
-  /// Menampilkan spinner menggantikan label, sekaligus menonaktifkan tombol.
   final bool isLoading;
+
+  final double? radius;
 
   @override
   State<BoxButton> createState() => _BoxButtonState();
@@ -39,7 +41,7 @@ class _BoxButtonState extends State<BoxButton> {
 
   bool get _isEnabled => widget.onPressed != null && !widget.isLoading;
 
-  bool get _isDisabled => widget.onPressed == null && !widget.isLoading;
+  bool get _isInactive => !_isEnabled;
 
   void _setPressed(bool value) {
     if (!_isEnabled) return;
@@ -50,16 +52,17 @@ class _BoxButtonState extends State<BoxButton> {
 
   @override
   Widget build(BuildContext context) {
-    final double radius = _isFilled ? BoxButton.minHeight / 2 : 12;
+    final double radius =
+        widget.radius ?? (_isFilled ? BoxButton.minHeight / 2 : 12);
     final Color background = _isFilled
-        ? (_isDisabled ? AppColor.disabled : AppColor.orangeLight)
+        ? (_isInactive ? AppColor.disabled : AppColor.orangeLight)
         : AppColor.surface;
     final Color foreground = _isFilled
         ? AppColor.surface
-        : (_isDisabled ? AppColor.inkFaint : AppColor.ink);
+        : (_isInactive ? AppColor.inkFaint : AppColor.ink);
 
     return Opacity(
-      opacity: _isDisabled && !_isFilled ? 0.6 : 1,
+      opacity: _isInactive && !_isFilled ? 0.6 : 1,
       child: AnimatedScale(
         scale: _pressed ? 0.97 : 1,
         duration: AppDuration.pressFeedback,
@@ -109,45 +112,30 @@ class _BoxButtonState extends State<BoxButton> {
                   horizontal: 16,
                   vertical: 12,
                 ),
-                child: widget.isLoading
-                    ? Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    if (widget.iconPath != null) ...<Widget>[
+                      Image.asset(widget.iconPath!, width: 22, height: 22),
+                      const SizedBox(width: 10),
+                    ],
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          widget.label,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: AppTextStyle.labelLarge.copyWith(
                             color: foreground,
                           ),
                         ),
-                      )
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          if (widget.iconPath != null) ...<Widget>[
-                            Image.asset(
-                              widget.iconPath!,
-                              width: 22,
-                              height: 22,
-                            ),
-                            const SizedBox(width: 10),
-                          ],
-                          Flexible(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.center,
-                              child: Text(
-                                widget.label,
-                                maxLines: 1,
-                                softWrap: false,
-                                style: AppTextStyle.labelLarge.copyWith(
-                                  color: foreground,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

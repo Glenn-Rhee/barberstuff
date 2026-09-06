@@ -12,7 +12,7 @@ class LocalController extends ChangeNotifier {
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_prefsKey);
-    if (saved != null && supported.contains(_prefsKey)) {
+    if (saved != null && supported.contains(saved)) {
       _locale = Locale(saved);
       notifyListeners();
     }

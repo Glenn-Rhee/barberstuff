@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
@@ -18,14 +19,21 @@ Future<void> showComingSoonDialog(BuildContext context) {
 
         title: Row(
           children: <Widget>[
-            Icon(Icons.hourglass_top_rounded, color: AppColor.orange, size: 22),
-            const SizedBox(width: 10),
             Expanded(
-              child: Text(l10n.comingSoonTitle, style: AppTextStyle.titleLarge),
+              child: Image.asset(
+                AppAssets.toolsMaintenance,
+                width: 50,
+                height: 50,
+                alignment: Alignment.center,
+              ),
             ),
           ],
         ),
-        content: Text(l10n.comingSoonMessage, style: AppTextStyle.bodyMedium),
+        content: Text(
+          l10n.comingSoonMessage,
+          style: AppTextStyle.headlineLarge.copyWith(),
+          textAlign: TextAlign.center,
+        ),
 
         actions: <Widget>[
           TextButton(

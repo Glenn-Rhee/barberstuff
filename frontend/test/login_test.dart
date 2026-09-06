@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/services/dio_client.dart';
+import 'package:mobile_barberstuff/core/services/google_auth_service.dart';
 import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/login_page.dart';
@@ -84,6 +85,7 @@ Future<_FakeAdapter> _pumpLogin(
       providers: <SingleChildWidget>[
         Provider<AppSession>.value(value: session),
         Provider<AuthRepository>.value(value: _repository(adapter)),
+        Provider<GoogleAuthService>(create: (_) => GoogleAuthService()),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,

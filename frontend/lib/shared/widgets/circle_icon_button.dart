@@ -30,9 +30,7 @@ class CircleIconButton extends StatelessWidget {
           child: SizedBox(
             width: size,
             height: size,
-            child: Center(
-              child: Image.asset(iconPath, width: 24, height: 24),
-            ),
+            child: Center(child: Image.asset(iconPath, width: 24, height: 24)),
           ),
         ),
       ),

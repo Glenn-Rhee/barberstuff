@@ -11,6 +11,9 @@ import 'package:mobile_barberstuff/features/auth/presentation/provider/register_
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_dropdown_field.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_picker.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_source_sheet.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/widgets/password_toggle.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
@@ -63,6 +66,7 @@ class _RegisterView extends StatelessWidget {
         AppRoute.verifyOtp,
         arguments: VerifyOtpArgs(
           userId: p.result!.id,
+          email: p.lastRequest!.email,
           registerRequest: p.lastRequest!,
         ),
       );
@@ -79,7 +83,6 @@ class _RegisterView extends StatelessWidget {
 
     return LoadingOverlay(
       isVisible: p.isLoading,
-      message: l10n.commonProcessing,
       child: Scaffold(
         backgroundColor: AppColor.surface,
         appBar: AppBar(
@@ -97,9 +100,17 @@ class _RegisterView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
+                  Center(
+                    child: AvatarPicker(
+                      imageUrl: p.imageUrl,
+                      imageFile: p.imageFile,
+                      onEdit: () => editAvatar(context, p),
+                    ),
+                  ),
+                  const SizedBox(height: _gapSection),
+
                   AppTextField(
                     hint: l10n.registerNameLabel,
-                    iconPath: AppAssets.nameIcon,
                     controller: p.nameController,
                     keyboardType: TextInputType.name,
                     validator: (String? v) =>
@@ -122,14 +133,8 @@ class _RegisterView extends StatelessWidget {
                     controller: p.passwordController,
                     obscureText: p.obscurePassword,
                     validator: validators.password,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        p.obscurePassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        size: 20,
-                        color: AppColor.inkFaint,
-                      ),
+                    suffixIcon: PasswordToggle(
+                      obscured: p.obscurePassword,
                       onPressed: p.toggleObscurePassword,
                     ),
                   ),
@@ -159,7 +164,6 @@ class _RegisterView extends StatelessWidget {
 
                   AppDropdownField<String>(
                     hint: l10n.registerGenderLabel,
-                    iconPath: AppAssets.genderIcon,
                     value: p.gender,
                     onChanged: p.setGender,
                     validator: (String? v) =>
@@ -197,7 +201,8 @@ class _RegisterView extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () =>
+                            Navigator.of(context).pushNamed(AppRoute.login),
                         behavior: HitTestBehavior.opaque,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
