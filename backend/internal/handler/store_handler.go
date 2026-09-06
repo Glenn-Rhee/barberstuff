@@ -140,7 +140,7 @@ func (h *StoreHandler) GetStores(ctx *gin.Context) {
 		return
 	}
 
-	result, err := h.service.GetStores(query)
+	result, paginationData, err := h.service.GetStores(query)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -153,6 +153,7 @@ func (h *StoreHandler) GetStores(ctx *gin.Context) {
 		Data:       result,
 		Message:    "Succes get data stores!",
 		StatusCode: http.StatusOK,
+		Meta:       &paginationData,
 	})
 }
 

@@ -16,7 +16,7 @@ import (
 
 type StoreService interface {
 	CreateNewStore(req dto.NewStoreRequest) error
-	GetStores(query dto.QueryParamsStores) ([]dto.StoreData, error)
+	GetStores(query dto.QueryParamsStores) ([]dto.StoreData, dto.ResponsePagination, error)
 	GetStore(claims lib.CustomClaims, idStore string) (dto.StoreData, error)
 	UpdateStore(req dto.UpdateStoreRequest, storeId string) error
 	DeleteStore(storeId string) error
@@ -93,7 +93,10 @@ func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
 	return nil
 }
 
-func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, error) {
+func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data toko!"
+	_, filePath, _, _ := runtime.Caller(0)
+
 	var scopes []func(*gorm.DB) *gorm.DB
 	if query.NameStore != nil {
 		q := "%"
@@ -104,17 +107,48 @@ func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, 
 		})
 	}
 
+	var page = 1
+	var limit = 20
+	var sortBy = dto.SortByName
+	var orderBy = dto.OrderAsc
+
+	if query.Page != nil {
+		page = *query.Page
+	}
+
+	if query.Limit != nil {
+		limit = *query.Limit
+	}
+
+	if query.SortBy != nil {
+		sortBy = *query.SortBy
+	}
+
+	if query.OrderBy != nil {
+		orderBy = *query.OrderBy
+	}
+
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 		return d.Where("deleted_at IS NULL")
 	})
 
-	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data toko!"
-	_, filePath, _, _ := runtime.Caller(0)
+	totalData, err := s.storeRepo.Count(scopes...)
+	if err != nil {
+		helper.Logger("Count total store repo", filePath, err)
+		return []dto.StoreData{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
 
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Order(sortBy + " " + dto.SortStore(orderBy)).
+			Offset((page - 1) * limit).
+			Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
 	stores, err := s.storeRepo.FindAll(scopes...)
 	if err != nil {
 		helper.Logger("Find all data", filePath, err)
-		return []dto.StoreData{}, errors.New(BASE_MESSAGE)
+		return []dto.StoreData{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 
 	dataStores := make([]dto.StoreData, 0, len(stores))
@@ -161,7 +195,7 @@ func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, 
 		})
 	}
 
-	return dataStores, nil
+	return dataStores, paginationData, nil
 }
 
 func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.StoreData, error) {

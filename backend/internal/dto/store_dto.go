@@ -52,6 +52,17 @@ type StoreResponse struct {
 	Capster []CapsterDataResponse `json:"capster"`
 }
 
+type SortStore string
+
+const (
+	SortByName      SortStore = "name"
+	SortByCreatedAt SortStore = "created_at"
+)
+
 type QueryParamsStores struct {
-	NameStore *string `form:"name"`
+	NameStore *string    `form:"name"`
+	Page      *int       `form:"page" binding:"omitempty,min=1"`
+	Limit     *int       `form:"limit" binding:"omitempty,min=1,max=50"`
+	SortBy    *SortStore `form:"sort_by" binding:"omitempty,oneof=name created_at"`
+	OrderBy   *OrderBy   `form:"order" binding:"omitempty,oneof=asc desc"`
 }

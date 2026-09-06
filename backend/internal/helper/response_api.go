@@ -21,5 +21,6 @@ func NewSuccessResponse[T any](ctx *gin.Context, dataResponse dto.ResponseApi[T]
 		Message:    dataResponse.Message,
 		StatusCode: dataResponse.StatusCode,
 		Status:     dto.StatusSuccess,
+		Meta:       dataResponse.Meta,
 	})
 }

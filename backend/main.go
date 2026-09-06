@@ -15,7 +15,7 @@ import (
 
 // @title           BarberStuff Backend API
 // @version         1.0
-// @description     Dokumentasi API untuk backend BarberStuff (auth, store, staff, capster, customer).
+// @description     Dokumentasi API untuk backend BarberStuff
 // @host            localhost:8080
 // @BasePath        /
 // @securityDefinitions.apikey  BearerAuth
