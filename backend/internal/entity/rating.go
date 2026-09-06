@@ -11,6 +11,7 @@ type RatingTypeEnum string
 const (
 	RatingTypeStore   RatingTypeEnum = "store"
 	RatingTypeCapster RatingTypeEnum = "capster"
+	RatingTypeStaff   RatingTypeEnum = "staff"
 )
 
 type Rating struct {
@@ -18,6 +19,7 @@ type Rating struct {
 	IDUser    uuid.UUID      `gorm:"column:id_user;not null"`
 	IDStore   *uuid.UUID     `gorm:"column:id_store"`
 	IDCapster *uuid.UUID     `gorm:"column:id_capster"`
+	IdStaff   *uuid.UUID     `gorm:"column:id_staff"`
 	Type      RatingTypeEnum `gorm:"column:type;not null"`
 	Score     int16          `gorm:"column:score;not null"`
 	Message   *string        `gorm:"column:message"`

@@ -2,6 +2,7 @@
 -- +goose StatementBegin
 
 CREATE TYPE store_status_enum AS ENUM ('open', 'close');
+CREATE TYPE store_type_enum AS ENUM ('lite', 'premium');
 
 CREATE TABLE store (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -13,8 +14,8 @@ CREATE TABLE store (
     banner_url TEXT,
     address TEXT,
     description TEXT,
+    store_type store_type_enum NOT NULL,
     status store_status_enum NOT NULL DEFAULT 'open',
-    id_rating UUID NOT NULL REFERENCES rating(id),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP
@@ -29,7 +30,6 @@ CREATE TABLE staff (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     id_store UUID REFERENCES store(id),
-    id_rating UUID NOT NULL REFERENCES rating(id),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP
@@ -47,7 +47,6 @@ CREATE TABLE capster (
     status capster_status_enum NOT NULL DEFAULT 'active', -- nonaktifkan tanpa hapus data (masih dipakai di booking/rating lama)
     image_url TEXT,
     id_store UUID NOT NULL REFERENCES store(id),
-    id_rating UUID NOT NULL REFERENCES rating(id),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP
@@ -68,4 +67,5 @@ DROP TABLE IF EXISTS capster;
 DROP TYPE IF EXISTS capster_status_enum;
 DROP TABLE IF EXISTS store;
 DROP TYPE IF EXISTS store_status_enum;
+DROP TYPE IF EXISTS store_type_enum;
 -- +goose StatementEnd

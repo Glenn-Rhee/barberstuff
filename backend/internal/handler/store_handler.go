@@ -170,7 +170,7 @@ func (h *StoreHandler) GetStore(ctx *gin.Context) {
 		return
 	}
 
-	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.StoreResponse]{
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.StoreData]{
 		Data:       result,
 		Message:    "Succes get data store!",
 		StatusCode: http.StatusOK,

@@ -17,7 +17,7 @@ import (
 type StoreService interface {
 	CreateNewStore(req dto.NewStoreRequest) error
 	GetStores(query dto.QueryParamsStores) ([]dto.StoreData, error)
-	GetStore(claims lib.CustomClaims, idStore string) (dto.StoreResponse, error)
+	GetStore(claims lib.CustomClaims, idStore string) (dto.StoreData, error)
 	UpdateStore(req dto.UpdateStoreRequest, storeId string) error
 	DeleteStore(storeId string) error
 }
@@ -82,6 +82,7 @@ func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
 		Address:     &req.Address,
 		Description: req.Description,
 		Status:      entity.StoreStatusOpen,
+		StoreType:   req.StoreType,
 	}
 
 	err = s.storeRepo.Create(&store)
@@ -118,6 +119,27 @@ func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, 
 
 	dataStores := make([]dto.StoreData, 0, len(stores))
 	for _, s := range stores {
+		var reviews []dto.Review
+		var totalRating = 0
+		var avgRating float64 = 5.0
+		for _, v := range s.Ratings {
+			totalRating += int(v.Score)
+			reviews = append(reviews, dto.Review{
+				Id:      v.ID,
+				Message: *v.Message,
+				Rating:  v.Score,
+				User: dto.CustomerResponseRating{
+					Id:          v.Customer.ID,
+					Name:        v.Customer.Name,
+					ImageUrl:    v.Customer.ImageCustomer,
+					PremiumType: v.Customer.PremiumType.Name,
+				},
+			})
+		}
+		if len(s.Ratings) > 0 {
+			avgRating = float64(totalRating) / float64(len(s.Ratings))
+		}
+
 		dataStores = append(dataStores, dto.StoreData{
 			Id:           s.ID,
 			Name:         s.Name,
@@ -129,88 +151,37 @@ func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, 
 			Address:      derefString(s.Address),
 			Status:       s.Status,
 			Description:  derefString(s.Description),
+			StoreType:    s.StoreType,
 			CreatedAt:    s.CreatedAt,
 			TotalPackage: s.TotalPackage,
 			TotalCapster: s.TotalCapster,
 			TotalService: s.TotalService,
+			Review:       reviews,
+			AvgRating:    avgRating,
 		})
 	}
 
 	return dataStores, nil
 }
 
-func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.StoreResponse, error) {
+func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.StoreData, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data toko!"
 	_, filePath, _, _ := runtime.Caller(0)
 
 	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return dto.StoreResponse{}, errors.New("Data toko cabang yang anda cari tidak ditemukan!")
+			return dto.StoreData{}, errors.New("Data toko cabang yang anda cari tidak ditemukan!")
 		}
 
 		helper.Logger("Find one data store", filePath, err)
-		return dto.StoreResponse{}, errors.New(BASE_MESSAGE)
-	}
-
-	var scopes []func(*gorm.DB) *gorm.DB
-	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Where("id_store = ?", dataStore.ID)
-	})
-
-	if claims.Role == entity.RoleCustomer {
-		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-			return d.Where("status = ?", entity.CapsterStatusActive)
-		})
-	}
-
-	var services []dto.ServiceData
-
-	dataServices, err := s.serviceRepo.FindAll(scopes...)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		helper.Logger("Find all services", filePath, err)
-		return dto.StoreResponse{}, errors.New(BASE_MESSAGE)
-	}
-
-	if err == nil {
-		for _, s := range dataServices {
-			services = append(services, dto.ServiceData{
-				Id:              s.ID,
-				Name:            s.Name,
-				Price:           s.Price,
-				DurationMinutes: s.DurationMinutes,
-				DoDont:          s.DoDont,
-				Description:     s.Description,
-				Status:          s.Status,
-			})
-		}
-	}
-
-	var packages []dto.PackageData
-	dataPackages, err := s.packageRepo.FindAll(scopes...)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		helper.Logger("Find all packages", filePath, err)
-		return dto.StoreResponse{}, errors.New(BASE_MESSAGE)
-	}
-
-	if err == nil {
-		for _, s := range dataPackages {
-			packages = append(packages, dto.PackageData{
-				Id:              s.ID,
-				Name:            s.Name,
-				Price:           s.Price,
-				DoDont:          s.DoDont,
-				DurationMinutes: s.DurationMinutes,
-				Description:     s.Description,
-				Status:          s.Status,
-			})
-		}
+		return dto.StoreData{}, errors.New(BASE_MESSAGE)
 	}
 
 	dataRatings, err := s.ratingRepo.FindAll("id_store = ?", idStore)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		helper.Logger("Find all ratings", filePath, err)
-		return dto.StoreResponse{}, errors.New(BASE_MESSAGE)
+		return dto.StoreData{}, errors.New(BASE_MESSAGE)
 	}
 
 	var avgRating float64 = 5.0
@@ -227,7 +198,7 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 					Id:          v.Customer.ID,
 					Name:        v.Customer.Name,
 					ImageUrl:    v.Customer.ImageCustomer,
-					PremiumType: v.Customer.PremiumType,
+					PremiumType: v.Customer.PremiumType.Name,
 				},
 			})
 		}
@@ -252,48 +223,12 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		TotalService: dataStore.TotalService,
 		TotalCapster: dataStore.TotalCapster,
 		TotalPackage: dataStore.TotalPackage,
+		StoreType:    dataStore.StoreType,
 		AvgRating:    avgRating,
 		Review:       reviews,
 	}
 
-	dataCapsters, err := s.capsterRepo.FindAll(scopes...)
-
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		helper.Logger("Find all data capsters", filePath, err)
-		return dto.StoreResponse{}, errors.New(BASE_MESSAGE)
-	}
-
-	var capsters []dto.CapsterDataResponse
-
-	if err == nil {
-		for _, v := range dataCapsters {
-			var totalRatings int16
-			for _, rating := range v.Ratings {
-				totalRatings += (rating.Score)
-			}
-
-			var avgRating float64 = 5.0
-
-			if len(v.Ratings) > 0 {
-				avgRating = float64(totalRatings) / float64(len(v.Ratings))
-			}
-
-			capsters = append(capsters, dto.CapsterDataResponse{
-				Id:        v.ID,
-				Name:      v.Name,
-				Status:    v.Status,
-				ImageUrl:  *v.ImageUrl,
-				AvgRating: avgRating,
-			})
-		}
-	}
-
-	return dto.StoreResponse{
-		Store:   store,
-		Service: services,
-		Package: packages,
-		Capster: capsters,
-	}, nil
+	return store, nil
 }
 
 func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) error {

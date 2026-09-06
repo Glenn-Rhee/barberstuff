@@ -27,21 +27,29 @@ type CustomerService interface {
 }
 
 type customerService struct {
-	customerRepo repository.CustomerRepository
-	authRepo     repository.AuthenticationRepository
-	db           *gorm.DB
-	client       *redis.Client
+	customerRepo    repository.CustomerRepository
+	authRepo        repository.AuthenticationRepository
+	premiumTypeRepo repository.PremiumTypeRepository
+	db              *gorm.DB
+	client          *redis.Client
 }
 
 const defaultRegisterErrMsg = "Terjadi kesalahan saat mendaftar. Silahkan coba lagi nanti!"
 const EXPIRED_OTP = 3 * time.Minute
 
-func NewCustomerService(custRepo repository.CustomerRepository, authRepo repository.AuthenticationRepository, db *gorm.DB, client *redis.Client) CustomerService {
+func NewCustomerService(
+	custRepo repository.CustomerRepository,
+	authRepo repository.AuthenticationRepository,
+	db *gorm.DB,
+	client *redis.Client,
+	ptr repository.PremiumTypeRepository,
+) CustomerService {
 	return &customerService{
-		customerRepo: custRepo,
-		authRepo:     authRepo,
-		db:           db,
-		client:       client,
+		customerRepo:    custRepo,
+		authRepo:        authRepo,
+		db:              db,
+		client:          client,
+		premiumTypeRepo: ptr,
 	}
 }
 
@@ -85,14 +93,20 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		helper.Logger("Find one auth", BASE_PATH, err)
 		return dto.AuthenticationResponse{}, errors.New(BASE_MESSAGE)
 	}
+
+	dataPremium, err := c.premiumTypeRepo.FindOne("name = ?", "silver")
+	if err != nil {
+		helper.Logger("Find premium type", BASE_PATH, err)
+		return dto.AuthenticationResponse{}, errors.New("Tterjadi kesalahan saat mencari data premium")
+	}
 	custId := uuid.New()
 	customer := &entity.Customer{
-		ID:           custId,
-		Name:         dataNewCustomer.Name,
-		PhoneNumber:  &dataNewCustomer.PhoneNumber,
-		DateOfBirth:  &dataNewCustomer.DateOfBirth,
-		Gender:       dataNewCustomer.Gender,
-		MemberPoints: 100,
+		ID:            custId,
+		Name:          dataNewCustomer.Name,
+		PhoneNumber:   &dataNewCustomer.PhoneNumber,
+		DateOfBirth:   &dataNewCustomer.DateOfBirth,
+		Gender:        dataNewCustomer.Gender,
+		IdPremiumType: dataPremium.ID,
 		ImageCustomer: dataNewCustomer.ImageUrl,
 	}
 
@@ -203,6 +217,12 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		return c.failRegister(tx, "GET EMAIL", err)
 	}
 
+	dataPremium, err := c.premiumTypeRepo.FindOne("name = ?", "silver")
+	if err != nil {
+		helper.Logger("Find premium type", BASE_PATH, err)
+		return &dto.CredentialCustomerResponse{}, errors.New("Tterjadi kesalahan saat mencari data premium")
+	}
+
 	hashedPassword, err := helper.HashPassword(dataNewCustomer.Password)
 	if err != nil {
 		return c.failRegister(tx, "GENERATE HASH PASSWORD", err)
@@ -210,12 +230,13 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 
 	custId := uuid.New()
 	customer := &entity.Customer{
-		ID:           custId,
-		Name:         dataNewCustomer.Name,
-		PhoneNumber:  &dataNewCustomer.PhoneNumber,
-		DateOfBirth:  &dataNewCustomer.DateOfBirth,
-		Gender:       dataNewCustomer.Gender,
-		MemberPoints: 100,
+		ID:            custId,
+		Name:          dataNewCustomer.Name,
+		PhoneNumber:   &dataNewCustomer.PhoneNumber,
+		DateOfBirth:   &dataNewCustomer.DateOfBirth,
+		Gender:        dataNewCustomer.Gender,
+		IdPremiumType: dataPremium.ID,
+		MemberPoints:  100,
 		ImageCustomer: dataNewCustomer.ImageUrl,
 	}
 
@@ -448,6 +469,12 @@ func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCusto
 		return dto.ProfileCustomerResponse{}, errors.New("Terdapat kesalahan saat mengambil data profile!")
 	}
 
+	dataPremium, err := c.premiumTypeRepo.FindOne("id = ?", dataCustomers.IdPremiumType)
+	if err != nil {
+		helper.Logger("Find premium type", "service/customer_service.go", err)
+		return dto.ProfileCustomerResponse{}, errors.New("Tterjadi kesalahan saat mencari data premium")
+	}
+
 	dataResult := dto.ProfileCustomerResponse{
 		Id:            dataCustomers.ID,
 		Name:          dataCustomers.Name,
@@ -455,7 +482,7 @@ func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCusto
 		DateOfBirth:   *dataCustomers.DateOfBirth,
 		Gender:        dataCustomers.Gender,
 		MemberPoints:  dataCustomers.MemberPoints,
-		PremiumType:   dataCustomers.PremiumType,
+		PremiumType:   dataPremium.Name,
 		ImageUrl:      &dataCustomers.ImageCustomer,
 		CreatedAt:     dataCustomers.CreatedAt,
 		Role:          dataCustomers.Authentication.Role,

@@ -9,7 +9,8 @@ CREATE TABLE service (
     price NUMERIC(12,2) NOT NULL DEFAULT 0,
     description TEXT,
     status product_status_enum NOT NULL DEFAULT 'active',
-    id_store UUID NOT NULL REFERENCES store(id)  ,
+    duration_minutes int,
+    id_store UUID NOT NULL REFERENCES store(id),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP

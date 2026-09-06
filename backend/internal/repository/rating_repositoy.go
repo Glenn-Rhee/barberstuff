@@ -23,7 +23,8 @@ func (r *ratingRepository) FindAll(where interface{}, args ...interface{}) ([]en
 	result := r.db.
 		Select("id", "id_user", "id_store", "score", "message", "created_at").
 		Preload("Customer", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name", "image_customer", "premium_type")
+			return db.Select("id", "name", "image_customer", "id_premium_type").
+				Preload("PremiumType")
 		}).
 		Where(where, args...).
 		Find(&dataRating)

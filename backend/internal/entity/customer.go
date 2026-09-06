@@ -7,17 +7,10 @@ import (
 )
 
 type Gender string
-type PremiumType string
 
 const (
 	GenderMale   Gender = "Male"
 	GenderFemale Gender = "Female"
-)
-const (
-	PremiumNewbie PremiumType = "newbie"
-	PremiumBestie PremiumType = "bestie"
-	PremiumRoyal  PremiumType = "royal"
-	PremiumCrazy  PremiumType = "crazy"
 )
 
 type Customer struct {
@@ -27,10 +20,11 @@ type Customer struct {
 	DateOfBirth    *time.Time     `gorm:"column:date_of_birth"`
 	Gender         Gender         `gorm:"column:gender"`
 	MemberPoints   int            `gorm:"column:member_points;not null;default:100"`
-	PremiumType    PremiumType    `gorm:"column:premium_type;default:newbie"`
+	IdPremiumType  uuid.UUID      `gorm:"column:id_premium_type;not null"`
 	ImageCustomer  string         `gorm:"column:image_customer"`
 	CreatedAt      time.Time      `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt      time.Time      `gorm:"column:updated_at;not null;autoUpdateTime"`
+	PremiumType    *PremiumType   `gorm:"foreignKey:IdPremiumType;references:ID"`
 	Authentication Authentication `gorm:"foreignKey:IDCustomer"`
 }
 

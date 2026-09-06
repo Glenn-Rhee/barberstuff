@@ -53,6 +53,15 @@ func (r *storeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.S
             (SELECT COUNT(*) FROM package WHERE package.id_store = store.id) AS total_package,
             (SELECT COUNT(*) FROM capster WHERE capster.id_store = store.id AND capster.deleted_at IS NULL) AS total_capster
         `).
+		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
+			return db.
+				Select("id", "id_store", "score", "message", "created_at", "type").
+				Where("type = ?", entity.RatingTypeStore).
+				Preload("Customer", func(db *gorm.DB) *gorm.DB {
+					return db.Select("id", "name", "image_customer", "id_premium_type").
+						Preload("PremiumType")
+				})
+		}).
 		Scopes(scopes...).
 		Find(&stores)
 

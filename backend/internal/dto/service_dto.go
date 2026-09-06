@@ -12,7 +12,6 @@ type ServiceData struct {
 	Name            string                   `json:"string"`
 	Price           decimal.Decimal          `json:"price"`
 	DurationMinutes *int                     `json:"duration_minutes"`
-	DoDont          *string                  `json:"do_dont"`
 	Description     *string                  `json:"description"`
 	Status          entity.ProductStatusEnum `json:"status"`
 }

@@ -66,22 +66,22 @@ type CustomerResponseRating struct {
 	Id          uuid.UUID          `json:"id"`
 	Name        string             `json:"name"`
 	ImageUrl    string             `json:"image_url"`
-	PremiumType entity.PremiumType `json:"premium_type"`
+	PremiumType string `json:"premium_type"`
 }
 
 type ProfileCustomerResponse struct {
-	Id            uuid.UUID          `json:"id"`
-	Name          string             `json:"name"`
-	PhoneNumber   string             `json:"phone_number"`
-	DateOfBirth   time.Time          `json:"date_of_birth"`
-	Gender        entity.Gender      `json:"gender"`
-	MemberPoints  int                `json:"member_points"`
-	PremiumType   entity.PremiumType `json:"premium_type"`
-	ImageUrl      *string            `json:"image_url"`
-	CreatedAt     time.Time          `json:"created_at"`
-	Role          entity.RoleEnum    `json:"role"`
-	Email         string             `json:"email"`
-	IsVerified    bool               `json:"is_verified"`
-	LoginType     entity.LoginType   `json:"login_type"`
-	OauthProvider string             `json:"oauth_provider"`
+	Id            uuid.UUID        `json:"id"`
+	Name          string           `json:"name"`
+	PhoneNumber   string           `json:"phone_number"`
+	DateOfBirth   time.Time        `json:"date_of_birth"`
+	Gender        entity.Gender    `json:"gender"`
+	MemberPoints  int              `json:"member_points"`
+	PremiumType   string           `json:"premium_type"`
+	ImageUrl      *string          `json:"image_url"`
+	CreatedAt     time.Time        `json:"created_at"`
+	Role          entity.RoleEnum  `json:"role"`
+	Email         string           `json:"email"`
+	IsVerified    bool             `json:"is_verified"`
+	LoginType     entity.LoginType `json:"login_type"`
+	OauthProvider string           `json:"oauth_provider"`
 }

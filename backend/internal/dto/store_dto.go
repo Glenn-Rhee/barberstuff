@@ -8,15 +8,16 @@ import (
 )
 
 type NewStoreRequest struct {
-	Name        string    `json:"name" binding:"required"`
-	Description *string   `json:"description"`
-	Address     string    `json:"address" binding:"required"`
-	BannerUrl   string    `json:"banner_url" binding:"required,url"`
-	OpenHour    time.Time `json:"open_hour" binding:"required"`
-	CloseHour   time.Time `json:"close_hour" binding:"required"`
-	Lat         float64   `json:"lat" binding:"required"`
-	Long        float64   `json:"long" binding:"required"`
-	PhoneNumber string    `json:"phone_number" binding:"required,min=9,max=15"`
+	Name        string               `json:"name" binding:"required"`
+	Description *string              `json:"description"`
+	Address     string               `json:"address" binding:"required"`
+	BannerUrl   string               `json:"banner_url" binding:"required,url"`
+	OpenHour    time.Time            `json:"open_hour" binding:"required"`
+	CloseHour   time.Time            `json:"close_hour" binding:"required"`
+	Lat         float64              `json:"lat" binding:"required"`
+	Long        float64              `json:"long" binding:"required"`
+	PhoneNumber string               `json:"phone_number" binding:"required,min=9,max=15"`
+	StoreType   entity.StoreTypeEnum `json:"store_type" binding:"required,oneof=lite premium"`
 }
 
 type UpdateStoreRequest struct {
@@ -34,6 +35,7 @@ type StoreData struct {
 	BannerUrl    string                 `json:"banner_url"`
 	Address      string                 `json:"address"`
 	Description  string                 `json:"description"`
+	StoreType    entity.StoreTypeEnum   `json:"store_type"`
 	TotalService int64                  `json:"total_service"`
 	TotalCapster int64                  `json:"total_capster"`
 	TotalPackage int64                  `json:"total_package"`

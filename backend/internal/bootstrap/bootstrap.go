@@ -30,9 +30,10 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	packageRepo := repository.NewPackageRepository(db)
 	ratingRepo := repository.NewRatingRepository(db)
 	capsterRepo := repository.NewCapsterRepository(db)
+	premiumTypeRepo := repository.NewPremiumTypeRepository(db)
 
 	// Service
-	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis)
+	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis, premiumTypeRepo)
 	authService := service.NewAuthService(authRepo, lib.ClientRedis)
 	staffService := service.NewStaffService(storeRepo, staffRepo, authRepo, db)
 	storeService := service.NewStoreService(storeRepo, serviceRepo, packageRepo, ratingRepo, capsterRepo, staffRepo)
