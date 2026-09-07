@@ -83,7 +83,7 @@ func (s *serviceService) GetServices(query dto.QueryParamsService, claims *lib.C
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Where("deleted_at IS NULL").Where("id_store = ?", idStore)
+		return d.Where("deleted_at IS NULL").Where("type = ?", query.Type).Where("id_store = ?", idStore)
 	})
 
 	totalData, err := s.serviceRepo.Count(scopes...)
