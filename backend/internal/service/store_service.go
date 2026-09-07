@@ -16,7 +16,7 @@ import (
 
 type StoreService interface {
 	CreateNewStore(req dto.NewStoreRequest) error
-	GetStores(query dto.QueryParamsStores) ([]dto.StoreData, dto.ResponsePagination, error)
+	GetStores(query dto.QueryParamsStores, claims *lib.CustomClaims) ([]dto.StoreData, dto.ResponsePagination, error)
 	GetStore(claims lib.CustomClaims, idStore string) (dto.StoreData, error)
 	UpdateStore(req dto.UpdateStoreRequest, storeId string) error
 	DeleteStore(storeId string) error
@@ -90,7 +90,7 @@ func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
 	return nil
 }
 
-func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, dto.ResponsePagination, error) {
+func (s *storeService) GetStores(query dto.QueryParamsStores, claims *lib.CustomClaims) ([]dto.StoreData, dto.ResponsePagination, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data toko!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -104,10 +104,16 @@ func (s *storeService) GetStores(query dto.QueryParamsStores) ([]dto.StoreData, 
 		})
 	}
 
+	if claims.Role == entity.RoleCustomer {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("status = ?", entity.StoreStatusOpen)
+		})
+	}
+
 	var page = 1
 	var limit = 20
 	var sortBy = dto.SortByName
-	var orderBy = dto.OrderAsc
+	var orderBy = dto.OrderAsc	
 
 	if query.Page != nil {
 		page = *query.Page

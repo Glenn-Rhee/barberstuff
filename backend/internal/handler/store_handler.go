@@ -144,7 +144,7 @@ func (h *StoreHandler) GetStores(ctx *gin.Context) {
 		return
 	}
 
-	result, paginationData, err := h.service.GetStores(query)
+	result, paginationData, err := h.service.GetStores(query, claimsResult)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
