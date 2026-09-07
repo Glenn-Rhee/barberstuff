@@ -155,6 +155,25 @@ definitions:
     required:
     - email
     type: object
+  dto.GetServiceResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      id_store:
+        type: string
+      price:
+        type: number
+      status:
+        $ref: '#/definitions/entity.ProductStatusEnum'
+      string:
+        type: string
+      type:
+        $ref: '#/definitions/entity.ProductTypeEnum'
+    type: object
   dto.NewStoreRequest:
     properties:
       address:
@@ -276,6 +295,17 @@ definitions:
     - new_password
     - reset_token
     type: object
+  dto.ResponsePagination:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+      total_data:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
   dto.Review:
     properties:
       id:
@@ -376,6 +406,7 @@ definitions:
       data: {}
       message:
         type: string
+      meta: {}
       status:
         $ref: '#/definitions/dto.StatusResponse'
       statusCode:
@@ -487,6 +518,22 @@ definitions:
     x-enum-varnames:
     - LoginWithOAuth
     - LoginWithCredential
+  entity.ProductStatusEnum:
+    enum:
+    - active
+    - inactive
+    type: string
+    x-enum-varnames:
+    - ProductStatusActive
+    - ProductStatusInactive
+  entity.ProductTypeEnum:
+    enum:
+    - service
+    - package
+    type: string
+    x-enum-varnames:
+    - TypeService
+    - TypePackage
   entity.RoleEnum:
     enum:
     - customer
@@ -817,9 +864,9 @@ paths:
   /capster:
     get:
       description: Mengambil semua data capster serta dapat melakukan filter serta
-        pagination. Hanya dapat diakses oleh admin
+        pagination. Dapat diakses oleh semua user yang telah terauthentikasi
       parameters:
-      - description: Nama toko
+      - description: Nama capster
         in: query
         name: name
         type: string
@@ -857,7 +904,11 @@ paths:
             - $ref: '#/definitions/dto.SwaggerResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.CapsterDataResponse'
+                  items:
+                    $ref: '#/definitions/dto.CapsterDataResponse'
+                  type: array
+                meta:
+                  $ref: '#/definitions/dto.ResponsePagination'
               type: object
         "400":
           description: Data tidak valid
@@ -865,6 +916,10 @@ paths:
             $ref: '#/definitions/dto.SwaggerResponse'
         "401":
           description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "424":
+          description: Gagal mengambil data
           schema:
             $ref: '#/definitions/dto.SwaggerResponse'
       security:
@@ -952,6 +1007,85 @@ paths:
       summary: Ambil profil staff
       tags:
       - Staff
+  /service:
+    get:
+      description: Mengambil semua data service serta dapat melakukan filter serta
+        pagination
+      parameters:
+      - description: Id Toko
+        in: query
+        name: id_store
+        required: true
+        type: string
+      - description: Service Type
+        enum:
+        - service
+        - package
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: Nama service
+        in: query
+        name: name
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: name
+        description: Sort By
+        enum:
+        - name
+        - created_at
+        in: query
+        name: sortBy
+        type: string
+      - default: asc
+        description: Order By
+        enum:
+        - asc
+        - desc
+        in: query
+        name: orderBy
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Succes get data services!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GetServiceResponse'
+                  type: array
+                meta:
+                  $ref: '#/definitions/dto.ResponsePagination'
+              type: object
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "424":
+          description: Gagal mengambil data
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mengambil semua data service
+      tags:
+      - Service
   /staff:
     get:
       description: Mengambil daftar akun staff, dapat difilter berdasarkan toko, nama,

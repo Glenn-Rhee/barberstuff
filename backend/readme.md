@@ -2104,6 +2104,66 @@ GET /capster
 
 ---
 
+# Service
+
+## 23. Get Data Service & Package
+
+Mengambil data service atau package berdasarkan store tertentu. Semua role dapat mengakses endpoint ini, tapi untuk role customer hanya dapat mencari service/paket yang statusnya `active`. Seperti biasa, header wajib disertakan dengan.
+
+### Endpoint
+
+```http
+GET /service
+```
+
+### Headers
+
+| Key | Required | Keterangan |
+| --- | --- | --- |
+| `Authorization` | Ya | Access token yang valid, dengan format `Bearer <token>`. |
+
+### Query Parameters
+
+| Key | Tipe Data | Required | Keterangan |
+| --- | --- | --- | --- |
+| `id_store` | String | Ya | Untuk mencari service berdasarkan store tertentu |
+| `type` | String (service, package) | Ya | Untuk mencari tip service, `service` atau `package` |
+| `name` | String | Tidak | Untuk mencari nama berdasarkan kecocokan tertentu |
+| `sort_by` | String | Tidak | Untuk mengorder berdasarkan field tertentu (name, price, created_at). default (name) |
+| `page` | int | Tidak | mengambil data di halaman tertentu. default (1) |
+| `limit` | int | Tidak | batasan pengambilan data. default (20) |
+| `order_by` | String (asc, desc) | Tidak | diurutkan ascending atau descending. default (asc) |
+
+### Response Sukses
+
+```json
+{
+    "data": [],
+    "message": "Succes get data stores!",
+    "statusCode": 200,
+    "status": "success",
+    "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_data": 0,
+        "total_pages": 0
+    }
+}
+```
+
+### Response Gagal
+
+```json
+{
+  "data": null,
+  "message": "Terjadi kesalahan.",
+  "statusCode": 400,
+  "status": "failed"
+}
+```
+
+---
+
 # API Summary
 
 | Method | Endpoint | Fungsi |
@@ -2130,3 +2190,4 @@ GET /capster
 | GET | `/profile/staff` | Mendapatkan data profil akun staff (admin/cashier/mitra) yang sedang login. |
 | POST | `/capster` | Membuat capster baru yang hanya bisa dilakukan oleh admin. |
 | GET | `/capster` | Mengambil data seluruh capster |
+| GET | `/service` | Mengambil data service atau paket |

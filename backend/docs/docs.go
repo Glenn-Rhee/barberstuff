@@ -492,7 +492,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Mengambil semua data capster serta dapat melakukan filter serta pagination. Hanya dapat diakses oleh admin",
+                "description": "Mengambil semua data capster serta dapat melakukan filter serta pagination. Dapat diakses oleh semua user yang telah terauthentikasi",
                 "produces": [
                     "application/json"
                 ],
@@ -503,7 +503,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Nama toko",
+                        "description": "Nama capster",
                         "name": "name",
                         "in": "query"
                     },
@@ -554,7 +554,13 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.CapsterDataResponse"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.CapsterDataResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.ResponsePagination"
                                         }
                                     }
                                 }
@@ -569,6 +575,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "424": {
+                        "description": "Gagal mengambil data",
                         "schema": {
                             "$ref": "#/definitions/dto.SwaggerResponse"
                         }
@@ -704,6 +716,127 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/service": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil semua data service serta dapat melakukan filter serta pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Mengambil semua data service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Id Toko",
+                        "name": "id_store",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "service",
+                            "package"
+                        ],
+                        "type": "string",
+                        "description": "Service Type",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nama service",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "name",
+                            "created_at"
+                        ],
+                        "type": "string",
+                        "default": "name",
+                        "description": "Sort By",
+                        "name": "sortBy",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "asc",
+                        "description": "Order By",
+                        "name": "orderBy",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Succes get data services!",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.GetServiceResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.ResponsePagination"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Data tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "424": {
+                        "description": "Gagal mengambil data",
                         "schema": {
                             "$ref": "#/definitions/dto.SwaggerResponse"
                         }
@@ -1486,6 +1619,35 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.GetServiceResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "id_store": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
+                    "$ref": "#/definitions/entity.ProductStatusEnum"
+                },
+                "string": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/entity.ProductTypeEnum"
+                }
+            }
+        },
         "dto.NewStoreRequest": {
             "type": "object",
             "required": [
@@ -1665,6 +1827,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ResponsePagination": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total_data": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.Review": {
             "type": "object",
             "properties": {
@@ -1813,6 +1992,7 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
+                "meta": {},
                 "status": {
                     "$ref": "#/definitions/dto.StatusResponse"
                 },
@@ -1974,6 +2154,28 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "LoginWithOAuth",
                 "LoginWithCredential"
+            ]
+        },
+        "entity.ProductStatusEnum": {
+            "type": "string",
+            "enum": [
+                "active",
+                "inactive"
+            ],
+            "x-enum-varnames": [
+                "ProductStatusActive",
+                "ProductStatusInactive"
+            ]
+        },
+        "entity.ProductTypeEnum": {
+            "type": "string",
+            "enum": [
+                "service",
+                "package"
+            ],
+            "x-enum-varnames": [
+                "TypeService",
+                "TypePackage"
             ]
         },
         "entity.RoleEnum": {

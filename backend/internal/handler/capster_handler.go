@@ -94,7 +94,7 @@ func (h *CapsterHandler) Create(ctx *gin.Context) {
 // @Param        limit   query int    false "Limit"
 // @Param        sortBy  query string false "Sort By"  Enums(name, created_at) default(name)
 // @Param        orderBy query string false "Order By" Enums(asc, desc)        default(asc)
-// @Success      200 {object} dto.SwaggerResponse{data=[]dto.CapsterDataResponse,meta=dto.PaginationData} "Succes get data capsters!"
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.CapsterDataResponse,meta=dto.ResponsePagination} "Succes get data capsters!"
 // @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
 // @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
 // @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data"

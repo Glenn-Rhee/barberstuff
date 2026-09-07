@@ -18,6 +18,24 @@ func NewServiceHandler(service service.ServiceService) *ServiceHandler {
 	return &ServiceHandler{service: service}
 }
 
+// GetServices godoc
+// @Summary      Mengambil semua data service
+// @Description  Mengambil semua data service serta dapat melakukan filter serta pagination
+// @Tags         Service
+// @Produce      json
+// @Security     BearerAuth
+// @Param		 id_store 	query string true "Id Toko"
+// @Param		 type 		query string true "Service Type" Enums(service, package)
+// @Param        name    	query string false "Nama service"
+// @Param        page    	query int    false "Page"
+// @Param        limit  	query int    false "Limit"
+// @Param        sortBy  	query string false "Sort By"  Enums(name, created_at) default(name)
+// @Param        orderBy 	query string false "Order By" Enums(asc, desc)        default(asc)
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.GetServiceResponse,meta=dto.ResponsePagination} "Succes get data services!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data"
+// @Router       /service [get]
 func (h *ServiceHandler) GetServices(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
