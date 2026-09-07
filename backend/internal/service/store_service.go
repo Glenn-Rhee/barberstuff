@@ -25,7 +25,6 @@ type StoreService interface {
 type storeService struct {
 	storeRepo   repository.StoreRepository
 	serviceRepo repository.ServiceRepository
-	packageRepo repository.PackageRepository
 	ratingRepo  repository.RatingRepository
 	capsterRepo repository.CapsterRepository
 	staffRepo   repository.StaffRepository
@@ -34,7 +33,6 @@ type storeService struct {
 func NewStoreService(
 	storeRepo repository.StoreRepository,
 	sr repository.ServiceRepository,
-	pr repository.PackageRepository,
 	rr repository.RatingRepository,
 	cr repository.CapsterRepository,
 	str repository.StaffRepository,
@@ -42,7 +40,6 @@ func NewStoreService(
 	return &storeService{
 		storeRepo:   storeRepo,
 		serviceRepo: sr,
-		packageRepo: pr,
 		ratingRepo:  rr,
 		capsterRepo: cr,
 		staffRepo:   str,

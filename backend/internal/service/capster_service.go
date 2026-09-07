@@ -4,6 +4,7 @@ import (
 	"barberstuff_backend/internal/dto"
 	"barberstuff_backend/internal/entity"
 	"barberstuff_backend/internal/helper"
+	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"errors"
 	"runtime"
@@ -14,7 +15,7 @@ import (
 
 type CapsterService interface {
 	Create(req dto.CreateCapsterRequest) error
-	GetCapsters(query dto.QueryParamsCapsters) ([]dto.CapsterDataResponse, dto.ResponsePagination, error)
+	GetCapsters(query dto.QueryParamsCapsters, claims *lib.CustomClaims) ([]dto.CapsterDataResponse, dto.ResponsePagination, error)
 }
 
 type capsterService struct {
@@ -71,7 +72,7 @@ func (s *capsterService) Create(req dto.CreateCapsterRequest) error {
 	return nil
 }
 
-func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters) ([]dto.CapsterDataResponse, dto.ResponsePagination, error) {
+func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.CustomClaims) ([]dto.CapsterDataResponse, dto.ResponsePagination, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data capster!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -91,6 +92,12 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters) ([]dto.Capst
 	}
 
 	var scopes []func(*gorm.DB) *gorm.DB
+	if claims.Role == entity.RoleCustomer {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("status = ?", entity.CapsterStatusActive)
+		})
+	}
+
 	if query.CapsterName != nil {
 		q := "%"
 		q += *query.CapsterName
@@ -159,12 +166,12 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters) ([]dto.Capst
 		}
 
 		dataCapsters = append(dataCapsters, dto.CapsterDataResponse{
-			Id: v.ID,
-			Name: v.Name,
-			Status: v.Status,
-			ImageUrl: *v.ImageUrl,
+			Id:        v.ID,
+			Name:      v.Name,
+			Status:    v.Status,
+			ImageUrl:  *v.ImageUrl,
 			AvgRating: avgRating,
-			IdStore: v.IDStore,
+			IdStore:   v.IDStore,
 			CreatedAt: v.CreatedAt,
 		})
 	}

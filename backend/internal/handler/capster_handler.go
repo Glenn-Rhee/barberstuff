@@ -100,6 +100,24 @@ func (h *CapsterHandler) Create(ctx *gin.Context) {
 // @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data"
 // @Router       /capster [get]
 func (h *CapsterHandler) GetCapsters(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
 	var query dto.QueryParamsCapsters
 	if err := ctx.ShouldBindQuery(&query); err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
@@ -109,7 +127,7 @@ func (h *CapsterHandler) GetCapsters(ctx *gin.Context) {
 		return
 	}
 
-	result, paginationData, err := h.service.GetCapsters(query)
+	result, paginationData, err := h.service.GetCapsters(query, claimsResult)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),

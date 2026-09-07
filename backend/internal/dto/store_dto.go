@@ -45,13 +45,6 @@ type StoreData struct {
 	CreatedAt    time.Time              `json:"created_at"`
 }
 
-type StoreResponse struct {
-	Store   StoreData             `json:"store"`
-	Service []ServiceData         `json:"service"`
-	Package []PackageData         `json:"package"`
-	Capster []CapsterDataResponse `json:"capster"`
-}
-
 type SortStore string
 
 const (

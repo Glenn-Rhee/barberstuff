@@ -8,6 +8,7 @@ import (
 
 type ServiceRepository interface {
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Service, error)
+	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
 
 type serviceRepository struct {
@@ -22,4 +23,10 @@ func (r *serviceRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 	var dataService []entity.Service
 	result := r.db.Scopes(scopes...).Find(&dataService)
 	return dataService, result.Error
+}
+
+func (r *serviceRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+	var total int64
+	result := r.db.Model(&entity.Service{}).Count(&total).Scopes(scopes...)
+	return total, result.Error
 }

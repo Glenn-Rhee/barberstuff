@@ -2,7 +2,7 @@ package main
 
 import (
 	"barberstuff_backend/db"
-	_ "barberstuff_backend/docs" // docs digenerate oleh swag init, wajib di-import
+	_ "barberstuff_backend/docs"
 	"barberstuff_backend/internal/bootstrap"
 	"barberstuff_backend/internal/lib"
 	"fmt"
@@ -80,6 +80,12 @@ func main() {
 		capster.Use(h.AuthMiddleware)
 		capster.POST("/", h.CapsterHandler.Create)
 		capster.GET("/", h.CapsterHandler.GetCapsters)
+	}
+
+	service := r.Group("/service")
+	{
+		service.Use(h.AuthMiddleware)
+		service.GET("/", h.Servicehandler.GetServices)
 	}
 
 	fmt.Println("Server running on http://localhost:8080")

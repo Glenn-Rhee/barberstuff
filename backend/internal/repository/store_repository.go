@@ -34,8 +34,8 @@ func (r *storeRepository) FindOne(where string, args ...interface{}) (entity.Sto
 	var dataStore entity.StoreWithTotal
 	result := r.db.
 		Select(`store.*,
-            (SELECT COUNT(*) FROM service WHERE service.id_store = store.id) AS total_service,
-            (SELECT COUNT(*) FROM package WHERE package.id_store = store.id) AS total_package,
+            (SELECT COUNT(*) FROM service WHERE service.id_store = store.id AND service.type = 'service') AS total_service,
+            (SELECT COUNT(*) FROM service WHERE service.id_store = store.id AND service.type = 'package') AS total_package,
             (SELECT COUNT(*) FROM capster WHERE capster.id_store = store.id AND capster.deleted_at IS NULL) AS total_capster
         `).
 		Where(where, args...).
@@ -50,8 +50,8 @@ func (r *storeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.S
 	result := r.db.
 		Model(&entity.Store{}).
 		Select(`store.*,
-            (SELECT COUNT(*) FROM service WHERE service.id_store = store.id) AS total_service,
-            (SELECT COUNT(*) FROM package WHERE package.id_store = store.id) AS total_package,
+            (SELECT COUNT(*) FROM service WHERE service.id_store = store.id AND service.type = 'service') AS total_service,
+            (SELECT COUNT(*) FROM service WHERE service.id_store = store.id AND service.type = 'package') AS total_package,
             (SELECT COUNT(*) FROM capster WHERE capster.id_store = store.id AND capster.deleted_at IS NULL) AS total_capster
         `).
 		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
