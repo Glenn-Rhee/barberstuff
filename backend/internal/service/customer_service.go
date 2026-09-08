@@ -36,6 +36,9 @@ type customerService struct {
 
 const defaultRegisterErrMsg = "Terjadi kesalahan saat mendaftar. Silahkan coba lagi nanti!"
 const EXPIRED_OTP = 3 * time.Minute
+const MAX_OTP_ATTEMPT = 5
+const OTP_ATTEMPT_WINDOW = EXPIRED_OTP*5 + time.Minute // 16 menit
+const OTP_BAN_DURATION = 15 * time.Minute
 
 func NewCustomerService(
 	custRepo repository.CustomerRepository,
@@ -174,12 +177,14 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 			return &dto.CredentialCustomerResponse{}, errors.New("Email ini telah terdaftar dan terverifikasi!")
 		}
 
-		allowed, err := helper.AllowAttemp(
+		allowed, err := helper.AllowResendOTP(
 			c.client,
 			ctx,
-			fmt.Sprintf("otp_resend_attempt:%v", dataAuth.IDCustomer.String()),
-			5,
-			EXPIRED_OTP,
+			dataAuth.IDCustomer.String(),
+			EXPIRED_OTP,        // FIX: cooldown = 3 menit (durasi OTP masih aktif)
+			MAX_OTP_ATTEMPT,    // 5
+			OTP_ATTEMPT_WINDOW, // FIX: window 16 menit (bukan EXPIRED_OTP lagi)
+			OTP_BAN_DURATION,   // FIX: ban 15 menit
 		)
 
 		if err != nil {
