@@ -29,7 +29,7 @@ type Promo struct {
 	DiscountType  DiscountTypeEnum `gorm:"column:discount_type;not null"`
 	DiscountValue decimal.Decimal  `gorm:"column:discount_value;not null;default:0"`
 	ExpiredAt     *time.Time       `gorm:"column:expired_at"`
-	ImagePromo    []byte           `gorm:"column:image_promo"`
+	ImagePromo    string           `gorm:"column:image_promo"`
 	CreatedAt     time.Time        `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt     time.Time        `gorm:"column:updated_at;not null;autoUpdateTime"`
 }
@@ -45,6 +45,7 @@ type PromoClaimed struct {
 	IsUsed    bool       `gorm:"column:is_used;not null;default:false"`
 	UsedAt    *time.Time `gorm:"column:used_at"`
 	CreatedAt time.Time  `gorm:"column:created_at;not null;autoCreateTime"`
+	Promo     Promo      `gorm:"foreignKey:IDPromo"`
 }
 
 func (PromoClaimed) TableName() string {

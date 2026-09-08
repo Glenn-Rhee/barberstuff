@@ -40,6 +40,8 @@ CREATE TABLE booking (
     id_user UUID NOT NULL REFERENCES customer(id),
     id_capster UUID NOT NULL REFERENCES capster(id),
     id_promo_claimed UUID REFERENCES promo_claimed(id),
+    subtotal NUMERIC(12,2) NOT NULL DEFAULT 0,
+    discount_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
     total_price NUMERIC(12,2) NOT NULL DEFAULT 0,  -- sekarang = SUM dari booking_item
     scheduled_at TIMESTAMP,
     qr_code VARCHAR(255),
@@ -71,9 +73,9 @@ CREATE INDEX idx_booking_id_capster ON booking(id_capster);
 -- +goose StatementBegin
 DROP TABLE IF EXISTS authentication;
 DROP TYPE IF EXISTS role_enum;
-DROP TABLE IF EXISTS booking_status_history;
-DROP TABLE IF EXISTS booking;
-DROP TYPE IF EXISTS booking_status_enum;
 DROP TABLE IF EXISTS booking_item;
+DROP TABLE IF EXISTS booking;
 DROP TYPE IF EXISTS booking_type;
+DROP TABLE IF EXISTS booking_status_history;
+DROP TYPE IF EXISTS booking_status_enum;
 -- +goose StatementEnd

@@ -102,6 +102,7 @@ func main() {
 	booking := r.Group("/booking")
 	{
 		booking.Use(h.AuthMiddleware)
+		booking.POST("/", h.BookingHandler.CreateBooking)
 		booking.POST("/lock", h.BookingHandler.LockBooking)
 	}
 

@@ -9,6 +9,7 @@ import (
 type BookingRepository interface {
 	FindOne(query interface{}, args ...interface{}) (entity.Booking, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Booking, error)
+	Create(tx *gorm.DB, b *entity.Booking) error
 }
 
 type bookingRepository struct {
@@ -35,4 +36,8 @@ func (r *bookingRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 		Find(&dataBooking)
 
 	return dataBooking, result.Error
+}
+
+func (r *bookingRepository) Create(tx *gorm.DB, b *entity.Booking) error {
+	return tx.Create(&b).Error
 }
