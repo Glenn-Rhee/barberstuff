@@ -8,7 +8,7 @@ import (
 
 type CapsterRepository interface {
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Capster, error)
-	FindOne(where string, args ...interface{}) (entity.Capster, error)
+	FindOne(query interface{}, args ...interface{}) (entity.Capster, error)
 	Create(c *entity.Capster) error
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
@@ -32,10 +32,10 @@ func (r *capsterRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 	return dataCapster, result.Error
 }
 
-func (r *capsterRepository) FindOne(where string, args ...interface{}) (entity.Capster, error) {
+func (r *capsterRepository) FindOne(query interface{}, args ...interface{}) (entity.Capster, error) {
 	var dataCapster entity.Capster
 	result := r.db.
-		Where(where, args...).
+		Where(query, args...).
 		Where("deleted_at IS NULL").
 		First(&dataCapster)
 
