@@ -38,7 +38,7 @@ CREATE TABLE booking (
     status_booking booking_status_enum NOT NULL DEFAULT 'booked',
     id_store UUID NOT NULL REFERENCES store(id),
     id_user UUID NOT NULL REFERENCES customer(id),
-    id_capster UUID REFERENCES capster(id) ON DELETE SET NULL,
+    id_capster UUID NOT NULL REFERENCES capster(id),
     id_promo_claimed UUID REFERENCES promo_claimed(id),
     total_price NUMERIC(12,2) NOT NULL DEFAULT 0,  -- sekarang = SUM dari booking_item
     scheduled_at TIMESTAMP,
@@ -53,8 +53,7 @@ CREATE TABLE booking_item (
     id_booking UUID NOT NULL REFERENCES booking(id),
     id_service UUID NOT NULL REFERENCES service(id),
     price NUMERIC(12,2) NOT NULL,          -- snapshot harga saat itu
-    duration_minutes INT NOT NULL,          -- snapshot durasi saat itu
-    added_on_spot BOOLEAN NOT NULL DEFAULT false,
+    added_on_spot BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -65,20 +64,6 @@ CREATE TRIGGER trg_booking_updated_at
 CREATE INDEX idx_booking_id_store ON booking(id_store);
 CREATE INDEX idx_booking_id_user ON booking(id_user);
 CREATE INDEX idx_booking_id_capster ON booking(id_capster);
-
--- history sebelumnya cuma duplikat (id_booking, id_user, created_at) tanpa
--- info baru. Diubah jadi log perubahan status booking -> ada jejak audit
--- (dari status apa ke status apa, kapan, siapa yang ubah).
-CREATE TABLE booking_status_history (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    id_booking UUID NOT NULL REFERENCES booking(id)  ,
-    old_status booking_status_enum,
-    new_status booking_status_enum NOT NULL,
-    changed_by UUID, -- id_customer atau id_staff, divalidasi di level aplikasi
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX idx_booking_status_history_id_booking ON booking_status_history(id_booking);
 
 -- +goose StatementEnd
 
