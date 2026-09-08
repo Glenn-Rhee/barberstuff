@@ -18,6 +18,7 @@ type Handlers struct {
 	StoreHandler    *handler.StoreHandler
 	CapsterHandler  *handler.CapsterHandler
 	Servicehandler  *handler.ServiceHandler
+	BookingHandler  *handler.BookingHandler
 	AuthMiddleware  gin.HandlerFunc
 }
 
@@ -31,6 +32,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	ratingRepo := repository.NewRatingRepository(db)
 	capsterRepo := repository.NewCapsterRepository(db)
 	premiumTypeRepo := repository.NewPremiumTypeRepository(db)
+	bookingRepo := repository.NewBookingRepository(db)
 
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis, premiumTypeRepo)
@@ -39,6 +41,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	storeService := service.NewStoreService(storeRepo, serviceRepo, ratingRepo, capsterRepo, staffRepo)
 	capsterService := service.NewCapsterService(capsterRepo, storeRepo)
 	serviceService := service.NewServiceService(serviceRepo, storeRepo)
+	bookingService := service.NewBookingService(bookingRepo, lib.ClientRedis, capsterRepo, storeRepo)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
@@ -47,6 +50,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	storeHandler := handler.NewStoreHandler(storeService)
 	capsterHandler := handler.NewCapsterHandler(capsterService)
 	serviceHandler := handler.NewServiceHandler(serviceService)
+	bookingHandler := handler.NewBookingHandler(bookingService)
 
 	// middleware
 	authMiddleware := middleware.AuthMiddleware(authRepo, staffRepo, customerRepo)
@@ -59,5 +63,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 		AuthMiddleware:  authMiddleware,
 		CapsterHandler:  capsterHandler,
 		Servicehandler:  serviceHandler,
+		BookingHandler:  bookingHandler,
 	}
 }

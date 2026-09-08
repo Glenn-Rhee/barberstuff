@@ -98,6 +98,12 @@ func main() {
 		service.Use(h.AuthMiddleware)
 		service.GET("/", h.Servicehandler.GetServices)
 	}
+	
+	booking := r.Group("/booking")
+	{
+		booking.Use(h.AuthMiddleware)
+		booking.POST("/lock", h.BookingHandler.LockBooking)
+	}
 
 	fmt.Println("Server running on http://localhost:8080")
 	r.Run(":8080")
