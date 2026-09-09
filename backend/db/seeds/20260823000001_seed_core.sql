@@ -3,123 +3,111 @@
 
 INSERT INTO premium_type (name) VALUES
     ('platinum'), ('gold'), ('silver');
-INSERT INTO store (
-    id,
-    name,
-    phone_number,
-    coordinate,
-    open_hour,
-    close_hour,
-    banner_url,
-    address,
-    description,
-    store_type,
-    status
-) VALUES (
-    '570e69e4-d481-4543-b729-692acafed2a2',
-    'Barberstuff Cabang Tebet',
-    '081234567890',
-    '106.813889,-6.260278',
-    '2026-08-31 09:00:00',
-    '2026-08-31 21:00:00',
-    'https://example.com/images/store-kemang-banner.jpg',
-    'Jl. Kemang Raya No. 45, Jakarta Selatan',
-    'Cabang baru di kawasan Kemang, Jakarta Selatan',
-    'lite',
-    'open'
-);
-INSERT INTO service (
-    name,
-    price,
-    description,
-    status,
-    type,
-    id_store
-) VALUES
--- 5 SERVICE
-(
-    'Haircut',
-    50000.00,
-    'Layanan potong rambut pria dengan gaya sesuai keinginan pelanggan.',
-    'active',
-    'service',
-    '570e69e4-d481-4543-b729-692acafed2a2'
-),
-(
-    'Hair Wash',
-    30000.00,
-    'Layanan keramas menggunakan shampoo dan conditioner.',
-    'active',
-    'service',
-    '570e69e4-d481-4543-b729-692acafed2a2'
-),
-(
-    'Hair Coloring',
-    150000.00,
-    'Layanan pewarnaan rambut dengan pilihan warna sesuai permintaan pelanggan.',
-    'active',
-    'service',
-    '570e69e4-d481-4543-b729-692acafed2a2'
-),
-(
-    'Hair Styling',
-    75000.00,
-    'Layanan penataan rambut untuk kebutuhan sehari-hari maupun acara khusus.',
-    'active',
-    'service',
-    '570e69e4-d481-4543-b729-692acafed2a2'
-),
-(
-    'Hair Treatment',
-    100000.00,
-    'Perawatan rambut untuk membantu menjaga kesehatan dan kelembutan rambut.',
-    'active',
-    'service',
-    '570e69e4-d481-4543-b729-692acafed2a2'
-),
-
--- 5 PACKAGE
-(
-    'Basic Grooming Package',
-    100000.00,
-    'Paket grooming dasar yang terdiri dari haircut dan hair wash.',
-    'active',
-    'package',
-    '570e69e4-d481-4543-b729-692acafed2a2'
-),
-(
-    'Premium Grooming Package',
-    200000.00,
-    'Paket grooming lengkap yang terdiri dari haircut, hair wash, dan hair treatment.',
-    'active',
-    'package',
-    '570e69e4-d481-4543-b729-692acafed2a2'
-),
-(
-    'Coloring Package',
-    200000.00,
-    'Paket pewarnaan rambut yang mencakup hair coloring dan hair treatment.',
-    'active',
-    'package',
-    '570e69e4-d481-4543-b729-692acafed2a2'
-),
-(
-    'Styling Package',
-    125000.00,
-    'Paket penataan rambut yang terdiri dari hair wash dan hair styling.',
-    'active',
-    'package',
-    '570e69e4-d481-4543-b729-692acafed2a2'
-),
-(
-    'Complete Hair Care Package',
-    300000.00,
-    'Paket perawatan rambut lengkap yang mencakup haircut, hair wash, hair coloring, dan hair treatment.',
-    'active',
-    'package',
-    '570e69e4-d481-4543-b729-692acafed2a2'
+    
+-- 1. Barberstuff Pondok Gede
+INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner_url, address, description, store_type, status)
+VALUES (
+  'Barberstuff Pondok Gede',
+  '08972314505',
+  '106.821810,-6.193125',
+  '2026-09-09T09:00:00Z',
+  '2026-09-09T22:00:00Z',
+  NULL,
+  'Jl. Jatimakmur No.49C, RT.001/RW.011, Jatimakmur, Kec. Pd. Gede, Kota Bks, Jawa Barat 17413',
+  'Toko Barberstuff cabang Pondok Gede dengan varian premium',
+  'premium',
+  'open'
 );
 
+-- 2. Barberstuff Duta Indah
+INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner_url, address, description, store_type, status)
+VALUES (
+  'Barberstuff Duta Indah',
+  '08972314505',
+  '106.9366931,-6.284902',  -- cek ulang longitude, data sumber tidak konsisten
+  '2026-09-09T10:00:00Z',
+  '2026-09-09T21:00:00Z',
+  NULL,
+  'Perumahan Duta Indah, Jatimakmur, Pondok Gede, Kota Bekasi.',
+  'Toko Barberstuff cabang Duta Indah dengan varian premium',
+  'premium',
+  'open'
+);
+
+-- 3. Barber Stuff Bali Jimbaran
+INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner_url, address, description, store_type, status)
+VALUES (
+  'Barber Stuff Bali Jimbaran',
+  '851-1933-6919',
+  NULL, -- koordinat tidak tersedia di sumber data
+  '2026-09-09T10:00:00Z',
+  '2026-09-09T21:00:00Z',
+  NULL,
+  'Jl. Rumah Sakit Unud, Jimbaran, Kec. Kuta Sel., Kabupaten Badung, Bali 80361',
+  'Toko Barberstuff cabang Bali Jimbaran dengan varian premium',
+  'premium',
+  'open'
+);
+
+-- 4. Barberstuff Tenjo
+INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner_url, address, description, store_type, status)
+VALUES (
+  'Barberstuff Tenjo',
+  '0813-1337-8900',
+  '106.5124,-6.4548',  -- cek ulang, data sumber tidak konsisten
+  '2026-09-09T10:00:00Z',
+  '2026-09-09T21:00:00Z',
+  NULL,
+  'Ruko lavender RDLV, Jl. Podomoro Tenjo No 25 Blok B',
+  'Toko barberstuff cabang Tenjo dengan varian premium',
+  'premium',
+  'open'
+);
+
+-- 5. Barberstuff Karawang
+INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner_url, address, description, store_type, status)
+VALUES (
+  'Barberstuff Karawang',
+  '0822-5882-1530',
+  NULL, -- koordinat tidak tersedia di sumber data
+  '2026-09-09T10:00:00Z',
+  '2026-09-09T21:00:00Z',
+  NULL,
+  'Ruko, Jl. Court Yard Blok C VIIA No.15, Puseurjaya, Telukjambe Timur, Karawang,',
+  'Toko Barberstuff cabang Karawang dengan varian premium',
+  'premium',
+  'open'
+);
+
+-- 6. Barberstuff Pangkalpinang
+INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner_url, address, description, store_type, status)
+VALUES (
+  'Barberstuff Pangkalpinang',
+  '082210027055',
+  NULL, -- koordinat tidak tersedia di sumber data
+  '2026-09-09T10:00:00Z',
+  '2026-09-09T21:00:00Z',
+  NULL,
+  'Jl. Jendral Sudirman, Klenteng Pasar BTC, Pangkalpinang',
+  'Toko Barberstuff cabang Pangkalpinang dengan varian premium',
+  'premium',
+  'open'
+);
+
+-- 7. Barberstuff Martapura
+INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner_url, address, description, store_type, status)
+VALUES (
+  'Barberstuff Martapura',
+  '082319341073',
+  NULL, -- koordinat tidak tersedia di sumber data
+  '2026-09-09T10:00:00Z',
+  '2026-09-09T21:00:00Z',
+  NULL,
+  'Jl. A. Yani Km.40, Cindai Alus, Kota Martapura, Kabupaten Banjar, Kalsel.',
+  'Toko Barberstuff cabang Martapura dengan varian premium',
+  'premium',
+  'open'
+);
 -- +goose StatementEnd
 
 -- +goose Down
