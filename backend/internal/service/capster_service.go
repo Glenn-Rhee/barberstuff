@@ -165,11 +165,16 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.
 			avgRating = float64(totalRating) / float64(len(v.Ratings))
 		}
 
+		imgUrl := ""
+		if v.ImageUrl != nil {
+			imgUrl = *v.ImageUrl
+		}
+
 		dataCapsters = append(dataCapsters, dto.CapsterDataResponse{
 			Id:        v.ID,
 			Name:      v.Name,
 			Status:    v.Status,
-			ImageUrl:  *v.ImageUrl,
+			ImageUrl:  imgUrl,
 			AvgRating: avgRating,
 			IdStore:   v.IDStore,
 			CreatedAt: v.CreatedAt,
