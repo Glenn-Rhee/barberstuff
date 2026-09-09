@@ -478,6 +478,120 @@
                 }
             }
         },
+        "/booking": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Membuat booking baru untuk service, capster, dan toko tertentu, mengembalikan detail booking beserta QR code. Hanya dapat diakses oleh customer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Buat booking baru",
+                "parameters": [
+                    {
+                        "description": "Data booking yang akan dibuat",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateBookingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membuat booking!",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CreateBookingResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Data tidak valid / gagal membuat booking",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking/lock": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengunci slot booking (capster, toko, dan tanggal tertentu) agar tidak bisa dipesan customer lain untuk sementara waktu. Hanya dapat diakses oleh customer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Kunci slot booking",
+                "parameters": [
+                    {
+                        "description": "Data booking yang akan dikunci",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LockBookingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil Lock booking!",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Data tidak valid / gagal lock booking",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/capster": {
             "get": {
                 "security": [
@@ -1485,6 +1599,64 @@
                 }
             }
         },
+        "dto.CreateBookingRequest": {
+            "type": "object",
+            "required": [
+                "booking_date",
+                "id_capster",
+                "id_service",
+                "id_store"
+            ],
+            "properties": {
+                "booking_date": {
+                    "type": "string"
+                },
+                "id_capster": {
+                    "type": "string"
+                },
+                "id_promo_claimed": {
+                    "type": "string"
+                },
+                "id_service": {
+                    "type": "string"
+                },
+                "id_store": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateBookingResponse": {
+            "type": "object",
+            "properties": {
+                "app_service_fee": {
+                    "type": "integer"
+                },
+                "booking_date": {
+                    "type": "string"
+                },
+                "capster": {
+                    "$ref": "#/definitions/dto.DataCapsterBooking"
+                },
+                "id_booking": {
+                    "type": "string"
+                },
+                "qr_code": {
+                    "type": "string"
+                },
+                "service": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.DataServiceBooking"
+                    }
+                },
+                "store": {
+                    "$ref": "#/definitions/dto.DataStoreBooking"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
         "dto.CreateCapsterRequest": {
             "type": "object",
             "required": [
@@ -1593,6 +1765,48 @@
                 }
             }
         },
+        "dto.DataCapsterBooking": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DataServiceBooking": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.DataStoreBooking": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ForgotPassswordResponse": {
             "type": "object",
             "properties": {
@@ -1638,6 +1852,25 @@
                 },
                 "type": {
                     "$ref": "#/definitions/entity.ProductTypeEnum"
+                }
+            }
+        },
+        "dto.LockBookingRequest": {
+            "type": "object",
+            "required": [
+                "booking_date",
+                "id_capster",
+                "id_store"
+            ],
+            "properties": {
+                "booking_date": {
+                    "type": "string"
+                },
+                "id_capster": {
+                    "type": "string"
+                },
+                "id_store": {
+                    "type": "string"
                 }
             }
         },

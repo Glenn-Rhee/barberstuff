@@ -70,6 +70,45 @@ definitions:
     - name
     - role
     type: object
+  dto.CreateBookingRequest:
+    properties:
+      booking_date:
+        type: string
+      id_capster:
+        type: string
+      id_promo_claimed:
+        type: string
+      id_service:
+        type: string
+      id_store:
+        type: string
+    required:
+    - booking_date
+    - id_capster
+    - id_service
+    - id_store
+    type: object
+  dto.CreateBookingResponse:
+    properties:
+      app_service_fee:
+        type: integer
+      booking_date:
+        type: string
+      capster:
+        $ref: '#/definitions/dto.DataCapsterBooking'
+      id_booking:
+        type: string
+      qr_code:
+        type: string
+      service:
+        items:
+          $ref: '#/definitions/dto.DataServiceBooking'
+        type: array
+      store:
+        $ref: '#/definitions/dto.DataStoreBooking'
+      total_price:
+        type: number
+    type: object
   dto.CreateCapsterRequest:
     properties:
       id_store:
@@ -143,6 +182,33 @@ definitions:
       premium_type:
         type: string
     type: object
+  dto.DataCapsterBooking:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.DataServiceBooking:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+    type: object
+  dto.DataStoreBooking:
+    properties:
+      address:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
   dto.ForgotPassswordResponse:
     properties:
       user_id:
@@ -173,6 +239,19 @@ definitions:
         type: string
       type:
         $ref: '#/definitions/entity.ProductTypeEnum'
+    type: object
+  dto.LockBookingRequest:
+    properties:
+      booking_date:
+        type: string
+      id_capster:
+        type: string
+      id_store:
+        type: string
+    required:
+    - booking_date
+    - id_capster
+    - id_store
     type: object
   dto.NewStoreRequest:
     properties:
@@ -861,6 +940,78 @@ paths:
       summary: Verifikasi OTP registrasi
       tags:
       - Customer
+  /booking:
+    post:
+      consumes:
+      - application/json
+      description: Membuat booking baru untuk service, capster, dan toko tertentu,
+        mengembalikan detail booking beserta QR code. Hanya dapat diakses oleh customer
+      parameters:
+      - description: Data booking yang akan dibuat
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat booking!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CreateBookingResponse'
+              type: object
+        "400":
+          description: Data tidak valid / gagal membuat booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Buat booking baru
+      tags:
+      - Booking
+  /booking/lock:
+    post:
+      consumes:
+      - application/json
+      description: Mengunci slot booking (capster, toko, dan tanggal tertentu) agar
+        tidak bisa dipesan customer lain untuk sementara waktu. Hanya dapat diakses
+        oleh customer
+      parameters:
+      - description: Data booking yang akan dikunci
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LockBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil Lock booking!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid / gagal lock booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Kunci slot booking
+      tags:
+      - Booking
   /capster:
     get:
       description: Mengambil semua data capster serta dapat melakukan filter serta

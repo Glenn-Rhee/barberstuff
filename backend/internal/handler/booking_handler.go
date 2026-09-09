@@ -19,6 +19,18 @@ func NewBookingHandler(s service.BookingService) *BookingHandler {
 	return &BookingHandler{service: s}
 }
 
+// LockBooking godoc
+// @Summary      Kunci slot booking
+// @Description  Mengunci slot booking (capster, toko, dan tanggal tertentu) agar tidak bisa dipesan customer lain untuk sementara waktu. Hanya dapat diakses oleh customer
+// @Tags         Booking
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.LockBookingRequest true "Data booking yang akan dikunci"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil Lock booking!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid / gagal lock booking"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /booking/lock [post]
 func (h *BookingHandler) LockBooking(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -71,6 +83,18 @@ func (h *BookingHandler) LockBooking(ctx *gin.Context) {
 	})
 }
 
+// CreateBooking godoc
+// @Summary      Buat booking baru
+// @Description  Membuat booking baru untuk service, capster, dan toko tertentu, mengembalikan detail booking beserta QR code. Hanya dapat diakses oleh customer
+// @Tags         Booking
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.CreateBookingRequest true "Data booking yang akan dibuat"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.CreateBookingResponse} "Berhasil membuat booking!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid / gagal membuat booking"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /booking [post]
 func (h *BookingHandler) CreateBooking(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
