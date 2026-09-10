@@ -12,7 +12,7 @@ VALUES (
   '106.821810,-6.193125',
   '2026-09-09T09:00:00Z',
   '2026-09-09T22:00:00Z',
-  NULL,
+  'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8R3HIsTc9dSjia278LrRoyIYcz9tkvHBPJOmVl',
   'Jl. Jatimakmur No.49C, RT.001/RW.011, Jatimakmur, Kec. Pd. Gede, Kota Bks, Jawa Barat 17413',
   'Toko Barberstuff cabang Pondok Gede dengan varian premium',
   'premium',
@@ -27,7 +27,7 @@ VALUES (
   '106.9366931,-6.284902',  -- cek ulang longitude, data sumber tidak konsisten
   '2026-09-09T10:00:00Z',
   '2026-09-09T21:00:00Z',
-  NULL,
+  'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RAjoAmLjMuZ7xYEWTwVi20bnzlShfoeUL3Nr8',
   'Perumahan Duta Indah, Jatimakmur, Pondok Gede, Kota Bekasi.',
   'Toko Barberstuff cabang Duta Indah dengan varian premium',
   'premium',
@@ -57,7 +57,7 @@ VALUES (
   '106.5124,-6.4548',  -- cek ulang, data sumber tidak konsisten
   '2026-09-09T10:00:00Z',
   '2026-09-09T21:00:00Z',
-  NULL,
+  'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RvAG0zX9FSf2aVsD3IYTmUrQC9cbWtBMKnpRi',
   'Ruko lavender RDLV, Jl. Podomoro Tenjo No 25 Blok B',
   'Toko barberstuff cabang Tenjo dengan varian premium',
   'premium',
@@ -102,7 +102,7 @@ VALUES (
   NULL, -- koordinat tidak tersedia di sumber data
   '2026-09-09T10:00:00Z',
   '2026-09-09T21:00:00Z',
-  NULL,
+  'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RgqQtt4tBVXYvBmMLx0no87ikFy6W1aSeDRHr',
   'Jl. A. Yani Km.40, Cindai Alus, Kota Martapura, Kabupaten Banjar, Kalsel.',
   'Toko Barberstuff cabang Martapura dengan varian premium',
   'premium',
