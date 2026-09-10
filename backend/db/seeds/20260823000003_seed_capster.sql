@@ -12,25 +12,25 @@
 
 -- +goose Up
 -- +goose StatementBegin
-INSERT INTO capster (name, id_store)
+INSERT INTO capster (name, id_store, image_url)
 SELECT
     v.name,
-    s.id
+    s.id,
+    v.image_url
 FROM (VALUES
-  ('Ariel Capster', 'Barberstuff Pondok Gede'),
-  ('Yanto Safutra Capster', 'Barberstuff Duta Indah'),
-  ('Farhan Capster', 'Barberstuff Duta Indah'),
-  ('Mualim Capster', 'Barberstuff Tenjo'),
-  ('Zakaria Capster', 'Barberstuff Tenjo'),
-  ('Nopri Capster', 'Barberstuff Pangkalpinang'),
-  ('Arief Capster', 'Barberstuff Pangkalpinang'),
-  ('Rahul Capster', 'Barberstuff Pangkalpinang'),
-  ('Rihad Capster', 'Barberstuff Pondok Gede'),
-  ('Deni Capster', 'Barberstuff Pondok Gede'),
-  ('Abdul Capster', 'Barberstuff Pondok Gede'),
-  ('Madun Capster', 'Barberstuff Pondok Gede'),
-  ('Semman Capster', 'Barberstuff Pondok Gede')
-) AS v(name, store_name)
+  ('Yanto Safutra Capster', 'Barberstuff Duta Indah', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8Rzbw7NpjUvgi23mxs4nX7pOWq0VjYfaB5dL8t'),
+  ('Farhan Capster', 'Barberstuff Duta Indah', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8R77A7uZNCDBwayItUrTSZ5Qh2iOzEWGfomKA6'),
+  ('Mualim Capster', 'Barberstuff Tenjo', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RKOWWq83gFHfdOAWoPBE2Vx59TGzw8ulqQbSa'),
+  ('Zakaria Capster', 'Barberstuff Tenjo', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8Rhz229DTznMEN8Wd4QVKgkTsSXARbFxmOvaPH'),
+  ('Nopri Capster', 'Barberstuff Pangkalpinang', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8Rgg6HsbBVXYvBmMLx0no87ikFy6W1aSeDRHrC'),
+  ('Arief Capster', 'Barberstuff Pangkalpinang', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8R402Z6AWiN5t1ZMCpsHu4LmzXFhrfyUIJWg0B'),
+  ('Rahul Capster', 'Barberstuff Pangkalpinang', NULL),
+  ('Rihad Capster', 'Barberstuff Pondok Gede', NULL),
+  ('Deni Capster', 'Barberstuff Pondok Gede', NULL),
+  ('Abdul Capster', 'Barberstuff Martapura', NULL),
+  ('Madun Capster', 'Barberstuff Karawang', NULL),
+  ('Semman Capster', 'Barberstuff Martapura', NULL)
+) AS v(name, store_name, image_url)
 JOIN store s
     ON LOWER(TRIM(s.name)) = LOWER(TRIM(v.store_name))
    AND s.deleted_at IS NULL;
