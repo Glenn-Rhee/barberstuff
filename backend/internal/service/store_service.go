@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"runtime"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -65,6 +66,11 @@ func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		helper.Logger("Find data store", filePath, err)
 		return errors.New(BASE_MESSAGE)
+	}
+
+	_, err = time.LoadLocation(string(req.Timezone))
+	if err != nil {
+		return errors.New("Timezone tidak valid!")
 	}
 
 	coordinate := fmt.Sprintf("%f,%f", req.Lat, req.Long)
