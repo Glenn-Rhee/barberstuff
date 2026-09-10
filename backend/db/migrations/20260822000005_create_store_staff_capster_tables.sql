@@ -3,6 +3,7 @@
 
 CREATE TYPE store_status_enum AS ENUM ('open', 'close');
 CREATE TYPE store_type_enum AS ENUM ('lite', 'premium');
+CREATE TYPE store_timezone_enum AS ENUM('Asia/Jakarta', 'Asia/Makassar', 'Asia/Jayapura');
 
 CREATE TABLE store (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -16,6 +17,7 @@ CREATE TABLE store (
     description TEXT,
     store_type store_type_enum NOT NULL,
     status store_status_enum NOT NULL DEFAULT 'open',
+    timezone store_timezone_enum NOT NULL DEFAULT 'Asia/Jakarta',
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP
@@ -68,4 +70,5 @@ DROP TYPE IF EXISTS capster_status_enum;
 DROP TABLE IF EXISTS store;
 DROP TYPE IF EXISTS store_status_enum;
 DROP TYPE IF EXISTS store_type_enum;
+DROP TYPE IF EXISTS store_timezone_enum;
 -- +goose StatementEnd
