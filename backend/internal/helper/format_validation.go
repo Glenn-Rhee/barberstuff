@@ -13,6 +13,7 @@ func FormatValidationError(err error) []string {
 
 	validationErrors, ok := err.(validator.ValidationErrors)
 	if !ok {
+		Logger("validation error", "format_validation.go", validationErrors)
 		// error bukan dari validator (misal JSON malformed)
 		return []string{"Format data tidak valid"}
 	}

@@ -22,6 +22,7 @@ import (
 type BookingService interface {
 	LockBooking(req dto.LockBookingRequest, claims *lib.CustomClaims, ctx context.Context) error
 	CreateBooking(ctx context.Context, claims *lib.CustomClaims, req dto.CreateBookingRequest) (dto.CreateBookingResponse, error)
+	GetBookingStore(ctx context.Context, claims *lib.CustomClaims, reqParams dto.GetBookingStoreRequest) (dto.GetBookingStoreResponse, error)
 }
 
 type bookingService struct {
@@ -58,8 +59,36 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat booking"
 	_, filePath, _, _ := runtime.Caller(0)
 
-	now := time.Now()
-	scheduledAt := req.BookingDate
+	idStore, err := uuid.Parse(req.IdStore)
+	if err != nil {
+		return errors.New("Toko tidak valid")
+	}
+
+	idCapster, err := uuid.Parse(req.IdCapster)
+	if err != nil {
+		return errors.New("Id capster tidak valid!")
+	}
+
+	// FIX: dataStore dipindah ke atas, karena Timezone-nya dibutuhkan sebelum pengecekan waktu
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Toko tidak ditemukan atau telah dihapus!")
+		}
+
+		helper.Logger("find one store", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	// FIX: load lokasi toko dari dataStore.Timezone
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load timezone", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	now := time.Now().In(loc)              // FIX: convert ke lokasi toko
+	scheduledAt := req.BookingDate.In(loc) // FIX: convert ke lokasi toko
 
 	if scheduledAt.Before(now) {
 		return errors.New("Tanggal dan jam booking tidak boleh kurang dari waktu sekarang.")
@@ -75,17 +104,7 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New("User tidak valid!")
 	}
 
-	idStore, err := uuid.Parse(req.IdStore)
-	if err != nil {
-		return errors.New("Toko tidak valid")
-	}
-
-	idCapster, err := uuid.Parse(req.IdCapster)
-	if err != nil {
-		return errors.New("Id capster tidak valid!")
-	}
-
-	_, err = s.capsterRepo.FindOne(&entity.Capster{ID: idCapster, Status: entity.CapsterStatusActive})
+	dataCapster, err := s.capsterRepo.FindOne(&entity.Capster{ID: idCapster, Status: entity.CapsterStatusActive})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Capster tidak ditemukan atau telah dihapus!")
@@ -95,8 +114,10 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New(BASE_MESSAGE)
 	}
 
-	// FIX: status yang dicek untuk "user masih punya booking aktif" adalah Booked & Progress
-	// (sebelumnya pakai nama status lama Completed/Canceled yang tidak sesuai 4 status: booked, progress, done, cancel)
+	if dataCapster.IDStore != idStore {
+		return errors.New("Capster ini bukan merupakan bagian dari toko yang anda pilih!")
+	}
+
 	_, err = s.bookingRepo.FindOne(
 		"id_user = ? AND status_booking IN ?",
 		userId,
@@ -112,21 +133,10 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New(BASE_MESSAGE)
 	}
 
-	dateSchedule := scheduledAt.Format("2006-01-02")
-	timeSchedule := scheduledAt.Format("15:04")
+	dateSchedule := scheduledAt.Format("2006-01-02") // sudah otomatis benar karena scheduledAt sudah di-convert
+	timeSchedule := scheduledAt.Format("15:04")      // sudah otomatis benar karena scheduledAt sudah di-convert
 
-	// Cek apakah jam yang di schedulekan itu berada di rentang store open dan store close
-	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("Toko tidak ditemukan atau telah dihapus!")
-		}
-
-		helper.Logger("find one store", filePath, err)
-		return errors.New(BASE_MESSAGE)
-	}
-
-	slots := helper.GenerateAvailableSlots(req.BookingDate, dataStore.OpenHour, dataStore.CloseHour)
+	slots := helper.GenerateAvailableSlots(req.BookingDate, dataStore.OpenHour, dataStore.CloseHour, loc) // FIX: tambah parameter loc
 	var isMatchWithSlotTime = false
 	for _, v := range slots {
 		timeSlot := v.Format("15:04")
@@ -140,7 +150,6 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New("Jam booking tidak sesuai dengan jam tersedia.")
 	}
 
-	// Cek apakah user sudah lock booking
 	userLockKey := fmt.Sprintf("user_lock:%v", userId)
 	existingLock, err := s.client.Get(ctx, userLockKey).Result()
 	if err == nil && existingLock != "" {
@@ -152,14 +161,11 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New(BASE_MESSAGE)
 	}
 
-	// FIX: Cek 1 — sekarang filter berdasarkan scheduled_at (jam yang sama persis)
-	// Sebelumnya tidak ada filter tanggal sama sekali, jadi menarik SEMUA booking ongoing
-	// di toko itu tanpa peduli tanggal/jam, yang menyebabkan false positive.
 	var scopeTime []func(*gorm.DB) *gorm.DB
 	scopeTime = append(scopeTime, func(d *gorm.DB) *gorm.DB {
 		return d.
 			Where("id_store = ?", req.IdStore).
-			Where("scheduled_at = ?", req.BookingDate).
+			Where("scheduled_at = ?", scheduledAt). // FIX: pakai scheduledAt yang sudah di-convert
 			Where("status_booking IN ?", []entity.BookingStatusEnum{
 				entity.BookingStatusBooked,
 				entity.BookingStatusProgress,
@@ -172,9 +178,6 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New(BASE_MESSAGE)
 	}
 
-	// FIX: Cek 2 — baru, terpisah dari Cek 1. Menangkap kasus capster masih `progress`
-	// dari booking SEBELUMNYA yang telat (beda jam), TANPA filter tanggal.
-	// Hanya status `progress` yang dicek di sini (bukan `booked`), supaya tidak salah
 	var scopeCapster []func(*gorm.DB) *gorm.DB
 	scopeCapster = append(scopeCapster, func(d *gorm.DB) *gorm.DB {
 		return d.
@@ -188,8 +191,6 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New(BASE_MESSAGE)
 	}
 
-	// FIX: cek kapasitas capster sekarang berdasarkan dataBookedTime (jam yang sama),
-	// bukan dataBookedes lama yang tidak difilter tanggal.
 	if len(dataBookedTime) > 0 {
 		var scopes []func(*gorm.DB) *gorm.DB
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
@@ -209,13 +210,11 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		}
 	}
 
-	// FIX: hapus break di tengah loop supaya kedua kondisi dicek independen,
-	// tidak saling menghentikan satu sama lain sebelum semua baris selesai dicek.
 	var isTimeAvailable = true
 	var isCapsterAvailable = true
 
 	for _, v := range dataBookedTime {
-		if v.ScheduledAt.Equal(req.BookingDate) {
+		if v.ScheduledAt.In(loc).Equal(scheduledAt) { // FIX: convert v.ScheduledAt ke loc sebelum compare
 			isTimeAvailable = false
 		}
 		if v.IDCapster == idCapster {
@@ -223,7 +222,6 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		}
 	}
 
-	// FIX: tambahan pengecekan dari Cek 2 — capster masih progress dari booking lain
 	if len(dataBookedCapster) > 0 {
 		isCapsterAvailable = false
 	}
@@ -236,7 +234,6 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New("Capster ini sedang tidak tersedia.")
 	}
 
-	// Lock booking selama 5 menit
 	bookingLockKey := fmt.Sprintf("lock:%v:%v:%v:%v", req.IdStore, dateSchedule, timeSchedule, req.IdCapster)
 	ok, err := s.client.SetNX(ctx, bookingLockKey, userId.String(), 5*time.Minute).Result()
 	if err != nil {
@@ -262,8 +259,36 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat booking. Coba lagi nanti!"
 	_, filePath, _, _ := runtime.Caller(0)
 
-	now := time.Now()
-	scheduledAt := req.BookingDate
+	idStore, err := uuid.Parse(req.IdStore)
+	if err != nil {
+		return dto.CreateBookingResponse{}, errors.New("Toko tidak valid")
+	}
+
+	idCapster, err := uuid.Parse(req.IdCapster)
+	if err != nil {
+		return dto.CreateBookingResponse{}, errors.New("Id capster tidak valid!")
+	}
+
+	// FIX: dataStore dipindah ke atas, karena Timezone-nya dibutuhkan sebelum pengecekan waktu
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.CreateBookingResponse{}, errors.New("Toko tidak ditemukan atau telah dihapus!")
+		}
+
+		helper.Logger("find one store", filePath, err)
+		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	// FIX: load lokasi toko dari dataStore.Timezone
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load timezone", filePath, err)
+		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	now := time.Now().In(loc)              // FIX: convert ke lokasi toko
+	scheduledAt := req.BookingDate.In(loc) // FIX: convert ke lokasi toko
 	dateSchedule := scheduledAt.Format("2006-01-02")
 	timeSchedule := scheduledAt.Format("15:04")
 
@@ -312,16 +337,6 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New("Booking minimal 30 menit dari sekarang.")
 	}
 
-	idStore, err := uuid.Parse(req.IdStore)
-	if err != nil {
-		return dto.CreateBookingResponse{}, errors.New("Toko tidak valid")
-	}
-
-	idCapster, err := uuid.Parse(req.IdCapster)
-	if err != nil {
-		return dto.CreateBookingResponse{}, errors.New("Id capster tidak valid!")
-	}
-
 	dataCapster, err := s.capsterRepo.FindOne(&entity.Capster{ID: idCapster, Status: entity.CapsterStatusActive})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -330,6 +345,10 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 
 		helper.Logger("find one store", filePath, err)
 		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	if dataCapster.IDStore != idStore {
+		return dto.CreateBookingResponse{}, errors.New("Capster ini bukan merupakan bagian dari toko yang anda pilih!")
 	}
 
 	_, err = s.bookingRepo.FindOne(
@@ -347,18 +366,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
 	}
 
-	// Cek apakah jam yang di schedulekan itu berada di rentang store open dan store close
-	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return dto.CreateBookingResponse{}, errors.New("Toko tidak ditemukan atau telah dihapus!")
-		}
-
-		helper.Logger("find one store", filePath, err)
-		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
-	}
-
-	slots := helper.GenerateAvailableSlots(req.BookingDate, dataStore.OpenHour, dataStore.CloseHour)
+	slots := helper.GenerateAvailableSlots(req.BookingDate, dataStore.OpenHour, dataStore.CloseHour, loc) // FIX: tambah parameter loc
 	var isMatchWithSlotTime = false
 	for _, v := range slots {
 		timeSlot := v.Format("15:04")
@@ -372,14 +380,11 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New("Jam booking tidak sesuai dengan jam tersedia.")
 	}
 
-	// FIX: Cek 1 — sekarang filter berdasarkan scheduled_at (jam yang sama persis)
-	// Sebelumnya tidak ada filter tanggal sama sekali, jadi menarik SEMUA booking ongoing
-	// di toko itu tanpa peduli tanggal/jam, yang menyebabkan false positive.
 	var scopeTime []func(*gorm.DB) *gorm.DB
 	scopeTime = append(scopeTime, func(d *gorm.DB) *gorm.DB {
 		return d.
 			Where("id_store = ?", req.IdStore).
-			Where("scheduled_at = ?", req.BookingDate).
+			Where("scheduled_at = ?", scheduledAt). // FIX: pakai scheduledAt yang sudah di-convert
 			Where("status_booking IN ?", []entity.BookingStatusEnum{
 				entity.BookingStatusBooked,
 				entity.BookingStatusProgress,
@@ -405,8 +410,6 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
 	}
 
-	// FIX: cek kapasitas capster sekarang berdasarkan dataBookedTime (jam yang sama),
-	// bukan dataBookedes lama yang tidak difilter tanggal.
 	if len(dataBookedTime) > 0 {
 		var scopes []func(*gorm.DB) *gorm.DB
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
@@ -426,13 +429,11 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		}
 	}
 
-	// FIX: hapus break di tengah loop supaya kedua kondisi dicek independen,
-	// tidak saling menghentikan satu sama lain sebelum semua baris selesai dicek.
 	var isTimeAvailable = true
 	var isCapsterAvailable = true
 
 	for _, v := range dataBookedTime {
-		if v.ScheduledAt.Equal(req.BookingDate) {
+		if v.ScheduledAt.In(loc).Equal(scheduledAt) { // FIX: convert v.ScheduledAt ke loc sebelum compare
 			isTimeAvailable = false
 		}
 		if v.IDCapster == idCapster {
@@ -440,7 +441,6 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		}
 	}
 
-	// FIX: tambahan pengecekan dari Cek 2 — capster masih progress dari booking lain
 	if len(dataBookedCapster) > 0 {
 		isCapsterAvailable = false
 	}
@@ -468,11 +468,15 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
 	}
 
+	if dataService.IdStore != idStore {
+		return dto.CreateBookingResponse{}, errors.New("Toko ini tidak memiliki service tersebut.")
+	}
+
 	if dataService.Status == entity.ProductStatusInactive {
 		return dto.CreateBookingResponse{}, errors.New("Service ini telah tidak tersedia! Mohon pilih ulang.")
 	}
 
-	var subTotal = dataService.Price // tetap decimal.Decimal
+	var subTotal = dataService.Price
 	var discountAmount = decimal.Zero
 	var totalPrice = subTotal
 	if req.IdPromoClaimed != nil {
@@ -493,7 +497,6 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 			if dataPromo.Promo.DiscountType == entity.DiscountTypeFixed {
 				discountAmount = dataPromo.Promo.DiscountValue
 			} else {
-				// percentage: value 0-100, jadi dibagi 100
 				discountAmount = subTotal.Mul(dataPromo.Promo.DiscountValue).Div(decimal.NewFromInt(100))
 			}
 
@@ -545,7 +548,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		SubTotal:       subTotal,
 		DiscountAmount: discountAmount,
 		TotalPrice:     totalPrice,
-		ScheduledAt:    scheduledAt,
+		ScheduledAt:    scheduledAt, // sudah otomatis benar karena scheduledAt sudah di-convert
 		QRCode:         qrCode,
 		BookingType:    entity.BookingScheduled,
 		BookingItems:   bookingItems,
@@ -587,4 +590,151 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 	}
 
 	return result, nil
+}
+
+func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.CustomClaims, req dto.GetBookingStoreRequest) (dto.GetBookingStoreResponse, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat booking. Coba lagi nanti!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idStore, err := uuid.Parse(req.IdStore)
+	if err != nil {
+		return dto.GetBookingStoreResponse{}, errors.New("Data toko tidak valid!")
+	}
+
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.GetBookingStoreResponse{}, errors.New("Data toko tidak ditemukan atau telah dihapus!")
+		}
+
+		helper.Logger("Find data store", filePath, err)
+		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	// FIX: load lokasi toko dari dataStore.Timezone (bukan hardcode Asia/Jakarta lagi)
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load timezone", filePath, err)
+		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	reqDateLocal := req.Date.In(loc) // FIX: convert tanggal request ke lokasi toko
+
+	slots := helper.GenerateAvailableSlots(req.Date, dataStore.OpenHour, dataStore.CloseHour, loc) // FIX: tambah parameter loc
+	slotStrings := make([]string, len(slots))
+	for i, slot := range slots {
+		slotStrings[i] = slot.Format("15:04")
+	}
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Where("id_store = ?", idStore).
+			Where("status = ?", entity.CapsterStatusActive)
+	})
+
+	dataCapsters, err := s.capsterRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("Find all data capsters", filePath, err)
+		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	capsterIds := make([]string, len(dataCapsters))
+	for i, c := range dataCapsters {
+		capsterIds[i] = c.ID.String()
+	}
+
+	var scopesBooked []func(d *gorm.DB) *gorm.DB
+	scopesBooked = append(scopesBooked, func(d *gorm.DB) *gorm.DB {
+		startDay := time.Date(reqDateLocal.Year(), reqDateLocal.Month(), reqDateLocal.Day(), 0, 0, 0, 0, loc) // FIX: pakai reqDateLocal & loc
+		endOfDay := startDay.Add(24 * time.Hour)
+
+		return d.Where("id_store = ?", idStore).
+			Where("scheduled_at >= ? AND scheduled_at < ?", startDay, endOfDay)
+	})
+
+	dataBooked, err := s.bookingRepo.FindAll(scopesBooked...)
+
+	// FIX: loc dihapus dari sini, pakai loc yang sudah di-load dari dataStore.Timezone di atas
+	dbBookedMap := make(map[string]bool)
+	for _, b := range dataBooked {
+		key := fmt.Sprintf("%s|%s", b.ScheduledAt.In(loc).Format("15:04"), b.IDCapster.String())
+		dbBookedMap[key] = true
+	}
+
+	pipe := s.client.Pipeline()
+	cmdMap := make(map[string]*redis.StringCmd)
+
+	for _, timeStr := range slotStrings {
+		for _, capsterId := range capsterIds {
+			key := fmt.Sprintf("lock:%s:%s:%s:%s", idStore, reqDateLocal.Format("2006-01-02"), timeStr, capsterId) // FIX: pakai reqDateLocal
+			cmdMap[fmt.Sprintf("%s|%s", timeStr, capsterId)] = pipe.Get(ctx, key)
+		}
+	}
+
+	_, err = pipe.Exec(ctx)
+	if err != nil && !errors.Is(err, redis.Nil) {
+		helper.Logger("Exec pipeline", filePath, err)
+		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	lockedMap := make(map[string]bool)
+
+	for compositeKey, cmd := range cmdMap {
+		val, err := cmd.Result()
+		if err == nil && val != "" {
+			lockedMap[compositeKey] = true
+		}
+	}
+
+	var resultSlots []dto.SlotAvailable
+	for _, timeStr := range slotStrings {
+		var capstterResults []dto.CapsterAvailable
+		availableCount := 0
+
+		for _, c := range dataCapsters {
+			compositeKey := fmt.Sprintf("%s|%s", timeStr, c.ID.String())
+			isBookedDb := dbBookedMap[compositeKey]
+			isLockedRedis := lockedMap[compositeKey]
+
+			available := !isBookedDb && !isLockedRedis
+
+			if available {
+				availableCount++
+			}
+
+			var avgRating = 5.0
+			var totalRating = 0
+			for _, r := range c.Ratings {
+				totalRating += int(r.Score)
+			}
+
+			if len(c.Ratings) > 0 {
+				avgRating = float64(totalRating) / float64(len(c.Ratings))
+			}
+
+			imageUrl := ""
+			if c.ImageUrl != nil {
+				imageUrl = *c.ImageUrl
+			}
+
+			capstterResults = append(capstterResults, dto.CapsterAvailable{
+				Id:        c.ID,
+				Name:      c.Name,
+				Available: available,
+				ImageUrl:  imageUrl,
+				AvgRating: avgRating,
+			})
+		}
+
+		resultSlots = append(resultSlots, dto.SlotAvailable{
+			Time:      timeStr,
+			Available: availableCount > 0,
+			Capsters:  capstterResults,
+		})
+	}
+	return dto.GetBookingStoreResponse{
+		Date:    req.Date,
+		IdStore: idStore,
+		Slots:   resultSlots,
+	}, nil
 }

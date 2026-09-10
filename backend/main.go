@@ -103,6 +103,7 @@ func main() {
 	{
 		booking.Use(h.AuthMiddleware)
 		booking.POST("/", h.BookingHandler.CreateBooking)
+		booking.GET("/store", h.BookingHandler.GetDataBookingStore)
 		booking.POST("/lock", h.BookingHandler.LockBooking)
 	}
 

@@ -2,15 +2,15 @@ package helper
 
 import "time"
 
-func GenerateAvailableSlots(bookingDate time.Time, openHour, closeHour time.Time) []time.Time {
-	loc := bookingDate.Location()
+func GenerateAvailableSlots(bookingDate, openHour, closeHour time.Time, loc *time.Location) []time.Time { // FIX: tambah parameter loc
+	bookingDateLocal := bookingDate.In(loc) // FIX: convert ke lokasi toko dulu
 
 	start := time.Date(
-		bookingDate.Year(), bookingDate.Month(), bookingDate.Day(),
+		bookingDateLocal.Year(), bookingDateLocal.Month(), bookingDateLocal.Day(), // FIX: pakai bookingDateLocal
 		openHour.Hour(), openHour.Minute(), 0, 0, loc,
 	)
 	end := time.Date(
-		bookingDate.Year(), bookingDate.Month(), bookingDate.Day(),
+		bookingDateLocal.Year(), bookingDateLocal.Month(), bookingDateLocal.Day(), // FIX: pakai bookingDateLocal
 		closeHour.Hour(), closeHour.Minute(), 0, 0, loc,
 	)
 
