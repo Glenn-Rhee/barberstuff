@@ -14,6 +14,7 @@ import 'package:mobile_barberstuff/features/debug/presentation/pages/debug_shell
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/forgot_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_success_page.dart';
+import 'package:mobile_barberstuff/features/history/presentation/pages/history_page.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/pages/notification_page.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/about_page.dart';
@@ -49,6 +50,7 @@ class AppRoute {
   static const String about = '/about';
   static const String booking = '/booking';
   static const String notification = '/notification';
+  static const String history = '/history';
   static const String bookingSuccess = '/booking-success';
   static const String bookingReceipt = '/booking-receipt';
 
@@ -106,6 +108,11 @@ class AppRoute {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (BuildContext context) => const NotificationPage(),
+        );
+      case history:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => const HistoryPage(),
         );
       case bookingSuccess:
         final Object? args = settings.arguments;

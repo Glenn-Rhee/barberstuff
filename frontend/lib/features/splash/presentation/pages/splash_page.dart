@@ -37,10 +37,14 @@ class _SplashPageState extends State<SplashPage>
     );
 
     _backdrop.forward();
-    _askNotificationPermission();
+
+    WidgetsBinding.instance.addPostFrameCallback((Duration _) {
+      _askNotificationPermission();
+    });
   }
 
   void _askNotificationPermission() {
+    if (!mounted) return;
     try {
       context.read<LocalNotificationService>().requestPermission();
     } on ProviderNotFoundException {

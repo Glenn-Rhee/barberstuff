@@ -86,6 +86,26 @@ class LocalNotificationService {
     }
   }
 
+  Future<bool> isEnabled() async {
+    if (!_ready) await init();
+    if (!_ready) return false;
+
+    try {
+      final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      if (android == null) return _granted;
+
+      final bool enabled = await android.areNotificationsEnabled() ?? false;
+      _granted = enabled;
+      return enabled;
+    } on Object catch (error) {
+      debugPrint('LocalNotificationService cek izin gagal: $error');
+      return false;
+    }
+  }
+
   Future<void> show({required String title, required String body}) async {
     if (!_ready) await init();
     if (!_ready) return;

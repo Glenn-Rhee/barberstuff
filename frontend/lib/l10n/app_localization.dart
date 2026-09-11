@@ -860,6 +860,138 @@ abstract class AppLocalizations {
   /// **'Profil'**
   String get navProfile;
 
+  /// No description provided for @historyTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat Booking'**
+  String get historyTitle;
+
+  /// No description provided for @historyTabUpcoming.
+  ///
+  /// In id, this message translates to:
+  /// **'Akan Datang'**
+  String get historyTabUpcoming;
+
+  /// No description provided for @historyTabDone.
+  ///
+  /// In id, this message translates to:
+  /// **'Selesai'**
+  String get historyTabDone;
+
+  /// No description provided for @historyTabCanceled.
+  ///
+  /// In id, this message translates to:
+  /// **'Dibatalkan'**
+  String get historyTabCanceled;
+
+  /// No description provided for @historyBadgeProgress.
+  ///
+  /// In id, this message translates to:
+  /// **'PROGRESS'**
+  String get historyBadgeProgress;
+
+  /// No description provided for @historyBadgeDone.
+  ///
+  /// In id, this message translates to:
+  /// **'DONE'**
+  String get historyBadgeDone;
+
+  /// No description provided for @historyBadgeCancel.
+  ///
+  /// In id, this message translates to:
+  /// **'CANCEL'**
+  String get historyBadgeCancel;
+
+  /// No description provided for @historyNotReviewed.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum diulas'**
+  String get historyNotReviewed;
+
+  /// No description provided for @historyWriteReview.
+  ///
+  /// In id, this message translates to:
+  /// **'Beri Ulasan'**
+  String get historyWriteReview;
+
+  /// No description provided for @historySeeReview.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Ulasan'**
+  String get historySeeReview;
+
+  /// No description provided for @historyYourReview.
+  ///
+  /// In id, this message translates to:
+  /// **'Ulasanmu'**
+  String get historyYourReview;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada booking di daftar ini.'**
+  String get historyEmpty;
+
+  /// No description provided for @reviewTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Bagaimana pengalamanmu?'**
+  String get reviewTitle;
+
+  /// No description provided for @reviewSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'pengalamanmu sangat berharga bagi kami'**
+  String get reviewSubtitle;
+
+  /// No description provided for @reviewCapster.
+  ///
+  /// In id, this message translates to:
+  /// **'Pelayanan Capster'**
+  String get reviewCapster;
+
+  /// No description provided for @reviewCashier.
+  ///
+  /// In id, this message translates to:
+  /// **'Pelayanan Kasir'**
+  String get reviewCashier;
+
+  /// No description provided for @reviewStore.
+  ///
+  /// In id, this message translates to:
+  /// **'Kualitas Outlet'**
+  String get reviewStore;
+
+  /// No description provided for @reviewMessageLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Ceritakan Pengalamanmu Disini'**
+  String get reviewMessageLabel;
+
+  /// No description provided for @reviewMessageHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Tulis disini untuk riview kamu!'**
+  String get reviewMessageHint;
+
+  /// No description provided for @reviewSubmit.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim'**
+  String get reviewSubmit;
+
+  /// No description provided for @reviewNeedStars.
+  ///
+  /// In id, this message translates to:
+  /// **'Beri bintang dulu untuk semua penilaian.'**
+  String get reviewNeedStars;
+
+  /// No description provided for @reviewThanks.
+  ///
+  /// In id, this message translates to:
+  /// **'Terima kasih atas ulasanmu!'**
+  String get reviewThanks;
+
   /// No description provided for @notificationTitle.
   ///
   /// In id, this message translates to:
@@ -1789,6 +1921,42 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Sedang offline — menampilkan data tersimpan'**
   String get offlineCachedData;
+
+  /// No description provided for @permissionNotificationTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Izinkan notifikasi'**
+  String get permissionNotificationTitle;
+
+  /// No description provided for @permissionNotificationMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktifkan notifikasi supaya kamu tahu saat booking dikonfirmasi dan poin bertambah.'**
+  String get permissionNotificationMessage;
+
+  /// No description provided for @permissionLocationTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Izinkan lokasi'**
+  String get permissionLocationTitle;
+
+  /// No description provided for @permissionLocationMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Lokasi dipakai untuk mengurutkan cabang dari yang terdekat denganmu.'**
+  String get permissionLocationMessage;
+
+  /// No description provided for @permissionOpenSettings.
+  ///
+  /// In id, this message translates to:
+  /// **'Buka Pengaturan'**
+  String get permissionOpenSettings;
+
+  /// No description provided for @permissionLater.
+  ///
+  /// In id, this message translates to:
+  /// **'Nanti saja'**
+  String get permissionLater;
 
   /// No description provided for @commonUnderstood.
   ///

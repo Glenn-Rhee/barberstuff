@@ -16,6 +16,7 @@ import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
 import 'package:mobile_barberstuff/features/booking/data/datasources/booking_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
+import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
@@ -53,6 +54,9 @@ Future<void> main() async {
         ChangeNotifierProvider<LocalController>.value(value: localController),
         ChangeNotifierProvider<DebugOverrides>(create: (_) => DebugOverrides()),
         ChangeNotifierProvider<BookingCatalog>(create: (_) => BookingCatalog()),
+        ChangeNotifierProvider<HistoryRepository>(
+          create: (_) => HistoryRepository(),
+        ),
         ChangeNotifierProvider<NotificationProvider>(
           create: (_) => NotificationProvider(),
         ),

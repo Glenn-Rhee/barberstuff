@@ -433,6 +433,72 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
+  String get historyTitle => 'Booking History';
+
+  @override
+  String get historyTabUpcoming => 'Upcoming';
+
+  @override
+  String get historyTabDone => 'Completed';
+
+  @override
+  String get historyTabCanceled => 'Canceled';
+
+  @override
+  String get historyBadgeProgress => 'PROGRESS';
+
+  @override
+  String get historyBadgeDone => 'DONE';
+
+  @override
+  String get historyBadgeCancel => 'CANCEL';
+
+  @override
+  String get historyNotReviewed => 'Not reviewed yet';
+
+  @override
+  String get historyWriteReview => 'Write Review';
+
+  @override
+  String get historySeeReview => 'See Review';
+
+  @override
+  String get historyYourReview => 'Your review';
+
+  @override
+  String get historyEmpty => 'No booking in this list yet.';
+
+  @override
+  String get reviewTitle => 'How was your experience?';
+
+  @override
+  String get reviewSubtitle => 'your experience matters a lot to us';
+
+  @override
+  String get reviewCapster => 'Capster Service';
+
+  @override
+  String get reviewCashier => 'Cashier Service';
+
+  @override
+  String get reviewStore => 'Outlet Quality';
+
+  @override
+  String get reviewMessageLabel => 'Tell Us About Your Experience';
+
+  @override
+  String get reviewMessageHint => 'Write your review here!';
+
+  @override
+  String get reviewSubmit => 'Send';
+
+  @override
+  String get reviewNeedStars => 'Please rate every category first.';
+
+  @override
+  String get reviewThanks => 'Thanks for your review!';
+
+  @override
   String get notificationTitle => 'Notifications';
 
   @override
@@ -939,6 +1005,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offlineCachedData => 'You are offline — showing saved data';
+
+  @override
+  String get permissionNotificationTitle => 'Allow notifications';
+
+  @override
+  String get permissionNotificationMessage =>
+      'Turn on notifications so you know when a booking is confirmed and points are added.';
+
+  @override
+  String get permissionLocationTitle => 'Allow location';
+
+  @override
+  String get permissionLocationMessage =>
+      'Location is used to sort branches from the nearest to you.';
+
+  @override
+  String get permissionOpenSettings => 'Open Settings';
+
+  @override
+  String get permissionLater => 'Not now';
 
   @override
   String get commonUnderstood => 'Oke';

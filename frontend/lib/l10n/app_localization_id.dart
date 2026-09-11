@@ -433,6 +433,72 @@ class AppLocalizationsId extends AppLocalizations {
   String get navProfile => 'Profil';
 
   @override
+  String get historyTitle => 'Riwayat Booking';
+
+  @override
+  String get historyTabUpcoming => 'Akan Datang';
+
+  @override
+  String get historyTabDone => 'Selesai';
+
+  @override
+  String get historyTabCanceled => 'Dibatalkan';
+
+  @override
+  String get historyBadgeProgress => 'PROGRESS';
+
+  @override
+  String get historyBadgeDone => 'DONE';
+
+  @override
+  String get historyBadgeCancel => 'CANCEL';
+
+  @override
+  String get historyNotReviewed => 'Belum diulas';
+
+  @override
+  String get historyWriteReview => 'Beri Ulasan';
+
+  @override
+  String get historySeeReview => 'Lihat Ulasan';
+
+  @override
+  String get historyYourReview => 'Ulasanmu';
+
+  @override
+  String get historyEmpty => 'Belum ada booking di daftar ini.';
+
+  @override
+  String get reviewTitle => 'Bagaimana pengalamanmu?';
+
+  @override
+  String get reviewSubtitle => 'pengalamanmu sangat berharga bagi kami';
+
+  @override
+  String get reviewCapster => 'Pelayanan Capster';
+
+  @override
+  String get reviewCashier => 'Pelayanan Kasir';
+
+  @override
+  String get reviewStore => 'Kualitas Outlet';
+
+  @override
+  String get reviewMessageLabel => 'Ceritakan Pengalamanmu Disini';
+
+  @override
+  String get reviewMessageHint => 'Tulis disini untuk riview kamu!';
+
+  @override
+  String get reviewSubmit => 'Kirim';
+
+  @override
+  String get reviewNeedStars => 'Beri bintang dulu untuk semua penilaian.';
+
+  @override
+  String get reviewThanks => 'Terima kasih atas ulasanmu!';
+
+  @override
   String get notificationTitle => 'Notifikasi';
 
   @override
@@ -941,6 +1007,26 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get offlineCachedData => 'Sedang offline — menampilkan data tersimpan';
+
+  @override
+  String get permissionNotificationTitle => 'Izinkan notifikasi';
+
+  @override
+  String get permissionNotificationMessage =>
+      'Aktifkan notifikasi supaya kamu tahu saat booking dikonfirmasi dan poin bertambah.';
+
+  @override
+  String get permissionLocationTitle => 'Izinkan lokasi';
+
+  @override
+  String get permissionLocationMessage =>
+      'Lokasi dipakai untuk mengurutkan cabang dari yang terdekat denganmu.';
+
+  @override
+  String get permissionOpenSettings => 'Buka Pengaturan';
+
+  @override
+  String get permissionLater => 'Nanti saja';
 
   @override
   String get commonUnderstood => 'Oke';

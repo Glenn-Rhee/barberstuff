@@ -5,6 +5,8 @@ import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
+import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
+import 'package:mobile_barberstuff/features/history/domain/booking_history.dart';
 import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
@@ -17,6 +19,7 @@ Future<void> showDebugPanel(BuildContext context) {
   final NotificationProvider notifications = context
       .read<NotificationProvider>();
   final AppCache cache = context.read<AppCache>();
+  final HistoryRepository history = context.read<HistoryRepository>();
 
   return showModalBottomSheet<void>(
     context: context,
@@ -33,6 +36,7 @@ Future<void> showDebugPanel(BuildContext context) {
           value: notifications,
         ),
         Provider<AppCache>.value(value: cache),
+        ChangeNotifierProvider<HistoryRepository>.value(value: history),
       ],
       child: const _DebugPanel(),
     ),
@@ -58,6 +62,8 @@ class _DebugPanel extends StatelessWidget {
     final BookingCatalog catalog = context.watch<BookingCatalog>();
     final NotificationProvider notif = context.watch<NotificationProvider>();
     final AppCache appCache = context.read<AppCache>();
+    final HistoryRepository historyRepo = context
+        .read<HistoryRepository>();
     final int unread = notif.items
         .where((AppNotification n) => !n.isRead)
         .length;
@@ -275,6 +281,48 @@ class _DebugPanel extends StatelessWidget {
                   value: notif.isSimulating,
                   activeThumbColor: AppColor.orangeLight,
                   onChanged: notif.toggleSimulator,
+                ),
+              ],
+            ),
+
+            const Divider(height: 32, color: AppColor.border),
+            Text('Riwayat booking', style: AppTextStyle.titleSmall),
+            const SizedBox(height: 4),
+            Text(
+              'Data dummy lokal. Backend belum punya endpoint riwayat '
+              'maupun ulasan.',
+              style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: <Widget>[
+                _TierChip(
+                  label: 'Semua',
+                  selected: false,
+                  onTap: historyRepo.resetDummy,
+                ),
+                _TierChip(
+                  label: 'Hanya akan datang',
+                  selected: false,
+                  onTap: () => historyRepo.useOnly(BookingStatus.progress),
+                ),
+                _TierChip(
+                  label: 'Hanya selesai',
+                  selected: false,
+                  onTap: () => historyRepo.useOnly(BookingStatus.completed),
+                ),
+                _TierChip(
+                  label: 'Hanya dibatalkan',
+                  selected: false,
+                  onTap: () => historyRepo.useOnly(BookingStatus.canceled),
+                ),
+                _TierChip(
+                  label: 'Kosongkan',
+                  color: AppColor.danger,
+                  selected: false,
+                  onTap: historyRepo.clearDummy,
                 ),
               ],
             ),

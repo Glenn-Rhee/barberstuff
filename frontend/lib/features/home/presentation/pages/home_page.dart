@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
-import 'package:mobile_barberstuff/core/services/location_service.dart';
+import 'package:mobile_barberstuff/core/services/permission_prompt.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
@@ -40,17 +40,15 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration _) {
-      _askLocationPermission();
+      _askPermissions();
     });
   }
 
-  Future<void> _askLocationPermission() async {
+  Future<void> _askPermissions() async {
     if (!mounted) return;
-    try {
-      await context.read<LocationService>().current(prompt: true);
-    } on ProviderNotFoundException {
-      return;
-    }
+    await PermissionPrompt.askNotification(context);
+    if (!mounted) return;
+    await PermissionPrompt.askLocation(context);
   }
 
   @override
@@ -259,9 +257,8 @@ class _DashboardBody extends StatelessWidget {
             child: SectionHeader(
               title: l10n.homeHistoryTitle,
               actionLabel: l10n.homeHistorySeeAll,
-              onAction: () {
-                showComingSoonDialog(context);
-              },
+              onAction: () =>
+                  Navigator.of(context).pushNamed(AppRoute.history),
             ),
           ),
           const SizedBox(height: 12),

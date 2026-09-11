@@ -5,12 +5,12 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/widgets/debug_panel.dart';
+import 'package:mobile_barberstuff/features/history/presentation/pages/history_page.dart';
 import 'package:mobile_barberstuff/features/home/presentation/pages/home_page.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/profile_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:provider/provider.dart';
 
 class DebugShellPage extends StatelessWidget {
@@ -43,25 +43,28 @@ class _MainShellViewState extends State<_MainShellView> {
       Navigator.of(context).pushNamed(AppRoute.booking);
       return;
     }
-    if (tab == DashboardTab.history) {
-      showComingSoonDialog(context);
-      return;
-    }
     if (tab != _tab) setState(() => _tab = tab);
   }
 
   @override
   Widget build(BuildContext context) {
     final bool onHome = _tab == DashboardTab.home;
+    const List<DashboardTab> stacked = <DashboardTab>[
+      DashboardTab.home,
+      DashboardTab.history,
+      DashboardTab.profile,
+    ];
+    final int index = stacked.indexOf(_tab).clamp(0, stacked.length - 1);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: onHome ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
         backgroundColor: onHome ? AppColor.ink : AppColor.surface,
         body: IndexedStack(
-          index: onHome ? 0 : 1,
+          index: index,
           children: <Widget>[
             HomePage(onProfileTap: () => _select(DashboardTab.profile)),
+            const HistoryPage(),
             const ProfilePage(),
           ],
         ),
