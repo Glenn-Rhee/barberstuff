@@ -1958,6 +1958,24 @@ abstract class AppLocalizations {
   /// **'Nanti saja'**
   String get permissionLater;
 
+  /// No description provided for @permissionLocationOffTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Nyalakan lokasi'**
+  String get permissionLocationOffTitle;
+
+  /// No description provided for @permissionLocationOffMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Layanan lokasi di HP kamu sedang mati. Nyalakan dulu supaya jarak cabang bisa dihitung.'**
+  String get permissionLocationOffMessage;
+
+  /// No description provided for @permissionOpenLocationSettings.
+  ///
+  /// In id, this message translates to:
+  /// **'Nyalakan Lokasi'**
+  String get permissionOpenLocationSettings;
+
   /// No description provided for @commonUnderstood.
   ///
   /// In id, this message translates to:

@@ -7,8 +7,13 @@ import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:provider/provider.dart';
 
+enum _SettingsTarget { app, location }
+
 class PermissionPrompt {
   const PermissionPrompt._();
+
+  static bool _notificationDialogShown = false;
+  static bool _locationDialogShown = false;
 
   static Future<void> askNotification(BuildContext context) async {
     final LocalNotificationService? service = _read<LocalNotificationService>(
@@ -20,43 +25,81 @@ class PermissionPrompt {
 
     await service.requestPermission();
     if (await service.isEnabled()) return;
+    if (_notificationDialogShown) return;
     if (!context.mounted) return;
 
+    _notificationDialogShown = true;
     final AppLocalizations l10n = AppLocalizations.of(context);
     await _showSettingsDialog(
       context,
       title: l10n.permissionNotificationTitle,
       message: l10n.permissionNotificationMessage,
+      actionLabel: l10n.permissionOpenSettings,
+      target: _SettingsTarget.app,
     );
   }
 
   static Future<void> askLocation(BuildContext context) async {
-    final LocationService? service = _read<LocationService>(context);
-    if (service == null) return;
+    LocationPermission permission;
 
-    await service.current(prompt: true);
+    try {
+      permission = await Geolocator.checkPermission();
 
-    final LocationPermission permission = await _permission();
-    if (permission == LocationPermission.always ||
-        permission == LocationPermission.whileInUse) {
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+    } on Object catch (error) {
+      debugPrint('PermissionPrompt lokasi gagal: $error');
       return;
     }
-    if (!context.mounted) return;
 
-    final AppLocalizations l10n = AppLocalizations.of(context);
-    await _showSettingsDialog(
-      context,
-      title: l10n.permissionLocationTitle,
-      message: l10n.permissionLocationMessage,
-    );
+    final bool granted =
+        permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
+
+    if (!granted) {
+      if (_locationDialogShown) return;
+      if (!context.mounted) return;
+
+      _locationDialogShown = true;
+      final AppLocalizations l10n = AppLocalizations.of(context);
+      await _showSettingsDialog(
+        context,
+        title: l10n.permissionLocationTitle,
+        message: l10n.permissionLocationMessage,
+        actionLabel: l10n.permissionOpenSettings,
+        target: _SettingsTarget.app,
+      );
+      return;
+    }
+
+    bool serviceOn = true;
+    try {
+      serviceOn = await Geolocator.isLocationServiceEnabled();
+    } on Object catch (error) {
+      debugPrint('PermissionPrompt cek GPS gagal: $error');
+    }
+
+    if (!serviceOn) {
+      if (!context.mounted) return;
+      final AppLocalizations l10n = AppLocalizations.of(context);
+      await _showSettingsDialog(
+        context,
+        title: l10n.permissionLocationOffTitle,
+        message: l10n.permissionLocationOffMessage,
+        actionLabel: l10n.permissionOpenLocationSettings,
+        target: _SettingsTarget.location,
+      );
+      return;
+    }
+
+    if (!context.mounted) return;
+    await _read<LocationService>(context)?.current();
   }
 
-  static Future<LocationPermission> _permission() async {
-    try {
-      return await Geolocator.checkPermission();
-    } on Object catch (_) {
-      return LocationPermission.denied;
-    }
+  static void allowDialogsAgain() {
+    _notificationDialogShown = false;
+    _locationDialogShown = false;
   }
 
   static T? _read<T>(BuildContext context) {
@@ -71,6 +114,8 @@ class PermissionPrompt {
     BuildContext context, {
     required String title,
     required String message,
+    required String actionLabel,
+    required _SettingsTarget target,
   }) async {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
@@ -97,7 +142,7 @@ class PermissionPrompt {
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
             child: Text(
-              l10n.permissionOpenSettings,
+              actionLabel,
               style: AppTextStyle.labelMedium.copyWith(
                 color: AppColor.goldDeep,
                 fontWeight: FontWeight.w700,
@@ -111,9 +156,13 @@ class PermissionPrompt {
     if (openSettings != true) return;
 
     try {
-      await Geolocator.openAppSettings();
-    } on Object catch (_) {
-      return;
+      if (target == _SettingsTarget.location) {
+        await Geolocator.openLocationSettings();
+      } else {
+        await Geolocator.openAppSettings();
+      }
+    } on Object catch (error) {
+      debugPrint('PermissionPrompt buka setelan gagal: $error');
     }
   }
 }

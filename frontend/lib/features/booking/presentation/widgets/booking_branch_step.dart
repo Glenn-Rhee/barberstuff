@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/services/permission_prompt.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
@@ -12,6 +13,13 @@ import 'package:provider/provider.dart';
 
 class BookingBranchStep extends StatelessWidget {
   const BookingBranchStep({super.key});
+
+  Future<void> _refresh(BuildContext context, BookingFlowProvider p) async {
+    PermissionPrompt.allowDialogsAgain();
+    await PermissionPrompt.askLocation(context);
+    if (!context.mounted) return;
+    await p.loadStores();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +35,7 @@ class BookingBranchStep extends StatelessWidget {
             controller: p.searchController,
             hint: l10n.bookingSearchHint,
             onSubmit: p.loadStores,
+            onRefresh: () => _refresh(context, p),
           ),
         ),
         if (p.storesFromCache)
@@ -40,7 +49,7 @@ class BookingBranchStep extends StatelessWidget {
             error: p.storesError,
             isEmpty: p.stores.isEmpty,
             emptyMessage: l10n.bookingStoreEmpty,
-            onRetry: p.loadStores,
+            onRetry: () => _refresh(context, p),
             child: ListView.separated(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
               itemCount: p.stores.length,
@@ -68,11 +77,13 @@ class _SearchBar extends StatelessWidget {
     required this.controller,
     required this.hint,
     required this.onSubmit,
+    required this.onRefresh,
   });
 
   final TextEditingController controller;
   final String hint;
   final VoidCallback onSubmit;
+  final VoidCallback onRefresh;
 
   static OutlineInputBorder _border(Color color) => OutlineInputBorder(
     borderRadius: BorderRadius.circular(8),
@@ -123,6 +134,26 @@ class _SearchBar extends StatelessWidget {
                 fit: BoxFit.contain,
                 color: AppColor.surface,
                 filterQuality: FilterQuality.medium,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Material(
+          color: AppColor.surface,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: const BorderSide(color: AppColor.goldDeep),
+          ),
+          child: InkWell(
+            onTap: onRefresh,
+            child: const Padding(
+              padding: EdgeInsets.all(12),
+              child: Icon(
+                Icons.refresh_rounded,
+                size: 18,
+                color: AppColor.goldDeep,
               ),
             ),
           ),

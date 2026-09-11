@@ -448,6 +448,9 @@
   "permissionLocationMessage": "Lokasi dipakai untuk mengurutkan cabang dari yang terdekat denganmu.",
   "permissionOpenSettings": "Buka Pengaturan",
   "permissionLater": "Nanti saja",
+  "permissionLocationOffTitle": "Nyalakan lokasi",
+  "permissionLocationOffMessage": "Layanan lokasi di HP kamu sedang mati. Nyalakan dulu supaya jarak cabang bisa dihitung.",
+  "permissionOpenLocationSettings": "Nyalakan Lokasi",
   "commonUnderstood": "Oke",
   "commonLogout": "Keluar"
 

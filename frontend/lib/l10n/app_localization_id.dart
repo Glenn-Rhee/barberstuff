@@ -1029,6 +1029,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get permissionLater => 'Nanti saja';
 
   @override
+  String get permissionLocationOffTitle => 'Nyalakan lokasi';
+
+  @override
+  String get permissionLocationOffMessage =>
+      'Layanan lokasi di HP kamu sedang mati. Nyalakan dulu supaya jarak cabang bisa dihitung.';
+
+  @override
+  String get permissionOpenLocationSettings => 'Nyalakan Lokasi';
+
+  @override
   String get commonUnderstood => 'Oke';
 
   @override

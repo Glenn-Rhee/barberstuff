@@ -1027,6 +1027,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get permissionLater => 'Not now';
 
   @override
+  String get permissionLocationOffTitle => 'Turn on location';
+
+  @override
+  String get permissionLocationOffMessage =>
+      'Location services are off on your phone. Turn them on so branch distance can be calculated.';
+
+  @override
+  String get permissionOpenLocationSettings => 'Turn On Location';
+
+  @override
   String get commonUnderstood => 'Oke';
 
   @override

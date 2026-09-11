@@ -346,6 +346,9 @@
   "permissionLocationMessage": "Location is used to sort branches from the nearest to you.",
   "permissionOpenSettings": "Open Settings",
   "permissionLater": "Not now",
+  "permissionLocationOffTitle": "Turn on location",
+  "permissionLocationOffMessage": "Location services are off on your phone. Turn them on so branch distance can be calculated.",
+  "permissionOpenLocationSettings": "Turn On Location",
   "commonUnderstood": "Oke",
   "commonLogout": "Log out"
 
