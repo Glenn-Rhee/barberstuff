@@ -24,6 +24,7 @@ type BookingService interface {
 	CreateBooking(ctx context.Context, claims *lib.CustomClaims, req dto.CreateBookingRequest) (dto.CreateBookingResponse, error)
 	GetBookingStore(ctx context.Context, claims *lib.CustomClaims, reqParams dto.GetBookingStoreRequest) (dto.GetBookingStoreResponse, error)
 	DeleteLockBooking(ctx context.Context, claims *lib.CustomClaims, reqParams dto.DeleteLockBookingRequest) error
+	GetBookingUser(claims *lib.CustomClaims, reqParams dto.GetBookingUserRequest) ([]dto.GetBookingUserResponse, dto.ResponsePagination, error)
 }
 
 type bookingService struct {
@@ -575,8 +576,8 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		Store: dto.DataStoreBooking{
 			Id:          idStore,
 			Name:        dataStore.Name,
-			Address:     *dataStore.Address,
-			PhoneNumber: *dataStore.PhoneNumber,
+			Address:     dataStore.Address,
+			PhoneNumber: dataStore.PhoneNumber,
 		},
 		Capster: dto.DataCapsterBooking{
 			Id:   idCapster,
@@ -811,4 +812,165 @@ func (s *bookingService) DeleteLockBooking(ctx context.Context, claims *lib.Cust
 	}
 
 	return nil
+}
+
+func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.GetBookingUserRequest) ([]dto.GetBookingUserResponse, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data booking!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	var status []entity.BookingStatusEnum
+
+	switch reqParams.StatusBooking {
+	case dto.StatusDone:
+		status = []entity.BookingStatusEnum{entity.BookingStatusCompleted}
+	case dto.StatusUpcoming:
+		status = []entity.BookingStatusEnum{
+			entity.BookingStatusBooked,
+			entity.BookingStatusProgress,
+		}
+	default:
+		status = []entity.BookingStatusEnum{entity.BookingStatusCanceled}
+	}
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	if reqParams.Query != nil {
+		q := "%" + *reqParams.Query + "%"
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where(`
+				EXISTS (
+					SELECT 1 FROM booking_item bi
+					JOIN service s ON s.id = bi.id_service
+					WHERE bi.id_booking = booking.id
+					AND s.name ILIKE ?
+				)
+				OR EXISTS (
+					SELECT 1 FROM capster c
+					WHERE c.id = booking.id_capster
+					AND c.name ILIKE ?
+				)
+				OR EXISTS (
+					SELECT 1 FROM store st
+					WHERE st.id = booking.id_store
+					AND (st.name ILIKE ? OR st.address ILIKE ?)
+				)
+			`, q, q, q, q)
+		})
+	}
+	var page = 1
+	var limit = 20
+	var sortBy = dto.SortByBookingDate
+	var orderBy = dto.OrderDesc
+
+	if reqParams.Page != nil {
+		page = *reqParams.Page
+	}
+
+	if reqParams.Limit != nil {
+		limit = *reqParams.Limit
+	}
+
+	if reqParams.SortBy != nil {
+		sortBy = *reqParams.SortBy
+	}
+
+	if reqParams.OrderBy != nil {
+		orderBy = *reqParams.OrderBy
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Where("status_booking IN ?", status)
+	})
+
+	totalData, err := s.bookingRepo.Count(scopes...)
+	if err != nil {
+		helper.Logger("Count total booking repo", filePath, err)
+		return []dto.GetBookingUserResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Order(sortBy + " " + dto.SortBooking(orderBy)).
+			Offset((page - 1) * limit).
+			Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
+	bookings, err := s.bookingRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("Find all data booking", filePath, err)
+		return []dto.GetBookingUserResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataBookings := make([]dto.GetBookingUserResponse, 0, len(bookings))
+	for _, b := range bookings {
+		dataServices := make([]dto.DataServiceBooking, 0, len(b.BookingItems))
+		for _, s := range b.BookingItems {
+			dataServices = append(dataServices, dto.DataServiceBooking{
+				Id:    s.Service.ID,
+				Name:  s.Service.Name,
+				Price: s.Service.Price,
+			})
+		}
+		dataBooking := dto.GetBookingUserResponse{
+			Id: b.ID,
+			Capster: dto.DataCapsterBooking{
+				Id:   b.Capster.ID,
+				Name: b.Capster.Name,
+			},
+			Store: dto.DataStoreBooking{
+				Id:          b.Store.ID,
+				Name:        b.Store.Name,
+				Address:     b.Store.Address,
+				PhoneNumber: b.Store.PhoneNumber,
+			},
+			BookingDate: b.ScheduledAt,
+			TotalPrice:  b.TotalPrice,
+			Service:     dataServices,
+			Rating:      nil,
+		}
+
+		if b.StatusBooking == entity.BookingStatusCompleted && len(b.Ratings) > 0 {
+			var avgRating float64 = 0.0
+			totalRating := 0
+			ratingCapster := 0
+			ratingStaff := 0
+			ratingStore := 0
+			countRating := 0
+			message := ""
+			for _, r := range b.Ratings {
+				if r.Type == entity.RatingTypeCapster {
+					ratingCapster = int(r.Score)
+					countRating = 1
+				}
+
+				if r.Type == entity.RatingTypeStaff {
+					ratingStaff = int(r.Score)
+					countRating = 2
+				}
+
+				if r.Type == entity.RatingTypeStore {
+					ratingStore = int(r.Score)
+					countRating = 3
+					message = *r.Message
+				}
+
+				totalRating += int(r.Score)
+			}
+
+			if countRating > 0 {
+				avgRating = float64(totalRating) / float64(countRating)
+			}
+
+			dataBooking.Rating = &dto.DataRatingBooking{
+				AvgRating:     avgRating,
+				CapsterRating: ratingCapster,
+				StaffRating:   ratingStaff,
+				StoreRating:   ratingStore,
+				Message:       message,
+			}
+		}
+
+		dataBookings = append(dataBookings, dataBooking)
+	}
+
+	return dataBookings, paginationData, nil
 }

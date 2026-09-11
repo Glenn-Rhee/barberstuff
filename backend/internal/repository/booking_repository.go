@@ -10,6 +10,7 @@ type BookingRepository interface {
 	FindOne(query interface{}, args ...interface{}) (entity.Booking, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Booking, error)
 	Create(tx *gorm.DB, b *entity.Booking) error
+	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
 
 type bookingRepository struct {
@@ -31,7 +32,16 @@ func (r *bookingRepository) FindOne(query interface{}, args ...interface{}) (ent
 func (r *bookingRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Booking, error) {
 	var dataBooking []entity.Booking
 	result := r.db.
-		Preload("BookingItems").
+		Preload("Store").
+		Preload("Capster").
+		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Store").
+				Preload("Capster").
+				Preload("Staff")
+		}).
+		Preload("BookingItems", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Service")
+		}).
 		Scopes(scopes...).
 		Find(&dataBooking)
 
@@ -40,4 +50,10 @@ func (r *bookingRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 
 func (r *bookingRepository) Create(tx *gorm.DB, b *entity.Booking) error {
 	return tx.Create(&b).Error
+}
+
+func (r *bookingRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+	var total int64
+	result := r.db.Model(&entity.Booking{}).Count(&total).Scopes(scopes...)
+	return total, result.Error
 }

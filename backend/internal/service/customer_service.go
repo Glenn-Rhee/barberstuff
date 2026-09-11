@@ -100,7 +100,7 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 	dataPremium, err := c.premiumTypeRepo.FindOne("name = ?", "silver")
 	if err != nil {
 		helper.Logger("Find premium type", BASE_PATH, err)
-		return dto.AuthenticationResponse{}, errors.New("Tterjadi kesalahan saat mencari data premium")
+		return dto.AuthenticationResponse{}, errors.New("Terjadi kesalahan saat mencari data premium")
 	}
 	custId := uuid.New()
 	customer := &entity.Customer{
@@ -225,7 +225,7 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 	dataPremium, err := c.premiumTypeRepo.FindOne("name = ?", "silver")
 	if err != nil {
 		helper.Logger("Find premium type", BASE_PATH, err)
-		return &dto.CredentialCustomerResponse{}, errors.New("Tterjadi kesalahan saat mencari data premium")
+		return &dto.CredentialCustomerResponse{}, errors.New("Terjadi kesalahan saat mencari data premium")
 	}
 
 	hashedPassword, err := helper.HashPassword(dataNewCustomer.Password)
@@ -477,7 +477,7 @@ func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCusto
 	dataPremium, err := c.premiumTypeRepo.FindOne("id = ?", dataCustomers.IdPremiumType)
 	if err != nil {
 		helper.Logger("Find premium type", "service/customer_service.go", err)
-		return dto.ProfileCustomerResponse{}, errors.New("Tterjadi kesalahan saat mencari data premium")
+		return dto.ProfileCustomerResponse{}, errors.New("Terjadi kesalahan saat mencari data premium")
 	}
 
 	dataResult := dto.ProfileCustomerResponse{

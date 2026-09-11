@@ -53,8 +53,8 @@ type GetBookingStoreResponse struct {
 type DataStoreBooking struct {
 	Id          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
-	Address     string    `json:"address"`
-	PhoneNumber string    `json:"phone_number"`
+	Address     *string   `json:"address"`
+	PhoneNumber *string   `json:"phone_number"`
 }
 
 type DataCapsterBooking struct {
@@ -77,4 +77,44 @@ type CreateBookingResponse struct {
 	Store         DataStoreBooking     `json:"store"`
 	Capster       DataCapsterBooking   `json:"capster"`
 	Service       []DataServiceBooking `json:"service"`
+}
+
+type StatusBookingRequest string
+
+const (
+	StatusUpcoming StatusBookingRequest = "upcoming"
+	StatusDone     StatusBookingRequest = "done"
+	StatusCancel   StatusBookingRequest = "cancel"
+)
+
+type SortBooking string
+
+const (
+	SortByBookingDate        SortBooking = "scheduled_at"
+	SortByBookingServiceName SortBooking = "name"
+)
+
+type GetBookingUserRequest struct {
+	StatusBooking StatusBookingRequest `form:"status_booking" binding:"required,oneof=upcoming done cancel"`
+	Query         *string              `form:"q" binding:"omitempty"`
+	SortBy        *SortBooking         `form:"sort_by" binding:"omitempty,oneof=scheduled_at name"`
+	RequestParamsPagination
+}
+
+type DataRatingBooking struct {
+	AvgRating     float64 `json:"avg_rating"`
+	CapsterRating int     `json:"capster_rating"`
+	StaffRating   int     `json:"staff_rating"`
+	StoreRating   int     `json:"store_rating"`
+	Message       string  `json:"message"`
+}
+
+type GetBookingUserResponse struct {
+	Id          uuid.UUID            `json:"id"`
+	Service     []DataServiceBooking `json:"service"`
+	Capster     DataCapsterBooking   `json:"capster"`
+	Store       DataStoreBooking     `json:"store"`
+	BookingDate time.Time            `json:"booking_date"`
+	TotalPrice  decimal.Decimal      `json:"total_price"`
+	Rating      *DataRatingBooking   `json:"rating"`
 }

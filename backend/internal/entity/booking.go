@@ -39,6 +39,9 @@ type Booking struct {
 	CreatedAt      time.Time         `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt      time.Time         `gorm:"column:updated_at;not null;autoUpdateTime"`
 	BookingItems   []BookingItem     `gorm:"foreignKey:IDBooking"`
+	Store          Store             `gorm:"foreignKey:IDStore"`
+	Capster        Capster           `gorm:"foreignKey:IDCapster"`
+	Ratings        []Rating          `gorm:"foreignKey:IDBooking"`
 }
 
 func (Booking) TableName() string {
@@ -52,6 +55,7 @@ type BookingItem struct {
 	Price       decimal.Decimal `gorm:"column:price;not null"`
 	AddedOnSpot bool            `gorm:"column:added_on_spot;not null"`
 	CreatedAt   time.Time       `gorm:"column:created_at;not null;autoCreateTime"`
+	Service     Service         `gorm:"foreignKey:IDService"`
 }
 
 func (BookingItem) TableName() string {
