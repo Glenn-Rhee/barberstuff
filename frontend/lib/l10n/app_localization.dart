@@ -1205,7 +1205,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookingTermsOutro.
   ///
   /// In id, this message translates to:
-  /// **'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya!'**
+  /// **'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya! 😊'**
   String get bookingTermsOutro;
 
   /// No description provided for @bookingTermsAgree.

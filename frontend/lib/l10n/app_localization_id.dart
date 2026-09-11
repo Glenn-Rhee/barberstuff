@@ -622,7 +622,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get bookingTermsOutro =>
-      'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya!';
+      'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya! 😊';
 
   @override
   String get bookingTermsAgree => 'Saya sudah baca ketentuan';

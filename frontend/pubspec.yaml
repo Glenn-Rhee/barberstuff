@@ -32,8 +32,27 @@ flutter:
   generate: true
 
   assets:
-    - assets/images/
-    - assets/icons/
+    - assets/icons/book/
+    - assets/icons/detail_store/
+    - assets/icons/general/
+    - assets/icons/history/
+    - assets/icons/home/
+    - assets/icons/loading/
+    - assets/icons/nav_bottom/
+    - assets/icons/notify/
+    - assets/icons/profile/
+    - assets/icons/promo/
+    - assets/icons/register/
+    - assets/icons/splash/
+    - assets/images/choose/
+    - assets/images/forgot/
+    - assets/images/general/
+    - assets/images/home/
+    - assets/images/notify/
+    - assets/images/profile/
+    - assets/images/promo/
+    - assets/images/splash/
+    - assets/images/verification/
 
   fonts:
     - family: Poppins
@@ -48,12 +67,12 @@ flutter:
           weight: 700
 
 flutter_launcher_icons:
-  image_path: "assets/icons/icon_barberstuff.png"
+  image_path: "assets/images/choose/logo_barberstuff.png"
 
   android: "launcher_icon"
   min_sdk_android: 21
   adaptive_icon_background: "#000000"
-  adaptive_icon_foreground: "assets/icons/icon_barberstuff_fg.png"
+  adaptive_icon_foreground: "assets/images/choose/logo_barberstuff_fg.png"
 
   ios: true
   remove_alpha_ios: true

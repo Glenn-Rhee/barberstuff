@@ -620,7 +620,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bookingTermsOutro =>
-      'Please arrive on time so your service can run comfortably and on schedule. Thank you for understanding!';
+      'Please arrive on time so your service can run comfortably and on schedule. Thank you for understanding! 😊';
 
   @override
   String get bookingTermsAgree => 'I have read the terms';

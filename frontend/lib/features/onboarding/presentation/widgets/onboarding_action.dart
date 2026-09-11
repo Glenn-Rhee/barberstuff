@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/constants/app_duration.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
@@ -57,11 +58,14 @@ class OnboardingAction extends StatelessWidget {
                               color: AppColor.surface,
                             ),
                           )
-                        : const Icon(
-                            Icons.arrow_forward_rounded,
-                            key: ValueKey<String>('icon'),
+                        : Image.asset(
+                            AppAssets.arrowSlide,
+                            key: const ValueKey<String>('arrow'),
+                            width: 20,
+                            height: 20,
+                            fit: BoxFit.contain,
                             color: AppColor.surface,
-                            size: 22,
+                            filterQuality: FilterQuality.medium,
                           ),
                   ),
                 ),
