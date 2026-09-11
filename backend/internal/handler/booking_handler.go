@@ -203,6 +203,20 @@ func (h *BookingHandler) GetDataBookingStore(ctx *gin.Context) {
 	})
 }
 
+// DeleteLockBooking godoc
+// @Summary      Hapus lock booking
+// @Description  Membatalkan/menghapus kunci slot booking (capster, toko, dan tanggal tertentu) yang sebelumnya dibuat. Hanya dapat diakses oleh customer
+// @Tags         Booking
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id_store     query string true "ID toko"
+// @Param        booking_date query string true "Tanggal & jam booking (format RFC3339 dengan timezone offset, contoh: 2026-09-12T11:00:00+07:00)"
+// @Param        id_capster   query string true "ID capster"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil delete lock booking!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal menghapus lock booking"
+// @Router       /booking/lock [delete]
 func (h *BookingHandler) DeleteLockBooking(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
