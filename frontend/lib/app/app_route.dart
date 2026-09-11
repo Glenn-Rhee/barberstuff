@@ -7,10 +7,10 @@ import 'package:mobile_barberstuff/features/auth/presentation/pages/register_pag
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_success_page.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_flow_page.dart';
+import 'package:mobile_barberstuff/features/debug/presentation/pages/debug_shell_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/forgot_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_success_page.dart';
-import 'package:mobile_barberstuff/features/main/presentation/pages/main_shell_page.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/about_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
@@ -134,7 +134,7 @@ class AppRoute {
       case home:
         return MaterialPageRoute<void>(
           settings: settings,
-          builder: (BuildContext context) => const MainShellPage(),
+          builder: (BuildContext context) => const DebugShellPage(),
         );
       case verifySuccess:
         return MaterialPageRoute<void>(

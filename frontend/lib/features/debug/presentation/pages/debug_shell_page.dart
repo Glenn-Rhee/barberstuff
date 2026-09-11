@@ -13,8 +13,8 @@ import 'package:mobile_barberstuff/features/profile/presentation/provider/profil
 import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:provider/provider.dart';
 
-class MainShellPage extends StatelessWidget {
-  const MainShellPage({super.key});
+class DebugShellPage extends StatelessWidget {
+  const DebugShellPage({super.key});
 
   @override
   Widget build(BuildContext context) {

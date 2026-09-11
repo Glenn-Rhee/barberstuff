@@ -10,7 +10,7 @@ class AppAssets {
   static const String onboardingFirst = '$_images/slide_1.png';
   static const String onboardingSecond = '$_images/slide_2.png';
   static const String onboardingThird = '$_images/slide_3.png';
-  static const String logoLogin = '$_images/logo_login.png';
+  static const String barberstuffLogoLogin = '$_images/barberstuff_logo_image.png';
   static const String topBox = '$_images/TopBox.png';
   static const String emailVerification = '$_images/email_verification.png';
   static const String checkVerification = '$_images/check_verification.png';

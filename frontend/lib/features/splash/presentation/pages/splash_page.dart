@@ -77,7 +77,7 @@ class _SplashPageState extends State<SplashPage>
               ),
           child: Center(
             child: AnimatedBrandLogo(
-              delay: const Duration(milliseconds: 200),
+              delay: const Duration(milliseconds: 50),
               onIntroEnd: _openBrandSplash,
             ),
           ),
