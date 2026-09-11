@@ -24,6 +24,12 @@ type GetBookingStoreRequest struct {
 	IdStore string    `form:"id_store" binding:"required"`
 }
 
+type DeleteLockBookingRequest struct {
+	IdStore     string    `form:"id_store" binding:"required"`
+	BookingDate time.Time `form:"booking_date" binding:"required"`
+	IdCapster   string    `form:"id_capster" binding:"required"`
+}
+
 type CapsterAvailable struct {
 	Id        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`

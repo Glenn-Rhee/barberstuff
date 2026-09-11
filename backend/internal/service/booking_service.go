@@ -23,6 +23,7 @@ type BookingService interface {
 	LockBooking(req dto.LockBookingRequest, claims *lib.CustomClaims, ctx context.Context) error
 	CreateBooking(ctx context.Context, claims *lib.CustomClaims, req dto.CreateBookingRequest) (dto.CreateBookingResponse, error)
 	GetBookingStore(ctx context.Context, claims *lib.CustomClaims, reqParams dto.GetBookingStoreRequest) (dto.GetBookingStoreResponse, error)
+	DeleteLockBooking(ctx context.Context, claims *lib.CustomClaims, reqParams dto.DeleteLockBookingRequest) error
 }
 
 type bookingService struct {
@@ -737,4 +738,77 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 		IdStore: idStore,
 		Slots:   resultSlots,
 	}, nil
+}
+
+func (s *bookingService) DeleteLockBooking(ctx context.Context, claims *lib.CustomClaims, reqParams dto.DeleteLockBookingRequest) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat booking"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idUser, err := uuid.Parse(claims.UserId)
+	if err != nil {
+		return errors.New("Data user tidak valid!")
+	}
+
+	idCapster, err := uuid.Parse(reqParams.IdCapster)
+	if err != nil {
+		return errors.New("Id capster tidak valid!")
+	}
+
+	idStore, err := uuid.Parse(reqParams.IdStore)
+	if err != nil {
+		return errors.New("Id toko tidak valid!")
+	}
+
+	userLockKey := fmt.Sprintf("user_lock:%v", idUser)
+	_, err = s.client.Get(ctx, userLockKey).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return errors.New("Anda belum melakukan lock booking")
+		}
+
+		helper.Logger("find data lock key", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Toko tidak ditemukan atau telah dihapus!")
+		}
+
+		helper.Logger("find one store", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load timezone", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	scheduledAt := reqParams.BookingDate.In(loc)
+	dateSchedule := scheduledAt.Format("2006-01-02")
+	timeSchedule := scheduledAt.Format("15:04")
+
+	bookingLockKey := fmt.Sprintf("lock:%v:%v:%v:%v", idStore, dateSchedule, timeSchedule, idCapster)
+	_, err = s.client.Get(ctx, bookingLockKey).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return errors.New("Anda belum melakukan lock booking")
+		}
+
+		helper.Logger("find data lock key", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	pipe := s.client.Pipeline()
+	pipe.Del(ctx, bookingLockKey)
+	pipe.Del(ctx, userLockKey)
+	_, err = pipe.Exec(ctx)
+	if err != nil {
+		helper.Logger("delete lock booking", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
 }
