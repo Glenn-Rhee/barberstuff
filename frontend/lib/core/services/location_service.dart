@@ -32,12 +32,13 @@ class LocationService {
   UserPosition? get lastKnown =>
       UserPosition.fromJson(_cache.readJson(cacheKey)?.asMap);
 
-  Future<UserPosition?> current() async {
+  Future<UserPosition?> current({bool prompt = false}) async {
     try {
       if (!await Geolocator.isLocationServiceEnabled()) return lastKnown;
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
+        if (!prompt) return lastKnown;
         permission = await Geolocator.requestPermission();
       }
 

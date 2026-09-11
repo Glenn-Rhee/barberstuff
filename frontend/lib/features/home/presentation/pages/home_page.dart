@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
@@ -22,13 +23,35 @@ import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
 import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key, this.onProfileTap});
 
   static const double sidePadding = 20;
   static const int birthdayDiscount = 30;
 
   final VoidCallback? onProfileTap;
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((Duration _) {
+      _askLocationPermission();
+    });
+  }
+
+  Future<void> _askLocationPermission() async {
+    if (!mounted) return;
+    try {
+      await context.read<LocationService>().current(prompt: true);
+    } on ProviderNotFoundException {
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +66,7 @@ class HomePage extends StatelessWidget {
           onNotificationTap: () {
             Navigator.of(context).pushNamed(AppRoute.notification);
           },
-          onProfileTap: onProfileTap ?? () {},
+          onProfileTap: widget.onProfileTap ?? () {},
         ),
         Expanded(
           child: ColoredBox(
