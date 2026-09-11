@@ -105,12 +105,9 @@ func main() {
 		booking.POST("/", h.BookingHandler.CreateBooking)
 		booking.GET("/store", h.BookingHandler.GetDataBookingStore)
 		booking.GET("/customer", h.BookingHandler.GetDataBookingCustomer)
-		
-		lock := booking.Group("/lock")
-		{
-			lock.POST("/", h.BookingHandler.LockBooking)
-			lock.DELETE("/", h.BookingHandler.DeleteLockBooking)
-		}
+
+		booking.POST("/lock", h.BookingHandler.LockBooking)
+		booking.DELETE("/lock", h.BookingHandler.DeleteLockBooking)
 	}
 
 	fmt.Println("Server running on http://localhost:8080")
