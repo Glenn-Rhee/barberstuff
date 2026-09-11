@@ -1329,7 +1329,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Mengambil daftar toko cabang, dapat difilter berdasarkan nama. Hanya dapat diakses oleh admin",
+                "description": "Mengambil daftar toko cabang, dapat difilter berdasarkan nama. Hanya dapat diakses oleh admin dan customer",
                 "produces": [
                     "application/json"
                 ],

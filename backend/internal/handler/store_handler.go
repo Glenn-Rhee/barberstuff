@@ -94,7 +94,7 @@ func (h *StoreHandler) CreateNewStore(ctx *gin.Context) {
 
 // GetStores godoc
 // @Summary      Daftar toko cabang
-// @Description  Mengambil daftar toko cabang, dapat difilter berdasarkan nama. Hanya dapat diakses oleh admin
+// @Description  Mengambil daftar toko cabang, dapat difilter berdasarkan nama. Hanya dapat diakses oleh admin dan customer
 // @Tags         Store
 // @Produce      json
 // @Security     BearerAuth
@@ -126,7 +126,7 @@ func (h *StoreHandler) GetStores(ctx *gin.Context) {
 		return
 	}
 
-	if claimsResult.Role != entity.RoleAdmin {
+	if claimsResult.Role != entity.RoleAdmin &&	 claimsResult.Role != entity.RoleCustomer {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    "Anda tidak memiliki akses!",
 			StatusCode: http.StatusUnauthorized,

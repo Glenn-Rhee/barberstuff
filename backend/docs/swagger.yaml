@@ -1534,7 +1534,7 @@ paths:
   /store:
     get:
       description: Mengambil daftar toko cabang, dapat difilter berdasarkan nama.
-        Hanya dapat diakses oleh admin
+        Hanya dapat diakses oleh admin dan customer
       parameters:
       - description: Nama toko
         in: query
