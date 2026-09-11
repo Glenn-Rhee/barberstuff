@@ -866,6 +866,174 @@ abstract class AppLocalizations {
   /// **'Riwayat Booking'**
   String get historyTitle;
 
+  /// No description provided for @storeDetailTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Detail Toko'**
+  String get storeDetailTitle;
+
+  /// No description provided for @storeOpen.
+  ///
+  /// In id, this message translates to:
+  /// **'BUKA'**
+  String get storeOpen;
+
+  /// No description provided for @storeClosed.
+  ///
+  /// In id, this message translates to:
+  /// **'TUTUP'**
+  String get storeClosed;
+
+  /// No description provided for @storeReviewCount.
+  ///
+  /// In id, this message translates to:
+  /// **'({count} reviews)'**
+  String storeReviewCount(String count);
+
+  /// No description provided for @storeActionCall.
+  ///
+  /// In id, this message translates to:
+  /// **'Telepon'**
+  String get storeActionCall;
+
+  /// No description provided for @storeActionRoute.
+  ///
+  /// In id, this message translates to:
+  /// **'Rute'**
+  String get storeActionRoute;
+
+  /// No description provided for @storeActionShare.
+  ///
+  /// In id, this message translates to:
+  /// **'Bagikan'**
+  String get storeActionShare;
+
+  /// No description provided for @storeBarbers.
+  ///
+  /// In id, this message translates to:
+  /// **'Barber Kami'**
+  String get storeBarbers;
+
+  /// No description provided for @storeSeeAll.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Semua'**
+  String get storeSeeAll;
+
+  /// No description provided for @storeTabAbout.
+  ///
+  /// In id, this message translates to:
+  /// **'Tentang Kami'**
+  String get storeTabAbout;
+
+  /// No description provided for @storeTabService.
+  ///
+  /// In id, this message translates to:
+  /// **'Layanan'**
+  String get storeTabService;
+
+  /// No description provided for @storeTabPackage.
+  ///
+  /// In id, this message translates to:
+  /// **'Paket'**
+  String get storeTabPackage;
+
+  /// No description provided for @storeTabReview.
+  ///
+  /// In id, this message translates to:
+  /// **'Ulasan'**
+  String get storeTabReview;
+
+  /// No description provided for @storeDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Deskripsi'**
+  String get storeDescription;
+
+  /// No description provided for @storeHours.
+  ///
+  /// In id, this message translates to:
+  /// **'Jam Operasional'**
+  String get storeHours;
+
+  /// No description provided for @storeHoursEveryday.
+  ///
+  /// In id, this message translates to:
+  /// **'Setiap hari'**
+  String get storeHoursEveryday;
+
+  /// No description provided for @storeAddressTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat Kami'**
+  String get storeAddressTitle;
+
+  /// No description provided for @storeSeeMap.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat di Peta'**
+  String get storeSeeMap;
+
+  /// No description provided for @storeServicesTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Services Kami'**
+  String get storeServicesTitle;
+
+  /// No description provided for @storePackagesTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Paket Kami'**
+  String get storePackagesTitle;
+
+  /// No description provided for @storeReviewsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Ulasan Pelanggan'**
+  String get storeReviewsTitle;
+
+  /// No description provided for @storeBookNow.
+  ///
+  /// In id, this message translates to:
+  /// **'Pesan Sekarang'**
+  String get storeBookNow;
+
+  /// No description provided for @storeTypeCount.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} types'**
+  String storeTypeCount(int count);
+
+  /// No description provided for @storeShareCopied.
+  ///
+  /// In id, this message translates to:
+  /// **'Info toko disalin ke clipboard'**
+  String get storeShareCopied;
+
+  /// No description provided for @storeNoBarber.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada barber di cabang ini.'**
+  String get storeNoBarber;
+
+  /// No description provided for @storeNoService.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada layanan.'**
+  String get storeNoService;
+
+  /// No description provided for @storeNoPackage.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada paket.'**
+  String get storeNoPackage;
+
+  /// No description provided for @storeNoReview.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada ulasan.'**
+  String get storeNoReview;
+
   /// No description provided for @historyTabUpcoming.
   ///
   /// In id, this message translates to:

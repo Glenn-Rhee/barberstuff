@@ -20,6 +20,8 @@ import 'package:mobile_barberstuff/features/history/data/history_repository.dart
 import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/store/data/datasources/store_remote_datasource.dart';
+import 'package:mobile_barberstuff/features/store/data/repositories/store_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -82,6 +84,11 @@ Future<void> main() async {
           create: (BuildContext ctx) => BookingRepository(
             BookingRemoteDataSource(ctx.read<DioClient>().dio),
             ctx.read<AppCache>(),
+          ),
+        ),
+        Provider<StoreRepository>(
+          create: (BuildContext ctx) => StoreRepository(
+            StoreRemoteDataSource(ctx.read<DioClient>().dio),
           ),
         ),
         Provider<ProfileRepository>(

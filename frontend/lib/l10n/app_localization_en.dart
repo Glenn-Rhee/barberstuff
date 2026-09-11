@@ -436,6 +436,94 @@ class AppLocalizationsEn extends AppLocalizations {
   String get historyTitle => 'Booking History';
 
   @override
+  String get storeDetailTitle => 'Store Detail';
+
+  @override
+  String get storeOpen => 'OPEN';
+
+  @override
+  String get storeClosed => 'CLOSED';
+
+  @override
+  String storeReviewCount(String count) {
+    return '($count reviews)';
+  }
+
+  @override
+  String get storeActionCall => 'Call';
+
+  @override
+  String get storeActionRoute => 'Route';
+
+  @override
+  String get storeActionShare => 'Share';
+
+  @override
+  String get storeBarbers => 'Our Barbers';
+
+  @override
+  String get storeSeeAll => 'See All';
+
+  @override
+  String get storeTabAbout => 'About Us';
+
+  @override
+  String get storeTabService => 'Services';
+
+  @override
+  String get storeTabPackage => 'Packages';
+
+  @override
+  String get storeTabReview => 'Reviews';
+
+  @override
+  String get storeDescription => 'Description';
+
+  @override
+  String get storeHours => 'Opening Hours';
+
+  @override
+  String get storeHoursEveryday => 'Every day';
+
+  @override
+  String get storeAddressTitle => 'Our Address';
+
+  @override
+  String get storeSeeMap => 'View on Map';
+
+  @override
+  String get storeServicesTitle => 'Our Services';
+
+  @override
+  String get storePackagesTitle => 'Our Packages';
+
+  @override
+  String get storeReviewsTitle => 'Customer Reviews';
+
+  @override
+  String get storeBookNow => 'Book Now';
+
+  @override
+  String storeTypeCount(int count) {
+    return '$count types';
+  }
+
+  @override
+  String get storeShareCopied => 'Store info copied to clipboard';
+
+  @override
+  String get storeNoBarber => 'No barber at this branch yet.';
+
+  @override
+  String get storeNoService => 'No service yet.';
+
+  @override
+  String get storeNoPackage => 'No package yet.';
+
+  @override
+  String get storeNoReview => 'No review yet.';
+
+  @override
   String get historyTabUpcoming => 'Upcoming';
 
   @override

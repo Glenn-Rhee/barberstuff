@@ -222,6 +222,44 @@
   "navHistory": "Riwayat",
   "navProfile": "Profil",
   "historyTitle": "Riwayat Booking",
+  "storeDetailTitle": "Detail Toko",
+  "storeOpen": "BUKA",
+  "storeClosed": "TUTUP",
+  "storeReviewCount": "({count} reviews)",
+  "@storeReviewCount": {
+    "placeholders": {
+      "count": { "type": "String" }
+    }
+  },
+  "storeActionCall": "Telepon",
+  "storeActionRoute": "Rute",
+  "storeActionShare": "Bagikan",
+  "storeBarbers": "Barber Kami",
+  "storeSeeAll": "Lihat Semua",
+  "storeTabAbout": "Tentang Kami",
+  "storeTabService": "Layanan",
+  "storeTabPackage": "Paket",
+  "storeTabReview": "Ulasan",
+  "storeDescription": "Deskripsi",
+  "storeHours": "Jam Operasional",
+  "storeHoursEveryday": "Setiap hari",
+  "storeAddressTitle": "Alamat Kami",
+  "storeSeeMap": "Lihat di Peta",
+  "storeServicesTitle": "Services Kami",
+  "storePackagesTitle": "Paket Kami",
+  "storeReviewsTitle": "Ulasan Pelanggan",
+  "storeBookNow": "Pesan Sekarang",
+  "storeTypeCount": "{count} types",
+  "@storeTypeCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "storeShareCopied": "Info toko disalin ke clipboard",
+  "storeNoBarber": "Belum ada barber di cabang ini.",
+  "storeNoService": "Belum ada layanan.",
+  "storeNoPackage": "Belum ada paket.",
+  "storeNoReview": "Belum ada ulasan.",
   "historyTabUpcoming": "Akan Datang",
   "historyTabDone": "Selesai",
   "historyTabCanceled": "Dibatalkan",
