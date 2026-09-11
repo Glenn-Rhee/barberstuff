@@ -436,6 +436,94 @@ class AppLocalizationsId extends AppLocalizations {
   String get historyTitle => 'Riwayat Booking';
 
   @override
+  String get storeDetailTitle => 'Detail Toko';
+
+  @override
+  String get storeOpen => 'BUKA';
+
+  @override
+  String get storeClosed => 'TUTUP';
+
+  @override
+  String storeReviewCount(String count) {
+    return '($count reviews)';
+  }
+
+  @override
+  String get storeActionCall => 'Telepon';
+
+  @override
+  String get storeActionRoute => 'Rute';
+
+  @override
+  String get storeActionShare => 'Bagikan';
+
+  @override
+  String get storeBarbers => 'Barber Kami';
+
+  @override
+  String get storeSeeAll => 'Lihat Semua';
+
+  @override
+  String get storeTabAbout => 'Tentang Kami';
+
+  @override
+  String get storeTabService => 'Layanan';
+
+  @override
+  String get storeTabPackage => 'Paket';
+
+  @override
+  String get storeTabReview => 'Ulasan';
+
+  @override
+  String get storeDescription => 'Deskripsi';
+
+  @override
+  String get storeHours => 'Jam Operasional';
+
+  @override
+  String get storeHoursEveryday => 'Setiap hari';
+
+  @override
+  String get storeAddressTitle => 'Alamat Kami';
+
+  @override
+  String get storeSeeMap => 'Lihat di Peta';
+
+  @override
+  String get storeServicesTitle => 'Services Kami';
+
+  @override
+  String get storePackagesTitle => 'Paket Kami';
+
+  @override
+  String get storeReviewsTitle => 'Ulasan Pelanggan';
+
+  @override
+  String get storeBookNow => 'Pesan Sekarang';
+
+  @override
+  String storeTypeCount(int count) {
+    return '$count types';
+  }
+
+  @override
+  String get storeShareCopied => 'Info toko disalin ke clipboard';
+
+  @override
+  String get storeNoBarber => 'Belum ada barber di cabang ini.';
+
+  @override
+  String get storeNoService => 'Belum ada layanan.';
+
+  @override
+  String get storeNoPackage => 'Belum ada paket.';
+
+  @override
+  String get storeNoReview => 'Belum ada ulasan.';
+
+  @override
   String get historyTabUpcoming => 'Akan Datang';
 
   @override

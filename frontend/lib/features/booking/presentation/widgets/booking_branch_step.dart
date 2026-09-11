@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/permission_prompt.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
@@ -6,8 +7,8 @@ import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/provider/booking_flow_provider.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_step_shell.dart';
+import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:mobile_barberstuff/shared/widgets/offline_banner.dart';
 import 'package:provider/provider.dart';
 
@@ -259,7 +260,10 @@ class _StoreCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () => showComingSoonDialog(context),
+                      onTap: () => Navigator.of(context).pushNamed(
+                        AppRoute.storeDetail,
+                        arguments: StoreDetailArgs(storeId: store.id),
+                      ),
                       behavior: HitTestBehavior.opaque,
                       child: Text(
                         l10n.bookingViewStore,

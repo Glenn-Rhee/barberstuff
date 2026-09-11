@@ -24,6 +24,7 @@ import 'package:mobile_barberstuff/features/profile/presentation/pages/language_
 import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
+import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/shared/transitions/circular_reveal_route.dart';
 import 'package:provider/provider.dart';
 
@@ -51,6 +52,7 @@ class AppRoute {
   static const String booking = '/booking';
   static const String notification = '/notification';
   static const String history = '/history';
+  static const String storeDetail = '/store-detail';
   static const String bookingSuccess = '/booking-success';
   static const String bookingReceipt = '/booking-receipt';
 
@@ -113,6 +115,13 @@ class AppRoute {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (BuildContext context) => const HistoryPage(),
+        );
+      case storeDetail:
+        final Object? args = settings.arguments;
+        if (args is! StoreDetailArgs) return null;
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => StoreDetailPage(args: args),
         );
       case bookingSuccess:
         final Object? args = settings.arguments;
