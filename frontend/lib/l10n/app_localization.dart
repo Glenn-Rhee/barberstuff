@@ -632,6 +632,18 @@ abstract class AppLocalizations {
   /// **'{points} Poin lagi ke level premium'**
   String homePointsToPremium(String points);
 
+  /// No description provided for @homeMembershipLevel.
+  ///
+  /// In id, this message translates to:
+  /// **'Tingkat membership'**
+  String get homeMembershipLevel;
+
+  /// No description provided for @homeRedeemPoints.
+  ///
+  /// In id, this message translates to:
+  /// **'Tukarkan point anda'**
+  String get homeRedeemPoints;
+
   /// No description provided for @homeBirthdayTitle.
   ///
   /// In id, this message translates to:
@@ -649,6 +661,18 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Lihat Promo'**
   String get homeSeePromo;
+
+  /// No description provided for @homeBirthdayBadge.
+  ///
+  /// In id, this message translates to:
+  /// **'Tampil terbaik setiap hari'**
+  String get homeBirthdayBadge;
+
+  /// No description provided for @homeBookingNow.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking Sekarang'**
+  String get homeBookingNow;
 
   /// No description provided for @homeActionBooking.
   ///
@@ -698,6 +722,24 @@ abstract class AppLocalizations {
   /// **'Prioritas jadwal tanpa antre panjang'**
   String get homeBenefitPriority;
 
+  /// No description provided for @homeBenefitDiscountTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Diskon Lebih Banyak Cukur!'**
+  String get homeBenefitDiscountTitle;
+
+  /// No description provided for @homeBenefitPointsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Poin di Setiap Potongan'**
+  String get homeBenefitPointsTitle;
+
+  /// No description provided for @homeBenefitPriorityTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Prioritas Tanpa Antre'**
+  String get homeBenefitPriorityTitle;
+
   /// No description provided for @homeActiveBookingTitle.
   ///
   /// In id, this message translates to:
@@ -721,6 +763,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Lihat Detail'**
   String get homeBookingDetail;
+
+  /// No description provided for @homeBookingCapster.
+  ///
+  /// In id, this message translates to:
+  /// **'Capster {name}'**
+  String homeBookingCapster(String name);
 
   /// No description provided for @homeBookingEmpty.
   ///
@@ -764,6 +812,24 @@ abstract class AppLocalizations {
   /// **'Belum ada riwayat potongan.'**
   String get homeHistoryEmpty;
 
+  /// No description provided for @homeHistoryRebook.
+  ///
+  /// In id, this message translates to:
+  /// **'Pesan Lagi'**
+  String get homeHistoryRebook;
+
+  /// No description provided for @homeHistoryBy.
+  ///
+  /// In id, this message translates to:
+  /// **'oleh {name}'**
+  String homeHistoryBy(String name);
+
+  /// No description provided for @homeNearbyLocation.
+  ///
+  /// In id, this message translates to:
+  /// **'{city} • {distance} km'**
+  String homeNearbyLocation(String city, String distance);
+
   /// No description provided for @navHome.
   ///
   /// In id, this message translates to:
@@ -788,29 +854,143 @@ abstract class AppLocalizations {
   /// **'Profil'**
   String get navProfile;
 
-  /// No description provided for @profileTierNewbie.
+  /// No description provided for @notificationTitle.
   ///
   /// In id, this message translates to:
-  /// **'NEWBIE MEMBER'**
-  String get profileTierNewbie;
+  /// **'Notifikasi'**
+  String get notificationTitle;
 
-  /// No description provided for @profileTierBestie.
+  /// No description provided for @notificationSearchHint.
   ///
   /// In id, this message translates to:
-  /// **'BESTIE MEMBER'**
-  String get profileTierBestie;
+  /// **'Cari notifikasi...'**
+  String get notificationSearchHint;
 
-  /// No description provided for @profileTierRoyal.
+  /// No description provided for @notificationFilterAll.
   ///
   /// In id, this message translates to:
-  /// **'ROYAL MEMBER'**
-  String get profileTierRoyal;
+  /// **'Semua'**
+  String get notificationFilterAll;
 
-  /// No description provided for @profileTierCrazy.
+  /// No description provided for @notificationFilterUnread.
   ///
   /// In id, this message translates to:
-  /// **'CRAZY MEMBER'**
-  String get profileTierCrazy;
+  /// **'Belum Dibaca'**
+  String get notificationFilterUnread;
+
+  /// No description provided for @notificationMarkAllRead.
+  ///
+  /// In id, this message translates to:
+  /// **'Tandai semua dibaca'**
+  String get notificationMarkAllRead;
+
+  /// No description provided for @notificationToday.
+  ///
+  /// In id, this message translates to:
+  /// **'Hari ini'**
+  String get notificationToday;
+
+  /// No description provided for @notificationYesterday.
+  ///
+  /// In id, this message translates to:
+  /// **'Kemarin'**
+  String get notificationYesterday;
+
+  /// No description provided for @notificationEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada notifikasi saat ini'**
+  String get notificationEmpty;
+
+  /// No description provided for @notificationTimeNow.
+  ///
+  /// In id, this message translates to:
+  /// **'Baru saja'**
+  String get notificationTimeNow;
+
+  /// No description provided for @notificationTimeMinute.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} mnt lalu'**
+  String notificationTimeMinute(int count);
+
+  /// No description provided for @notificationTimeHour.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} jam lalu'**
+  String notificationTimeHour(int count);
+
+  /// No description provided for @notificationTimeDay.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} hari lalu'**
+  String notificationTimeDay(int count);
+
+  /// No description provided for @notificationBookingTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Jadwal Booking Dikonfirmasi!'**
+  String get notificationBookingTitle;
+
+  /// No description provided for @notificationBookingBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemesanan Anda untuk layanan cukur di cabang Jati Asih telah dikonfirmasi oleh barber.'**
+  String get notificationBookingBody;
+
+  /// No description provided for @notificationPointsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Poin Member Bertambah!'**
+  String get notificationPointsTitle;
+
+  /// No description provided for @notificationPointsBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda mendapatkan 150 poin tambahan dari transaksi cukur terakhir Anda. Tingkatkan terus level Anda!'**
+  String get notificationPointsBody;
+
+  /// No description provided for @notificationMembershipTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Selamat, Level Member Naik!'**
+  String get notificationMembershipTitle;
+
+  /// No description provided for @notificationMembershipBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda telah mencapai level Premium! Nikmati berbagai keuntungan eksklusif tanpa antre.'**
+  String get notificationMembershipBody;
+
+  /// No description provided for @notificationRecommendationTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Rekomendasi Gaya Rambut Baru'**
+  String get notificationRecommendationTitle;
+
+  /// No description provided for @notificationRecommendationBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Temukan tren gaya rambut pria terbaru tahun ini yang cocok dengan bentuk wajah Anda.'**
+  String get notificationRecommendationBody;
+
+  /// No description provided for @profileTierSilver.
+  ///
+  /// In id, this message translates to:
+  /// **'Silver Member'**
+  String get profileTierSilver;
+
+  /// No description provided for @profileTierGold.
+  ///
+  /// In id, this message translates to:
+  /// **'Gold Member'**
+  String get profileTierGold;
+
+  /// No description provided for @profileTierPlatinum.
+  ///
+  /// In id, this message translates to:
+  /// **'Platinum Member'**
+  String get profileTierPlatinum;
 
   /// No description provided for @profileMenuPersonalInfo.
   ///

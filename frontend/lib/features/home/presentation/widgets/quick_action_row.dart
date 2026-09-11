@@ -64,7 +64,8 @@ class _ActionItem extends StatelessWidget {
     required this.onTap,
   });
 
-  static const double _maxCircle = 62;
+  static const double _maxTile = 68;
+  static const double _radius = 18;
 
   final String iconPath;
   final String label;
@@ -72,51 +73,54 @@ class _ActionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                final double size = constraints.maxWidth * 0.78 < _maxCircle
-                    ? constraints.maxWidth * 0.78
-                    : _maxCircle;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final double size = constraints.maxWidth * 0.82 < _maxTile
+                ? constraints.maxWidth * 0.82
+                : _maxTile;
 
-                return Container(
-                  width: size,
-                  height: size,
-                  decoration: BoxDecoration(
-                    color: AppColor.orangeDashboard.withValues(alpha: 0.38),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Image.asset(
-                      iconPath,
-                      width: size * 0.44,
-                      height: size * 0.44,
-                      fit: BoxFit.contain,
-                      color: AppColor.ink,
-                      filterQuality: FilterQuality.medium,
+            return Center(
+              child: Material(
+                color: AppColor.surface,
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(_radius),
+                  side: const BorderSide(color: AppColor.goldDeep, width: 1.5),
+                ),
+                child: InkWell(
+                  onTap: onTap,
+                  splashColor: AppColor.goldDeep.withValues(alpha: 0.16),
+                  child: SizedBox(
+                    width: size,
+                    height: size,
+                    child: Center(
+                      child: Image.asset(
+                        iconPath,
+                        width: size * 0.42,
+                        height: size * 0.42,
+                        fit: BoxFit.contain,
+                        color: AppColor.ink,
+                        filterQuality: FilterQuality.medium,
+                      ),
                     ),
                   ),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: AppTextStyle.labelMedium,
-            ),
-          ],
+                ),
+              ),
+            );
+          },
         ),
-      ),
+        const SizedBox(height: 10),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: AppTextStyle.labelMedium,
+        ),
+      ],
     );
   }
 }

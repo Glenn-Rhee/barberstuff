@@ -4,6 +4,8 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
+import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
+import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -11,6 +13,8 @@ import 'package:provider/single_child_widget.dart';
 Future<void> showDebugPanel(BuildContext context) {
   final DebugOverrides overrides = context.read<DebugOverrides>();
   final BookingCatalog catalog = context.read<BookingCatalog>();
+  final NotificationProvider notifications = context
+      .read<NotificationProvider>();
 
   return showModalBottomSheet<void>(
     context: context,
@@ -23,6 +27,9 @@ Future<void> showDebugPanel(BuildContext context) {
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<DebugOverrides>.value(value: overrides),
         ChangeNotifierProvider<BookingCatalog>.value(value: catalog),
+        ChangeNotifierProvider<NotificationProvider>.value(
+          value: notifications,
+        ),
       ],
       child: const _DebugPanel(),
     ),
@@ -46,6 +53,10 @@ class _DebugPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final DebugOverrides d = context.watch<DebugOverrides>();
     final BookingCatalog catalog = context.watch<BookingCatalog>();
+    final NotificationProvider notif = context.watch<NotificationProvider>();
+    final int unread = notif.items
+        .where((AppNotification n) => !n.isRead)
+        .length;
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -192,6 +203,76 @@ class _DebugPanel extends StatelessWidget {
               count: catalog.capsters.length,
               onAdd: catalog.addCapster,
               onRemove: catalog.removeLastCapster,
+            ),
+
+            const Divider(height: 32, color: AppColor.border),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text('Notifikasi', style: AppTextStyle.titleSmall),
+                ),
+                TextButton(
+                  onPressed: notif.reset,
+                  child: Text(
+                    'Reset',
+                    style: AppTextStyle.labelMedium.copyWith(
+                      color: AppColor.danger,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              '${notif.items.length} notifikasi, $unread belum dibaca. '
+              'Dummy lokal, tidak menyentuh backend.',
+              style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: <Widget>[
+                _TierChip(
+                  label: 'Kirim 1',
+                  selected: false,
+                  onTap: notif.push,
+                ),
+                for (final NotificationCategory c
+                    in NotificationCategory.values)
+                  _TierChip(
+                    label: c.name,
+                    selected: false,
+                    onTap: () => notif.push(c),
+                  ),
+                _TierChip(
+                  label: 'Tandai dibaca',
+                  selected: false,
+                  onTap: notif.markAllRead,
+                ),
+                _TierChip(
+                  label: 'Kosongkan',
+                  color: AppColor.danger,
+                  selected: false,
+                  onTap: notif.clear,
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    'Simulasi masuk otomatis '
+                    '(${NotificationProvider.simulatorInterval.inSeconds} dtk)',
+                    style: AppTextStyle.bodyMedium,
+                  ),
+                ),
+                Switch(
+                  value: notif.isSimulating,
+                  activeThumbColor: AppColor.orangeLight,
+                  onChanged: notif.toggleSimulator,
+                ),
+              ],
             ),
           ],
         ),

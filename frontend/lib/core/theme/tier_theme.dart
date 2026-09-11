@@ -20,44 +20,35 @@ class TierTheme {
     colors: <Color>[base, deep],
   );
 
-  static const TierTheme _newbie = TierTheme(
-    base: Color(0xFF2E3338),
-    deep: Color(0xFF15181B),
+  static const TierTheme _silver = TierTheme(
+    base: Color(0xFF3A4046),
+    deep: Color(0xFF16191C),
     accent: Color(0xFFC3CCD6),
-    onAccent: Color(0xFF15181B),
+    onAccent: Color(0xFF16191C),
   );
 
-  static const TierTheme _bestie = TierTheme(
-    base: Color(0xFF4A3524),
-    deep: Color(0xFF1E140C),
-    accent: Color(0xFFD79A6A),
-    onAccent: Color(0xFF1E140C),
-  );
-
-  static const TierTheme _royal = TierTheme(
+  static const TierTheme _gold = TierTheme(
     base: Color(0xFF3B2F14),
     deep: Color(0xFF171206),
     accent: Color(0xFFFECC67),
     onAccent: Color(0xFF171206),
   );
 
-  static const TierTheme _crazy = TierTheme(
-    base: Color(0xFF352247),
-    deep: Color(0xFF150D1E),
-    accent: Color(0xFFC79BEC),
-    onAccent: Color(0xFF150D1E),
+  static const TierTheme _platinum = TierTheme(
+    base: Color(0xFF2B3440),
+    deep: Color(0xFF0E1318),
+    accent: Color(0xFFE6ECF2),
+    onAccent: Color(0xFF0E1318),
   );
 
   static TierTheme of(MemberTier tier) {
     switch (tier) {
-      case MemberTier.newbie:
-        return _newbie;
-      case MemberTier.bestie:
-        return _bestie;
-      case MemberTier.royal:
-        return _royal;
-      case MemberTier.crazy:
-        return _crazy;
+      case MemberTier.silver:
+        return _silver;
+      case MemberTier.gold:
+        return _gold;
+      case MemberTier.platinum:
+        return _platinum;
     }
   }
 }

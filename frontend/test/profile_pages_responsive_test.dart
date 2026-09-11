@@ -18,7 +18,7 @@ final CustomerProfile _profile = CustomerProfile(
   phoneNumber: '081388876690',
   gender: 'male',
   memberPoints: 1250,
-  tier: MemberTier.newbie,
+  tier: MemberTier.silver,
   dateOfBirth: DateTime(2000, 1, 11),
 );
 

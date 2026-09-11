@@ -13,6 +13,8 @@ class ActiveBookingCard extends StatelessWidget {
     required this.onDetail,
   });
 
+  static const double _radius = 20;
+
   final ActiveBooking booking;
   final VoidCallback onDetail;
 
@@ -22,15 +24,14 @@ class ActiveBookingCard extends StatelessWidget {
     final String locale = Localizations.localeOf(context).toLanguageTag();
 
     final String schedule =
-        '${DateFormat('EEEE, d MMMM', locale).format(booking.schedule)}'
+        '${DateFormat('EEEE, d MMM', locale).format(booking.schedule)}'
         ' • ${DateFormat('HH:mm', locale).format(booking.schedule)}';
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
       decoration: BoxDecoration(
-        color: AppColor.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColor.border),
+        color: AppColor.ink,
+        borderRadius: BorderRadius.circular(_radius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,11 +41,11 @@ class ActiveBookingCard extends StatelessWidget {
               Flexible(
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                    horizontal: 14,
+                    vertical: 7,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColor.orangeLight,
+                    color: AppColor.surface,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -52,7 +53,6 @@ class ActiveBookingCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyle.bodySmall.copyWith(
-                      color: AppColor.surface,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.4,
                     ),
@@ -67,27 +67,28 @@ class ActiveBookingCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.bodySmall.copyWith(
-                    color: AppColor.inkFaint,
+                    color: AppColor.goldDeep,
+                    fontSize: 13,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           Row(
             children: <Widget>[
               Container(
-                width: 42,
-                height: 42,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
-                  color: AppColor.border.withValues(alpha: 0.45),
-                  borderRadius: BorderRadius.circular(10),
+                  color: AppColor.goldMid,
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
                   child: Image.asset(
                     AppAssets.storeDashboard,
-                    width: 20,
-                    height: 20,
+                    width: 22,
+                    height: 22,
                     fit: BoxFit.contain,
                     color: AppColor.ink,
                     filterQuality: FilterQuality.medium,
@@ -103,7 +104,10 @@ class ActiveBookingCard extends StatelessWidget {
                       booking.storeName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyle.titleMedium,
+                      style: AppTextStyle.titleMedium.copyWith(
+                        color: AppColor.surface,
+                        fontSize: 17,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -111,7 +115,8 @@ class ActiveBookingCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyle.bodySmall.copyWith(
-                        color: AppColor.inkFaint,
+                        color: AppColor.surface,
+                        fontSize: 13,
                       ),
                     ),
                   ],
@@ -119,25 +124,31 @@ class ActiveBookingCard extends StatelessWidget {
               ),
             ],
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 14),
-            child: Divider(height: 1, thickness: 1, color: AppColor.border),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Divider(
+              height: 1,
+              thickness: 1,
+              color: AppColor.surface.withValues(alpha: 0.28),
+            ),
           ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              _CapsterAvatar(photoUrl: AppAssets.dummyCapster),
-              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      booking.capsterName,
+                      l10n.homeBookingCapster(booking.capsterName),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyle.titleSmall,
+                      style: AppTextStyle.titleSmall.copyWith(
+                        color: AppColor.surface,
+                        fontSize: 16,
+                      ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text(
                       schedule,
                       maxLines: 1,
@@ -149,70 +160,36 @@ class ActiveBookingCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               GestureDetector(
                 onTap: onDetail,
                 behavior: HitTestBehavior.opaque,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(
-                    l10n.homeBookingDetail,
-                    style: AppTextStyle.labelMedium.copyWith(
-                      color: AppColor.orangeLight,
-                      fontWeight: FontWeight.w600,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      l10n.homeBookingDetail,
+                      style: AppTextStyle.labelMedium.copyWith(
+                        color: AppColor.goldDeep,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 6),
+                    Image.asset(
+                      AppAssets.arrowFilledDashboard,
+                      width: 6,
+                      height: 12,
+                      fit: BoxFit.contain,
+                      color: AppColor.goldDeep,
+                      filterQuality: FilterQuality.medium,
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ],
       ),
-    );
-  }
-}
-
-class _CapsterAvatar extends StatelessWidget {
-  const _CapsterAvatar({required this.photoUrl});
-
-  static const double _size = 34;
-
-  final String? photoUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final String? source = photoUrl;
-
-    return ClipOval(
-      child: SizedBox(
-        width: _size,
-        height: _size,
-        child: source == null ? _fallback() : _image(source),
-      ),
-    );
-  }
-
-  Widget _image(String source) {
-    if (source.startsWith('assets/')) {
-      return Image.asset(
-        source,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.medium,
-        errorBuilder: (BuildContext _, Object _, StackTrace? _) => _fallback(),
-      );
-    }
-
-    return Image.network(
-      source,
-      fit: BoxFit.cover,
-      errorBuilder: (BuildContext _, Object _, StackTrace? _) => _fallback(),
-    );
-  }
-
-  Widget _fallback() {
-    return const ColoredBox(
-      color: AppColor.border,
-      child: Icon(Icons.person_rounded, size: 20, color: AppColor.surface),
     );
   }
 }

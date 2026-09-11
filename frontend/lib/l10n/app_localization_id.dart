@@ -308,6 +308,12 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get homeMembershipLevel => 'Tingkat membership';
+
+  @override
+  String get homeRedeemPoints => 'Tukarkan point anda';
+
+  @override
   String get homeBirthdayTitle => 'Spesial Hari Ulang Tahun!';
 
   @override
@@ -316,6 +322,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get homeSeePromo => 'Lihat Promo';
+
+  @override
+  String get homeBirthdayBadge => 'Tampil terbaik setiap hari';
+
+  @override
+  String get homeBookingNow => 'Booking Sekarang';
 
   @override
   String get homeActionBooking => 'Booking';
@@ -342,6 +354,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get homeBenefitPriority => 'Prioritas jadwal tanpa antre panjang';
 
   @override
+  String get homeBenefitDiscountTitle => 'Diskon Lebih Banyak Cukur!';
+
+  @override
+  String get homeBenefitPointsTitle => 'Poin di Setiap Potongan';
+
+  @override
+  String get homeBenefitPriorityTitle => 'Prioritas Tanpa Antre';
+
+  @override
   String get homeActiveBookingTitle => 'Booking Aktif';
 
   @override
@@ -354,6 +375,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get homeBookingDetail => 'Lihat Detail';
+
+  @override
+  String homeBookingCapster(String name) {
+    return 'Capster $name';
+  }
 
   @override
   String get homeBookingEmpty => 'Belum ada booking aktif.';
@@ -379,6 +405,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get homeHistoryEmpty => 'Belum ada riwayat potongan.';
 
   @override
+  String get homeHistoryRebook => 'Pesan Lagi';
+
+  @override
+  String homeHistoryBy(String name) {
+    return 'oleh $name';
+  }
+
+  @override
+  String homeNearbyLocation(String city, String distance) {
+    return '$city • $distance km';
+  }
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -391,16 +430,83 @@ class AppLocalizationsId extends AppLocalizations {
   String get navProfile => 'Profil';
 
   @override
-  String get profileTierNewbie => 'NEWBIE MEMBER';
+  String get notificationTitle => 'Notifikasi';
 
   @override
-  String get profileTierBestie => 'BESTIE MEMBER';
+  String get notificationSearchHint => 'Cari notifikasi...';
 
   @override
-  String get profileTierRoyal => 'ROYAL MEMBER';
+  String get notificationFilterAll => 'Semua';
 
   @override
-  String get profileTierCrazy => 'CRAZY MEMBER';
+  String get notificationFilterUnread => 'Belum Dibaca';
+
+  @override
+  String get notificationMarkAllRead => 'Tandai semua dibaca';
+
+  @override
+  String get notificationToday => 'Hari ini';
+
+  @override
+  String get notificationYesterday => 'Kemarin';
+
+  @override
+  String get notificationEmpty => 'Belum ada notifikasi saat ini';
+
+  @override
+  String get notificationTimeNow => 'Baru saja';
+
+  @override
+  String notificationTimeMinute(int count) {
+    return '$count mnt lalu';
+  }
+
+  @override
+  String notificationTimeHour(int count) {
+    return '$count jam lalu';
+  }
+
+  @override
+  String notificationTimeDay(int count) {
+    return '$count hari lalu';
+  }
+
+  @override
+  String get notificationBookingTitle => 'Jadwal Booking Dikonfirmasi!';
+
+  @override
+  String get notificationBookingBody =>
+      'Pemesanan Anda untuk layanan cukur di cabang Jati Asih telah dikonfirmasi oleh barber.';
+
+  @override
+  String get notificationPointsTitle => 'Poin Member Bertambah!';
+
+  @override
+  String get notificationPointsBody =>
+      'Anda mendapatkan 150 poin tambahan dari transaksi cukur terakhir Anda. Tingkatkan terus level Anda!';
+
+  @override
+  String get notificationMembershipTitle => 'Selamat, Level Member Naik!';
+
+  @override
+  String get notificationMembershipBody =>
+      'Anda telah mencapai level Premium! Nikmati berbagai keuntungan eksklusif tanpa antre.';
+
+  @override
+  String get notificationRecommendationTitle => 'Rekomendasi Gaya Rambut Baru';
+
+  @override
+  String get notificationRecommendationBody =>
+      'Temukan tren gaya rambut pria terbaru tahun ini yang cocok dengan bentuk wajah Anda.';
+
+  @override
+  String get profileTierSilver => 'Silver Member';
+
+  @override
+  String get profileTierGold => 'Gold Member';
+
+  @override
+  String get profileTierPlatinum => 'Platinum Member';
 
   @override
   String get profileMenuPersonalInfo => 'Informasi Pribadi';

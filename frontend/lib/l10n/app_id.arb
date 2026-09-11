@@ -146,6 +146,8 @@
   },
   "homeMemberBadge": "MEMBER",
   "homePointsToPremium": "{points} Poin lagi ke level premium",
+  "homeMembershipLevel": "Tingkat membership",
+  "homeRedeemPoints": "Tukarkan point anda",
   "@homePointsToPremium": {
     "placeholders": {
       "points": { "type": "String" }
@@ -154,6 +156,8 @@
   "homeBirthdayTitle": "Spesial Hari Ulang Tahun!",
   "homeBirthdayDescription": "Diskon potongan rambut berlaku s/d 7 hari setelah ultah.",
   "homeSeePromo": "Lihat Promo",
+  "homeBirthdayBadge": "Tampil terbaik setiap hari",
+  "homeBookingNow": "Booking Sekarang",
 
   "homeActionBooking": "Booking",
   "homeActionPackage": "Paket",
@@ -164,6 +168,9 @@
   "homeBenefitPoints": "Poin reward setiap kali potong rambut",
   "homeBenefitBirthday": "Diskon khusus dan penawaran ulang tahun",
   "homeBenefitPriority": "Prioritas jadwal tanpa antre panjang",
+  "homeBenefitDiscountTitle": "Diskon Lebih Banyak Cukur!",
+  "homeBenefitPointsTitle": "Poin di Setiap Potongan",
+  "homeBenefitPriorityTitle": "Prioritas Tanpa Antre",
 
   "homeActiveBookingTitle": "Booking Aktif",
   "homeBookingUpcoming": "MENDATANG",
@@ -174,6 +181,12 @@
     }
   },
   "homeBookingDetail": "Lihat Detail",
+  "homeBookingCapster": "Capster {name}",
+  "@homeBookingCapster": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "homeBookingEmpty": "Belum ada booking aktif.",
 
   "homeNearbyTitle": "Cabang Terdekat",
@@ -188,16 +201,65 @@
   "homeHistoryTitle": "Riwayat Potongan",
   "homeHistorySeeAll": "Lihat Riwayat",
   "homeHistoryEmpty": "Belum ada riwayat potongan.",
+  "homeHistoryRebook": "Pesan Lagi",
+  "homeHistoryBy": "oleh {name}",
+  "@homeHistoryBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "homeNearbyLocation": "{city} • {distance} km",
+  "@homeNearbyLocation": {
+    "placeholders": {
+      "city": { "type": "String" },
+      "distance": { "type": "String" }
+    }
+  },
 
   "navHome": "Home",
   "navBooking": "Booking",
   "navHistory": "Riwayat",
   "navProfile": "Profil",
 
-  "profileTierNewbie": "NEWBIE MEMBER",
-  "profileTierBestie": "BESTIE MEMBER",
-  "profileTierRoyal": "ROYAL MEMBER",
-  "profileTierCrazy": "CRAZY MEMBER",
+  "notificationTitle": "Notifikasi",
+  "notificationSearchHint": "Cari notifikasi...",
+  "notificationFilterAll": "Semua",
+  "notificationFilterUnread": "Belum Dibaca",
+  "notificationMarkAllRead": "Tandai semua dibaca",
+  "notificationToday": "Hari ini",
+  "notificationYesterday": "Kemarin",
+  "notificationEmpty": "Belum ada notifikasi saat ini",
+  "notificationTimeNow": "Baru saja",
+  "notificationTimeMinute": "{count} mnt lalu",
+  "@notificationTimeMinute": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationTimeHour": "{count} jam lalu",
+  "@notificationTimeHour": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationTimeDay": "{count} hari lalu",
+  "@notificationTimeDay": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationBookingTitle": "Jadwal Booking Dikonfirmasi!",
+  "notificationBookingBody": "Pemesanan Anda untuk layanan cukur di cabang Jati Asih telah dikonfirmasi oleh barber.",
+  "notificationPointsTitle": "Poin Member Bertambah!",
+  "notificationPointsBody": "Anda mendapatkan 150 poin tambahan dari transaksi cukur terakhir Anda. Tingkatkan terus level Anda!",
+  "notificationMembershipTitle": "Selamat, Level Member Naik!",
+  "notificationMembershipBody": "Anda telah mencapai level Premium! Nikmati berbagai keuntungan eksklusif tanpa antre.",
+  "notificationRecommendationTitle": "Rekomendasi Gaya Rambut Baru",
+  "notificationRecommendationBody": "Temukan tren gaya rambut pria terbaru tahun ini yang cocok dengan bentuk wajah Anda.",
+
+  "profileTierSilver": "Silver Member",
+  "profileTierGold": "Gold Member",
+  "profileTierPlatinum": "Platinum Member",
 
   "profileMenuPersonalInfo": "Informasi Pribadi",
   "profileMenuLanguage": "Bahasa",

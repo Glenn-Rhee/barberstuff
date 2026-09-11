@@ -6,7 +6,7 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/active_booking_card.dart';
-import 'package:mobile_barberstuff/features/home/presentation/widgets/benefit_card.dart';
+import 'package:mobile_barberstuff/features/home/presentation/widgets/benefit_carousel.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/birthday_promo_card.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_header.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/history_tile.dart';
@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
           name: profile?.name ?? '',
           photoUrl: profile?.imageUrl,
           onNotificationTap: () {
-            showComingSoonDialog(context);
+            Navigator.of(context).pushNamed(AppRoute.notification);
           },
           onProfileTap: onProfileTap ?? () {},
         ),
@@ -65,32 +65,34 @@ class _DashboardBody extends StatelessWidget {
   final Future<void> Function() onRefresh;
 
   static final ActiveBooking _booking = ActiveBooking(
-    orderId: '0001',
-    storeName: 'Pondok Gede',
-    storeAddress:
-        'Gg. Leopard Jl. Jatimakmur No.49C, RT.001/RW.011, Jatimakmur, Kec. Pd. Gede, Kota Bks, Jawa Barat 17413',
-    capsterName: 'Danarmas',
-    schedule: DateTime(2024, 5, 25, 16),
+    orderId: '9821',
+    storeName: 'Jati Asih',
+    storeAddress: 'Jl. Jati Asih No. 20, Bekasi',
+    capsterName: 'Iqbal',
+    schedule: DateTime(2026, 5, 25, 16),
   );
 
   static const List<NearbyStore> _stores = <NearbyStore>[
     NearbyStore(
       id: '1',
-      name: 'Depok',
-      rating: 4.7,
-      distanceKm: 3.2,
+      name: 'Pondok Indah',
+      city: 'Jakarta Selatan',
+      rating: 4.9,
+      distanceKm: 0.7,
       imageAsset: AppAssets.storeDepok,
     ),
     NearbyStore(
       id: '2',
       name: 'Ciracas',
+      city: 'Jakarta Timur',
       rating: 4.8,
-      distanceKm: 0.5,
+      distanceKm: 3.2,
       imageAsset: AppAssets.storeCiracas,
     ),
     NearbyStore(
       id: '3',
       name: 'Pondok Gede',
+      city: 'Bekasi',
       rating: 4.6,
       distanceKm: 5.1,
       imageAsset: AppAssets.storePondokgede,
@@ -100,26 +102,53 @@ class _DashboardBody extends StatelessWidget {
   static final List<HaircutHistory> _histories = <HaircutHistory>[
     HaircutHistory(
       id: '1',
-      capsterName: 'Danarmas',
-      date: DateTime(2026, 2, 30),
-      storeName: 'Depok',
+      serviceName: 'Anti Frizz & Treatment',
+      capsterName: 'Joni Akbar',
+      date: DateTime(2026, 8, 12),
+      storeName: 'Pondok Indah',
       price: 95000,
     ),
     HaircutHistory(
       id: '2',
-      capsterName: 'Kang iqbal',
-      date: DateTime(2026, 0, 28),
+      serviceName: 'Haircut & Styling',
+      capsterName: 'Danarmas',
+      date: DateTime(2026, 7, 28),
       storeName: 'Pondok Gede',
       price: 55000,
     ),
     HaircutHistory(
       id: '3',
+      serviceName: 'Hair Toner',
       capsterName: 'Mas Ariel',
-      date: DateTime(2026, 5, 8),
+      date: DateTime(2026, 6, 8),
       storeName: 'Ciracas',
       price: 25000,
     ),
   ];
+
+  static List<BenefitItem> _benefitsOf(AppLocalizations l10n) {
+    return <BenefitItem>[
+      BenefitItem(
+        title: l10n.homeBenefitDiscountTitle,
+        description: l10n.homeBirthdayDescription,
+        imageAsset: AppAssets.promoScissors,
+      ),
+      BenefitItem(
+        title: l10n.homeBenefitPointsTitle,
+        description: l10n.homeBenefitPoints,
+        imageAsset: AppAssets.promoScissors,
+      ),
+      BenefitItem(
+        title: l10n.homeBenefitPriorityTitle,
+        description: l10n.homeBenefitPriority,
+        imageAsset: AppAssets.promoScissors,
+      ),
+    ];
+  }
+
+  void _openBooking(BuildContext context) {
+    Navigator.of(context).pushNamed(AppRoute.booking);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,26 +156,23 @@ class _DashboardBody extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: onRefresh,
-      color: AppColor.orangeLight,
+      color: AppColor.goldDeep,
       child: ListView(
         padding: const EdgeInsets.only(top: 20, bottom: 28),
         children: <Widget>[
           _Inset(
-            child: PointsCard(
-              points: profile.memberPoints,
-              pointsToNextTier: profile.pointsToNextTier,
-              progress: profile.tierProgress,
-              tier: profile.tier,
-              onTap: () {
-                showComingSoonDialog(context);
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-          _Inset(
             child: BirthdayPromoCard(
               discountPercent: HomePage.birthdayDiscount,
-              onSeePromo: () {
+              onBooking: () => _openBooking(context),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+          _Inset(
+            child: PointsCard(
+              points: profile.memberPoints,
+              tier: profile.tier,
+              onTap: () {
                 showComingSoonDialog(context);
               },
             ),
@@ -157,7 +183,7 @@ class _DashboardBody extends StatelessWidget {
             child: QuickActionRow(
               onSelect: (QuickAction action) {
                 if (action == QuickAction.booking) {
-                  Navigator.of(context).pushNamed(AppRoute.booking);
+                  _openBooking(context);
                   return;
                 }
                 showComingSoonDialog(context);
@@ -168,7 +194,10 @@ class _DashboardBody extends StatelessWidget {
           const SizedBox(height: 28),
           _Inset(child: SectionHeader(title: l10n.homeBenefitTitle)),
           const SizedBox(height: 12),
-          const _Inset(child: BenefitCard()),
+          BenefitCarousel(
+            benefits: _benefitsOf(l10n),
+            horizontalPadding: HomePage.sidePadding,
+          ),
 
           const SizedBox(height: 28),
           _Inset(child: SectionHeader(title: l10n.homeActiveBookingTitle)),
@@ -199,6 +228,7 @@ class _DashboardBody extends StatelessWidget {
             onSelect: (NearbyStore _) {
               showComingSoonDialog(context);
             },
+            onBooking: (NearbyStore _) => _openBooking(context),
           ),
 
           const SizedBox(height: 28),
@@ -219,6 +249,7 @@ class _DashboardBody extends StatelessWidget {
                 onTap: () {
                   showComingSoonDialog(context);
                 },
+                onRebook: () => _openBooking(context),
               ),
             ),
             const SizedBox(height: 12),

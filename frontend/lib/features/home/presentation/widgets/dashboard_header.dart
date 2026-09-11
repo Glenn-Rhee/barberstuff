@@ -14,7 +14,8 @@ class DashboardHeader extends StatelessWidget {
     this.photoUrl,
   });
 
-  static const double _avatarSize = 46;
+  static const double _avatarSize = 48;
+  static const double _radius = 30;
 
   final String name;
   final String? photoUrl;
@@ -26,52 +27,60 @@ class DashboardHeader extends StatelessWidget {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     return ColoredBox(
-      color: AppColor.ink,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 26),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Opacity(
-                      opacity: name.isEmpty ? 0 : 1,
-                      child: Text(
-                        l10n.homeGreeting(name),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyle.headlineSmall.copyWith(
-                          color: AppColor.surface,
-                          fontWeight: FontWeight.w700,
+      color: AppColor.surface,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          color: AppColor.ink,
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(_radius),
+          ),
+        ),
+        child: SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 14, 24, 28),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Opacity(
+                        opacity: name.isEmpty ? 0 : 1,
+                        child: Text(
+                          l10n.homeGreeting(name),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyle.headlineMedium.copyWith(
+                            color: AppColor.surface,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      l10n.homeWelcomeBack,
-                      style: AppTextStyle.labelMedium.copyWith(
-                        color: AppColor.inkFaint,
+                      Text(
+                        l10n.homeWelcomeBack,
+                        style: AppTextStyle.labelMedium.copyWith(
+                          color: AppColor.inkFaint,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              CircleIconButton(
-                iconPath: AppAssets.bellDashboard,
-                onPressed: onNotificationTap,
-                size: _avatarSize,
-              ),
-              const SizedBox(width: 12),
-              _ProfileAvatar(
-                photoUrl: photoUrl,
-                size: _avatarSize,
-                onTap: onProfileTap,
-              ),
-            ],
+                const SizedBox(width: 12),
+                CircleIconButton(
+                  iconPath: AppAssets.bellDashboard,
+                  onPressed: onNotificationTap,
+                  size: _avatarSize,
+                ),
+                const SizedBox(width: 12),
+                _ProfileAvatar(
+                  photoUrl: photoUrl,
+                  size: _avatarSize,
+                  onTap: onProfileTap,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -102,7 +111,7 @@ class _ProfileAvatar extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: AppColor.orangeLight, width: 2),
+          border: Border.all(color: AppColor.surface, width: 2),
         ),
         child: ClipOval(
           child: url == null

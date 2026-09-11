@@ -308,6 +308,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get homeMembershipLevel => 'Membership level';
+
+  @override
+  String get homeRedeemPoints => 'Redeem your points';
+
+  @override
   String get homeBirthdayTitle => 'Birthday Special!';
 
   @override
@@ -316,6 +322,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeSeePromo => 'See Promo';
+
+  @override
+  String get homeBirthdayBadge => 'Look your best every day';
+
+  @override
+  String get homeBookingNow => 'Book Now';
 
   @override
   String get homeActionBooking => 'Booking';
@@ -342,6 +354,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeBenefitPriority => 'Priority slots with no long queues';
 
   @override
+  String get homeBenefitDiscountTitle => 'More Haircut Discounts!';
+
+  @override
+  String get homeBenefitPointsTitle => 'Points on Every Cut';
+
+  @override
+  String get homeBenefitPriorityTitle => 'Priority Without Queueing';
+
+  @override
   String get homeActiveBookingTitle => 'Active Booking';
 
   @override
@@ -354,6 +375,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeBookingDetail => 'View Detail';
+
+  @override
+  String homeBookingCapster(String name) {
+    return 'Capster $name';
+  }
 
   @override
   String get homeBookingEmpty => 'No active booking yet.';
@@ -379,6 +405,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeHistoryEmpty => 'No haircut history yet.';
 
   @override
+  String get homeHistoryRebook => 'Book Again';
+
+  @override
+  String homeHistoryBy(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String homeNearbyLocation(String city, String distance) {
+    return '$city • $distance km';
+  }
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -391,16 +430,83 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
-  String get profileTierNewbie => 'NEWBIE MEMBER';
+  String get notificationTitle => 'Notifications';
 
   @override
-  String get profileTierBestie => 'BESTIE MEMBER';
+  String get notificationSearchHint => 'Search notifications...';
 
   @override
-  String get profileTierRoyal => 'ROYAL MEMBER';
+  String get notificationFilterAll => 'All';
 
   @override
-  String get profileTierCrazy => 'CRAZY MEMBER';
+  String get notificationFilterUnread => 'Unread';
+
+  @override
+  String get notificationMarkAllRead => 'Mark all as read';
+
+  @override
+  String get notificationToday => 'Today';
+
+  @override
+  String get notificationYesterday => 'Yesterday';
+
+  @override
+  String get notificationEmpty => 'No notifications yet';
+
+  @override
+  String get notificationTimeNow => 'Just now';
+
+  @override
+  String notificationTimeMinute(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String notificationTimeHour(int count) {
+    return '$count hr ago';
+  }
+
+  @override
+  String notificationTimeDay(int count) {
+    return '$count d ago';
+  }
+
+  @override
+  String get notificationBookingTitle => 'Booking Confirmed!';
+
+  @override
+  String get notificationBookingBody =>
+      'Your haircut booking at the Jati Asih branch has been confirmed by the barber.';
+
+  @override
+  String get notificationPointsTitle => 'Member Points Added!';
+
+  @override
+  String get notificationPointsBody =>
+      'You earned 150 bonus points from your latest haircut. Keep levelling up!';
+
+  @override
+  String get notificationMembershipTitle => 'Congrats, Member Level Up!';
+
+  @override
+  String get notificationMembershipBody =>
+      'You have reached Premium level! Enjoy exclusive perks with no queueing.';
+
+  @override
+  String get notificationRecommendationTitle => 'New Hairstyle Recommendation';
+
+  @override
+  String get notificationRecommendationBody =>
+      'Discover this year latest men hairstyle trends that suit your face shape.';
+
+  @override
+  String get profileTierSilver => 'Silver Member';
+
+  @override
+  String get profileTierGold => 'Gold Member';
+
+  @override
+  String get profileTierPlatinum => 'Platinum Member';
 
   @override
   String get profileMenuPersonalInfo => 'Personal Information';

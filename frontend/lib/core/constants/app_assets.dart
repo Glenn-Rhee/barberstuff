@@ -56,7 +56,6 @@ class AppAssets {
   static const String googleIcon = '$_iconGeneral/google_icon.png';
   static const String mailIcon = '$_iconGeneral/mails.png';
   static const String lockIcon = '$_iconGeneral/locks.png';
-  static const String keyIcon = '$_iconGeneral/locks.png';
   static const String eyeIcon = '$_iconGeneral/open_eye.png';
   static const String eyeOffIcon = '$_iconGeneral/close_eye.png';
   static const String backArrowIcon = '$_iconGeneral/back_arrow.png';
@@ -77,7 +76,7 @@ class AppAssets {
   static const String phoneIcon = '$_iconRegister/phones.png';
   static const String birthDateIcon = '$_iconRegister/calendars.png';
   static const String pencilIcon = '$_iconRegister/upload_pencil.png';
-  static const String uploadIcon = '$_iconRegister/upload_pencil.png';
+  static const String uploadIcon = '$_iconDetailStore/share.png';
 
   static const String bellDashboard = '$_iconGeneral/notify.png';
   static const String bellProfile = '$_iconGeneral/notify.png';
@@ -105,7 +104,9 @@ class AppAssets {
   static const String helpCircleProfile = '$_iconProfile/ask.png';
   static const String infoProfile = '$_iconProfile/info.png';
   static const String logOutProfile = '$_iconProfile/logout.png';
-  static const String toolsMaintenance = '$_iconProfile/maintenance.png';
+  static const String toolsMaintenance = '$_iconGeneral/maintenace.png';
+  static const String keyIcon = '$_iconProfile/key.png';
+
 
   static const String cutsBook = '$_iconBook/cuts.png';
   static const String hairStylingBook = '$_iconBook/hair_styling.png';
