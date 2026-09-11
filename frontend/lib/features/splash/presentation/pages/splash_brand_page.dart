@@ -94,7 +94,7 @@ class _SplashBrandPageState extends State<SplashBrandPage>
               AnimatedBrandLogo(
                 tint: AppColor.surface,
                 shimmerColor: AppColor.orange,
-                delay: const Duration(milliseconds: 260),
+                delay: const Duration(milliseconds: 60),
                 onIntroEnd: _handleIntroEnd,
               ),
             ],

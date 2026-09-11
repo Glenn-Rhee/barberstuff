@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/localization/local_controller.dart';
+import 'package:mobile_barberstuff/core/services/local_notification_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_theme.dart';
+import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
+import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
+import 'package:mobile_barberstuff/features/notification/presentation/widgets/notification_text.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:provider/provider.dart';
 
@@ -32,6 +36,22 @@ class App extends StatelessWidget {
       onGenerateRoute: AppRoute.onGenerateRoute,
 
       builder: (context, child) {
+        final l10n = AppLocalizations.of(context);
+        final service = context.read<LocalNotificationService>();
+        service.applyLabels(
+          name: l10n.notificationChannelName,
+          description: l10n.notificationChannelDescription,
+        );
+
+        context.read<NotificationProvider>().attachPresenter((
+          AppNotification n,
+        ) {
+          service.show(
+            title: notificationTitle(n.category, l10n),
+            body: notificationBody(n.category, l10n),
+          );
+        });
+
         final mq = MediaQuery.of(context);
         return MediaQuery(
           data: mq.copyWith(

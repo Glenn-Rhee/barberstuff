@@ -308,6 +308,12 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get homeMembershipLevel => 'Tingkat membership';
+
+  @override
+  String get homeRedeemPoints => 'Tukarkan point anda';
+
+  @override
   String get homeBirthdayTitle => 'Spesial Hari Ulang Tahun!';
 
   @override
@@ -316,6 +322,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get homeSeePromo => 'Lihat Promo';
+
+  @override
+  String get homeBirthdayBadge => 'Tampil terbaik setiap hari';
+
+  @override
+  String get homeBookingNow => 'Booking Sekarang';
 
   @override
   String get homeActionBooking => 'Booking';
@@ -330,6 +342,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get homeActionHistory => 'Riwayat';
 
   @override
+  String get bookingBranchNewBadge => 'NEWBIE';
+
+  @override
   String get homeBenefitTitle => 'Benefit Barberstuff';
 
   @override
@@ -340,6 +355,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get homeBenefitPriority => 'Prioritas jadwal tanpa antre panjang';
+
+  @override
+  String get homeBenefitDiscountTitle => 'Diskon Lebih Banyak Cukur!';
+
+  @override
+  String get homeBenefitPointsTitle => 'Poin di Setiap Potongan';
+
+  @override
+  String get homeBenefitPriorityTitle => 'Prioritas Tanpa Antre';
 
   @override
   String get homeActiveBookingTitle => 'Booking Aktif';
@@ -354,6 +378,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get homeBookingDetail => 'Lihat Detail';
+
+  @override
+  String homeBookingCapster(String name) {
+    return 'Capster $name';
+  }
 
   @override
   String get homeBookingEmpty => 'Belum ada booking aktif.';
@@ -379,6 +408,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get homeHistoryEmpty => 'Belum ada riwayat potongan.';
 
   @override
+  String get homeHistoryRebook => 'Pesan Lagi';
+
+  @override
+  String homeHistoryBy(String name) {
+    return 'oleh $name';
+  }
+
+  @override
+  String homeNearbyLocation(String city, String distance) {
+    return '$city • $distance km';
+  }
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -391,16 +433,156 @@ class AppLocalizationsId extends AppLocalizations {
   String get navProfile => 'Profil';
 
   @override
-  String get profileTierNewbie => 'NEWBIE MEMBER';
+  String get historyTitle => 'Riwayat Booking';
 
   @override
-  String get profileTierBestie => 'BESTIE MEMBER';
+  String get historyTabUpcoming => 'Akan Datang';
 
   @override
-  String get profileTierRoyal => 'ROYAL MEMBER';
+  String get historyTabDone => 'Selesai';
 
   @override
-  String get profileTierCrazy => 'CRAZY MEMBER';
+  String get historyTabCanceled => 'Dibatalkan';
+
+  @override
+  String get historyBadgeProgress => 'PROGRESS';
+
+  @override
+  String get historyBadgeDone => 'DONE';
+
+  @override
+  String get historyBadgeCancel => 'CANCEL';
+
+  @override
+  String get historyNotReviewed => 'Belum diulas';
+
+  @override
+  String get historyWriteReview => 'Beri Ulasan';
+
+  @override
+  String get historySeeReview => 'Lihat Ulasan';
+
+  @override
+  String get historyYourReview => 'Ulasanmu';
+
+  @override
+  String get historyEmpty => 'Belum ada booking di daftar ini.';
+
+  @override
+  String get reviewTitle => 'Bagaimana pengalamanmu?';
+
+  @override
+  String get reviewSubtitle => 'pengalamanmu sangat berharga bagi kami';
+
+  @override
+  String get reviewCapster => 'Pelayanan Capster';
+
+  @override
+  String get reviewCashier => 'Pelayanan Kasir';
+
+  @override
+  String get reviewStore => 'Kualitas Outlet';
+
+  @override
+  String get reviewMessageLabel => 'Ceritakan Pengalamanmu Disini';
+
+  @override
+  String get reviewMessageHint => 'Tulis disini untuk riview kamu!';
+
+  @override
+  String get reviewSubmit => 'Kirim';
+
+  @override
+  String get reviewNeedStars => 'Beri bintang dulu untuk semua penilaian.';
+
+  @override
+  String get reviewThanks => 'Terima kasih atas ulasanmu!';
+
+  @override
+  String get notificationTitle => 'Notifikasi';
+
+  @override
+  String get notificationSearchHint => 'Cari notifikasi...';
+
+  @override
+  String get notificationFilterAll => 'Semua';
+
+  @override
+  String get notificationFilterUnread => 'Belum Dibaca';
+
+  @override
+  String get notificationMarkAllRead => 'Tandai semua dibaca';
+
+  @override
+  String get notificationToday => 'Hari ini';
+
+  @override
+  String get notificationYesterday => 'Kemarin';
+
+  @override
+  String get notificationEmpty => 'Belum ada notifikasi saat ini';
+
+  @override
+  String get notificationChannelName => 'Info Barberstuff';
+
+  @override
+  String get notificationChannelDescription =>
+      'Info booking, poin, dan promo Barberstuff.';
+
+  @override
+  String get notificationTimeNow => 'Baru saja';
+
+  @override
+  String notificationTimeMinute(int count) {
+    return '$count mnt lalu';
+  }
+
+  @override
+  String notificationTimeHour(int count) {
+    return '$count jam lalu';
+  }
+
+  @override
+  String notificationTimeDay(int count) {
+    return '$count hari lalu';
+  }
+
+  @override
+  String get notificationBookingTitle => 'Jadwal Booking Dikonfirmasi!';
+
+  @override
+  String get notificationBookingBody =>
+      'Pemesanan Anda untuk layanan cukur di cabang Jati Asih telah dikonfirmasi oleh barber.';
+
+  @override
+  String get notificationPointsTitle => 'Poin Member Bertambah!';
+
+  @override
+  String get notificationPointsBody =>
+      'Anda mendapatkan 150 poin tambahan dari transaksi cukur terakhir Anda. Tingkatkan terus level Anda!';
+
+  @override
+  String get notificationMembershipTitle => 'Selamat, Level Member Naik!';
+
+  @override
+  String get notificationMembershipBody =>
+      'Anda telah mencapai level Premium! Nikmati berbagai keuntungan eksklusif tanpa antre.';
+
+  @override
+  String get notificationRecommendationTitle => 'Rekomendasi Gaya Rambut Baru';
+
+  @override
+  String get notificationRecommendationBody =>
+      'Temukan tren gaya rambut pria terbaru tahun ini yang cocok dengan bentuk wajah Anda.';
+
+  @override
+  String get profileTierSilver => 'Silver Member';
+
+  @override
+  String get profileTierGold => 'Gold Member';
+
+  @override
+  String get profileTierPlatinum => 'Platinum Member';
 
   @override
   String get profileMenuPersonalInfo => 'Informasi Pribadi';
@@ -467,6 +649,10 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get personalInfoEmailLocked =>
       'Email dipakai untuk masuk dan tidak bisa diubah';
+
+  @override
+  String get personalInfoBirthDateLocked =>
+      'Tanggal lahir mengikuti data pendaftaran dan tidak bisa diubah';
 
   @override
   String get personalInfoPasswordTitle => 'Password Saya';
@@ -590,7 +776,112 @@ class AppLocalizationsId extends AppLocalizations {
       'Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.';
 
   @override
+  String get bookingTitle => 'Booking';
+
+  @override
   String get bookingBranchTitle => 'Pilih Cabang';
+
+  @override
+  String bookingStepLabel(int current, int total) {
+    return 'LANGKAH $current DARI $total';
+  }
+
+  @override
+  String get bookingBranchSubtitle =>
+      'Tentukan cabang barbershop terdekat kamu';
+
+  @override
+  String get bookingScheduleSubtitle => 'Pilih tanggal dan jam yang tersedia';
+
+  @override
+  String get bookingBarberSubtitle =>
+      'Pilih barber favoritmu atau biarkan kami memilihkan';
+
+  @override
+  String get bookingServiceSubtitle => 'Pilih layanan yang kamu inginkan';
+
+  @override
+  String get bookingConfirmTitle => 'Konfirmasi Booking';
+
+  @override
+  String get bookingConfirmSubtitle =>
+      'Harap periksa kembali detail pesanan Anda';
+
+  @override
+  String get bookingNextSchedule => 'Lanjut Pilih Jadwal';
+
+  @override
+  String get bookingNextBarber => 'Lanjut Pilih Capster';
+
+  @override
+  String get bookingNextService => 'Lanjut Pilih Layanan';
+
+  @override
+  String get bookingNextConfirm => 'Lanjut Konfirmasi Booking';
+
+  @override
+  String get bookingConfirmCta => 'Konfirmasi Pesanan';
+
+  @override
+  String get bookingSlotFullNote => 'Slot yang tidak dapat dipilih sudah penuh';
+
+  @override
+  String get bookingSlotEmpty => 'Belum ada jam tersedia di tanggal ini.';
+
+  @override
+  String get bookingSlotTooSoon => 'Booking minimal 30 menit dari sekarang.';
+
+  @override
+  String get bookingTabService => 'Service';
+
+  @override
+  String get bookingAvailableToday => 'Tersedia hari ini';
+
+  @override
+  String bookingLockRemaining(String time) {
+    return 'Sisa waktu $time';
+  }
+
+  @override
+  String get bookingLockExpired =>
+      'Waktu kunci habis. Silakan pilih jadwal lagi.';
+
+  @override
+  String get bookingCancelTitle => 'Batalkan booking?';
+
+  @override
+  String get bookingCancelMessage =>
+      'Slot yang sudah dikunci akan dilepas dan bisa diambil orang lain.';
+
+  @override
+  String get bookingCancelConfirm => 'Ya, batalkan';
+
+  @override
+  String get bookingCancelKeep => 'Lanjut booking';
+
+  @override
+  String get bookingConfirmBranch => 'CABANG';
+
+  @override
+  String get bookingConfirmService => 'LAYANAN';
+
+  @override
+  String get bookingConfirmBarber => 'BARBER';
+
+  @override
+  String get bookingConfirmSchedule => 'WAKTU & TANGGAL';
+
+  @override
+  String get bookingPaymentTitle => 'Rincian Pembayaran';
+
+  @override
+  String get bookingSubtotal => 'Subtotal';
+
+  @override
+  String get bookingAppFee => 'Biaya Layanan Aplikasi';
+
+  @override
+  String get bookingTotal => 'Total Pembayaran';
 
   @override
   String get bookingBarberTitle => 'Pilih Barber';
@@ -622,7 +913,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get bookingTermsOutro =>
-      'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya!';
+      'Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya! 😊';
 
   @override
   String get bookingTermsAgree => 'Saya sudah baca ketentuan';
@@ -713,6 +1004,39 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get commonRetry => 'Coba Lagi';
+
+  @override
+  String get offlineCachedData => 'Sedang offline — menampilkan data tersimpan';
+
+  @override
+  String get permissionNotificationTitle => 'Izinkan notifikasi';
+
+  @override
+  String get permissionNotificationMessage =>
+      'Aktifkan notifikasi supaya kamu tahu saat booking dikonfirmasi dan poin bertambah.';
+
+  @override
+  String get permissionLocationTitle => 'Izinkan lokasi';
+
+  @override
+  String get permissionLocationMessage =>
+      'Lokasi dipakai untuk mengurutkan cabang dari yang terdekat denganmu.';
+
+  @override
+  String get permissionOpenSettings => 'Buka Pengaturan';
+
+  @override
+  String get permissionLater => 'Nanti saja';
+
+  @override
+  String get permissionLocationOffTitle => 'Nyalakan lokasi';
+
+  @override
+  String get permissionLocationOffMessage =>
+      'Layanan lokasi di HP kamu sedang mati. Nyalakan dulu supaya jarak cabang bisa dihitung.';
+
+  @override
+  String get permissionOpenLocationSettings => 'Nyalakan Lokasi';
 
   @override
   String get commonUnderstood => 'Oke';

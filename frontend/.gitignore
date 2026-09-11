@@ -54,6 +54,7 @@ app.*.map.json
 !.env.example
 *.jks
 *.keystore
+ANALISIS.md
 android/key.properties
 android/app/google-services.json
 android/app/src/*/google-services.json

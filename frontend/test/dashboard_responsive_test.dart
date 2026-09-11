@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/active_booking_card.dart';
-import 'package:mobile_barberstuff/features/home/presentation/widgets/benefit_card.dart';
+import 'package:mobile_barberstuff/features/home/presentation/widgets/benefit_carousel.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/birthday_promo_card.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/history_tile.dart';
@@ -51,17 +52,14 @@ void main() {
   final Map<String, Widget> subjects = <String, Widget>{
     'PointsCard': PointsCard(
       points: 1250,
-      pointsToNextTier: 150,
-      progress: 0.75,
-      tier: MemberTier.newbie,
+      tier: MemberTier.silver,
       onTap: () {},
     ),
     'BirthdayPromoCard': BirthdayPromoCard(
       discountPercent: 30,
-      onSeePromo: () {},
+      onBooking: () {},
     ),
     'QuickActionRow': QuickActionRow(onSelect: (QuickAction _) {}),
-    'BenefitCard': const BenefitCard(),
     'SectionHeader': SectionHeader(
       title: 'Riwayat Potongan',
       actionLabel: 'Lihat Riwayat',
@@ -69,7 +67,7 @@ void main() {
     ),
     'ActiveBookingCard': ActiveBookingCard(
       booking: ActiveBooking(
-        orderId: '0001',
+        orderId: '9821',
         storeName: 'Pondok Gede',
         storeAddress:
             'Gg. Leopard Jl. Jatimakmur No.49C, RT.001/RW.011, Kota Bekasi',
@@ -81,16 +79,47 @@ void main() {
     'HistoryTile': HistoryTile(
       history: HaircutHistory(
         id: '1',
+        serviceName: 'Anti Frizz and Treatment Premium',
         capsterName: 'Ariel Rizki Muhtamad Bakri',
         date: DateTime(2026, 5, 8),
         storeName: 'Kemang Raya',
         price: 95000,
       ),
       onTap: () {},
+      onRebook: () {},
     ),
     'DashboardBottomNav': DashboardBottomNav(
       current: DashboardTab.home,
       onSelect: (DashboardTab _) {},
+    ),
+  };
+
+  final Map<String, Widget> fullWidthSubjects = <String, Widget>{
+    'BenefitCarousel': BenefitCarousel(
+      horizontalPadding: 20,
+      benefits: const <BenefitItem>[
+        BenefitItem(
+          title: 'Diskon Lebih Banyak Cukur!',
+          description:
+              'Diskon potongan rambut berlaku s/d 7 hari setelah ultah.',
+          imageAsset: AppAssets.promoScissors,
+        ),
+      ],
+    ),
+    'NearbyStoreList': NearbyStoreList(
+      stores: const <NearbyStore>[
+        NearbyStore(
+          id: '1',
+          name: 'Pondok Indah',
+          city: 'Jakarta Selatan',
+          rating: 4.9,
+          distanceKm: 0.7,
+          imageAsset: AppAssets.storeDepok,
+        ),
+      ],
+      horizontalPadding: 20,
+      onSelect: (NearbyStore _) {},
+      onBooking: (NearbyStore _) {},
     ),
   };
 
@@ -127,31 +156,17 @@ void main() {
               );
             }
 
-            await tester.pumpWidget(
-              _host(
-                NearbyStoreList(
-                  stores: const <NearbyStore>[
-                    NearbyStore(
-                      id: '1',
-                      name: 'Pondok Gede',
-                      rating: 4.7,
-                      distanceKm: 3.2,
-                      imageAsset: 'assets/images/store_depok_image.png',
-                    ),
-                  ],
-                  horizontalPadding: 20,
-                  onSelect: (NearbyStore _) {},
-                ),
-                locale: locale,
-              ),
-            );
-            await tester.pump();
+            for (final MapEntry<String, Widget> entry
+                in fullWidthSubjects.entries) {
+              await tester.pumpWidget(_host(entry.value, locale: locale));
+              await tester.pump();
 
-            expect(
-              tester.takeException(),
-              isNull,
-              reason: 'NearbyStoreList overflow di ${width.toInt()}dp x$scale',
-            );
+              expect(
+                tester.takeException(),
+                isNull,
+                reason: '${entry.key} overflow di ${width.toInt()}dp x$scale',
+              );
+            }
           },
         );
       }

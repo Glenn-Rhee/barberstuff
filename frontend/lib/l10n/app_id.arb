@@ -146,6 +146,8 @@
   },
   "homeMemberBadge": "MEMBER",
   "homePointsToPremium": "{points} Poin lagi ke level premium",
+  "homeMembershipLevel": "Tingkat membership",
+  "homeRedeemPoints": "Tukarkan point anda",
   "@homePointsToPremium": {
     "placeholders": {
       "points": { "type": "String" }
@@ -154,16 +156,22 @@
   "homeBirthdayTitle": "Spesial Hari Ulang Tahun!",
   "homeBirthdayDescription": "Diskon potongan rambut berlaku s/d 7 hari setelah ultah.",
   "homeSeePromo": "Lihat Promo",
+  "homeBirthdayBadge": "Tampil terbaik setiap hari",
+  "homeBookingNow": "Booking Sekarang",
 
   "homeActionBooking": "Booking",
   "homeActionPackage": "Paket",
   "homeActionPromo": "Promo",
   "homeActionHistory": "Riwayat",
+  "bookingBranchNewBadge": "NEWBIE",
 
   "homeBenefitTitle": "Benefit Barberstuff",
   "homeBenefitPoints": "Poin reward setiap kali potong rambut",
   "homeBenefitBirthday": "Diskon khusus dan penawaran ulang tahun",
   "homeBenefitPriority": "Prioritas jadwal tanpa antre panjang",
+  "homeBenefitDiscountTitle": "Diskon Lebih Banyak Cukur!",
+  "homeBenefitPointsTitle": "Poin di Setiap Potongan",
+  "homeBenefitPriorityTitle": "Prioritas Tanpa Antre",
 
   "homeActiveBookingTitle": "Booking Aktif",
   "homeBookingUpcoming": "MENDATANG",
@@ -174,6 +182,12 @@
     }
   },
   "homeBookingDetail": "Lihat Detail",
+  "homeBookingCapster": "Capster {name}",
+  "@homeBookingCapster": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "homeBookingEmpty": "Belum ada booking aktif.",
 
   "homeNearbyTitle": "Cabang Terdekat",
@@ -188,16 +202,89 @@
   "homeHistoryTitle": "Riwayat Potongan",
   "homeHistorySeeAll": "Lihat Riwayat",
   "homeHistoryEmpty": "Belum ada riwayat potongan.",
+  "homeHistoryRebook": "Pesan Lagi",
+  "homeHistoryBy": "oleh {name}",
+  "@homeHistoryBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "homeNearbyLocation": "{city} • {distance} km",
+  "@homeNearbyLocation": {
+    "placeholders": {
+      "city": { "type": "String" },
+      "distance": { "type": "String" }
+    }
+  },
 
   "navHome": "Home",
   "navBooking": "Booking",
   "navHistory": "Riwayat",
   "navProfile": "Profil",
+  "historyTitle": "Riwayat Booking",
+  "historyTabUpcoming": "Akan Datang",
+  "historyTabDone": "Selesai",
+  "historyTabCanceled": "Dibatalkan",
+  "historyBadgeProgress": "PROGRESS",
+  "historyBadgeDone": "DONE",
+  "historyBadgeCancel": "CANCEL",
+  "historyNotReviewed": "Belum diulas",
+  "historyWriteReview": "Beri Ulasan",
+  "historySeeReview": "Lihat Ulasan",
+  "historyYourReview": "Ulasanmu",
+  "historyEmpty": "Belum ada booking di daftar ini.",
+  "reviewTitle": "Bagaimana pengalamanmu?",
+  "reviewSubtitle": "pengalamanmu sangat berharga bagi kami",
+  "reviewCapster": "Pelayanan Capster",
+  "reviewCashier": "Pelayanan Kasir",
+  "reviewStore": "Kualitas Outlet",
+  "reviewMessageLabel": "Ceritakan Pengalamanmu Disini",
+  "reviewMessageHint": "Tulis disini untuk riview kamu!",
+  "reviewSubmit": "Kirim",
+  "reviewNeedStars": "Beri bintang dulu untuk semua penilaian.",
+  "reviewThanks": "Terima kasih atas ulasanmu!",
 
-  "profileTierNewbie": "NEWBIE MEMBER",
-  "profileTierBestie": "BESTIE MEMBER",
-  "profileTierRoyal": "ROYAL MEMBER",
-  "profileTierCrazy": "CRAZY MEMBER",
+  "notificationTitle": "Notifikasi",
+  "notificationSearchHint": "Cari notifikasi...",
+  "notificationFilterAll": "Semua",
+  "notificationFilterUnread": "Belum Dibaca",
+  "notificationMarkAllRead": "Tandai semua dibaca",
+  "notificationToday": "Hari ini",
+  "notificationYesterday": "Kemarin",
+  "notificationEmpty": "Belum ada notifikasi saat ini",
+  "notificationChannelName": "Info Barberstuff",
+  "notificationChannelDescription": "Info booking, poin, dan promo Barberstuff.",
+  "notificationTimeNow": "Baru saja",
+  "notificationTimeMinute": "{count} mnt lalu",
+  "@notificationTimeMinute": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationTimeHour": "{count} jam lalu",
+  "@notificationTimeHour": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationTimeDay": "{count} hari lalu",
+  "@notificationTimeDay": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationBookingTitle": "Jadwal Booking Dikonfirmasi!",
+  "notificationBookingBody": "Pemesanan Anda untuk layanan cukur di cabang Jati Asih telah dikonfirmasi oleh barber.",
+  "notificationPointsTitle": "Poin Member Bertambah!",
+  "notificationPointsBody": "Anda mendapatkan 150 poin tambahan dari transaksi cukur terakhir Anda. Tingkatkan terus level Anda!",
+  "notificationMembershipTitle": "Selamat, Level Member Naik!",
+  "notificationMembershipBody": "Anda telah mencapai level Premium! Nikmati berbagai keuntungan eksklusif tanpa antre.",
+  "notificationRecommendationTitle": "Rekomendasi Gaya Rambut Baru",
+  "notificationRecommendationBody": "Temukan tren gaya rambut pria terbaru tahun ini yang cocok dengan bentuk wajah Anda.",
+
+  "profileTierSilver": "Silver Member",
+  "profileTierGold": "Gold Member",
+  "profileTierPlatinum": "Platinum Member",
 
   "profileMenuPersonalInfo": "Informasi Pribadi",
   "profileMenuLanguage": "Bahasa",
@@ -225,6 +312,7 @@
   "personalInfoChangePhoto": "Ganti Foto Profil",
   "personalInfoPhotoFormat": "Support Format: JPEG, PNG, JPG",
   "personalInfoEmailLocked": "Email dipakai untuk masuk dan tidak bisa diubah",
+  "personalInfoBirthDateLocked": "Tanggal lahir mengikuti data pendaftaran dan tidak bisa diubah",
   "personalInfoPasswordTitle": "Password Saya",
   "personalInfoPasswordSubtitle": "Ganti Password Saya",
   "personalInfoPasswordAction": "Ganti Sekarang",
@@ -268,7 +356,50 @@
   "aboutChangesTitle": "8. Perubahan Ketentuan",
   "aboutChangesBody": "Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.",
 
+  "bookingTitle": "Booking",
   "bookingBranchTitle": "Pilih Cabang",
+  "bookingStepLabel": "LANGKAH {current} DARI {total}",
+  "@bookingStepLabel": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "bookingBranchSubtitle": "Tentukan cabang barbershop terdekat kamu",
+  "bookingScheduleSubtitle": "Pilih tanggal dan jam yang tersedia",
+  "bookingBarberSubtitle": "Pilih barber favoritmu atau biarkan kami memilihkan",
+  "bookingServiceSubtitle": "Pilih layanan yang kamu inginkan",
+  "bookingConfirmTitle": "Konfirmasi Booking",
+  "bookingConfirmSubtitle": "Harap periksa kembali detail pesanan Anda",
+  "bookingNextSchedule": "Lanjut Pilih Jadwal",
+  "bookingNextBarber": "Lanjut Pilih Capster",
+  "bookingNextService": "Lanjut Pilih Layanan",
+  "bookingNextConfirm": "Lanjut Konfirmasi Booking",
+  "bookingConfirmCta": "Konfirmasi Pesanan",
+  "bookingSlotFullNote": "Slot yang tidak dapat dipilih sudah penuh",
+  "bookingSlotEmpty": "Belum ada jam tersedia di tanggal ini.",
+  "bookingSlotTooSoon": "Booking minimal 30 menit dari sekarang.",
+  "bookingTabService": "Service",
+  "bookingAvailableToday": "Tersedia hari ini",
+  "bookingLockRemaining": "Sisa waktu {time}",
+  "@bookingLockRemaining": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "bookingLockExpired": "Waktu kunci habis. Silakan pilih jadwal lagi.",
+  "bookingCancelTitle": "Batalkan booking?",
+  "bookingCancelMessage": "Slot yang sudah dikunci akan dilepas dan bisa diambil orang lain.",
+  "bookingCancelConfirm": "Ya, batalkan",
+  "bookingCancelKeep": "Lanjut booking",
+  "bookingConfirmBranch": "CABANG",
+  "bookingConfirmService": "LAYANAN",
+  "bookingConfirmBarber": "BARBER",
+  "bookingConfirmSchedule": "WAKTU & TANGGAL",
+  "bookingPaymentTitle": "Rincian Pembayaran",
+  "bookingSubtotal": "Subtotal",
+  "bookingAppFee": "Biaya Layanan Aplikasi",
+  "bookingTotal": "Total Pembayaran",
   "bookingBarberTitle": "Pilih Barber",
   "bookingTermsHeadline": "📋 Ketentuan Booking Barberstuff",
   "bookingTermsIntro": "Untuk memberikan pelayanan terbaik dan menjaga jadwal tetap teratur, setiap pelanggan diharapkan mengikuti ketentuan booking yang berlaku.",
@@ -277,7 +408,7 @@
   "bookingTermsRule2": "Pelanggan diharapkan datang sesuai waktu yang telah dipilih",
   "bookingTermsRule3": "Toleransi keterlambatan maksimal 5 menit",
   "bookingTermsRule4": "Keterlambatan lebih dari 5 menit dapat menyebabkan booking dibatalkan secara otomatis",
-  "bookingTermsOutro": "Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya!",
+  "bookingTermsOutro": "Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya! 😊",
   "bookingTermsAgree": "Saya sudah baca ketentuan",
   "bookingNearbyHeadline": "Pilih Barberstuff Terdekat!",
   "bookingSearchHint": "Ketik disini!",
@@ -310,6 +441,16 @@
 
   "comingSoonMessage": "Segera hadir!",
   "commonRetry": "Coba Lagi",
+  "offlineCachedData": "Sedang offline — menampilkan data tersimpan",
+  "permissionNotificationTitle": "Izinkan notifikasi",
+  "permissionNotificationMessage": "Aktifkan notifikasi supaya kamu tahu saat booking dikonfirmasi dan poin bertambah.",
+  "permissionLocationTitle": "Izinkan lokasi",
+  "permissionLocationMessage": "Lokasi dipakai untuk mengurutkan cabang dari yang terdekat denganmu.",
+  "permissionOpenSettings": "Buka Pengaturan",
+  "permissionLater": "Nanti saja",
+  "permissionLocationOffTitle": "Nyalakan lokasi",
+  "permissionLocationOffMessage": "Layanan lokasi di HP kamu sedang mati. Nyalakan dulu supaya jarak cabang bisa dihitung.",
+  "permissionOpenLocationSettings": "Nyalakan Lokasi",
   "commonUnderstood": "Oke",
   "commonLogout": "Keluar"
 

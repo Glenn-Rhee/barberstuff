@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_duration.dart';
+import 'package:mobile_barberstuff/core/services/local_notification_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/shared/widgets/animated_brand_logo.dart';
 import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
+import 'package:provider/provider.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -35,6 +37,19 @@ class _SplashPageState extends State<SplashPage>
     );
 
     _backdrop.forward();
+
+    WidgetsBinding.instance.addPostFrameCallback((Duration _) {
+      _askNotificationPermission();
+    });
+  }
+
+  void _askNotificationPermission() {
+    if (!mounted) return;
+    try {
+      context.read<LocalNotificationService>().requestPermission();
+    } on ProviderNotFoundException {
+      return;
+    }
   }
 
   @override
@@ -77,7 +92,7 @@ class _SplashPageState extends State<SplashPage>
               ),
           child: Center(
             child: AnimatedBrandLogo(
-              delay: const Duration(milliseconds: 200),
+              delay: const Duration(milliseconds: 50),
               onIntroEnd: _openBrandSplash,
             ),
           ),

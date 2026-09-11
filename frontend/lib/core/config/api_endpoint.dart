@@ -12,4 +12,14 @@ class ApiEndpoint {
   static const String resetPassword = '/auth/reset';
 
   static const String profileCustomer = '/profile/customer';
+
+  static const String stores = '/store/';
+  static String storeDetail(String id) => '/store/$id';
+
+  static const String services = '/service/';
+  static const String capsters = '/capster/';
+
+  static const String bookingStore = '/booking/store';
+  static const String booking = '/booking/';
+  static const String bookingLock = '/booking/lock';
 }

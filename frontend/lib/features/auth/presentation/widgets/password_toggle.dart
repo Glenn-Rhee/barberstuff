@@ -17,19 +17,13 @@ class PasswordToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
-      icon: obscured
-          ? Image.asset(
-              AppAssets.eyeIcon,
-              width: AppField.iconSize,
-              height: AppField.iconSize,
-              filterQuality: FilterQuality.medium,
-              color: AppColor.inkFaint,
-            )
-          : const Icon(
-              Icons.visibility_outlined,
-              size: AppField.iconSize,
-              color: AppColor.inkFaint,
-            ),
+      icon: Image.asset(
+        obscured ? AppAssets.eyeOffIcon : AppAssets.eyeIcon,
+        width: AppField.iconSize,
+        height: AppField.iconSize,
+        filterQuality: FilterQuality.medium,
+        color: AppColor.inkFaint,
+      ),
     );
   }
 }

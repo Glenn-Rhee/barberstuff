@@ -6,11 +6,16 @@ import 'package:mobile_barberstuff/features/auth/presentation/pages/login_page.d
 import 'package:mobile_barberstuff/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_success_page.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_flow_page.dart';
+import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_receipt_page.dart';
+import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_success_page.dart';
+import 'package:mobile_barberstuff/features/debug/presentation/pages/debug_shell_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/forgot_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_password_page.dart';
 import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_success_page.dart';
-import 'package:mobile_barberstuff/features/main/presentation/pages/main_shell_page.dart';
+import 'package:mobile_barberstuff/features/history/presentation/pages/history_page.dart';
+import 'package:mobile_barberstuff/features/notification/presentation/pages/notification_page.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/about_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
@@ -44,6 +49,10 @@ class AppRoute {
   static const String helpCenter = '/help-center';
   static const String about = '/about';
   static const String booking = '/booking';
+  static const String notification = '/notification';
+  static const String history = '/history';
+  static const String bookingSuccess = '/booking-success';
+  static const String bookingReceipt = '/booking-receipt';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -95,6 +104,30 @@ class AppRoute {
           settings: settings,
           builder: (BuildContext context) => const BookingFlowPage(),
         );
+      case notification:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => const NotificationPage(),
+        );
+      case history:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => const HistoryPage(),
+        );
+      case bookingSuccess:
+        final Object? args = settings.arguments;
+        if (args is! BookingResult) return null;
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => BookingSuccessPage(result: args),
+        );
+      case bookingReceipt:
+        final Object? args = settings.arguments;
+        if (args is! BookingResult) return null;
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => BookingReceiptPage(result: args),
+        );
       case about:
         return MaterialPageRoute<void>(
           settings: settings,
@@ -134,7 +167,7 @@ class AppRoute {
       case home:
         return MaterialPageRoute<void>(
           settings: settings,
-          builder: (BuildContext context) => const MainShellPage(),
+          builder: (BuildContext context) => const DebugShellPage(),
         );
       case verifySuccess:
         return MaterialPageRoute<void>(

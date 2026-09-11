@@ -8,6 +8,10 @@ class AppColor {
   static const Color orangeDark = Color(0xFFA96F1E);
   static const Color orangeDashboard = Color(0xFFFECC67);
 
+  static const Color goldDeep = Color(0xFFECA93B);
+  static const Color goldMid = Color(0xFFEFC44F);
+  static const Color goldSoft = Color(0xFFF5D26A);
+
   static const Color customKeyProfileInfo = Color(0xFFE6F4FF);
   static const Color customKeyProfileInfo2 = Color(0xFF0682DF);
 

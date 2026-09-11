@@ -39,17 +39,6 @@ class _PersonalInfoView extends StatelessWidget {
 
   static const double _gap = 18;
 
-  Future<void> _pickDate(BuildContext context, PersonalInfoProvider p) async {
-    final DateTime now = DateTime.now();
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: p.dateOfBirth ?? DateTime(now.year - 18),
-      firstDate: DateTime(1940),
-      lastDate: now,
-    );
-    if (picked != null) p.setDateOfBirth(picked);
-  }
-
   void _save(BuildContext context, PersonalInfoProvider p) {
     FocusScope.of(context).unfocus();
     if (!p.validate()) return;
@@ -108,10 +97,8 @@ class _PersonalInfoView extends StatelessWidget {
                 label: l10n.registerBirthDateLabel,
                 iconPath: AppAssets.birthDateIcon,
                 controller: p.birthDateController,
-                readOnly: true,
-                onTap: () => _pickDate(context, p),
-                validator: (String? v) =>
-                    validators.required(v, label: l10n.registerBirthDateLabel),
+                enabled: false,
+                helper: l10n.personalInfoBirthDateLocked,
               ),
               const SizedBox(height: _gap),
 

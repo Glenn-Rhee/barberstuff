@@ -13,6 +13,8 @@ class DashboardBottomNav extends StatelessWidget {
     required this.onSelect,
   });
 
+  static const double _radius = 26;
+
   final DashboardTab current;
   final void Function(DashboardTab tab) onSelect;
 
@@ -47,26 +49,41 @@ class DashboardBottomNav extends StatelessWidget {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColor.surface,
-        border: Border(top: BorderSide(color: AppColor.border)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(_radius),
+        ),
+        border: Border.all(color: AppColor.border),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: AppColor.backdrop.withValues(alpha: 0.07),
+            blurRadius: 18,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            children: <Widget>[
-              for (final DashboardTab tab in DashboardTab.values)
-                Expanded(
-                  child: _NavItem(
-                    iconPath: _iconOf(tab),
-                    label: _labelOf(tab, l10n),
-                    active: tab == current,
-                    onTap: () => onSelect(tab),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(_radius),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              children: <Widget>[
+                for (final DashboardTab tab in DashboardTab.values)
+                  Expanded(
+                    child: _NavItem(
+                      iconPath: _iconOf(tab),
+                      label: _labelOf(tab, l10n),
+                      active: tab == current,
+                      onTap: () => onSelect(tab),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -89,11 +106,11 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color tint = active ? AppColor.orangeLight : AppColor.inkFaint;
+    final Color tint = active ? AppColor.goldDeep : AppColor.inkSoft;
 
     return InkWell(
       onTap: onTap,
-      splashColor: AppColor.orangeLight.withValues(alpha: 0.10),
+      splashColor: AppColor.goldDeep.withValues(alpha: 0.12),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Column(

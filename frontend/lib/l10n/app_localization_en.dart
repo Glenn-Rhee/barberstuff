@@ -308,6 +308,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get homeMembershipLevel => 'Membership level';
+
+  @override
+  String get homeRedeemPoints => 'Redeem your points';
+
+  @override
   String get homeBirthdayTitle => 'Birthday Special!';
 
   @override
@@ -316,6 +322,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeSeePromo => 'See Promo';
+
+  @override
+  String get homeBirthdayBadge => 'Look your best every day';
+
+  @override
+  String get homeBookingNow => 'Book Now';
 
   @override
   String get homeActionBooking => 'Booking';
@@ -330,6 +342,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeActionHistory => 'History';
 
   @override
+  String get bookingBranchNewBadge => 'NEW';
+
+  @override
   String get homeBenefitTitle => 'Barberstuff Benefits';
 
   @override
@@ -340,6 +355,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeBenefitPriority => 'Priority slots with no long queues';
+
+  @override
+  String get homeBenefitDiscountTitle => 'More Haircut Discounts!';
+
+  @override
+  String get homeBenefitPointsTitle => 'Points on Every Cut';
+
+  @override
+  String get homeBenefitPriorityTitle => 'Priority Without Queueing';
 
   @override
   String get homeActiveBookingTitle => 'Active Booking';
@@ -354,6 +378,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeBookingDetail => 'View Detail';
+
+  @override
+  String homeBookingCapster(String name) {
+    return 'Capster $name';
+  }
 
   @override
   String get homeBookingEmpty => 'No active booking yet.';
@@ -379,6 +408,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeHistoryEmpty => 'No haircut history yet.';
 
   @override
+  String get homeHistoryRebook => 'Book Again';
+
+  @override
+  String homeHistoryBy(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String homeNearbyLocation(String city, String distance) {
+    return '$city • $distance km';
+  }
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -391,16 +433,156 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
-  String get profileTierNewbie => 'NEWBIE MEMBER';
+  String get historyTitle => 'Booking History';
 
   @override
-  String get profileTierBestie => 'BESTIE MEMBER';
+  String get historyTabUpcoming => 'Upcoming';
 
   @override
-  String get profileTierRoyal => 'ROYAL MEMBER';
+  String get historyTabDone => 'Completed';
 
   @override
-  String get profileTierCrazy => 'CRAZY MEMBER';
+  String get historyTabCanceled => 'Canceled';
+
+  @override
+  String get historyBadgeProgress => 'PROGRESS';
+
+  @override
+  String get historyBadgeDone => 'DONE';
+
+  @override
+  String get historyBadgeCancel => 'CANCEL';
+
+  @override
+  String get historyNotReviewed => 'Not reviewed yet';
+
+  @override
+  String get historyWriteReview => 'Write Review';
+
+  @override
+  String get historySeeReview => 'See Review';
+
+  @override
+  String get historyYourReview => 'Your review';
+
+  @override
+  String get historyEmpty => 'No booking in this list yet.';
+
+  @override
+  String get reviewTitle => 'How was your experience?';
+
+  @override
+  String get reviewSubtitle => 'your experience matters a lot to us';
+
+  @override
+  String get reviewCapster => 'Capster Service';
+
+  @override
+  String get reviewCashier => 'Cashier Service';
+
+  @override
+  String get reviewStore => 'Outlet Quality';
+
+  @override
+  String get reviewMessageLabel => 'Tell Us About Your Experience';
+
+  @override
+  String get reviewMessageHint => 'Write your review here!';
+
+  @override
+  String get reviewSubmit => 'Send';
+
+  @override
+  String get reviewNeedStars => 'Please rate every category first.';
+
+  @override
+  String get reviewThanks => 'Thanks for your review!';
+
+  @override
+  String get notificationTitle => 'Notifications';
+
+  @override
+  String get notificationSearchHint => 'Search notifications...';
+
+  @override
+  String get notificationFilterAll => 'All';
+
+  @override
+  String get notificationFilterUnread => 'Unread';
+
+  @override
+  String get notificationMarkAllRead => 'Mark all as read';
+
+  @override
+  String get notificationToday => 'Today';
+
+  @override
+  String get notificationYesterday => 'Yesterday';
+
+  @override
+  String get notificationEmpty => 'No notifications yet';
+
+  @override
+  String get notificationChannelName => 'Barberstuff Updates';
+
+  @override
+  String get notificationChannelDescription =>
+      'Booking, points, and promo updates from Barberstuff.';
+
+  @override
+  String get notificationTimeNow => 'Just now';
+
+  @override
+  String notificationTimeMinute(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String notificationTimeHour(int count) {
+    return '$count hr ago';
+  }
+
+  @override
+  String notificationTimeDay(int count) {
+    return '$count d ago';
+  }
+
+  @override
+  String get notificationBookingTitle => 'Booking Confirmed!';
+
+  @override
+  String get notificationBookingBody =>
+      'Your haircut booking at the Jati Asih branch has been confirmed by the barber.';
+
+  @override
+  String get notificationPointsTitle => 'Member Points Added!';
+
+  @override
+  String get notificationPointsBody =>
+      'You earned 150 bonus points from your latest haircut. Keep levelling up!';
+
+  @override
+  String get notificationMembershipTitle => 'Congrats, Member Level Up!';
+
+  @override
+  String get notificationMembershipBody =>
+      'You have reached Premium level! Enjoy exclusive perks with no queueing.';
+
+  @override
+  String get notificationRecommendationTitle => 'New Hairstyle Recommendation';
+
+  @override
+  String get notificationRecommendationBody =>
+      'Discover this year latest men hairstyle trends that suit your face shape.';
+
+  @override
+  String get profileTierSilver => 'Silver Member';
+
+  @override
+  String get profileTierGold => 'Gold Member';
+
+  @override
+  String get profileTierPlatinum => 'Platinum Member';
 
   @override
   String get profileMenuPersonalInfo => 'Personal Information';
@@ -467,6 +649,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get personalInfoEmailLocked =>
       'Email is used to sign in and cannot be changed';
+
+  @override
+  String get personalInfoBirthDateLocked =>
+      'Date of birth follows your registration data and cannot be changed';
 
   @override
   String get personalInfoPasswordTitle => 'My Password';
@@ -589,7 +775,112 @@ class AppLocalizationsEn extends AppLocalizations {
       'Barberstuff may update these Terms at any time. Continued use of the platform indicates acceptance of the updated Terms.';
 
   @override
+  String get bookingTitle => 'Booking';
+
+  @override
   String get bookingBranchTitle => 'Choose Branch';
+
+  @override
+  String bookingStepLabel(int current, int total) {
+    return 'STEP $current OF $total';
+  }
+
+  @override
+  String get bookingBranchSubtitle =>
+      'Pick the barbershop branch nearest to you';
+
+  @override
+  String get bookingScheduleSubtitle => 'Pick an available date and time';
+
+  @override
+  String get bookingBarberSubtitle =>
+      'Pick your favourite barber or let us choose';
+
+  @override
+  String get bookingServiceSubtitle => 'Pick the service you want';
+
+  @override
+  String get bookingConfirmTitle => 'Booking Confirmation';
+
+  @override
+  String get bookingConfirmSubtitle => 'Please review your order details';
+
+  @override
+  String get bookingNextSchedule => 'Next: Pick Schedule';
+
+  @override
+  String get bookingNextBarber => 'Next: Pick Barber';
+
+  @override
+  String get bookingNextService => 'Next: Pick Service';
+
+  @override
+  String get bookingNextConfirm => 'Next: Confirm Booking';
+
+  @override
+  String get bookingConfirmCta => 'Confirm Order';
+
+  @override
+  String get bookingSlotFullNote => 'Slots you cannot pick are already full';
+
+  @override
+  String get bookingSlotEmpty => 'No time slot available on this date.';
+
+  @override
+  String get bookingSlotTooSoon =>
+      'Booking must be at least 30 minutes from now.';
+
+  @override
+  String get bookingTabService => 'Service';
+
+  @override
+  String get bookingAvailableToday => 'Available today';
+
+  @override
+  String bookingLockRemaining(String time) {
+    return 'Time left $time';
+  }
+
+  @override
+  String get bookingLockExpired =>
+      'Your hold expired. Please pick a schedule again.';
+
+  @override
+  String get bookingCancelTitle => 'Cancel booking?';
+
+  @override
+  String get bookingCancelMessage =>
+      'The slot you are holding will be released and someone else can take it.';
+
+  @override
+  String get bookingCancelConfirm => 'Yes, cancel';
+
+  @override
+  String get bookingCancelKeep => 'Keep booking';
+
+  @override
+  String get bookingConfirmBranch => 'BRANCH';
+
+  @override
+  String get bookingConfirmService => 'SERVICE';
+
+  @override
+  String get bookingConfirmBarber => 'BARBER';
+
+  @override
+  String get bookingConfirmSchedule => 'TIME & DATE';
+
+  @override
+  String get bookingPaymentTitle => 'Payment Details';
+
+  @override
+  String get bookingSubtotal => 'Subtotal';
+
+  @override
+  String get bookingAppFee => 'App Service Fee';
+
+  @override
+  String get bookingTotal => 'Total Payment';
 
   @override
   String get bookingBarberTitle => 'Choose Barber';
@@ -620,7 +911,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bookingTermsOutro =>
-      'Please arrive on time so your service can run comfortably and on schedule. Thank you for understanding!';
+      'Please arrive on time so your service can run comfortably and on schedule. Thank you for understanding! 😊';
 
   @override
   String get bookingTermsAgree => 'I have read the terms';
@@ -711,6 +1002,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonRetry => 'Try Again';
+
+  @override
+  String get offlineCachedData => 'You are offline — showing saved data';
+
+  @override
+  String get permissionNotificationTitle => 'Allow notifications';
+
+  @override
+  String get permissionNotificationMessage =>
+      'Turn on notifications so you know when a booking is confirmed and points are added.';
+
+  @override
+  String get permissionLocationTitle => 'Allow location';
+
+  @override
+  String get permissionLocationMessage =>
+      'Location is used to sort branches from the nearest to you.';
+
+  @override
+  String get permissionOpenSettings => 'Open Settings';
+
+  @override
+  String get permissionLater => 'Not now';
+
+  @override
+  String get permissionLocationOffTitle => 'Turn on location';
+
+  @override
+  String get permissionLocationOffMessage =>
+      'Location services are off on your phone. Turn them on so branch distance can be calculated.';
+
+  @override
+  String get permissionOpenLocationSettings => 'Turn On Location';
 
   @override
   String get commonUnderstood => 'Oke';

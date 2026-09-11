@@ -7,12 +7,16 @@ class TierTheme {
     required this.deep,
     required this.accent,
     required this.onAccent,
+    required this.onCard,
+    required this.sheen,
   });
 
   final Color base;
   final Color deep;
   final Color accent;
   final Color onAccent;
+  final Color onCard;
+  final Color sheen;
 
   LinearGradient get gradient => LinearGradient(
     begin: Alignment.topLeft,
@@ -20,44 +24,41 @@ class TierTheme {
     colors: <Color>[base, deep],
   );
 
-  static const TierTheme _newbie = TierTheme(
-    base: Color(0xFF2E3338),
-    deep: Color(0xFF15181B),
-    accent: Color(0xFFC3CCD6),
-    onAccent: Color(0xFF15181B),
+  static const TierTheme _silver = TierTheme(
+    base: Color(0xFFDCE1E7),
+    deep: Color(0xFFA9B2BD),
+    accent: Color(0xFFC6CDD6),
+    onAccent: Color(0xFF1B1E21),
+    onCard: Color(0xFF1B1E21),
+    sheen: Color(0xFFFFFFFF),
   );
 
-  static const TierTheme _bestie = TierTheme(
-    base: Color(0xFF4A3524),
-    deep: Color(0xFF1E140C),
-    accent: Color(0xFFD79A6A),
-    onAccent: Color(0xFF1E140C),
+  static const TierTheme _gold = TierTheme(
+    base: Color(0xFFF7DA80),
+    deep: Color(0xFFE8B845),
+    accent: Color(0xFFEFC44F),
+    onAccent: Color(0xFF1B1E21),
+    onCard: Color(0xFF1B1E21),
+    sheen: Color(0xFFFFFFFF),
   );
 
-  static const TierTheme _royal = TierTheme(
-    base: Color(0xFF3B2F14),
-    deep: Color(0xFF171206),
-    accent: Color(0xFFFECC67),
-    onAccent: Color(0xFF171206),
-  );
-
-  static const TierTheme _crazy = TierTheme(
-    base: Color(0xFF352247),
-    deep: Color(0xFF150D1E),
-    accent: Color(0xFFC79BEC),
-    onAccent: Color(0xFF150D1E),
+  static const TierTheme _platinum = TierTheme(
+    base: Color(0xFFFDFEFF),
+    deep: Color(0xFFD3DAE2),
+    accent: Color(0xFFE9EEF4),
+    onAccent: Color(0xFF1B1E21),
+    onCard: Color(0xFF1B1E21),
+    sheen: Color(0xFFFFFFFF),
   );
 
   static TierTheme of(MemberTier tier) {
     switch (tier) {
-      case MemberTier.newbie:
-        return _newbie;
-      case MemberTier.bestie:
-        return _bestie;
-      case MemberTier.royal:
-        return _royal;
-      case MemberTier.crazy:
-        return _crazy;
+      case MemberTier.silver:
+        return _silver;
+      case MemberTier.gold:
+        return _gold;
+      case MemberTier.platinum:
+        return _platinum;
     }
   }
 }

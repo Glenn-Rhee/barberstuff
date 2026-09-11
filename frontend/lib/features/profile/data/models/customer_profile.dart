@@ -1,8 +1,7 @@
 enum MemberTier {
-  newbie(threshold: 0),
-  bestie(threshold: 500),
-  royal(threshold: 1500),
-  crazy(threshold: 3000);
+  silver(threshold: 0),
+  gold(threshold: 500),
+  platinum(threshold: 1500);
 
   const MemberTier({required this.threshold});
 
@@ -11,7 +10,7 @@ enum MemberTier {
   static MemberTier fromJson(String? value) {
     return MemberTier.values.firstWhere(
       (MemberTier tier) => tier.name == value?.toLowerCase().trim(),
-      orElse: () => MemberTier.newbie,
+      orElse: () => MemberTier.silver,
     );
   }
 

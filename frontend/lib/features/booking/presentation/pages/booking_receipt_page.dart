@@ -1,38 +1,39 @@
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/phone_formatter.dart';
-import 'package:mobile_barberstuff/core/utils/price_format.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_content.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_receipt.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
+import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_step_shell.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:provider/provider.dart';
 
-class BookingReceiptArgs {
-  const BookingReceiptArgs({required this.receipt});
-
-  final BookingReceipt receipt;
-}
-
 class BookingReceiptPage extends StatelessWidget {
-  const BookingReceiptPage({super.key, required this.args});
+  const BookingReceiptPage({super.key, required this.result});
 
-  final BookingReceiptArgs args;
+  final BookingResult result;
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    final BookingReceipt r = args.receipt;
     final String locale = Localizations.localeOf(context).toLanguageTag();
-    final ReceiptCodeType codeType = context
-        .select<BookingCatalog, ReceiptCodeType>(
-          (BookingCatalog c) => c.codeType,
-        );
+
+    String customerName = '-';
+    String customerPhone = '';
+    try {
+      final dynamic profile = context.read<ProfileProvider>().profile;
+      if (profile != null) {
+        customerName = profile.name as String;
+        customerPhone = profile.phoneNumber as String;
+      }
+    } on ProviderNotFoundException {
+      customerName = '-';
+    }
 
     return Scaffold(
       backgroundColor: AppColor.surface,
@@ -40,7 +41,17 @@ class BookingReceiptPage extends StatelessWidget {
         backgroundColor: AppColor.surface,
         elevation: 0,
         titleSpacing: 0,
-        leading: const BackButton(color: AppColor.ink),
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).maybePop(),
+          icon: Image.asset(
+            AppAssets.backArrowIcon,
+            width: 20,
+            height: 16,
+            fit: BoxFit.contain,
+            color: AppColor.ink,
+            filterQuality: FilterQuality.medium,
+          ),
+        ),
         title: Text(
           l10n.receiptTitle,
           style: AppTextStyle.headlineSmall.copyWith(
@@ -55,49 +66,75 @@ class BookingReceiptPage extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                 children: <Widget>[
-                  _CodeBlock(value: r.orderId, type: codeType),
-                  const SizedBox(height: 24),
-                  _Card(
-                    children: <Widget>[
-                      _Row(label: l10n.receiptStore, value: r.store.name),
-                      _Row(label: l10n.receiptAddress, value: r.store.address),
-                      _Row(label: l10n.receiptName, value: r.customerName),
-                      _Row(
-                        label: l10n.receiptPhone,
-                        value: PhoneFormatter.display(r.customerPhone),
-                      ),
-                      _Row(
-                        label: l10n.receiptDate,
-                        value: DateFormat('d MMMM y', locale).format(r.date),
-                      ),
-                      _Row(
-                        label: l10n.receiptTime,
-                        value: '${_time(r.time)} WIB',
-                      ),
-                      _Row(
-                        label: l10n.receiptSpecialist,
-                        value: r.capster.name,
-                        underline: true,
-                      ),
-                    ],
+                  Center(
+                    child: BarcodeWidget(
+                      barcode: Barcode.code128(),
+                      data: result.qrCode,
+                      width: double.infinity,
+                      height: 74,
+                      color: AppColor.ink,
+                      drawText: false,
+                      errorBuilder: (BuildContext _, String _) =>
+                          const SizedBox(height: 74),
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  _Card(
-                    children: <Widget>[
-                      for (final BookingService s in r.services)
-                        _Row(label: s.name, value: PriceFormat.full(s.price)),
-                      _Row(
-                        label: l10n.receiptTotal,
-                        value: PriceFormat.full(r.total),
-                        bold: true,
-                      ),
-                    ],
+                  const SizedBox(height: 22),
+                  _Row(
+                    label: l10n.receiptStore,
+                    value: result.store.name,
+                  ),
+                  _Row(
+                    label: l10n.receiptAddress,
+                    value: result.store.address,
+                  ),
+                  _Row(label: l10n.receiptName, value: customerName),
+                  _Row(
+                    label: l10n.receiptPhone,
+                    value: customerPhone.isEmpty
+                        ? '-'
+                        : PhoneFormatter.display(customerPhone),
+                  ),
+                  _Row(
+                    label: l10n.receiptDate,
+                    value: DateFormat(
+                      'd MMMM y',
+                      locale,
+                    ).format(result.bookingDate),
+                  ),
+                  _Row(
+                    label: l10n.receiptTime,
+                    value:
+                        '${DateFormat('HH:mm', locale).format(result.bookingDate)} WIB',
+                  ),
+                  _Row(
+                    label: l10n.receiptSpecialist,
+                    value: result.capster.name,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    child: DottedDivider(),
+                  ),
+                  for (final BookingServiceInfo item in result.services)
+                    _Row(
+                      label: item.name,
+                      value: formatRupiah(item.price),
+                    ),
+                  if (result.appServiceFee > 0)
+                    _Row(
+                      label: l10n.bookingAppFee,
+                      value: formatRupiah(result.appServiceFee),
+                    ),
+                  const SizedBox(height: 6),
+                  _Row(
+                    label: l10n.receiptTotal,
+                    value: formatRupiah(result.grandTotal),
+                    strong: true,
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
               child: BoxButton(
                 label: l10n.receiptDownload,
                 onPressed: () => showComingSoonDialog(context),
@@ -108,55 +145,24 @@ class BookingReceiptPage extends StatelessWidget {
       ),
     );
   }
-
-  static String _time(TimeOfDay t) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return '${two(t.hour)}:${two(t.minute)}';
-  }
 }
 
-class _CodeBlock extends StatelessWidget {
-  const _CodeBlock({required this.value, required this.type});
-
-  final String value;
-  final ReceiptCodeType type;
+class DottedDivider extends StatelessWidget {
+  const DottedDivider({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final bool isQr = type == ReceiptCodeType.qr;
-
-    return Center(
-      child: SizedBox(
-        width: isQr ? 180 : double.infinity,
-        height: isQr ? 180 : 90,
-        child: BarcodeWidget(
-          data: value,
-          barcode: isQr ? Barcode.qrCode() : Barcode.code128(),
-          drawText: false,
-          color: AppColor.ink,
-          errorBuilder: (BuildContext _, String _) =>
-              const ColoredBox(color: AppColor.border),
-        ),
-      ),
-    );
-  }
-}
-
-class _Card extends StatelessWidget {
-  const _Card({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColor.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColor.border),
-      ),
-      child: Column(children: children),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final int count = (constraints.maxWidth / 6).floor();
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List<Widget>.generate(
+            count,
+            (int _) => Container(width: 3, height: 1, color: AppColor.border),
+          ),
+        );
+      },
     );
   }
 }
@@ -165,42 +171,37 @@ class _Row extends StatelessWidget {
   const _Row({
     required this.label,
     required this.value,
-    this.bold = false,
-    this.underline = false,
+    this.strong = false,
   });
 
   final String label;
   final String value;
-  final bool bold;
-  final bool underline;
+  final bool strong;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 7),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Expanded(
-            flex: 4,
             child: Text(
               label,
-              style: bold
-                  ? AppTextStyle.titleSmall
-                  : AppTextStyle.bodyMedium.copyWith(color: AppColor.inkSoft),
+              style: strong
+                  ? AppTextStyle.titleSmall.copyWith(fontSize: 13)
+                  : AppTextStyle.bodySmall.copyWith(
+                      fontSize: 12,
+                      color: AppColor.inkSoft,
+                    ),
             ),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            flex: 6,
+          const SizedBox(width: 16),
+          Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: (bold ? AppTextStyle.titleSmall : AppTextStyle.titleSmall)
-                  .copyWith(
-                    decoration: underline ? TextDecoration.underline : null,
-                    decorationColor: AppColor.ink,
-                  ),
+              style: AppTextStyle.titleSmall.copyWith(fontSize: 13),
             ),
           ),
         ],
