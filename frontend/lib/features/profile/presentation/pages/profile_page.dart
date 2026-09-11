@@ -17,7 +17,6 @@ import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_la
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -154,7 +153,8 @@ class ProfilePage extends StatelessWidget {
                   ProfileMenuTile(
                     iconPath: AppAssets.bellProfile,
                     label: l10n.profileMenuNotification,
-                    onTap: () => showComingSoonDialog(context),
+                    onTap: () =>
+                        Navigator.of(context).pushNamed(AppRoute.notification),
                   ),
                   ProfileMenuTile(
                     iconPath: AppAssets.helpCircleProfile,
@@ -166,7 +166,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               _MenuGroup(
                 children: <Widget>[
                   ProfileMenuTile(
@@ -177,7 +177,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
                 child: ProfileMenuTile(
@@ -207,13 +207,7 @@ class _MenuGroup extends StatelessWidget {
       child: Column(
         children: <Widget>[
           for (int i = 0; i < children.length; i++) ...<Widget>[
-            if (i > 0)
-              const Divider(
-                height: 1,
-                thickness: 1,
-                indent: 68,
-                color: AppColor.border,
-              ),
+            if (i > 0) const SizedBox(height: 8),
             children[i],
           ],
         ],

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/debug/debug_overrides.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
+import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
 import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';

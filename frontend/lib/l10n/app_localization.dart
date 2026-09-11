@@ -698,6 +698,12 @@ abstract class AppLocalizations {
   /// **'Riwayat'**
   String get homeActionHistory;
 
+  /// No description provided for @bookingBranchNewBadge.
+  ///
+  /// In id, this message translates to:
+  /// **'NEWBIE'**
+  String get bookingBranchNewBadge;
+
   /// No description provided for @homeBenefitTitle.
   ///
   /// In id, this message translates to:
@@ -901,6 +907,18 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Belum ada notifikasi saat ini'**
   String get notificationEmpty;
+
+  /// No description provided for @notificationChannelName.
+  ///
+  /// In id, this message translates to:
+  /// **'Info Barberstuff'**
+  String get notificationChannelName;
+
+  /// No description provided for @notificationChannelDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Info booking, poin, dan promo Barberstuff.'**
+  String get notificationChannelDescription;
 
   /// No description provided for @notificationTimeNow.
   ///
@@ -1117,6 +1135,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Email dipakai untuk masuk dan tidak bisa diubah'**
   String get personalInfoEmailLocked;
+
+  /// No description provided for @personalInfoBirthDateLocked.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal lahir mengikuti data pendaftaran dan tidak bisa diubah'**
+  String get personalInfoBirthDateLocked;
 
   /// No description provided for @personalInfoPasswordTitle.
   ///

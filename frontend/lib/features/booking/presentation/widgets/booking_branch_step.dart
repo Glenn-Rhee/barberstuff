@@ -234,7 +234,7 @@ class _NewbieBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        'NEWBIE',
+        AppLocalizations.of(context).bookingBranchNewBadge,
         style: AppTextStyle.bodySmall.copyWith(
           fontSize: 10,
           fontWeight: FontWeight.w700,

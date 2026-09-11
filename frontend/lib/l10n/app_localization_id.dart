@@ -342,6 +342,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get homeActionHistory => 'Riwayat';
 
   @override
+  String get bookingBranchNewBadge => 'NEWBIE';
+
+  @override
   String get homeBenefitTitle => 'Benefit Barberstuff';
 
   @override
@@ -452,6 +455,13 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get notificationEmpty => 'Belum ada notifikasi saat ini';
+
+  @override
+  String get notificationChannelName => 'Info Barberstuff';
+
+  @override
+  String get notificationChannelDescription =>
+      'Info booking, poin, dan promo Barberstuff.';
 
   @override
   String get notificationTimeNow => 'Baru saja';
@@ -573,6 +583,10 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get personalInfoEmailLocked =>
       'Email dipakai untuk masuk dan tidak bisa diubah';
+
+  @override
+  String get personalInfoBirthDateLocked =>
+      'Tanggal lahir mengikuti data pendaftaran dan tidak bisa diubah';
 
   @override
   String get personalInfoPasswordTitle => 'Password Saya';

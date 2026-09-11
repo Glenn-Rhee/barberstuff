@@ -12,7 +12,8 @@ class ProfileMenuTile extends StatelessWidget {
     this.danger = false,
   });
 
-  static const double _badge = 40;
+  static const double _badge = 38;
+  static const double _radius = 12;
 
   final String iconPath;
   final String label;
@@ -28,11 +29,19 @@ class ProfileMenuTile extends StatelessWidget {
           ? AppColor.danger.withValues(alpha: 0.07)
           : AppColor.surface,
       clipBehavior: Clip.antiAlias,
-      borderRadius: BorderRadius.circular(danger ? 12 : 0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_radius),
+        side: BorderSide(
+          color: danger
+              ? AppColor.danger.withValues(alpha: 0.3)
+              : AppColor.border,
+        ),
+      ),
       child: InkWell(
         onTap: onTap,
+        splashColor: tint.withValues(alpha: 0.08),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           child: Row(
             children: <Widget>[
               Container(
@@ -41,14 +50,14 @@ class ProfileMenuTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: danger
                       ? AppColor.surface
-                      : AppColor.border.withValues(alpha: 0.5),
+                      : AppColor.border.withValues(alpha: 0.45),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Center(
                   child: Image.asset(
                     iconPath,
-                    width: 20,
-                    height: 20,
+                    width: 19,
+                    height: 19,
                     fit: BoxFit.contain,
                     color: tint,
                     filterQuality: FilterQuality.medium,
@@ -61,7 +70,10 @@ class ProfileMenuTile extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.labelLarge.copyWith(color: tint),
+                  style: AppTextStyle.labelLarge.copyWith(
+                    fontSize: 15,
+                    color: tint,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -70,7 +82,7 @@ class ProfileMenuTile extends StatelessWidget {
                 width: 8,
                 height: 16,
                 fit: BoxFit.contain,
-                color: danger ? AppColor.danger : AppColor.inkSoft,
+                color: danger ? AppColor.danger : AppColor.inkFaint,
                 filterQuality: FilterQuality.medium,
               ),
             ],

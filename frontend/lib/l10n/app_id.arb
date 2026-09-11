@@ -163,6 +163,7 @@
   "homeActionPackage": "Paket",
   "homeActionPromo": "Promo",
   "homeActionHistory": "Riwayat",
+  "bookingBranchNewBadge": "NEWBIE",
 
   "homeBenefitTitle": "Benefit Barberstuff",
   "homeBenefitPoints": "Poin reward setiap kali potong rambut",
@@ -229,6 +230,8 @@
   "notificationToday": "Hari ini",
   "notificationYesterday": "Kemarin",
   "notificationEmpty": "Belum ada notifikasi saat ini",
+  "notificationChannelName": "Info Barberstuff",
+  "notificationChannelDescription": "Info booking, poin, dan promo Barberstuff.",
   "notificationTimeNow": "Baru saja",
   "notificationTimeMinute": "{count} mnt lalu",
   "@notificationTimeMinute": {
@@ -287,6 +290,7 @@
   "personalInfoChangePhoto": "Ganti Foto Profil",
   "personalInfoPhotoFormat": "Support Format: JPEG, PNG, JPG",
   "personalInfoEmailLocked": "Email dipakai untuk masuk dan tidak bisa diubah",
+  "personalInfoBirthDateLocked": "Tanggal lahir mengikuti data pendaftaran dan tidak bisa diubah",
   "personalInfoPasswordTitle": "Password Saya",
   "personalInfoPasswordSubtitle": "Ganti Password Saya",
   "personalInfoPasswordAction": "Ganti Sekarang",

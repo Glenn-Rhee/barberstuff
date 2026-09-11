@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
 
+typedef NotificationPresenter = void Function(AppNotification notification);
+
 enum NotificationFilter { all, unread }
 
 class NotificationProvider extends ChangeNotifier {
@@ -16,6 +18,7 @@ class NotificationProvider extends ChangeNotifier {
   NotificationFilter _filter = NotificationFilter.all;
   String _query = '';
   Timer? _simulator;
+  NotificationPresenter? _presenter;
   int _serial = 0;
 
   List<AppNotification> get items => List<AppNotification>.unmodifiable(_items);
@@ -61,6 +64,10 @@ class NotificationProvider extends ChangeNotifier {
     ];
   }
 
+  void attachPresenter(NotificationPresenter? presenter) {
+    _presenter = presenter;
+  }
+
   void setFilter(NotificationFilter value) {
     if (_filter == value) return;
     _filter = value;
@@ -98,15 +105,15 @@ class NotificationProvider extends ChangeNotifier {
     final NotificationCategory picked =
         category ?? all[_serial % all.length];
 
-    _items = <AppNotification>[
-      AppNotification(
-        id: 'sim-$_serial',
-        category: picked,
-        createdAt: DateTime.now(),
-      ),
-      ..._items,
-    ];
+    final AppNotification created = AppNotification(
+      id: 'sim-$_serial',
+      category: picked,
+      createdAt: DateTime.now(),
+    );
+
+    _items = <AppNotification>[created, ..._items];
     notifyListeners();
+    _presenter?.call(created);
   }
 
   void clear() {

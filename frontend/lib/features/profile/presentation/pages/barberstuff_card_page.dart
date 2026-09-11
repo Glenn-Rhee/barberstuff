@@ -1,3 +1,4 @@
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
@@ -28,7 +29,17 @@ class BarberstuffCardPage extends StatelessWidget {
         backgroundColor: AppColor.surface,
         elevation: 0,
         titleSpacing: 0,
-        leading: const BackButton(color: AppColor.ink),
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).maybePop(),
+          icon: Image.asset(
+            AppAssets.backArrowIcon,
+            width: 20,
+            height: 16,
+            fit: BoxFit.contain,
+            color: AppColor.ink,
+            filterQuality: FilterQuality.medium,
+          ),
+        ),
         title: Text(
           l10n.cardPageTitle,
           style: AppTextStyle.headlineSmall.copyWith(
@@ -49,16 +60,25 @@ class BarberstuffCardPage extends StatelessWidget {
 class MemberCard extends StatelessWidget {
   const MemberCard({super.key, required this.profile});
 
-  static const double _radius = 20;
-  static const double _avatar = 54;
+  static const double _radius = 16;
+  static const double _avatar = 56;
+  static const double _qr = 74;
 
   final CustomerProfile profile;
 
   static String cardNumber(String id) {
-    final String clean = id.replaceAll('-', '').toUpperCase();
-    if (clean.isEmpty) return '#—';
-    return '#${clean.substring(0, clean.length < 8 ? clean.length : 8)}';
+    final String clean = id.replaceAll(RegExp('[^0-9a-fA-F]'), '');
+    if (clean.isEmpty) return '#00000000';
+
+    int hash = 0;
+    for (final int unit in clean.codeUnits) {
+      hash = (hash * 31 + unit) & 0x7FFFFFFF;
+    }
+
+    return '#${(hash % 100000000).toString().padLeft(8, '0')}';
   }
+
+  static String qrPayload(String id) => 'cs$id';
 
   @override
   Widget build(BuildContext context) {
@@ -76,32 +96,28 @@ class MemberCard extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             Positioned(
-              right: -18,
-              top: -6,
-              bottom: -6,
+              right: -24,
+              top: -10,
+              bottom: -10,
               child: Opacity(
-                opacity: 0.12,
+                opacity: 0.5,
                 child: Image.asset(
                   AppAssets.vectorCard,
                   fit: BoxFit.fitHeight,
-                  color: theme.accent,
+                  color: theme.sheen,
                   filterQuality: FilterQuality.medium,
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 22),
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      _CardAvatar(
-                        photoUrl: profile.imageUrl,
-                        size: _avatar,
-                        ringColor: theme.accent,
-                      ),
-                      const SizedBox(width: 14),
+                      _CardAvatar(photoUrl: profile.imageUrl, size: _avatar),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,18 +128,18 @@ class MemberCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyle.bodySmall.copyWith(
-                                color: theme.accent,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.5,
+                                fontSize: 12,
+                                color: theme.onCard.withValues(alpha: 0.7),
                               ),
                             ),
-                            const SizedBox(height: 3),
+                            const SizedBox(height: 2),
                             Text(
                               profile.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyle.titleMedium.copyWith(
-                                color: AppColor.surface,
+                                fontSize: 17,
+                                color: theme.onCard,
                               ),
                             ),
                           ],
@@ -132,24 +148,49 @@ class MemberCard extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  Text(
-                    l10n.cardIdLabel,
-                    style: AppTextStyle.bodySmall.copyWith(
-                      color: AppColor.surface.withValues(alpha: 0.65),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      cardNumber(profile.id),
-                      maxLines: 1,
-                      style: AppTextStyle.headlineLarge.copyWith(
-                        color: AppColor.surface,
-                        fontWeight: FontWeight.w700,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(
+                              l10n.cardIdLabel,
+                              maxLines: 1,
+                              style: AppTextStyle.bodyMedium.copyWith(
+                                color: theme.onCard,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                cardNumber(profile.id),
+                                maxLines: 1,
+                                style: AppTextStyle.headlineLarge.copyWith(
+                                  color: theme.onCard,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      BarcodeWidget(
+                        barcode: Barcode.qrCode(),
+                        data: qrPayload(profile.id),
+                        width: _qr,
+                        height: _qr,
+                        color: theme.onCard,
+                        drawText: false,
+                        errorBuilder: (BuildContext _, String _) =>
+                            SizedBox.square(dimension: _qr),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -162,15 +203,10 @@ class MemberCard extends StatelessWidget {
 }
 
 class _CardAvatar extends StatelessWidget {
-  const _CardAvatar({
-    required this.photoUrl,
-    required this.size,
-    required this.ringColor,
-  });
+  const _CardAvatar({required this.photoUrl, required this.size});
 
   final String? photoUrl;
   final double size;
-  final Color ringColor;
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +217,7 @@ class _CardAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: ringColor, width: 2),
+        border: Border.all(color: AppColor.surface, width: 2),
       ),
       child: ClipOval(
         child: url == null

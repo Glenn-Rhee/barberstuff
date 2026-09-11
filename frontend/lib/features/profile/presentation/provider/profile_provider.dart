@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'package:mobile_barberstuff/core/debug/debug_overrides.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
 

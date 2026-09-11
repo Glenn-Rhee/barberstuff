@@ -342,6 +342,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeActionHistory => 'History';
 
   @override
+  String get bookingBranchNewBadge => 'NEW';
+
+  @override
   String get homeBenefitTitle => 'Barberstuff Benefits';
 
   @override
@@ -452,6 +455,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationEmpty => 'No notifications yet';
+
+  @override
+  String get notificationChannelName => 'Barberstuff Updates';
+
+  @override
+  String get notificationChannelDescription =>
+      'Booking, points, and promo updates from Barberstuff.';
 
   @override
   String get notificationTimeNow => 'Just now';
@@ -573,6 +583,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get personalInfoEmailLocked =>
       'Email is used to sign in and cannot be changed';
+
+  @override
+  String get personalInfoBirthDateLocked =>
+      'Date of birth follows your registration data and cannot be changed';
 
   @override
   String get personalInfoPasswordTitle => 'My Password';
