@@ -32,6 +32,19 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserAuth'
     type: object
+  dto.CapsterAvailable:
+    properties:
+      available:
+        type: boolean
+      avg_rating:
+        type: number
+      id:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+    type: object
   dto.CapsterDataResponse:
     properties:
       avg_rating:
@@ -221,6 +234,17 @@ definitions:
     required:
     - email
     type: object
+  dto.GetBookingStoreResponse:
+    properties:
+      date:
+        type: string
+      id_store:
+        type: string
+      slots:
+        items:
+          $ref: '#/definitions/dto.SlotAvailable'
+        type: array
+    type: object
   dto.GetServiceResponse:
     properties:
       created_at:
@@ -281,6 +305,13 @@ definitions:
         enum:
         - lite
         - premium
+      timezone:
+        allOf:
+        - $ref: '#/definitions/entity.StoreTimezoneEnum'
+        enum:
+        - Asia/Jakarta
+        - Asia/Makassar
+        - Asia/Jayapura
     required:
     - address
     - banner_url
@@ -291,6 +322,7 @@ definitions:
     - open_hour
     - phone_number
     - store_type
+    - timezone
     type: object
   dto.OauthCustomerRequest:
     properties:
@@ -395,6 +427,17 @@ definitions:
         type: integer
       user:
         $ref: '#/definitions/dto.CustomerResponseRating'
+    type: object
+  dto.SlotAvailable:
+    properties:
+      available:
+        type: boolean
+      capsters:
+        items:
+          $ref: '#/definitions/dto.CapsterAvailable'
+        type: array
+      time:
+        type: string
     type: object
   dto.StaffAccountsResponse:
     properties:
@@ -537,6 +580,13 @@ definitions:
         enum:
         - lite
         - premium
+      timezone:
+        allOf:
+        - $ref: '#/definitions/entity.StoreTimezoneEnum'
+        enum:
+        - Asia/Jakarta
+        - Asia/Makassar
+        - Asia/Jayapura
     required:
     - address
     - banner_url
@@ -548,6 +598,7 @@ definitions:
     - phone_number
     - status
     - store_type
+    - timezone
     type: object
   dto.UserAuth:
     properties:
@@ -633,6 +684,16 @@ definitions:
     x-enum-varnames:
     - StoreStatusOpen
     - StoreStatusClose
+  entity.StoreTimezoneEnum:
+    enum:
+    - Asia/Jakarta
+    - Asia/Makassar
+    - Asia/Jayapura
+    type: string
+    x-enum-varnames:
+    - TimezoneJakarta
+    - TimezoneMakassar
+    - TimezoneJayapura
   entity.StoreTypeEnum:
     enum:
     - lite
@@ -1010,6 +1071,46 @@ paths:
       security:
       - BearerAuth: []
       summary: Kunci slot booking
+      tags:
+      - Booking
+  /booking/store:
+    get:
+      description: Mengambil data slot waktu, ketersediaan, dan daftar capster yang
+        tersedia pada toko dan tanggal tertentu
+      parameters:
+      - description: 'Tanggal booking (format RFC3339, contoh: 2026-09-11T00:00:00Z)'
+        in: query
+        name: date
+        required: true
+        type: string
+      - description: ID toko
+        in: query
+        name: id_store
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil data booking toko!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GetBookingStoreResponse'
+              type: object
+        "400":
+          description: Data tidak valid / gagal mengambil data
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Cek ketersediaan slot booking toko
       tags:
       - Booking
   /capster:

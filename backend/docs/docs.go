@@ -599,6 +599,71 @@ const docTemplate = `{
                 }
             }
         },
+        "/booking/store": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil data slot waktu, ketersediaan, dan daftar capster yang tersedia pada toko dan tanggal tertentu",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Cek ketersediaan slot booking toko",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tanggal booking (format RFC3339, contoh: 2026-09-11T00:00:00Z)",
+                        "name": "date",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID toko",
+                        "name": "id_store",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data booking toko!",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.GetBookingStoreResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Data tidak valid / gagal mengambil data",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/capster": {
             "get": {
                 "security": [
@@ -1548,6 +1613,26 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CapsterAvailable": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "boolean"
+                },
+                "avg_rating": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CapsterDataResponse": {
             "type": "object",
             "properties": {
@@ -1833,6 +1918,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.GetBookingStoreResponse": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "id_store": {
+                    "type": "string"
+                },
+                "slots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SlotAvailable"
+                    }
+                }
+            }
+        },
         "dto.GetServiceResponse": {
             "type": "object",
             "properties": {
@@ -1892,7 +1994,8 @@ const docTemplate = `{
                 "name",
                 "open_hour",
                 "phone_number",
-                "store_type"
+                "store_type",
+                "timezone"
             ],
             "properties": {
                 "address": {
@@ -1932,6 +2035,18 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/entity.StoreTypeEnum"
+                        }
+                    ]
+                },
+                "timezone": {
+                    "enum": [
+                        "Asia/Jakarta",
+                        "Asia/Makassar",
+                        "Asia/Jayapura"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.StoreTimezoneEnum"
                         }
                     ]
                 }
@@ -2091,6 +2206,23 @@ const docTemplate = `{
                 },
                 "user": {
                     "$ref": "#/definitions/dto.CustomerResponseRating"
+                }
+            }
+        },
+        "dto.SlotAvailable": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "boolean"
+                },
+                "capsters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CapsterAvailable"
+                    }
+                },
+                "time": {
+                    "type": "string"
                 }
             }
         },
@@ -2263,7 +2395,8 @@ const docTemplate = `{
                 "open_hour",
                 "phone_number",
                 "status",
-                "store_type"
+                "store_type",
+                "timezone"
             ],
             "properties": {
                 "address": {
@@ -2314,6 +2447,18 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/entity.StoreTypeEnum"
+                        }
+                    ]
+                },
+                "timezone": {
+                    "enum": [
+                        "Asia/Jakarta",
+                        "Asia/Makassar",
+                        "Asia/Jayapura"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.StoreTimezoneEnum"
                         }
                     ]
                 }
@@ -2435,6 +2580,19 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "StoreStatusOpen",
                 "StoreStatusClose"
+            ]
+        },
+        "entity.StoreTimezoneEnum": {
+            "type": "string",
+            "enum": [
+                "Asia/Jakarta",
+                "Asia/Makassar",
+                "Asia/Jayapura"
+            ],
+            "x-enum-varnames": [
+                "TimezoneJakarta",
+                "TimezoneMakassar",
+                "TimezoneJayapura"
             ]
         },
         "entity.StoreTypeEnum": {
