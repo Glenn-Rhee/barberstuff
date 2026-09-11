@@ -1040,6 +1040,50 @@ paths:
       tags:
       - Booking
   /booking/lock:
+    delete:
+      description: Membatalkan/menghapus kunci slot booking (capster, toko, dan tanggal
+        tertentu) yang sebelumnya dibuat. Hanya dapat diakses oleh customer
+      parameters:
+      - description: ID toko
+        in: query
+        name: id_store
+        required: true
+        type: string
+      - description: 'Tanggal & jam booking (format RFC3339 dengan timezone offset,
+          contoh: 2026-09-12T11:00:00+07:00)'
+        in: query
+        name: booking_date
+        required: true
+        type: string
+      - description: ID capster
+        in: query
+        name: id_capster
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil delete lock booking!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal menghapus lock booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus lock booking
+      tags:
+      - Booking
     post:
       consumes:
       - application/json
