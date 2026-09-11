@@ -29,13 +29,13 @@ type UpdateStoreRequest struct {
 type StoreData struct {
 	Id           uuid.UUID              `json:"id"`
 	Name         string                 `json:"name"`
-	PhoneNumber  string                 `json:"phone_number"`
-	Coordinate   string                 `json:"coordinate"`
+	PhoneNumber  *string                 `json:"phone_number"`
+	Coordinate   *string                 `json:"coordinate"`
 	OpenHour     time.Time              `json:"open_hour"`
 	CloseHour    time.Time              `json:"close_hour"`
-	BannerUrl    string                 `json:"banner_url"`
-	Address      string                 `json:"address"`
-	Description  string                 `json:"description"`
+	BannerUrl    *string                 `json:"banner_url"`
+	Address      *string                 `json:"address"`
+	Description  *string                 `json:"description"`
 	StoreType    entity.StoreTypeEnum   `json:"store_type"`
 	TotalService int64                  `json:"total_service"`
 	TotalCapster int64                  `json:"total_capster"`

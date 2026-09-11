@@ -119,7 +119,7 @@ func (s *storeService) GetStores(query dto.QueryParamsStores, claims *lib.Custom
 	var page = 1
 	var limit = 20
 	var sortBy = dto.SortByName
-	var orderBy = dto.OrderAsc	
+	var orderBy = dto.OrderAsc
 
 	if query.Page != nil {
 		page = *query.Page
@@ -186,14 +186,14 @@ func (s *storeService) GetStores(query dto.QueryParamsStores, claims *lib.Custom
 		dataStores = append(dataStores, dto.StoreData{
 			Id:           s.ID,
 			Name:         s.Name,
-			PhoneNumber:  derefString(s.PhoneNumber),
-			Coordinate:   derefString(s.Coordinate),
+			PhoneNumber:  (s.PhoneNumber),
+			Coordinate:   (s.Coordinate),
 			OpenHour:     s.OpenHour,
 			CloseHour:    s.CloseHour,
-			BannerUrl:    derefString(s.BannerUrl),
-			Address:      derefString(s.Address),
+			BannerUrl:    (s.BannerUrl),
+			Address:      (s.Address),
 			Status:       s.Status,
-			Description:  derefString(s.Description),
+			Description:  (s.Description),
 			StoreType:    s.StoreType,
 			CreatedAt:    s.CreatedAt,
 			TotalPackage: s.TotalPackage,
@@ -254,13 +254,13 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 	store := dto.StoreData{
 		Id:           dataStore.ID,
 		Name:         dataStore.Name,
-		PhoneNumber:  *dataStore.PhoneNumber,
-		Coordinate:   *dataStore.Coordinate,
+		PhoneNumber:  dataStore.PhoneNumber,
+		Coordinate:   dataStore.Coordinate,
 		OpenHour:     dataStore.OpenHour,
 		CloseHour:    dataStore.CloseHour,
-		BannerUrl:    *dataStore.BannerUrl,
-		Address:      *dataStore.Address,
-		Description:  *dataStore.Description,
+		BannerUrl:    dataStore.BannerUrl,
+		Address:      dataStore.Address,
+		Description:  dataStore.Description,
 		Status:       dataStore.Status,
 		CreatedAt:    dataStore.CreatedAt,
 		TotalService: dataStore.TotalService,
