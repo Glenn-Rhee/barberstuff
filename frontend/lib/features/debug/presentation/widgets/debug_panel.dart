@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
@@ -15,6 +16,7 @@ Future<void> showDebugPanel(BuildContext context) {
   final BookingCatalog catalog = context.read<BookingCatalog>();
   final NotificationProvider notifications = context
       .read<NotificationProvider>();
+  final AppCache cache = context.read<AppCache>();
 
   return showModalBottomSheet<void>(
     context: context,
@@ -30,6 +32,7 @@ Future<void> showDebugPanel(BuildContext context) {
         ChangeNotifierProvider<NotificationProvider>.value(
           value: notifications,
         ),
+        Provider<AppCache>.value(value: cache),
       ],
       child: const _DebugPanel(),
     ),
@@ -54,6 +57,7 @@ class _DebugPanel extends StatelessWidget {
     final DebugOverrides d = context.watch<DebugOverrides>();
     final BookingCatalog catalog = context.watch<BookingCatalog>();
     final NotificationProvider notif = context.watch<NotificationProvider>();
+    final AppCache appCache = context.read<AppCache>();
     final int unread = notif.items
         .where((AppNotification n) => !n.isRead)
         .length;
@@ -271,6 +275,70 @@ class _DebugPanel extends StatelessWidget {
                   value: notif.isSimulating,
                   activeThumbColor: AppColor.orangeLight,
                   onChanged: notif.toggleSimulator,
+                ),
+              ],
+            ),
+
+            const Divider(height: 32, color: AppColor.border),
+            Text('Booking & cache', style: AppTextStyle.titleSmall),
+            const SizedBox(height: 4),
+            Text(
+              'Durasi lock bawaan server 5 menit. Perpendek untuk menguji '
+              'countdown habis. Alur booking dibuka ulang agar berlaku.',
+              style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: <Widget>[
+                _TierChip(
+                  label: 'server (5 mnt)',
+                  selected: d.lockDuration == null,
+                  onTap: () => d.setLockDuration(null),
+                ),
+                for (final int seconds in <int>[15, 30, 60])
+                  _TierChip(
+                    label: '\$seconds dtk',
+                    selected: d.lockDuration?.inSeconds == seconds,
+                    onTap: () =>
+                        d.setLockDuration(Duration(seconds: seconds)),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    'Paksa mode offline',
+                    style: AppTextStyle.bodyMedium,
+                  ),
+                ),
+                Switch(
+                  value: d.forceOffline,
+                  activeThumbColor: AppColor.danger,
+                  onChanged: d.setForceOffline,
+                ),
+              ],
+            ),
+            Text(
+              d.forceOffline
+                  ? 'Semua request ditolak. Halaman yang punya cache tetap '
+                        'terbaca dan menampilkan pita offline.'
+                  : 'Request berjalan normal ke server.',
+              style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: <Widget>[
+                _TierChip(
+                  label: 'Kosongkan cache',
+                  color: AppColor.danger,
+                  selected: false,
+                  onTap: () => appCache.clearAll(),
                 ),
               ],
             ),

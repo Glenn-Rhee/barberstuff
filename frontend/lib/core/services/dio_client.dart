@@ -7,8 +7,9 @@ import 'package:mobile_barberstuff/core/services/app_session.dart';
 
 class DioClient {
   // configan awal dulu
-  DioClient({AppSession? session})
+  DioClient({AppSession? session, bool Function()? isOffline})
     : _session = session,
+      _isOffline = isOffline,
       _dio = Dio(
         BaseOptions(
           baseUrl: ApiConfig.baseUrl,
@@ -21,6 +22,17 @@ class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
+          if (kDebugMode && (_isOffline?.call() ?? false)) {
+            handler.reject(
+              DioException.connectionError(
+                requestOptions: options,
+                reason: 'debug: mode offline',
+              ),
+              true,
+            );
+            return;
+          }
+
           final String? token = _session?.accessToken;
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
@@ -38,6 +50,7 @@ class DioClient {
   }
 
   final AppSession? _session;
+  final bool Function()? _isOffline;
   final Dio _dio;
   Dio get dio => _dio;
 

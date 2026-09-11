@@ -334,7 +334,50 @@
   "aboutChangesTitle": "8. Perubahan Ketentuan",
   "aboutChangesBody": "Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.",
 
+  "bookingTitle": "Booking",
   "bookingBranchTitle": "Pilih Cabang",
+  "bookingStepLabel": "LANGKAH {current} DARI {total}",
+  "@bookingStepLabel": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "bookingBranchSubtitle": "Tentukan cabang barbershop terdekat kamu",
+  "bookingScheduleSubtitle": "Pilih tanggal dan jam yang tersedia",
+  "bookingBarberSubtitle": "Pilih barber favoritmu atau biarkan kami memilihkan",
+  "bookingServiceSubtitle": "Pilih layanan yang kamu inginkan",
+  "bookingConfirmTitle": "Konfirmasi Booking",
+  "bookingConfirmSubtitle": "Harap periksa kembali detail pesanan Anda",
+  "bookingNextSchedule": "Lanjut Pilih Jadwal",
+  "bookingNextBarber": "Lanjut Pilih Capster",
+  "bookingNextService": "Lanjut Pilih Layanan",
+  "bookingNextConfirm": "Lanjut Konfirmasi Booking",
+  "bookingConfirmCta": "Konfirmasi Pesanan",
+  "bookingSlotFullNote": "Slot yang tidak dapat dipilih sudah penuh",
+  "bookingSlotEmpty": "Belum ada jam tersedia di tanggal ini.",
+  "bookingSlotTooSoon": "Booking minimal 30 menit dari sekarang.",
+  "bookingTabService": "Service",
+  "bookingAvailableToday": "Tersedia hari ini",
+  "bookingLockRemaining": "Sisa waktu {time}",
+  "@bookingLockRemaining": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "bookingLockExpired": "Waktu kunci habis. Silakan pilih jadwal lagi.",
+  "bookingCancelTitle": "Batalkan booking?",
+  "bookingCancelMessage": "Slot yang sudah dikunci akan dilepas dan bisa diambil orang lain.",
+  "bookingCancelConfirm": "Ya, batalkan",
+  "bookingCancelKeep": "Lanjut booking",
+  "bookingConfirmBranch": "CABANG",
+  "bookingConfirmService": "LAYANAN",
+  "bookingConfirmBarber": "BARBER",
+  "bookingConfirmSchedule": "WAKTU & TANGGAL",
+  "bookingPaymentTitle": "Rincian Pembayaran",
+  "bookingSubtotal": "Subtotal",
+  "bookingAppFee": "Biaya Layanan Aplikasi",
+  "bookingTotal": "Total Pembayaran",
   "bookingBarberTitle": "Pilih Barber",
   "bookingTermsHeadline": "📋 Ketentuan Booking Barberstuff",
   "bookingTermsIntro": "Untuk memberikan pelayanan terbaik dan menjaga jadwal tetap teratur, setiap pelanggan diharapkan mengikuti ketentuan booking yang berlaku.",
@@ -376,6 +419,7 @@
 
   "comingSoonMessage": "Segera hadir!",
   "commonRetry": "Coba Lagi",
+  "offlineCachedData": "Sedang offline — menampilkan data tersimpan",
   "commonUnderstood": "Oke",
   "commonLogout": "Keluar"
 

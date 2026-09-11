@@ -1352,11 +1352,203 @@ abstract class AppLocalizations {
   /// **'Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.'**
   String get aboutChangesBody;
 
+  /// No description provided for @bookingTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking'**
+  String get bookingTitle;
+
   /// No description provided for @bookingBranchTitle.
   ///
   /// In id, this message translates to:
   /// **'Pilih Cabang'**
   String get bookingBranchTitle;
+
+  /// No description provided for @bookingStepLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'LANGKAH {current} DARI {total}'**
+  String bookingStepLabel(int current, int total);
+
+  /// No description provided for @bookingBranchSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tentukan cabang barbershop terdekat kamu'**
+  String get bookingBranchSubtitle;
+
+  /// No description provided for @bookingScheduleSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih tanggal dan jam yang tersedia'**
+  String get bookingScheduleSubtitle;
+
+  /// No description provided for @bookingBarberSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih barber favoritmu atau biarkan kami memilihkan'**
+  String get bookingBarberSubtitle;
+
+  /// No description provided for @bookingServiceSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih layanan yang kamu inginkan'**
+  String get bookingServiceSubtitle;
+
+  /// No description provided for @bookingConfirmTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi Booking'**
+  String get bookingConfirmTitle;
+
+  /// No description provided for @bookingConfirmSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Harap periksa kembali detail pesanan Anda'**
+  String get bookingConfirmSubtitle;
+
+  /// No description provided for @bookingNextSchedule.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjut Pilih Jadwal'**
+  String get bookingNextSchedule;
+
+  /// No description provided for @bookingNextBarber.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjut Pilih Capster'**
+  String get bookingNextBarber;
+
+  /// No description provided for @bookingNextService.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjut Pilih Layanan'**
+  String get bookingNextService;
+
+  /// No description provided for @bookingNextConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjut Konfirmasi Booking'**
+  String get bookingNextConfirm;
+
+  /// No description provided for @bookingConfirmCta.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi Pesanan'**
+  String get bookingConfirmCta;
+
+  /// No description provided for @bookingSlotFullNote.
+  ///
+  /// In id, this message translates to:
+  /// **'Slot yang tidak dapat dipilih sudah penuh'**
+  String get bookingSlotFullNote;
+
+  /// No description provided for @bookingSlotEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada jam tersedia di tanggal ini.'**
+  String get bookingSlotEmpty;
+
+  /// No description provided for @bookingSlotTooSoon.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking minimal 30 menit dari sekarang.'**
+  String get bookingSlotTooSoon;
+
+  /// No description provided for @bookingTabService.
+  ///
+  /// In id, this message translates to:
+  /// **'Service'**
+  String get bookingTabService;
+
+  /// No description provided for @bookingAvailableToday.
+  ///
+  /// In id, this message translates to:
+  /// **'Tersedia hari ini'**
+  String get bookingAvailableToday;
+
+  /// No description provided for @bookingLockRemaining.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa waktu {time}'**
+  String bookingLockRemaining(String time);
+
+  /// No description provided for @bookingLockExpired.
+  ///
+  /// In id, this message translates to:
+  /// **'Waktu kunci habis. Silakan pilih jadwal lagi.'**
+  String get bookingLockExpired;
+
+  /// No description provided for @bookingCancelTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Batalkan booking?'**
+  String get bookingCancelTitle;
+
+  /// No description provided for @bookingCancelMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Slot yang sudah dikunci akan dilepas dan bisa diambil orang lain.'**
+  String get bookingCancelMessage;
+
+  /// No description provided for @bookingCancelConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Ya, batalkan'**
+  String get bookingCancelConfirm;
+
+  /// No description provided for @bookingCancelKeep.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjut booking'**
+  String get bookingCancelKeep;
+
+  /// No description provided for @bookingConfirmBranch.
+  ///
+  /// In id, this message translates to:
+  /// **'CABANG'**
+  String get bookingConfirmBranch;
+
+  /// No description provided for @bookingConfirmService.
+  ///
+  /// In id, this message translates to:
+  /// **'LAYANAN'**
+  String get bookingConfirmService;
+
+  /// No description provided for @bookingConfirmBarber.
+  ///
+  /// In id, this message translates to:
+  /// **'BARBER'**
+  String get bookingConfirmBarber;
+
+  /// No description provided for @bookingConfirmSchedule.
+  ///
+  /// In id, this message translates to:
+  /// **'WAKTU & TANGGAL'**
+  String get bookingConfirmSchedule;
+
+  /// No description provided for @bookingPaymentTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Rincian Pembayaran'**
+  String get bookingPaymentTitle;
+
+  /// No description provided for @bookingSubtotal.
+  ///
+  /// In id, this message translates to:
+  /// **'Subtotal'**
+  String get bookingSubtotal;
+
+  /// No description provided for @bookingAppFee.
+  ///
+  /// In id, this message translates to:
+  /// **'Biaya Layanan Aplikasi'**
+  String get bookingAppFee;
+
+  /// No description provided for @bookingTotal.
+  ///
+  /// In id, this message translates to:
+  /// **'Total Pembayaran'**
+  String get bookingTotal;
 
   /// No description provided for @bookingBarberTitle.
   ///
@@ -1591,6 +1783,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Coba Lagi'**
   String get commonRetry;
+
+  /// No description provided for @offlineCachedData.
+  ///
+  /// In id, this message translates to:
+  /// **'Sedang offline — menampilkan data tersimpan'**
+  String get offlineCachedData;
 
   /// No description provided for @commonUnderstood.
   ///

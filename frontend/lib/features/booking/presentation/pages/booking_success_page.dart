@@ -3,21 +3,14 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_receipt.dart';
-import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_receipt_page.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 
-class BookingSuccessArgs {
-  const BookingSuccessArgs({required this.receipt});
-
-  final BookingReceipt receipt;
-}
-
 class BookingSuccessPage extends StatelessWidget {
-  const BookingSuccessPage({super.key, required this.args});
+  const BookingSuccessPage({super.key, required this.result});
 
-  final BookingSuccessArgs args;
+  final BookingResult result;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +39,7 @@ class BookingSuccessPage extends StatelessWidget {
                           const Icon(
                             Icons.check_circle_rounded,
                             size: 132,
-                            color: AppColor.orangeLight,
+                            color: AppColor.goldDeep,
                           ),
                     ),
                   ),
@@ -55,11 +48,11 @@ class BookingSuccessPage extends StatelessWidget {
                     l10n.bookingSuccessTitle,
                     textAlign: TextAlign.center,
                     style: AppTextStyle.headlineMedium.copyWith(
-                      color: AppColor.orangeLight,
+                      color: AppColor.goldDeep,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Text(
                     l10n.bookingSuccessMessage,
                     textAlign: TextAlign.center,
@@ -67,23 +60,20 @@ class BookingSuccessPage extends StatelessWidget {
                       color: AppColor.inkSoft,
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  // BoxButton(
-                  //   label: l10n.bookingSuccessReceipt,
-                  //   radius: 14,
-                  //   onPressed: () => Navigator.of(context).pushNamed(
-                  //     AppRoute.bookingReceipt,
-                  //     arguments: BookingReceiptArgs(receipt: args.receipt),
-                  //   ),
-                  // ),
+                  const SizedBox(height: 28),
+                  BoxButton(
+                    label: l10n.bookingSuccessReceipt,
+                    onPressed: () => Navigator.of(context).pushNamed(
+                      AppRoute.bookingReceipt,
+                      arguments: result,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   _SoftButton(
                     label: l10n.bookingSuccessHome,
-                    onPressed: () =>
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          AppRoute.home,
-                          (Route<dynamic> r) => false,
-                        ),
+                    onPressed: () => Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(AppRoute.home, (Route<dynamic> r) => false),
                   ),
                 ],
               ),
@@ -104,20 +94,20 @@ class _SoftButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColor.orangeDashboard.withValues(alpha: 0.35),
+      color: AppColor.goldSoft.withValues(alpha: 0.45),
       clipBehavior: Clip.antiAlias,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onPressed,
         child: Container(
-          constraints: const BoxConstraints(minHeight: BoxButton.minHeight),
+          height: BoxButton.minHeight,
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Text(
             label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyle.labelLarge.copyWith(color: AppColor.orangeDark),
+            style: AppTextStyle.labelLarge.copyWith(
+              color: AppColor.goldDeep,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

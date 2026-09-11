@@ -709,7 +709,112 @@ class AppLocalizationsEn extends AppLocalizations {
       'Barberstuff may update these Terms at any time. Continued use of the platform indicates acceptance of the updated Terms.';
 
   @override
+  String get bookingTitle => 'Booking';
+
+  @override
   String get bookingBranchTitle => 'Choose Branch';
+
+  @override
+  String bookingStepLabel(int current, int total) {
+    return 'STEP $current OF $total';
+  }
+
+  @override
+  String get bookingBranchSubtitle =>
+      'Pick the barbershop branch nearest to you';
+
+  @override
+  String get bookingScheduleSubtitle => 'Pick an available date and time';
+
+  @override
+  String get bookingBarberSubtitle =>
+      'Pick your favourite barber or let us choose';
+
+  @override
+  String get bookingServiceSubtitle => 'Pick the service you want';
+
+  @override
+  String get bookingConfirmTitle => 'Booking Confirmation';
+
+  @override
+  String get bookingConfirmSubtitle => 'Please review your order details';
+
+  @override
+  String get bookingNextSchedule => 'Next: Pick Schedule';
+
+  @override
+  String get bookingNextBarber => 'Next: Pick Barber';
+
+  @override
+  String get bookingNextService => 'Next: Pick Service';
+
+  @override
+  String get bookingNextConfirm => 'Next: Confirm Booking';
+
+  @override
+  String get bookingConfirmCta => 'Confirm Order';
+
+  @override
+  String get bookingSlotFullNote => 'Slots you cannot pick are already full';
+
+  @override
+  String get bookingSlotEmpty => 'No time slot available on this date.';
+
+  @override
+  String get bookingSlotTooSoon =>
+      'Booking must be at least 30 minutes from now.';
+
+  @override
+  String get bookingTabService => 'Service';
+
+  @override
+  String get bookingAvailableToday => 'Available today';
+
+  @override
+  String bookingLockRemaining(String time) {
+    return 'Time left $time';
+  }
+
+  @override
+  String get bookingLockExpired =>
+      'Your hold expired. Please pick a schedule again.';
+
+  @override
+  String get bookingCancelTitle => 'Cancel booking?';
+
+  @override
+  String get bookingCancelMessage =>
+      'The slot you are holding will be released and someone else can take it.';
+
+  @override
+  String get bookingCancelConfirm => 'Yes, cancel';
+
+  @override
+  String get bookingCancelKeep => 'Keep booking';
+
+  @override
+  String get bookingConfirmBranch => 'BRANCH';
+
+  @override
+  String get bookingConfirmService => 'SERVICE';
+
+  @override
+  String get bookingConfirmBarber => 'BARBER';
+
+  @override
+  String get bookingConfirmSchedule => 'TIME & DATE';
+
+  @override
+  String get bookingPaymentTitle => 'Payment Details';
+
+  @override
+  String get bookingSubtotal => 'Subtotal';
+
+  @override
+  String get bookingAppFee => 'App Service Fee';
+
+  @override
+  String get bookingTotal => 'Total Payment';
 
   @override
   String get bookingBarberTitle => 'Choose Barber';
@@ -831,6 +936,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonRetry => 'Try Again';
+
+  @override
+  String get offlineCachedData => 'You are offline — showing saved data';
 
   @override
   String get commonUnderstood => 'Oke';

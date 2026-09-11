@@ -710,7 +710,112 @@ class AppLocalizationsId extends AppLocalizations {
       'Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.';
 
   @override
+  String get bookingTitle => 'Booking';
+
+  @override
   String get bookingBranchTitle => 'Pilih Cabang';
+
+  @override
+  String bookingStepLabel(int current, int total) {
+    return 'LANGKAH $current DARI $total';
+  }
+
+  @override
+  String get bookingBranchSubtitle =>
+      'Tentukan cabang barbershop terdekat kamu';
+
+  @override
+  String get bookingScheduleSubtitle => 'Pilih tanggal dan jam yang tersedia';
+
+  @override
+  String get bookingBarberSubtitle =>
+      'Pilih barber favoritmu atau biarkan kami memilihkan';
+
+  @override
+  String get bookingServiceSubtitle => 'Pilih layanan yang kamu inginkan';
+
+  @override
+  String get bookingConfirmTitle => 'Konfirmasi Booking';
+
+  @override
+  String get bookingConfirmSubtitle =>
+      'Harap periksa kembali detail pesanan Anda';
+
+  @override
+  String get bookingNextSchedule => 'Lanjut Pilih Jadwal';
+
+  @override
+  String get bookingNextBarber => 'Lanjut Pilih Capster';
+
+  @override
+  String get bookingNextService => 'Lanjut Pilih Layanan';
+
+  @override
+  String get bookingNextConfirm => 'Lanjut Konfirmasi Booking';
+
+  @override
+  String get bookingConfirmCta => 'Konfirmasi Pesanan';
+
+  @override
+  String get bookingSlotFullNote => 'Slot yang tidak dapat dipilih sudah penuh';
+
+  @override
+  String get bookingSlotEmpty => 'Belum ada jam tersedia di tanggal ini.';
+
+  @override
+  String get bookingSlotTooSoon => 'Booking minimal 30 menit dari sekarang.';
+
+  @override
+  String get bookingTabService => 'Service';
+
+  @override
+  String get bookingAvailableToday => 'Tersedia hari ini';
+
+  @override
+  String bookingLockRemaining(String time) {
+    return 'Sisa waktu $time';
+  }
+
+  @override
+  String get bookingLockExpired =>
+      'Waktu kunci habis. Silakan pilih jadwal lagi.';
+
+  @override
+  String get bookingCancelTitle => 'Batalkan booking?';
+
+  @override
+  String get bookingCancelMessage =>
+      'Slot yang sudah dikunci akan dilepas dan bisa diambil orang lain.';
+
+  @override
+  String get bookingCancelConfirm => 'Ya, batalkan';
+
+  @override
+  String get bookingCancelKeep => 'Lanjut booking';
+
+  @override
+  String get bookingConfirmBranch => 'CABANG';
+
+  @override
+  String get bookingConfirmService => 'LAYANAN';
+
+  @override
+  String get bookingConfirmBarber => 'BARBER';
+
+  @override
+  String get bookingConfirmSchedule => 'WAKTU & TANGGAL';
+
+  @override
+  String get bookingPaymentTitle => 'Rincian Pembayaran';
+
+  @override
+  String get bookingSubtotal => 'Subtotal';
+
+  @override
+  String get bookingAppFee => 'Biaya Layanan Aplikasi';
+
+  @override
+  String get bookingTotal => 'Total Pembayaran';
 
   @override
   String get bookingBarberTitle => 'Pilih Barber';
@@ -833,6 +938,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get commonRetry => 'Coba Lagi';
+
+  @override
+  String get offlineCachedData => 'Sedang offline — menampilkan data tersimpan';
 
   @override
   String get commonUnderstood => 'Oke';

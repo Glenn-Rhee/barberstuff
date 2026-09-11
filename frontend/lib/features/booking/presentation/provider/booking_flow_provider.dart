@@ -1,45 +1,149 @@
-import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_content.dart';
+import 'dart:async';
 
-enum BookingStep { terms, branch, barber, schedule, service }
+import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/core/services/location_service.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
+import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
+
+enum BookingStep { terms, branch, schedule, capster, service, confirm }
 
 class BookingFlowProvider extends ChangeNotifier {
-  BookingFlowProvider(this._catalog) {
-    _catalog.addListener(_onCatalogChanged);
+  BookingFlowProvider(
+    this._repo,
+    this._cache, {
+    LocationService? location,
+    Duration? lockDuration,
+  }) : _location = location,
+       _lockDuration = lockDuration ?? defaultLockDuration {
     searchController.addListener(_onSearchChanged);
+    _selectedDay = DateUtils.dateOnly(DateTime.now());
+    _agreed = _cache.readBool(AppCache.keyBookingTermsAgreed);
+    _restoreLock();
   }
 
+  static const Duration defaultLockDuration = Duration(minutes: 5);
   static const int dayCount = 14;
-  static const int _openHour = 9;
-  static const int _closeHour = 21;
+  static const int minimumLeadMinutes = 30;
 
-  final BookingCatalog _catalog;
+  final BookingRepository _repo;
+  final AppCache _cache;
+  final LocationService? _location;
+  final Duration _lockDuration;
 
   final TextEditingController searchController = TextEditingController();
 
   BookingStep _step = BookingStep.terms;
   bool _agreed = false;
-  String? _storeId;
-  String? _capsterId;
-  DateTime? _date;
-  TimeOfDay? _time;
-  final Set<String> _serviceIds = <String>{};
   String _query = '';
-  bool _packageExpanded = true;
+
+  List<StoreSummary> _stores = const <StoreSummary>[];
+  UserPosition? _position;
+  bool _loadingStores = false;
+  bool _storesFromCache = false;
+  ApiException? _storesError;
+  StoreSummary? _store;
+
+  late DateTime _selectedDay;
+  StoreSlots? _storeSlots;
+  bool _loadingSlots = false;
+  ApiException? _slotsError;
+  BookingSlot? _slot;
+
+  SlotCapster? _capster;
+
+  bool _locking = false;
+  ApiException? _lockError;
+  DateTime? _lockExpiresAt;
+  Timer? _ticker;
+
+  ProductType _serviceTab = ProductType.service;
+  final Map<ProductType, List<ServiceItem>> _services =
+      <ProductType, List<ServiceItem>>{};
+  bool _loadingServices = false;
+  ApiException? _servicesError;
+  ServiceItem? _service;
+
   bool _submitting = false;
-  String? _orderId;
+  ApiException? _submitError;
+  BookingResult? _result;
 
   BookingStep get step => _step;
   bool get agreed => _agreed;
-  String? get storeId => _storeId;
-  String? get capsterId => _capsterId;
-  DateTime? get date => _date;
-  TimeOfDay? get time => _time;
-  Set<String> get serviceIds => Set<String>.unmodifiable(_serviceIds);
-  bool get packageExpanded => _packageExpanded;
+
+  List<StoreSummary> get stores => _stores;
+
+  double? distanceOf(StoreSummary store) {
+    final UserPosition? from = _position;
+    final StoreCoordinate? at = store.coordinate;
+    if (from == null || at == null) return null;
+
+    return LocationService.distanceKm(
+      from: from,
+      latitude: at.latitude,
+      longitude: at.longitude,
+    );
+  }
+
+  void _sortByDistance() {
+    if (_position == null) return;
+
+    final List<StoreSummary> sorted = List<StoreSummary>.of(_stores);
+    sorted.sort((StoreSummary a, StoreSummary b) {
+      final double da = distanceOf(a) ?? double.infinity;
+      final double db = distanceOf(b) ?? double.infinity;
+      return da.compareTo(db);
+    });
+    _stores = sorted;
+  }
+
+  Future<void> _refreshPosition() async {
+    final LocationService? service = _location;
+    if (service == null) return;
+
+    _position ??= service.lastKnown;
+    final UserPosition? fresh = await service.current();
+    if (fresh == null) return;
+
+    _position = fresh;
+    _sortByDistance();
+    notifyListeners();
+  }
+  bool get loadingStores => _loadingStores;
+  bool get storesFromCache => _storesFromCache;
+  ApiException? get storesError => _storesError;
+  StoreSummary? get store => _store;
+
+  DateTime get selectedDay => _selectedDay;
+  List<BookingSlot> get slots => _storeSlots?.slots ?? const <BookingSlot>[];
+  bool get loadingSlots => _loadingSlots;
+  ApiException? get slotsError => _slotsError;
+  BookingSlot? get slot => _slot;
+
+  List<SlotCapster> get capsters => _slot?.capsters ?? const <SlotCapster>[];
+  SlotCapster? get capster => _capster;
+
+  bool get locking => _locking;
+  ApiException? get lockError => _lockError;
+  bool get hasLock => _lockExpiresAt != null;
+  Duration get lockRemaining {
+    final DateTime? until = _lockExpiresAt;
+    if (until == null) return Duration.zero;
+    final Duration left = until.difference(DateTime.now());
+    return left.isNegative ? Duration.zero : left;
+  }
+
+  ProductType get serviceTab => _serviceTab;
+  List<ServiceItem> get visibleServices =>
+      _services[_serviceTab] ?? const <ServiceItem>[];
+  bool get loadingServices => _loadingServices;
+  ApiException? get servicesError => _servicesError;
+  ServiceItem? get service => _service;
+
   bool get submitting => _submitting;
-  String? get orderId => _orderId;
+  ApiException? get submitError => _submitError;
+  BookingResult? get result => _result;
 
   List<DateTime> get days {
     final DateTime today = DateUtils.dateOnly(DateTime.now());
@@ -49,154 +153,415 @@ class BookingFlowProvider extends ChangeNotifier {
     );
   }
 
-  List<TimeOfDay> get slots {
-    return List<TimeOfDay>.generate(
-      (_closeHour - _openHour) * 2,
-      (int i) => TimeOfDay(hour: _openHour + i ~/ 2, minute: i.isEven ? 0 : 30),
+  DateTime? get bookingDateTime {
+    final BookingSlot? picked = _slot;
+    if (picked == null) return null;
+
+    final List<String> parts = picked.time.split(':');
+    if (parts.length < 2) return null;
+
+    final int? hour = int.tryParse(parts[0]);
+    final int? minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return null;
+
+    return DateTime(
+      _selectedDay.year,
+      _selectedDay.month,
+      _selectedDay.day,
+      hour,
+      minute,
     );
   }
 
-  List<BookingStore> get stores {
-    final String q = _query.trim().toLowerCase();
-    if (q.isEmpty) return _catalog.stores;
-
-    return _catalog.stores
-        .where(
-          (BookingStore s) =>
-              s.name.toLowerCase().contains(q) ||
-              s.address.toLowerCase().contains(q),
-        )
-        .toList();
+  bool get isSlotTooSoon {
+    final DateTime? at = bookingDateTime;
+    if (at == null) return false;
+    return at.isBefore(
+      DateTime.now().add(const Duration(minutes: minimumLeadMinutes)),
+    );
   }
 
-  List<BookingCapster> get capsters => _catalog.capsters;
-
-  BookingStore? get selectedStore {
-    for (final BookingStore s in _catalog.stores) {
-      if (s.id == _storeId) return s;
-    }
-    return null;
-  }
-
-  BookingCapster? get selectedCapster {
-    for (final BookingCapster c in _catalog.capsters) {
-      if (c.id == _capsterId) return c;
-    }
-    return null;
-  }
-
-  List<BookingService> get selectedServices => _catalog.services
-      .where((BookingService s) => _serviceIds.contains(s.id))
-      .toList();
-
-  int get totalPrice =>
-      selectedServices.fold(0, (int sum, BookingService s) => sum + s.price);
+  double get subTotal => _service?.price ?? 0;
 
   bool get canContinue {
     switch (_step) {
       case BookingStep.terms:
         return _agreed;
       case BookingStep.branch:
-        return _storeId != null;
-      case BookingStep.barber:
-        return _capsterId != null;
+        return _store != null;
       case BookingStep.schedule:
-        return _date != null && _time != null;
+        return _slot != null && !isSlotTooSoon;
+      case BookingStep.capster:
+        return _capster != null && !_locking;
       case BookingStep.service:
-        return _serviceIds.isNotEmpty;
+        return _service != null;
+      case BookingStep.confirm:
+        return !_submitting;
     }
   }
 
-  bool get isLastStep => _step == BookingStep.service;
+  bool get isLastStep => _step == BookingStep.confirm;
 
   void setAgreed(bool value) {
+    if (_agreed == value) return;
     _agreed = value;
     notifyListeners();
+    _cache.writeJson(AppCache.keyBookingTermsAgreed, value);
   }
 
-  void selectStore(String id) {
-    _storeId = id;
+  Future<void> loadStores() async {
+    _loadingStores = true;
+    _storesError = null;
+    notifyListeners();
+
+    try {
+      final CachedResult<List<StoreSummary>> result = await _repo.getStores(
+        name: _query.isEmpty ? null : _query,
+      );
+      _stores = result.data;
+      _storesFromCache = result.fromCache;
+      _position ??= _location?.lastKnown;
+      _sortByDistance();
+    } on ApiException catch (e) {
+      _storesError = e;
+    } finally {
+      _loadingStores = false;
+      notifyListeners();
+    }
+
+    await _refreshPosition();
+  }
+
+  void selectStore(StoreSummary value) {
+    if (_store?.id == value.id) return;
+    _store = value;
+    _storeSlots = null;
+    _slot = null;
+    _capster = null;
+    _service = null;
+    _services.clear();
     notifyListeners();
   }
 
-  void selectCapster(String id) {
-    _capsterId = id;
+  Future<void> selectDay(DateTime day) async {
+    _selectedDay = DateUtils.dateOnly(day);
+    _slot = null;
+    _capster = null;
+    notifyListeners();
+    await loadSlots();
+  }
+
+  Future<void> loadSlots() async {
+    final StoreSummary? picked = _store;
+    if (picked == null) return;
+
+    _loadingSlots = true;
+    _slotsError = null;
+    notifyListeners();
+
+    try {
+      _storeSlots = await _repo.getStoreSlots(
+        idStore: picked.id,
+        date: _selectedDay,
+      );
+    } on ApiException catch (e) {
+      _slotsError = e;
+      _storeSlots = null;
+    } finally {
+      _loadingSlots = false;
+      notifyListeners();
+    }
+  }
+
+  void selectSlot(BookingSlot value) {
+    if (!value.available) return;
+    _slot = value;
+    _capster = null;
     notifyListeners();
   }
 
-  void selectDate(DateTime value) {
-    _date = value;
+  void selectCapster(SlotCapster value) {
+    if (!value.available) return;
+    _capster = value;
     notifyListeners();
   }
 
-  void selectTime(TimeOfDay value) {
-    _time = value;
+  Future<bool> lockAndContinue() async {
+    final StoreSummary? pickedStore = _store;
+    final SlotCapster? pickedCapster = _capster;
+    final DateTime? at = bookingDateTime;
+
+    if (pickedStore == null || pickedCapster == null || at == null) {
+      return false;
+    }
+
+    _locking = true;
+    _lockError = null;
+    notifyListeners();
+
+    try {
+      await _repo.lockBooking(
+        idStore: pickedStore.id,
+        idCapster: pickedCapster.id,
+        bookingDate: at,
+      );
+
+      _startCountdown();
+      _persistLock();
+      _step = BookingStep.service;
+      notifyListeners();
+      await loadServices();
+      return true;
+    } on ApiException catch (e) {
+      _lockError = e;
+      return false;
+    } finally {
+      _locking = false;
+      notifyListeners();
+    }
+  }
+
+  void _startCountdown() {
+    _ticker?.cancel();
+    _lockExpiresAt = DateTime.now().add(_lockDuration);
+    _ticker = Timer.periodic(const Duration(seconds: 1), (Timer _) {
+      if (lockRemaining == Duration.zero) {
+        _onLockExpired();
+        return;
+      }
+      notifyListeners();
+    });
+  }
+
+  void _stopCountdown() {
+    _ticker?.cancel();
+    _ticker = null;
+    _lockExpiresAt = null;
+    _cache.remove(AppCache.keyBookingLock);
+  }
+
+  void _persistLock() {
+    final StoreSummary? pickedStore = _store;
+    final SlotCapster? pickedCapster = _capster;
+    final BookingSlot? pickedSlot = _slot;
+    final DateTime? until = _lockExpiresAt;
+
+    if (pickedStore == null ||
+        pickedCapster == null ||
+        pickedSlot == null ||
+        until == null) {
+      return;
+    }
+
+    _cache.writeJson(AppCache.keyBookingLock, <String, dynamic>{
+      'store': pickedStore.toJson(),
+      'capster': pickedCapster.toJson(),
+      'slot_time': pickedSlot.time,
+      'day': _selectedDay.toIso8601String(),
+      'expires_at': until.millisecondsSinceEpoch,
+    });
+  }
+
+  void _restoreLock() {
+    final Map<String, dynamic>? raw = _cache
+        .readJson(AppCache.keyBookingLock)
+        ?.asMap;
+    if (raw == null) return;
+
+    final int millis = (raw['expires_at'] as num?)?.toInt() ?? 0;
+    final DateTime until = DateTime.fromMillisecondsSinceEpoch(millis);
+    if (!until.isAfter(DateTime.now())) {
+      _cache.remove(AppCache.keyBookingLock);
+      return;
+    }
+
+    final Object? store = raw['store'];
+    final Object? capster = raw['capster'];
+    if (store is! Map<String, dynamic> || capster is! Map<String, dynamic>) {
+      return;
+    }
+
+    _store = StoreSummary.fromJson(store);
+    _capster = SlotCapster.fromJson(capster);
+    _selectedDay = DateUtils.dateOnly(
+      DateTime.tryParse('${raw['day']}') ?? DateTime.now(),
+    );
+    _slot = BookingSlot(
+      time: '${raw['slot_time']}',
+      available: true,
+      capsters: <SlotCapster>[_capster!],
+    );
+
+    _lockExpiresAt = until;
+    _ticker = Timer.periodic(const Duration(seconds: 1), (Timer _) {
+      if (lockRemaining == Duration.zero) {
+        _onLockExpired();
+        return;
+      }
+      notifyListeners();
+    });
+
+    _agreed = true;
+    _step = BookingStep.service;
+    loadServices();
+  }
+
+  void _onLockExpired() {
+    _stopCountdown();
+    _service = null;
+    _services.clear();
+    _capster = null;
+    _slot = null;
+    _step = BookingStep.schedule;
+    notifyListeners();
+    loadSlots();
+  }
+
+  Future<void> releaseLock() async {
+    final StoreSummary? pickedStore = _store;
+    final SlotCapster? pickedCapster = _capster;
+    final DateTime? at = bookingDateTime;
+
+    _stopCountdown();
+    notifyListeners();
+
+    if (pickedStore == null || pickedCapster == null || at == null) return;
+
+    try {
+      await _repo.releaseLock(
+        idStore: pickedStore.id,
+        idCapster: pickedCapster.id,
+        bookingDate: at,
+      );
+    } on ApiException catch (_) {
+      return;
+    }
+  }
+
+  void setServiceTab(ProductType value) {
+    if (_serviceTab == value) return;
+    _serviceTab = value;
+    _service = null;
+    notifyListeners();
+    if (!_services.containsKey(value)) loadServices();
+  }
+
+  Future<void> loadServices() async {
+    final StoreSummary? picked = _store;
+    if (picked == null) return;
+
+    _loadingServices = true;
+    _servicesError = null;
+    notifyListeners();
+
+    try {
+      _services[_serviceTab] = await _repo.getServices(
+        idStore: picked.id,
+        type: _serviceTab,
+      );
+    } on ApiException catch (e) {
+      _servicesError = e;
+    } finally {
+      _loadingServices = false;
+      notifyListeners();
+    }
+  }
+
+  void selectService(ServiceItem value) {
+    _service = value;
     notifyListeners();
   }
 
-  void toggleService(String id) {
-    if (!_serviceIds.add(id)) _serviceIds.remove(id);
+  Future<bool> submit() async {
+    final StoreSummary? pickedStore = _store;
+    final SlotCapster? pickedCapster = _capster;
+    final ServiceItem? pickedService = _service;
+    final DateTime? at = bookingDateTime;
+
+    if (pickedStore == null ||
+        pickedCapster == null ||
+        pickedService == null ||
+        at == null ||
+        _submitting) {
+      return false;
+    }
+
+    _submitting = true;
+    _submitError = null;
     notifyListeners();
+
+    try {
+      _result = await _repo.createBooking(
+        idStore: pickedStore.id,
+        idCapster: pickedCapster.id,
+        idService: pickedService.id,
+        bookingDate: at,
+      );
+      _stopCountdown();
+      return true;
+    } on ApiException catch (e) {
+      _submitError = e;
+      return false;
+    } finally {
+      _submitting = false;
+      notifyListeners();
+    }
   }
 
-  void togglePackageSection() {
-    _packageExpanded = !_packageExpanded;
-    notifyListeners();
-  }
-
-  void next() {
+  Future<void> next() async {
     if (!canContinue || isLastStep) return;
-    _step = BookingStep.values[_step.index + 1];
-    notifyListeners();
+
+    switch (_step) {
+      case BookingStep.terms:
+        _step = BookingStep.branch;
+        notifyListeners();
+        await loadStores();
+      case BookingStep.branch:
+        _step = BookingStep.schedule;
+        notifyListeners();
+        await loadSlots();
+      case BookingStep.schedule:
+        _step = BookingStep.capster;
+        notifyListeners();
+      case BookingStep.capster:
+        await lockAndContinue();
+      case BookingStep.service:
+        _step = BookingStep.confirm;
+        notifyListeners();
+      case BookingStep.confirm:
+        return;
+    }
   }
+
+  bool get needsCancelConfirm => hasLock;
 
   bool back() {
     if (_step == BookingStep.terms) return false;
+
+    if (hasLock) {
+      _stopCountdown();
+      _service = null;
+      _services.clear();
+      _step = BookingStep.capster;
+      notifyListeners();
+      return true;
+    }
+
     _step = BookingStep.values[_step.index - 1];
     notifyListeners();
     return true;
   }
 
-  Future<void> submit() async {
-    if (!canContinue || _submitting) return;
-
-    _submitting = true;
-    notifyListeners();
-
-    await Future<void>.delayed(const Duration(milliseconds: 1400));
-
-    _orderId = DateTime.now().millisecondsSinceEpoch
-        .toRadixString(36)
-        .toUpperCase();
-    _submitting = false;
-    notifyListeners();
-  }
-
   void _onSearchChanged() {
-    final String next = searchController.text;
+    final String next = searchController.text.trim();
     if (_query == next) return;
     _query = next;
     notifyListeners();
   }
 
-  void _onCatalogChanged() {
-    if (_storeId != null &&
-        !_catalog.stores.any((BookingStore s) => s.id == _storeId)) {
-      _storeId = null;
-    }
-    if (_capsterId != null &&
-        !_catalog.capsters.any((BookingCapster c) => c.id == _capsterId)) {
-      _capsterId = null;
-    }
-    _serviceIds.removeWhere(
-      (String id) => !_catalog.services.any((BookingService s) => s.id == id),
-    );
-    notifyListeners();
-  }
-
   @override
   void dispose() {
-    _catalog.removeListener(_onCatalogChanged);
+    _ticker?.cancel();
     searchController.dispose();
     super.dispose();
   }

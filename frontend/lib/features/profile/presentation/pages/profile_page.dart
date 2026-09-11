@@ -17,6 +17,7 @@ import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_la
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/offline_banner.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -126,6 +127,16 @@ class ProfilePage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
+              if (p.isFromCache)
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    _sidePadding,
+                    0,
+                    _sidePadding,
+                    12,
+                  ),
+                  child: OfflineBanner(),
+                ),
               _MenuGroup(
                 children: <Widget>[
                   ProfileMenuTile(

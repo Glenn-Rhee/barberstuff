@@ -78,6 +78,24 @@ class StoreSummary {
   bool get isLite => storeType.toLowerCase().trim() == 'lite';
   bool get isOpen => status.toLowerCase().trim() == 'open';
 
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'id': id,
+    'name': name,
+    'address': address,
+    'phone_number': phoneNumber,
+    'banner_url': bannerUrl,
+    'store_type': storeType,
+    'status': status,
+    'avg_rating': avgRating,
+    'total_capster': totalCapster,
+    'total_service': totalService,
+    'total_package': totalPackage,
+    'description': description,
+    'coordinate': coordinate == null
+        ? null
+        : '${coordinate!.latitude},${coordinate!.longitude}',
+  };
+
   factory StoreSummary.fromJson(Map<String, dynamic> json) {
     return StoreSummary(
       id: _toText(json['id']),
@@ -111,6 +129,14 @@ class SlotCapster {
   final double avgRating;
   final String imageUrl;
   final bool available;
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'id': id,
+    'name': name,
+    'avg_rating': avgRating,
+    'image_url': imageUrl,
+    'available': available,
+  };
 
   factory SlotCapster.fromJson(Map<String, dynamic> json) {
     return SlotCapster(
