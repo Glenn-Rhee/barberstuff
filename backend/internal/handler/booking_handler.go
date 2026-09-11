@@ -269,6 +269,25 @@ func (h *BookingHandler) DeleteLockBooking(ctx *gin.Context) {
 	})
 }
 
+// GetDataBookingCustomer godoc
+// @Summary      Daftar booking customer
+// @Description  Mengambil daftar booking milik customer yang sedang login berdasarkan status booking, dapat difilter berdasarkan nama dan diurutkan berdasarkan jadwal booking atau nama toko.
+// @Tags         Booking
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        status_booking query string true "Status booking" Enums(upcoming, done, cancel)
+// @Param        q query string false "Pencarian berdasarkan nama"
+// @Param        sort_by query string false "Kolom untuk pengurutan" Enums(scheduled_at, name)
+// @Param        page query int false "Page"
+// @Param        limit query int false "Limit" minimum(1) maximum(50)
+// @Param        order query string false "Urutan data" Enums(asc, desc) default(desc)
+//
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.GetBookingUserResponse,meta=dto.ResponsePagination} "Succes get data booking!"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data booking"
+// @Router       /booking/customer [get]
 func (h *BookingHandler) GetDataBookingCustomer(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

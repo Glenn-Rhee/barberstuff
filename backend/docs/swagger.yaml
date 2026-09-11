@@ -202,6 +202,19 @@ definitions:
       name:
         type: string
     type: object
+  dto.DataRatingBooking:
+    properties:
+      avg_rating:
+        type: number
+      capster_rating:
+        type: integer
+      message:
+        type: string
+      staff_rating:
+        type: integer
+      store_rating:
+        type: integer
+    type: object
   dto.DataServiceBooking:
     properties:
       id:
@@ -244,6 +257,25 @@ definitions:
         items:
           $ref: '#/definitions/dto.SlotAvailable'
         type: array
+    type: object
+  dto.GetBookingUserResponse:
+    properties:
+      booking_date:
+        type: string
+      capster:
+        $ref: '#/definitions/dto.DataCapsterBooking'
+      id:
+        type: string
+      rating:
+        $ref: '#/definitions/dto.DataRatingBooking'
+      service:
+        items:
+          $ref: '#/definitions/dto.DataServiceBooking'
+        type: array
+      store:
+        $ref: '#/definitions/dto.DataStoreBooking'
+      total_price:
+        type: number
     type: object
   dto.GetServiceResponse:
     properties:
@@ -1039,6 +1071,83 @@ paths:
       summary: Buat booking baru
       tags:
       - Booking
+  /booking/customer:
+    get:
+      description: Mengambil daftar booking milik customer yang sedang login berdasarkan
+        status booking, dapat difilter berdasarkan nama dan diurutkan berdasarkan
+        jadwal booking atau nama toko.
+      parameters:
+      - description: Status booking
+        enum:
+        - upcoming
+        - done
+        - cancel
+        in: query
+        name: status_booking
+        required: true
+        type: string
+      - description: Pencarian berdasarkan nama
+        in: query
+        name: q
+        type: string
+      - description: Kolom untuk pengurutan
+        enum:
+        - scheduled_at
+        - name
+        in: query
+        name: sort_by
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        maximum: 50
+        minimum: 1
+        name: limit
+        type: integer
+      - default: desc
+        description: Urutan data
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Succes get data booking!
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GetBookingUserResponse'
+                  type: array
+                meta:
+                  $ref: '#/definitions/dto.ResponsePagination'
+              type: object
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "424":
+          description: Gagal mengambil data booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Daftar booking customer
+      tags:
+      - Booking
   /booking/lock:
     delete:
       description: Membatalkan/menghapus kunci slot booking (capster, toko, dan tanggal
@@ -1577,6 +1686,8 @@ paths:
                   items:
                     $ref: '#/definitions/dto.StoreData'
                   type: array
+                meta:
+                  $ref: '#/definitions/dto.ResponsePagination'
               type: object
         "401":
           description: Tidak memiliki akses

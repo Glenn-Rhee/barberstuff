@@ -548,6 +548,122 @@ const docTemplate = `{
                 }
             }
         },
+        "/booking/customer": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil daftar booking milik customer yang sedang login berdasarkan status booking, dapat difilter berdasarkan nama dan diurutkan berdasarkan jadwal booking atau nama toko.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Daftar booking customer",
+                "parameters": [
+                    {
+                        "enum": [
+                            "upcoming",
+                            "done",
+                            "cancel"
+                        ],
+                        "type": "string",
+                        "description": "Status booking",
+                        "name": "status_booking",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Pencarian berdasarkan nama",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "scheduled_at",
+                            "name"
+                        ],
+                        "type": "string",
+                        "description": "Kolom untuk pengurutan",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Urutan data",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Succes get data booking!",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.GetBookingUserResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.ResponsePagination"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "424": {
+                        "description": "Gagal mengambil data booking",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/booking/lock": {
             "post": {
                 "security": [
@@ -1395,6 +1511,9 @@ const docTemplate = `{
                                             "items": {
                                                 "$ref": "#/definitions/dto.StoreData"
                                             }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.ResponsePagination"
                                         }
                                     }
                                 }
@@ -1932,6 +2051,26 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.DataRatingBooking": {
+            "type": "object",
+            "properties": {
+                "avg_rating": {
+                    "type": "number"
+                },
+                "capster_rating": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "staff_rating": {
+                    "type": "integer"
+                },
+                "store_rating": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.DataServiceBooking": {
             "type": "object",
             "properties": {
@@ -1996,6 +2135,35 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.SlotAvailable"
                     }
+                }
+            }
+        },
+        "dto.GetBookingUserResponse": {
+            "type": "object",
+            "properties": {
+                "booking_date": {
+                    "type": "string"
+                },
+                "capster": {
+                    "$ref": "#/definitions/dto.DataCapsterBooking"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "rating": {
+                    "$ref": "#/definitions/dto.DataRatingBooking"
+                },
+                "service": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.DataServiceBooking"
+                    }
+                },
+                "store": {
+                    "$ref": "#/definitions/dto.DataStoreBooking"
+                },
+                "total_price": {
+                    "type": "number"
                 }
             }
         },
