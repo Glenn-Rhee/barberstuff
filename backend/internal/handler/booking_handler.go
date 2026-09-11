@@ -147,7 +147,18 @@ func (h *BookingHandler) CreateBooking(ctx *gin.Context) {
 	})
 }
 
-
+// GetDataBookingStore godoc
+// @Summary      Cek ketersediaan slot booking toko
+// @Description  Mengambil data slot waktu, ketersediaan, dan daftar capster yang tersedia pada toko dan tanggal tertentu
+// @Tags         Booking
+// @Produce      json
+// @Security     BearerAuth
+// @Param        date     query string true "Tanggal booking (format RFC3339, contoh: 2026-09-11T00:00:00Z)"
+// @Param        id_store query string true "ID toko"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.GetBookingStoreResponse} "Berhasil mengambil data booking toko!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid / gagal mengambil data"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /booking/store [GET]
 func (h *BookingHandler) GetDataBookingStore(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
