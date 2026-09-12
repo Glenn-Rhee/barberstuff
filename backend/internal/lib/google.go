@@ -14,7 +14,6 @@ import (
 )
 
 type ClaimsGoogle struct {
-	
 	jwt.MapClaims
 }
 
@@ -38,7 +37,7 @@ func VerifyIdTokenGoogle(rawToken string) (dto.GoogleClaims, error) {
 		return dto.GoogleClaims{}, fmt.Errorf("Claims tidak valid")
 	}
 
-	if claims["aud"] !=  os.Getenv("GOOGLE_CLIENT_ID") {
+	if claims["aud"] != os.Getenv("GOOGLE_CLIENT_ID") {
 		return dto.GoogleClaims{}, fmt.Errorf("Audince tidak cocok")
 	}
 
