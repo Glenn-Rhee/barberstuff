@@ -249,6 +249,6 @@ func (h *CustomerHandler) GetProfile(ctx *gin.Context) {
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.ProfileCustomerResponse]{
 		Message:    "Berhasil mengambil data!",
 		Data:       result,
-		StatusCode: http.StatusUnauthorized,
+		StatusCode: http.StatusOK,
 	})
 }
