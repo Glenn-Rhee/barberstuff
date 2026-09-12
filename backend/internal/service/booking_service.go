@@ -730,7 +730,7 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 
 		resultSlots = append(resultSlots, dto.SlotAvailable{
 			Time:      timeStr,
-			Available: availableCount > 0,
+			Available: availableCount > 1,
 			Capsters:  capstterResults,
 		})
 	}
