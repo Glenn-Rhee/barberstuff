@@ -596,7 +596,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 }
 
 func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.CustomClaims, req dto.GetBookingStoreRequest) (dto.GetBookingStoreResponse, error) {
-	const BASE_MESSAGE = "Terjadi kesalahan saat membuat booking. Coba lagi nanti!"
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil booking toko. Coba lagi nanti!"
 	_, filePath, _, _ := runtime.Caller(0)
 
 	idStore, err := uuid.Parse(req.IdStore)
@@ -694,17 +694,43 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 	var resultSlots []dto.SlotAvailable
 	for i, timeStr := range slotStrings {
 		slotDateTime := slots[i]
+		isPastSlot := slotDateTime.Before(now)
+
+		// FIX: langkah 1 — hitung dulu capster mana saja yang kosong di slot ini,
+		// sebelum decide available/tidaknya masing-masing
+		var freeCapsterIndexes []int // index c di dataCapsters yang statusnya kosong
+
+		for idx, c := range dataCapsters {
+			compositeKey := fmt.Sprintf("%s|%s", timeStr, c.ID.String())
+			isBookedDb := dbBookedMap[compositeKey]
+			isLockedRedis := lockedMap[compositeKey]
+
+			isFree := !isBookedDb && !isLockedRedis && !isPastSlot
+			if isFree {
+				freeCapsterIndexes = append(freeCapsterIndexes, idx)
+			}
+		}
+
+		// FIX: langkah 2 — kalau capster kosong cuma sisa 1, itu direserved (tidak available)
+		reservedIdx := -1
+		if len(freeCapsterIndexes) == 1 {
+			reservedIdx = freeCapsterIndexes[0]
+		}
+
 		var capstterResults []dto.CapsterAvailable
 		availableCount := 0
 
-		isPastSlot := slotDateTime.Before(now)
-
-		for _, c := range dataCapsters {
+		for idx, c := range dataCapsters {
 			compositeKey := fmt.Sprintf("%s|%s", timeStr, c.ID.String())
 			isBookedDb := dbBookedMap[compositeKey]
 			isLockedRedis := lockedMap[compositeKey]
 
 			available := !isBookedDb && !isLockedRedis && !isPastSlot
+
+			// FIX: langkah 3 — kalau capster ini adalah satu-satunya yang tersisa, paksa jadi false
+			if idx == reservedIdx {
+				available = false
+			}
 
 			if available {
 				availableCount++
@@ -736,10 +762,11 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 
 		resultSlots = append(resultSlots, dto.SlotAvailable{
 			Time:      timeStr,
-			Available: !isPastSlot && availableCount > 1,
+			Available: !isPastSlot && availableCount > 0, // FIX: >0, karena availableCount sudah otomatis exclude reserved
 			Capsters:  capstterResults,
 		})
 	}
+
 	return dto.GetBookingStoreResponse{
 		Date:    req.Date,
 		IdStore: idStore,
