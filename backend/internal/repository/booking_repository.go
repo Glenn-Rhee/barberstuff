@@ -3,6 +3,7 @@ package repository
 import (
 	"barberstuff_backend/internal/entity"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +12,7 @@ type BookingRepository interface {
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Booking, error)
 	Create(tx *gorm.DB, b *entity.Booking) error
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
+	UpdateStatusMany(ids []uuid.UUID, status entity.BookingStatusEnum) error
 }
 
 type bookingRepository struct {
@@ -56,4 +58,10 @@ func (r *bookingRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, err
 	var total int64
 	result := r.db.Model(&entity.Booking{}).Count(&total).Scopes(scopes...)
 	return total, result.Error
+}
+
+func (r *bookingRepository) UpdateStatusMany(ids []uuid.UUID, status entity.BookingStatusEnum) error {
+	return r.db.Model(&entity.Booking{}).
+		Where("id IN ?", ids).
+		Update("status_booking", status).Error
 }

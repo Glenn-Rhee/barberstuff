@@ -25,6 +25,7 @@ type BookingService interface {
 	GetBookingStore(ctx context.Context, claims *lib.CustomClaims, reqParams dto.GetBookingStoreRequest) (dto.GetBookingStoreResponse, error)
 	DeleteLockBooking(ctx context.Context, claims *lib.CustomClaims, reqParams dto.DeleteLockBookingRequest) error
 	GetBookingUser(claims *lib.CustomClaims, reqParams dto.GetBookingUserRequest) ([]dto.GetBookingUserResponse, dto.ResponsePagination, error)
+	AutoCancelBookings(ctx context.Context) error
 }
 
 type bookingService struct {
@@ -688,17 +689,22 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 		}
 	}
 
+	now := time.Now().In(loc)
+
 	var resultSlots []dto.SlotAvailable
-	for _, timeStr := range slotStrings {
+	for i, timeStr := range slotStrings {
+		slotDateTime := slots[i]
 		var capstterResults []dto.CapsterAvailable
 		availableCount := 0
+
+		isPastSlot := slotDateTime.Before(now)
 
 		for _, c := range dataCapsters {
 			compositeKey := fmt.Sprintf("%s|%s", timeStr, c.ID.String())
 			isBookedDb := dbBookedMap[compositeKey]
 			isLockedRedis := lockedMap[compositeKey]
 
-			available := !isBookedDb && !isLockedRedis
+			available := !isBookedDb && !isLockedRedis && !isPastSlot
 
 			if available {
 				availableCount++
@@ -730,7 +736,7 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 
 		resultSlots = append(resultSlots, dto.SlotAvailable{
 			Time:      timeStr,
-			Available: availableCount > 1,
+			Available: !isPastSlot && availableCount > 1,
 			Capsters:  capstterResults,
 		})
 	}
@@ -973,4 +979,42 @@ func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.
 	}
 
 	return dataBookings, paginationData, nil
+}
+
+func (s *bookingService) AutoCancelBookings(ctx context.Context) error {
+	const BASE_MESSAGE = "Terjadi kesalahan di sistem!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	now := time.Now()
+	deadline := now.Add(-constant.AUTO_CANCEL_TOLERANCE)
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.
+			Where("status_booking = ?", entity.BookingStatusBooked).
+			Where("scheduled_at < ?", deadline)
+	})
+
+	dataBookings, err := s.bookingRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("Find all bookings", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if len(dataBookings) == 0 {
+		return nil
+	}
+
+	var ids []uuid.UUID
+	for _, v := range dataBookings {
+		ids = append(ids, v.ID)
+	}
+
+	err = s.bookingRepo.UpdateStatusMany(ids, entity.BookingStatusCanceled)
+	if err != nil {
+		helper.Logger("update status many", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
 }

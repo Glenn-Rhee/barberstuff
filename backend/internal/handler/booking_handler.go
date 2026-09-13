@@ -142,7 +142,7 @@ func (h *BookingHandler) CreateBooking(ctx *gin.Context) {
 
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.CreateBookingResponse]{
 		Data:       result,
-		Message:    "Berhasil Lock booking!",
+		Message:    "Berhasil membuat booking!",
 		StatusCode: http.StatusOK,
 	})
 }
