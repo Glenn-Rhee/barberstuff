@@ -20,6 +20,7 @@ type Handlers struct {
 	Servicehandler  *handler.ServiceHandler
 	BookingHandler  *handler.BookingHandler
 	AuthMiddleware  gin.HandlerFunc
+	BookingService  service.BookingService
 }
 
 func InitHandlers(db *gorm.DB) *Handlers {
@@ -65,5 +66,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 		CapsterHandler:  capsterHandler,
 		Servicehandler:  serviceHandler,
 		BookingHandler:  bookingHandler,
+		BookingService:  bookingService,
 	}
 }

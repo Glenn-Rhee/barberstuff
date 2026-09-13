@@ -5,12 +5,14 @@ import (
 	_ "barberstuff_backend/docs"
 	"barberstuff_backend/internal/bootstrap"
 	"barberstuff_backend/internal/lib"
+	"context"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/robfig/cron/v3"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -29,8 +31,8 @@ func main() {
 	db := db.Connect()
 	lib.RedisInit()
 	h := bootstrap.InitHandlers(db)
-
 	r := gin.Default()
+	c := cron.New()
 
 	if _, err := os.Stat(".env"); err == nil {
 		if err := godotenv.Load(); err != nil {
@@ -109,6 +111,13 @@ func main() {
 		booking.POST("/lock", h.BookingHandler.LockBooking)
 		booking.DELETE("/lock", h.BookingHandler.DeleteLockBooking)
 	}
+
+	c.AddFunc("*/5 * * * *", func() {
+		if err := h.BookingService.AutoCancelBookings(context.Background()); err != nil {
+			log.Println("Error auto cancel booking:", err)
+		}
+	})
+	c.Start()
 
 	fmt.Println("Server running on http://localhost:8080")
 	r.Run(":8080")
