@@ -69,7 +69,6 @@ func main() {
 		store.GET("/:id", h.StoreHandler.GetStore)
 		store.PUT("/:id", h.StoreHandler.UpdateStore)
 		store.DELETE("/:id", h.StoreHandler.DeleteStore)
-		store.GET("/available-slots/:id")
 	}
 
 	staff := r.Group("/staff")
