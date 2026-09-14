@@ -33,9 +33,10 @@ type StaffAccountsResponse struct {
 	Role      entity.RoleEnum `json:"role"`
 	Email     string          `json:"email"`
 	CreatedAt time.Time       `json:"created_at"`
+	AvgRating float32         `json:"avg_rating"`
 }
 
 type UpdateAccountStaffRequest struct {
-	Name     string          `json:"name" binding:"required,min=3"`
-	Password string          `json:"password" binding:"required,min=5"`
+	Name     string `json:"name" binding:"required,min=3"`
+	Password string `json:"password" binding:"required,min=5"`
 }

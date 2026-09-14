@@ -25,7 +25,9 @@ func (r *capsterRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 	var dataCapster []entity.Capster
 	result := r.db.
 		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "score", "id_staff")
+			return db.Select("id", "score", "id_capster").
+				Where("id_capster IS NOT NULL").
+				Where("type = ?", entity.RatingTypeCapster)
 		}).
 		Scopes(scopes...).
 		Find(&dataCapster)

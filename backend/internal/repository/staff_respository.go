@@ -45,6 +45,11 @@ func (r *staffRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.S
 		Preload("Authentication", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "id_staff", "role", "email")
 		}).
+		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "score", "id_staff").
+				Where("id_staff IS NOT NULL").
+				Where("type = ?", entity.RatingTypeStaff)
+		}).
 		Where("staff.deleted_at IS NULL").
 		Scopes(scopes...).
 		Find(&dataStaffes)

@@ -14,6 +14,7 @@ type Staff struct {
 	UpdatedAt      time.Time      `gorm:"column:updated_at;not null;autoUpdateTime"`
 	DeletedAt      *time.Time     `gorm:"column:deleted_at"`
 	Authentication Authentication `gorm:"foreignKey:IDStaff"`
+	Ratings        []Rating       `gorm:"foreignKey:IdStaff"`
 }
 
 func (Staff) TableName() string {

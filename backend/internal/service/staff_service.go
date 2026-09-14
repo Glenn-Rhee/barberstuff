@@ -269,6 +269,16 @@ func (s *staffService) GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.St
 	var dataResults = make([]dto.StaffAccountsResponse, 0)
 
 	for _, v := range dataStaffes {
+		avgRating := float32(5.0)
+		totalRating := 0
+		for _, r := range v.Ratings {
+			totalRating += int(r.Score)
+		}
+
+		if len(v.Ratings) > 0 {
+			avgRating = float32(totalRating) / float32(len(v.Ratings))
+		}
+
 		dataResults = append(dataResults, dto.StaffAccountsResponse{
 			Id:        v.ID,
 			Name:      v.Name,
@@ -276,6 +286,7 @@ func (s *staffService) GetAccounts(query dto.QueryParamsAccountStaff) (*[]dto.St
 			Role:      v.Authentication.Role,
 			Email:     v.Authentication.Email,
 			CreatedAt: v.CreatedAt,
+			AvgRating: avgRating,
 		})
 	}
 
