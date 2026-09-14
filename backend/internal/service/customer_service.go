@@ -124,6 +124,17 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		OAuthProvider: "google",
 	}
 
+	if customer.PhoneNumber != nil {
+		_, err = c.customerRepo.FindOne("phone_number = ?", customer.PhoneNumber)
+		if err == nil {
+			return dto.AuthenticationResponse{}, errors.New("No telepon ini telah terdaftar!")
+		}
+
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.AuthenticationResponse{}, errors.New(BASE_MESSAGE)
+		}
+	}
+
 	tx := c.db.Begin()
 
 	if tx.Error != nil {
@@ -254,6 +265,17 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		IsVerified:    false,
 		LoginType:     entity.LoginWithCredential,
 		OAuthProvider: "",
+	}
+
+	if customer.PhoneNumber != nil {
+		_, err = c.customerRepo.FindOne("phone_number = ?", customer.PhoneNumber)
+		if err == nil {
+			return &dto.CredentialCustomerResponse{}, errors.New("No telepon ini telah terdaftar!")
+		}
+
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.failRegister(tx, "FIND ONE CUSTOMER BY PHONE NUMBER", err)
+		}
 	}
 
 	if err := c.customerRepo.Create(tx, customer); err != nil {

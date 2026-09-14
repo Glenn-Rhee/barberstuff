@@ -10,6 +10,7 @@ type CustomerRepository interface {
 	Create(tx *gorm.DB, c *entity.Customer) error
 	FindById(userId string) (entity.Customer, error)
 	FindProfile(userId string) (entity.Customer, error)
+	FindOne(where interface{}, args ...interface{}) (entity.Customer, error)
 }
 
 type customerRepository struct {
@@ -42,4 +43,10 @@ func (r *customerRepository) FindProfile(userId string) (entity.Customer, error)
 		First(&dataCustomers)
 
 	return dataCustomers, result.Error
+}
+
+func (r *customerRepository) FindOne(where interface{}, args ...interface{}) (entity.Customer, error) {
+	var dataCustomer entity.Customer
+	result := r.db.Where(where, args...).First(&dataCustomer)
+	return dataCustomer, result.Error
 }
