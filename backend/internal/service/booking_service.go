@@ -930,7 +930,7 @@ func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.
 					Desc: dto.SortBooking(orderBy) == "desc",
 				},
 			},
-		})
+		}).Offset((page - 1) * limit).Limit(limit)
 	})
 
 	paginationData := helper.GetPaginationData(page, limit, int(totalData))

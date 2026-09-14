@@ -149,7 +149,7 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.
 					Desc: dto.SortCapster(orderBy) == "desc",
 				},
 			},
-		})
+		}).Offset((page - 1) * limit).Limit(limit)
 	})
 
 	paginationData := helper.GetPaginationData(page, limit, int(totalData))
