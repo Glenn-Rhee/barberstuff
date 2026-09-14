@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type CapsterService interface {
@@ -139,9 +140,16 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Order(sortBy + " " + dto.SortCapster(orderBy)).
-			Offset((page - 1) * limit).
-			Limit(limit)
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{
+					Column: clause.Column{
+						Name: string(sortBy),
+					},
+					Desc: dto.SortCapster(orderBy) == "desc",
+				},
+			},
+		})
 	})
 
 	paginationData := helper.GetPaginationData(page, limit, int(totalData))
