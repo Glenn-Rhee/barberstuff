@@ -253,6 +253,22 @@ func (h *CustomerHandler) GetProfile(ctx *gin.Context) {
 	})
 }
 
+// FindCustomers godoc
+// @Summary      Daftar customer
+// @Description  Mengambil daftar customer beserta informasi kunjungan, layanan favorit, capster favorit, dan KPI customer. Hanya dapat diakses oleh admin, kasir, maupun mitra
+// @Tags         Customer
+// @Produce      json
+// @Security     BearerAuth
+// @Param        q query string false "Pencarian berdasarkan nama, phone_number, id, atau email pengguna."
+// @Param        page query int false "Page" minimum(1) default(1)
+// @Param        limit query int false "Limit" minimum(1) maximum(50) default(20)
+// @Param        sort_by query string false "Sort By" Enums(name, created_at, member_points, email) default(member_points)
+// @Param        order query string false "Order By" Enums(asc, desc) default(desc)
+// @Success      200 {object} dto.SwaggerResponse{data=dto.FindCustomerResponse,meta=dto.ResponsePagination} "Success get data customer"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengambil data customer"
+// @Router       /customer [get]
 func (h *CustomerHandler) FindCustomers(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

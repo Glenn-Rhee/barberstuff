@@ -989,6 +989,113 @@
                 }
             }
         },
+        "/customer": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil daftar customer beserta informasi kunjungan, layanan favorit, capster favorit, dan KPI customer. Hanya dapat diakses oleh admin, kasir, maupun mitra",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customer"
+                ],
+                "summary": "Daftar customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pencarian berdasarkan nama, phone_number, id, atau email pengguna.",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "name",
+                            "created_at",
+                            "member_points",
+                            "email"
+                        ],
+                        "type": "string",
+                        "default": "member_points",
+                        "description": "Sort By",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Order By",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success get data customer",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.FindCustomerResponse"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.ResponsePagination"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal mengambil data customer",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/profile/customer": {
             "get": {
                 "security": [
@@ -2044,6 +2151,20 @@
                 }
             }
         },
+        "dto.DataKPICustomer": {
+            "type": "object",
+            "properties": {
+                "total_customers": {
+                    "type": "integer"
+                },
+                "total_members": {
+                    "type": "integer"
+                },
+                "total_new_customers": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.DataRatingBooking": {
             "type": "object",
             "properties": {
@@ -2103,6 +2224,58 @@
                 },
                 "phone_number": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.DataUserFindCustomer": {
+            "type": "object",
+            "properties": {
+                "capster_favorite": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "last_visited_at": {
+                    "type": "string"
+                },
+                "member_points": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "service_favorite": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/dto.StatusCustomer"
+                },
+                "total_visited": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.FindCustomerResponse": {
+            "type": "object",
+            "properties": {
+                "customers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.DataUserFindCustomer"
+                    }
+                },
+                "kpi": {
+                    "$ref": "#/definitions/dto.DataKPICustomer"
                 }
             }
         },
@@ -2468,6 +2641,9 @@
         "dto.StaffAccountsResponse": {
             "type": "object",
             "properties": {
+                "avg_rating": {
+                    "type": "number"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2517,6 +2693,17 @@
             "x-enum-varnames": [
                 "NEED_COMPLETE_PROFILE",
                 "SUCCESS"
+            ]
+        },
+        "dto.StatusCustomer": {
+            "type": "string",
+            "enum": [
+                "MEMBER",
+                "REGULER"
+            ],
+            "x-enum-varnames": [
+                "StatusMember",
+                "StatusReguler"
             ]
         },
         "dto.StatusResponse": {

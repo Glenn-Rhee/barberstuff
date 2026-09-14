@@ -608,8 +608,8 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 
 	var page = 1
 	var limit = 20
-	var sortBy = dto.SortByCustomerName
-	var orderBy = dto.OrderAsc
+	var sortBy = dto.SortByCustomerMemberPoints
+	var orderBy = dto.OrderDesc
 
 	if params.Page != nil {
 		page = *params.Page

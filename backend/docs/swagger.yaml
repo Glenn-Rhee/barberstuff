@@ -202,6 +202,15 @@ definitions:
       name:
         type: string
     type: object
+  dto.DataKPICustomer:
+    properties:
+      total_customers:
+        type: integer
+      total_members:
+        type: integer
+      total_new_customers:
+        type: integer
+    type: object
   dto.DataRatingBooking:
     properties:
       avg_rating:
@@ -241,6 +250,40 @@ definitions:
         type: string
       phone_number:
         type: string
+    type: object
+  dto.DataUserFindCustomer:
+    properties:
+      capster_favorite:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      last_visited_at:
+        type: string
+      member_points:
+        type: integer
+      name:
+        type: string
+      phone_number:
+        type: string
+      service_favorite:
+        type: string
+      status:
+        $ref: '#/definitions/dto.StatusCustomer'
+      total_visited:
+        type: integer
+    type: object
+  dto.FindCustomerResponse:
+    properties:
+      customers:
+        items:
+          $ref: '#/definitions/dto.DataUserFindCustomer'
+        type: array
+      kpi:
+        $ref: '#/definitions/dto.DataKPICustomer'
     type: object
   dto.ForgotPassswordResponse:
     properties:
@@ -482,6 +525,8 @@ definitions:
     type: object
   dto.StaffAccountsResponse:
     properties:
+      avg_rating:
+        type: number
       created_at:
         type: string
       email:
@@ -517,6 +562,14 @@ definitions:
     x-enum-varnames:
     - NEED_COMPLETE_PROFILE
     - SUCCESS
+  dto.StatusCustomer:
+    enum:
+    - MEMBER
+    - REGULER
+    type: string
+    x-enum-varnames:
+    - StatusMember
+    - StatusReguler
   dto.StatusResponse:
     enum:
     - success
@@ -1373,6 +1426,78 @@ paths:
       summary: Tambah capster baru
       tags:
       - Capster
+  /customer:
+    get:
+      description: Mengambil daftar customer beserta informasi kunjungan, layanan
+        favorit, capster favorit, dan KPI customer. Hanya dapat diakses oleh admin,
+        kasir, maupun mitra
+      parameters:
+      - description: Pencarian berdasarkan nama, phone_number, id, atau email pengguna.
+        in: query
+        name: q
+        type: string
+      - default: 1
+        description: Page
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 20
+        description: Limit
+        in: query
+        maximum: 50
+        minimum: 1
+        name: limit
+        type: integer
+      - default: member_points
+        description: Sort By
+        enum:
+        - name
+        - created_at
+        - member_points
+        - email
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Order By
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success get data customer
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.FindCustomerResponse'
+                meta:
+                  $ref: '#/definitions/dto.ResponsePagination'
+              type: object
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengambil data customer
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Daftar customer
+      tags:
+      - Customer
   /profile/customer:
     get:
       description: Mengambil data profil customer yang sedang login
