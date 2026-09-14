@@ -135,6 +135,16 @@ definitions:
     - id_store
     - name
     type: object
+  dto.CreateRatingRequest:
+    properties:
+      id_booking:
+        type: string
+      rating:
+        $ref: '#/definitions/dto.RatingDataRequest'
+    required:
+    - id_booking
+    - rating
+    type: object
   dto.CredentialCustomerRequest:
     properties:
       date_of_birth:
@@ -472,6 +482,53 @@ definitions:
     type: string
     x-enum-varnames:
     - Google
+  dto.RatingCapsterRequest:
+    properties:
+      id:
+        type: string
+      score:
+        maximum: 5
+        minimum: 1
+        type: integer
+    required:
+    - id
+    - score
+    type: object
+  dto.RatingDataRequest:
+    properties:
+      capster:
+        $ref: '#/definitions/dto.RatingCapsterRequest'
+      staff:
+        $ref: '#/definitions/dto.RatingStaffRequest'
+      store:
+        $ref: '#/definitions/dto.RatingStoreRequest'
+    type: object
+  dto.RatingStaffRequest:
+    properties:
+      id:
+        type: string
+      score:
+        maximum: 5
+        minimum: 1
+        type: integer
+    required:
+    - id
+    - score
+    type: object
+  dto.RatingStoreRequest:
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      score:
+        maximum: 5
+        minimum: 1
+        type: integer
+    required:
+    - id
+    - score
+    type: object
   dto.RefreshTokenBody:
     properties:
       refresh_token:
@@ -1546,6 +1603,44 @@ paths:
       summary: Ambil profil staff
       tags:
       - Staff
+  /rating:
+    post:
+      consumes:
+      - application/json
+      description: Membuat rating untuk booking. Customer wajib memberikan rating
+        minimal pada salah satu objek (capster, staff, atau store), dan dapat memberikan
+        rating pada lebih dari satu objek sekaligus. Hanya dapat diakses oleh customer
+      parameters:
+      - description: Data rating
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRatingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat rating baru!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data rating tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal membuat rating
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Membuat rating
+      tags:
+      - Rating
   /service:
     get:
       description: Mengambil semua data service serta dapat melakukan filter serta

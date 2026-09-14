@@ -1189,6 +1189,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/rating": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Membuat rating untuk booking. Customer wajib memberikan rating minimal pada salah satu objek (capster, staff, atau store), dan dapat memberikan rating pada lebih dari satu objek sekaligus. Hanya dapat diakses oleh customer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rating"
+                ],
+                "summary": "Membuat rating",
+                "parameters": [
+                    {
+                        "description": "Data rating",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateRatingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membuat rating baru!",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Data rating tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal membuat rating",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/service": {
             "get": {
                 "security": [
@@ -2058,6 +2115,21 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateRatingRequest": {
+            "type": "object",
+            "required": [
+                "id_booking",
+                "rating"
+            ],
+            "properties": {
+                "id_booking": {
+                    "type": "string"
+                },
+                "rating": {
+                    "$ref": "#/definitions/dto.RatingDataRequest"
+                }
+            }
+        },
         "dto.CredentialCustomerRequest": {
             "type": "object",
             "required": [
@@ -2566,6 +2638,74 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "Google"
             ]
+        },
+        "dto.RatingCapsterRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "score"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "integer",
+                    "maximum": 5,
+                    "minimum": 1
+                }
+            }
+        },
+        "dto.RatingDataRequest": {
+            "type": "object",
+            "properties": {
+                "capster": {
+                    "$ref": "#/definitions/dto.RatingCapsterRequest"
+                },
+                "staff": {
+                    "$ref": "#/definitions/dto.RatingStaffRequest"
+                },
+                "store": {
+                    "$ref": "#/definitions/dto.RatingStoreRequest"
+                }
+            }
+        },
+        "dto.RatingStaffRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "score"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "integer",
+                    "maximum": 5,
+                    "minimum": 1
+                }
+            }
+        },
+        "dto.RatingStoreRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "score"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "integer",
+                    "maximum": 5,
+                    "minimum": 1
+                }
+            }
         },
         "dto.RefreshTokenBody": {
             "type": "object",
