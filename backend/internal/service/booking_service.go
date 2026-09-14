@@ -17,6 +17,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type BookingService interface {
@@ -921,9 +922,15 @@ func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Order(sortBy + " " + dto.SortBooking(orderBy)).
-			Offset((page - 1) * limit).
-			Limit(limit)
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{Column: clause.Column{
+					Name: string(sortBy),
+				},
+					Desc: dto.SortBooking(orderBy) == "desc",
+				},
+			},
+		})
 	})
 
 	paginationData := helper.GetPaginationData(page, limit, int(totalData))
