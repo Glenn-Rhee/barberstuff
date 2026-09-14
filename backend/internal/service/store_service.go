@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type StoreService interface {
@@ -148,9 +149,11 @@ func (s *storeService) GetStores(query dto.QueryParamsStores, claims *lib.Custom
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Order(sortBy + " " + dto.SortStore(orderBy)).
-			Offset((page - 1) * limit).
-			Limit(limit)
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{Column: clause.Column{Name: string(sortBy)}, Desc: dto.SortStore(orderBy) == "desc"},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
 	})
 
 	paginationData := helper.GetPaginationData(page, limit, int(totalData))
