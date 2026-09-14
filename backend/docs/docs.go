@@ -2085,6 +2085,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.DataStaffBooking": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.DataStoreBooking": {
             "type": "object",
             "properties": {
@@ -2158,6 +2169,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.DataServiceBooking"
                     }
+                },
+                "staff": {
+                    "$ref": "#/definitions/dto.DataStaffBooking"
                 },
                 "store": {
                     "$ref": "#/definitions/dto.DataStoreBooking"

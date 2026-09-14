@@ -36,6 +36,7 @@ func (r *bookingRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 	result := r.db.
 		Preload("Store").
 		Preload("Capster").
+		Preload("Staff").
 		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Store").
 				Preload("Capster").

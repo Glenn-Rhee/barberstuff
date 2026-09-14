@@ -224,6 +224,13 @@ definitions:
       price:
         type: number
     type: object
+  dto.DataStaffBooking:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   dto.DataStoreBooking:
     properties:
       address:
@@ -272,6 +279,8 @@ definitions:
         items:
           $ref: '#/definitions/dto.DataServiceBooking'
         type: array
+      staff:
+        $ref: '#/definitions/dto.DataStaffBooking'
       store:
         $ref: '#/definitions/dto.DataStoreBooking'
       total_price:

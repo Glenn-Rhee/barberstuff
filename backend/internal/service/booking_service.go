@@ -36,6 +36,7 @@ type bookingService struct {
 	storeRepo   repository.StoreRepository
 	serviceRepo repository.ServiceRepository
 	promoRepo   repository.PromoRepository
+	staffRepo   repository.StaffRepository
 	db          *gorm.DB
 }
 
@@ -46,6 +47,7 @@ func NewBookingService(
 	sr repository.StoreRepository,
 	srp repository.ServiceRepository,
 	pr repository.PromoRepository,
+	sfr repository.StaffRepository,
 	db *gorm.DB,
 ) BookingService {
 	return &bookingService{
@@ -55,6 +57,7 @@ func NewBookingService(
 		storeRepo:   sr,
 		serviceRepo: srp,
 		promoRepo:   pr,
+		staffRepo:   sfr,
 		db:          db,
 	}
 }
@@ -541,6 +544,35 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 
 		idPromoClaimed = &parsed
 	}
+
+	var scopesStaff []func(*gorm.DB) *gorm.DB
+	scopesStaff = append(scopesStaff, func(d *gorm.DB) *gorm.DB {
+		return d.Where("id_store = ?", idStore)
+	})
+
+	dataStaff, err := s.staffRepo.FindAll(scopesStaff...)
+	if err != nil {
+		helper.Logger("find data staff", filePath, err)
+		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	if len(dataStaff) <= 0 {
+		return dto.CreateBookingResponse{}, errors.New("Toko belum siap menerima booking")
+	}
+
+	var idStaff *uuid.UUID
+
+	for _, s := range dataStaff {
+		if s.Authentication.Role == entity.RoleCashier {
+			idStaff = &s.ID
+			break
+		}
+	}
+
+	if idStaff == nil {
+		return dto.CreateBookingResponse{}, errors.New("Toko belum siap menerima booking")
+	}
+
 	qrCode := fmt.Sprintf("bk%v", idBooking)
 	data := entity.Booking{
 		ID:             idBooking,
@@ -548,6 +580,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		IDStore:        idStore,
 		IDCustomer:     userId,
 		IDCapster:      idCapster,
+		IDStaff:        *idStaff,
 		IDPromoClaimed: idPromoClaimed,
 		SubTotal:       subTotal,
 		DiscountAmount: discountAmount,
@@ -961,6 +994,10 @@ func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.
 				Name:        b.Store.Name,
 				Address:     b.Store.Address,
 				PhoneNumber: b.Store.PhoneNumber,
+			},
+			Staff: dto.DataStaffBooking{
+				Id:   b.Staff.ID,
+				Name: b.Staff.Name,
 			},
 			BookingDate: b.ScheduledAt,
 			TotalPrice:  b.TotalPrice,

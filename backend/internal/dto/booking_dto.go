@@ -62,6 +62,11 @@ type DataCapsterBooking struct {
 	Name string    `json:"name"`
 }
 
+type DataStaffBooking struct {
+	Id   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
 type DataServiceBooking struct {
 	Id    uuid.UUID       `json:"id"`
 	Name  string          `json:"name"`
@@ -114,6 +119,7 @@ type GetBookingUserResponse struct {
 	Service     []DataServiceBooking `json:"service"`
 	Capster     DataCapsterBooking   `json:"capster"`
 	Store       DataStoreBooking     `json:"store"`
+	Staff       DataStaffBooking     `json:"staff"`
 	BookingDate time.Time            `json:"booking_date"`
 	TotalPrice  decimal.Decimal      `json:"total_price"`
 	Rating      *DataRatingBooking   `json:"rating"`

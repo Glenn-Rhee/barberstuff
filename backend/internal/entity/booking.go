@@ -29,6 +29,7 @@ type Booking struct {
 	IDStore        uuid.UUID         `gorm:"column:id_store;not null"`
 	IDCustomer     uuid.UUID         `gorm:"column:id_user;not null"`
 	IDCapster      uuid.UUID         `gorm:"column:id_capster"`
+	IDStaff        uuid.UUID         `gorm:"column:id_staff;not null"`
 	IDPromoClaimed *uuid.UUID        `gorm:"column:id_promo_claimed"`
 	SubTotal       decimal.Decimal   `gorm:"column:subtotal;default:0"`
 	DiscountAmount decimal.Decimal   `gorm:"column:discount_amount;default:0"`
@@ -41,6 +42,7 @@ type Booking struct {
 	BookingItems   []BookingItem     `gorm:"foreignKey:IDBooking"`
 	Store          Store             `gorm:"foreignKey:IDStore"`
 	Capster        Capster           `gorm:"foreignKey:IDCapster"`
+	Staff          Staff             `gorm:"foreignKey:IDStaff"`
 	Ratings        []Rating          `gorm:"foreignKey:IDBooking"`
 }
 

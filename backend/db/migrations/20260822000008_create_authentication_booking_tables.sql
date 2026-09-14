@@ -39,6 +39,7 @@ CREATE TABLE booking (
     id_store UUID NOT NULL REFERENCES store(id),
     id_user UUID NOT NULL REFERENCES customer(id),
     id_capster UUID NOT NULL REFERENCES capster(id),
+    id_staff UUID NOT NULL REFERENCES staff(id),
     id_promo_claimed UUID REFERENCES promo_claimed(id),
     subtotal NUMERIC(12,2) NOT NULL DEFAULT 0,
     discount_amount NUMERIC(12,2) NOT NULL DEFAULT 0,

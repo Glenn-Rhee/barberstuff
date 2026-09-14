@@ -117,6 +117,12 @@ func main() {
 		customer.GET("/", h.CustomerHandler.FindCustomers)
 	}
 
+	rating := r.Group("/rating")
+	{
+		rating.Use(h.AuthMiddleware)
+		rating.POST("/", h.RatingHandler.Create)
+	}
+
 	c.AddFunc("*/5 * * * *", func() {
 		if err := h.BookingService.AutoCancelBookings(context.Background()); err != nil {
 			log.Println("Error auto cancel booking:", err)
