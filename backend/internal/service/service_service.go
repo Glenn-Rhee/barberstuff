@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type ServiceService interface {
@@ -93,9 +94,14 @@ func (s *serviceService) GetServices(query dto.QueryParamsService, claims *lib.C
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Order(sortBy + " " + dto.SortService(orderBy)).
-			Offset((page - 1) * limit).
-			Limit(limit)
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{
+					Column: clause.Column{Name: string(sortBy)},
+					Desc:   dto.SortService(orderBy) == "desc",
+				},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
 	})
 
 	paginationData := helper.GetPaginationData(page, limit, int(totalData))
@@ -110,14 +116,14 @@ func (s *serviceService) GetServices(query dto.QueryParamsService, claims *lib.C
 
 	for _, v := range services {
 		dataServices = append(dataServices, dto.GetServiceResponse{
-			Id: v.ID,
-			Name: v.Name,
-			Price: v.Price,
+			Id:          v.ID,
+			Name:        v.Name,
+			Price:       v.Price,
 			Description: v.Description,
-			Status: v.Status,
-			IdStore: v.IdStore,
-			Type: v.Type,
-			CreatedAt: v.CreatedAt,
+			Status:      v.Status,
+			IdStore:     v.IdStore,
+			Type:        v.Type,
+			CreatedAt:   v.CreatedAt,
 		})
 	}
 
