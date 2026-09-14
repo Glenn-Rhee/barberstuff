@@ -26,6 +26,7 @@ type Customer struct {
 	UpdatedAt      time.Time      `gorm:"column:updated_at;not null;autoUpdateTime"`
 	PremiumType    *PremiumType   `gorm:"foreignKey:IdPremiumType;references:ID"`
 	Authentication Authentication `gorm:"foreignKey:IDCustomer"`
+	Bookings       []Booking      `gorm:"foreignKey:IDCustomer"`
 }
 
 func (Customer) TableName() string {

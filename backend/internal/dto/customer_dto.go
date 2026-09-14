@@ -63,10 +63,10 @@ type VerifyOTPResponse struct {
 }
 
 type CustomerResponseRating struct {
-	Id          uuid.UUID          `json:"id"`
-	Name        string             `json:"name"`
-	ImageUrl    string             `json:"image_url"`
-	PremiumType string `json:"premium_type"`
+	Id          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	ImageUrl    string    `json:"image_url"`
+	PremiumType string    `json:"premium_type"`
 }
 
 type ProfileCustomerResponse struct {
@@ -84,4 +84,51 @@ type ProfileCustomerResponse struct {
 	IsVerified    bool             `json:"is_verified"`
 	LoginType     entity.LoginType `json:"login_type"`
 	OauthProvider string           `json:"oauth_provider"`
+}
+
+type SortCustomer string
+
+const (
+	SortByCustomerName         SortCustomer = "name"
+	SortByCustomerCreatedAt    SortCustomer = "created_at"
+	SortByCustomerMemberPoints SortCustomer = "member_points"
+	SortByCustomerEmail        SortCustomer = "email"
+)
+
+type FindCustomerRequest struct {
+	Query  *string       `form:"q" binding:"omitempty"`
+	SortBy *SortCustomer `form:"sort_by" binding:"omitempty,oneof=name created_at member_points email"`
+	RequestParamsPagination
+}
+
+type StatusCustomer string
+
+const (
+	StatusMember  StatusCustomer = "MEMBER"
+	StatusReguler StatusCustomer = "REGULER"
+)
+
+type DataUserFindCustomer struct {
+	Id              uuid.UUID      `json:"id"`
+	Name            string         `json:"name"`
+	PhoneNumber     *string        `json:"phone_number"`
+	MemberPoints    int64          `json:"member_points"`
+	Status          StatusCustomer `json:"status"`
+	TotalVisited    int64          `json:"total_visited"`
+	LastVisitedAt   *time.Time     `json:"last_visited_at"`
+	ServiceFavorite string         `json:"service_favorite"`
+	CapsterFavorite string         `json:"capster_favorite"`
+	ImageUrl        *string        `json:"image_url"`
+	Email           string         `json:"email"`
+}
+
+type DataKPICustomer struct {
+	TotalCustomers    int64 `json:"total_customers"`
+	TotalMembers      int64 `json:"total_members"`
+	TotalNewCustomers int64 `json:"total_new_customers"`
+}
+
+type FindCustomerResponse struct {
+	Customers []DataUserFindCustomer `json:"customers"`
+	KPI       DataKPICustomer        `json:"kpi"`
 }

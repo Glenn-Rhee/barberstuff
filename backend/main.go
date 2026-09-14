@@ -111,6 +111,12 @@ func main() {
 		booking.DELETE("/lock", h.BookingHandler.DeleteLockBooking)
 	}
 
+	customer := r.Group("/customer")
+	{
+		customer.Use(h.AuthMiddleware)
+		customer.GET("/", h.CustomerHandler.FindCustomers)
+	}
+
 	c.AddFunc("*/5 * * * *", func() {
 		if err := h.BookingService.AutoCancelBookings(context.Background()); err != nil {
 			log.Println("Error auto cancel booking:", err)

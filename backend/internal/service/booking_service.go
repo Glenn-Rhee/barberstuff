@@ -546,7 +546,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		ID:             idBooking,
 		StatusBooking:  entity.BookingStatusBooked,
 		IDStore:        idStore,
-		IDUser:         userId,
+		IDCustomer:     userId,
 		IDCapster:      idCapster,
 		IDPromoClaimed: idPromoClaimed,
 		SubTotal:       subTotal,

@@ -27,7 +27,7 @@ type Booking struct {
 	ID             uuid.UUID         `gorm:"column:id;primaryKey"`
 	StatusBooking  BookingStatusEnum `gorm:"column:status_booking;not null"`
 	IDStore        uuid.UUID         `gorm:"column:id_store;not null"`
-	IDUser         uuid.UUID         `gorm:"column:id_user;not null"`
+	IDCustomer     uuid.UUID         `gorm:"column:id_user;not null"`
 	IDCapster      uuid.UUID         `gorm:"column:id_capster"`
 	IDPromoClaimed *uuid.UUID        `gorm:"column:id_promo_claimed"`
 	SubTotal       decimal.Decimal   `gorm:"column:subtotal;default:0"`

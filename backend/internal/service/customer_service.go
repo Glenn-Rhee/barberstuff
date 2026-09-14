@@ -10,12 +10,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"runtime"
 	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type CustomerService interface {
@@ -24,6 +26,7 @@ type CustomerService interface {
 	OauthRegister(dataNewCustomer dto.OauthCustomerRequest, ctx context.Context) (dto.AuthenticationResponse, error)
 	ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) (dto.ForgotPassswordResponse, error)
 	GetProfile(claims *lib.CustomClaims) (dto.ProfileCustomerResponse, error)
+	FindCustomers(params dto.FindCustomerRequest) (dto.FindCustomerResponse, dto.ResponsePagination, error)
 }
 
 type customerService struct {
@@ -569,4 +572,179 @@ func (c *customerService) issueOTP(ctx context.Context, userId uuid.UUID) (strin
 	}
 
 	return otpGenerated, nil
+}
+
+func findMostFrequent(count map[uuid.UUID]int, nameMap map[uuid.UUID]string) string {
+	var maxID uuid.UUID
+	maxCount := 0
+
+	for id, c := range count {
+		if c > maxCount {
+			maxCount = c
+			maxID = id
+		}
+	}
+
+	if maxCount == 0 {
+		return "-"
+	}
+
+	return nameMap[maxID]
+}
+
+func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.FindCustomerResponse, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data customer!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	if params.Query != nil {
+		q := "%" + *params.Query + "%"
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.
+				Joins("LEFT JOIN authentication ON authentication.id_customer = customer.id").
+				Where("customer.id ILIKE ? OR customer.phone_number ILIKE ? OR customer.name ILIKE ? OR authentication.email = ?", params.Query, params.Query, q, params.Query)
+		})
+	}
+
+	var page = 1
+	var limit = 20
+	var sortBy = dto.SortByCustomerName
+	var orderBy = dto.OrderAsc
+
+	if params.Page != nil {
+		page = *params.Page
+	}
+
+	if params.Limit != nil {
+		limit = *params.Limit
+	}
+
+	if params.SortBy != nil {
+		sortBy = *params.SortBy
+	}
+
+	if params.OrderBy != nil {
+		orderBy = *params.OrderBy
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Select("id", "name", "phone_number", "member_points", "id_premium_type")
+	})
+
+	totalData, err := c.customerRepo.Count(scopes...)
+	if err != nil {
+		helper.Logger("Count total customer", filePath, err)
+		return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{
+					Column: clause.Column{Name: string(sortBy)},
+					Desc:   dto.SortCustomer(orderBy) == "desc",
+				},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
+	customers, err := c.customerRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("Find all data customers", filePath, err)
+		return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataCustomers := make([]dto.DataUserFindCustomer, 0, len(customers))
+	for _, c := range customers {
+		var status dto.StatusCustomer
+		if c.IdPremiumType.String() == "" {
+			status = dto.StatusReguler
+		} else {
+			status = dto.StatusMember
+		}
+
+		var totalVisited int64 = 0
+		var lastVisitedAt *time.Time
+
+		capsterCount := make(map[uuid.UUID]int)
+		capsterNameMap := make(map[uuid.UUID]string)
+
+		serviceCount := make(map[uuid.UUID]int)
+		serviceNameMap := make(map[uuid.UUID]string)
+
+		for i, b := range c.Bookings {
+			if b.StatusBooking != entity.BookingStatusCompleted {
+				continue
+			}
+
+			totalVisited++
+			if i == 0 {
+				lastVisitedAt = &b.ScheduledAt
+			}
+
+			capsterCount[b.IDCapster]++
+			capsterNameMap[b.IDCapster] = b.Capster.Name
+
+			for _, item := range b.BookingItems {
+				serviceCount[item.IDService]++
+				serviceNameMap[item.IDService] = item.Service.Name
+			}
+		}
+
+		favoriteCapsterName := findMostFrequent(capsterCount, capsterNameMap)
+		favoriteServiceName := findMostFrequent(serviceCount, serviceNameMap)
+
+		dataCustomers = append(dataCustomers, dto.DataUserFindCustomer{
+			Id:              c.ID,
+			Name:            c.Name,
+			PhoneNumber:     c.PhoneNumber,
+			MemberPoints:    int64(c.MemberPoints),
+			Status:          status,
+			TotalVisited:    totalVisited,
+			LastVisitedAt:   lastVisitedAt,
+			ServiceFavorite: favoriteServiceName,
+			CapsterFavorite: favoriteCapsterName,
+			ImageUrl:        &c.ImageCustomer,
+			Email:           c.Authentication.Email,
+		})
+	}
+
+	now := time.Now()
+	startDate := time.Date(
+		now.Year(),
+		now.Month(),
+		1,
+		0, 0, 0, 0,
+		now.Location(),
+	)
+	endDate := startDate.AddDate(0, 1, 0)
+
+	totalNewCustomers, err := c.customerRepo.CountNewCustomers(startDate, endDate)
+	if err != nil {
+		helper.Logger("count total new cust", filePath, err)
+		return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	var scopesTotalMember []func(*gorm.DB) *gorm.DB
+	scopesTotalMember = append(scopesTotalMember, func(d *gorm.DB) *gorm.DB {
+		return d.Where("id_premium_type IS NOT NULL")
+	})
+
+	totalMembers, err := c.customerRepo.Count(scopesTotalMember...)
+	if err != nil {
+		helper.Logger("count total members", filePath, err)
+		return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataKPI := dto.DataKPICustomer{
+		TotalCustomers:    totalData,
+		TotalMembers:      int64(totalMembers),
+		TotalNewCustomers: int64(totalNewCustomers),
+	}
+
+	return dto.FindCustomerResponse{
+		Customers: dataCustomers,
+		KPI:       dataKPI,
+	}, paginationData, nil
 }
