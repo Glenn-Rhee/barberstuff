@@ -67,7 +67,7 @@ func main() {
 		store.POST("/", h.StoreHandler.CreateNewStore)
 		store.GET("/", h.StoreHandler.GetStores)
 		store.GET("/:id", h.StoreHandler.GetStore)
-		store.PUT("/:id", h.StoreHandler.UpdateStore)
+		store.PATCH("/:id", h.StoreHandler.UpdateStore)
 		store.DELETE("/:id", h.StoreHandler.DeleteStore)
 	}
 

@@ -22,20 +22,30 @@ type NewStoreRequest struct {
 }
 
 type UpdateStoreRequest struct {
-	NewStoreRequest
-	Status entity.StoreStatusEnum `json:"status" binding:"required,oneof=open close"`
+	Name        *string                   `json:"name" binding:"omitempty"`
+	Description *string                   `json:"description"`
+	Address     *string                   `json:"address" binding:"omitempty"`
+	BannerUrl   *string                   `json:"banner_url" binding:"omitempty,url"`
+	OpenHour    *time.Time                `json:"open_hour" binding:"omitempty"`
+	CloseHour   *time.Time                `json:"close_hour" binding:"omitempty"`
+	Lat         *float64                  `json:"lat" binding:"omitempty"`
+	Long        *float64                  `json:"long" binding:"omitempty"`
+	PhoneNumber *string                   `json:"phone_number" binding:"omitempty,min=9,max=15"`
+	StoreType   *entity.StoreTypeEnum     `json:"store_type" binding:"omitempty,oneof=lite premium"`
+	Timezone    *entity.StoreTimezoneEnum `json:"timezone" binding:"omitempty,oneof=Asia/Jakarta Asia/Makassar Asia/Jayapura"`
+	Status      *entity.StoreStatusEnum   `json:"status" binding:"omitempty,oneof=open close"`
 }
 
 type StoreData struct {
 	Id           uuid.UUID              `json:"id"`
 	Name         string                 `json:"name"`
-	PhoneNumber  *string                 `json:"phone_number"`
-	Coordinate   *string                 `json:"coordinate"`
+	PhoneNumber  *string                `json:"phone_number"`
+	Coordinate   *string                `json:"coordinate"`
 	OpenHour     time.Time              `json:"open_hour"`
 	CloseHour    time.Time              `json:"close_hour"`
-	BannerUrl    *string                 `json:"banner_url"`
-	Address      *string                 `json:"address"`
-	Description  *string                 `json:"description"`
+	BannerUrl    *string                `json:"banner_url"`
+	Address      *string                `json:"address"`
+	Description  *string                `json:"description"`
 	StoreType    entity.StoreTypeEnum   `json:"store_type"`
 	TotalService int64                  `json:"total_service"`
 	TotalCapster int64                  `json:"total_capster"`

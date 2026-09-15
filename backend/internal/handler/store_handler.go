@@ -126,7 +126,7 @@ func (h *StoreHandler) GetStores(ctx *gin.Context) {
 		return
 	}
 
-	if claimsResult.Role != entity.RoleAdmin &&	 claimsResult.Role != entity.RoleCustomer {
+	if claimsResult.Role != entity.RoleAdmin && claimsResult.Role != entity.RoleCustomer {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    "Anda tidak memiliki akses!",
 			StatusCode: http.StatusUnauthorized,
@@ -228,7 +228,7 @@ func (h *StoreHandler) GetStore(ctx *gin.Context) {
 // @Success      200 {object} dto.SwaggerResponse "Berhasil mengubah toko cabang!"
 // @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
 // @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
-// @Router       /store/{id} [put]
+// @Router       /store/{id} [patch]
 func (h *StoreHandler) UpdateStore(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -266,12 +266,13 @@ func (h *StoreHandler) UpdateStore(ctx *gin.Context) {
 		return
 	}
 
-	if !helper.ValidatePhoneNumber(dataBody.PhoneNumber) {
+	if dataBody.PhoneNumber != nil && !helper.ValidatePhoneNumber(*dataBody.PhoneNumber) {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    "No telepon tidak valid, gunakan format +62xxxx atau 08xxxx",
 			StatusCode: http.StatusBadRequest,
 		})
 		return
+
 	}
 
 	idStore := ctx.Param("id")

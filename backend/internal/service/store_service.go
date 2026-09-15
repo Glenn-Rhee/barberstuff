@@ -286,37 +286,68 @@ func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) e
 		return errors.New("Id toko tidak valid")
 	}
 
-	dataStore, err := s.storeRepo.FindOne("id = ?", id)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("Toko cabang yang anda ingin ubah tidak ditemukan atau telah dihapus")
-		}
+	if helper.IsAllFieldsNil(req) {
+		return errors.New("Minimal update salah satu data!")
+	}
 
+	updates := make(map[string]interface{})
+	if req.Name != nil {
+		updates["name"] = req.Name
+	}
+
+	if req.Description != nil {
+		updates["description"] = req.Description
+	}
+
+	if req.Address != nil {
+		updates["address"] = req.Address
+	}
+
+	if req.BannerUrl != nil {
+		updates["banner_url"] = req.BannerUrl
+	}
+
+	if req.OpenHour != nil {
+		updates["open_hour"] = req.OpenHour
+	}
+
+	if req.CloseHour != nil {
+		updates["close_hour"] = req.CloseHour
+	}
+
+	if (req.Lat == nil && req.Long != nil) || (req.Lat != nil && req.Long == nil) {
+		return errors.New("Update koordinat wajib mengirim lat dan long")
+	}
+
+	if req.Lat != nil && req.Long != nil {
+		coordinate := fmt.Sprintf("%f,%f", *req.Lat, *req.Long)
+		updates["coordinate"] = coordinate
+	}
+
+	if req.PhoneNumber != nil {
+		updates["phone_number"] = req.PhoneNumber
+	}
+
+	if req.StoreType != nil {
+		updates["store_type"] = req.StoreType
+	}
+
+	if req.Timezone != nil {
+		updates["timezone"] = req.Timezone
+	}
+
+	if req.Status != nil {
+		updates["status"] = req.Status
+	}
+
+	rowsAffected, err := s.storeRepo.Updates(updates, id)
+	if err != nil {
 		helper.Logger("Find data store", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
-	coordinate := fmt.Sprintf("%f,%f", req.Lat, req.Long)
-
-	store := entity.Store{
-		ID:          id,
-		Name:        req.Name,
-		PhoneNumber: &req.PhoneNumber,
-		Coordinate:  &coordinate,
-		OpenHour:    req.OpenHour,
-		CloseHour:   req.CloseHour,
-		BannerUrl:   &req.BannerUrl,
-		Address:     &req.Address,
-		Description: req.Description,
-		Status:      req.Status,
-		CreatedAt:   dataStore.CreatedAt,
-		DeletedAt:   dataStore.DeletedAt,
-	}
-
-	err = s.storeRepo.Update(&store)
-	if err != nil {
-		helper.Logger("Find data store", filePath, err)
-		return errors.New(BASE_MESSAGE)
+	if rowsAffected == 0 {
+		return errors.New("Data toko tidak ditemukan atau telah dihapus.")
 	}
 
 	return nil

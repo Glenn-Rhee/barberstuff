@@ -2,6 +2,7 @@ package helper
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
 	"time"
 
@@ -60,4 +61,14 @@ func ValidateMinAge(dateOfBirth time.Time) bool {
 	minBirthDate := time.Now().AddDate(0, -6, 0)
 
 	return !dateOfBirth.After(minBirthDate)
+}
+
+func IsAllFieldsNil(v interface{}) bool {
+	val := reflect.ValueOf(v)
+	for i := 0; i < val.NumField(); i++ {
+		if !val.Field(i).IsNil() {
+			return false
+		}
+	}
+	return true
 }
