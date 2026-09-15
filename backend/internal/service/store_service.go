@@ -172,7 +172,7 @@ func (s *storeService) GetStores(query dto.QueryParamsStores, claims *lib.Custom
 			totalRating += int(v.Score)
 			reviews = append(reviews, dto.Review{
 				Id:      v.ID,
-				Message: *v.Message,
+				Message: v.Message,
 				Rating:  v.Score,
 				User: dto.CustomerResponseRating{
 					Id:          v.Customer.ID,
@@ -238,7 +238,7 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 			totalRatings += v.Score
 			reviews = append(reviews, dto.Review{
 				Id:      v.ID,
-				Message: *v.Message,
+				Message: v.Message,
 				Rating:  v.Score,
 				User: dto.CustomerResponseRating{
 					Id:          v.Customer.ID,

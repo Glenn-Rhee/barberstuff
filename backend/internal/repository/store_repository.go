@@ -56,7 +56,7 @@ func (r *storeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.S
         `).
 		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Select("id", "id_store", "score", "message", "created_at", "type").
+				Select("id", "id_store", "score", "message", "created_at", "type", "id_user").
 				Where("id_store IS NOT NULL").
 				Where("type = ?", entity.RatingTypeStore).
 				Preload("Customer", func(db *gorm.DB) *gorm.DB {
