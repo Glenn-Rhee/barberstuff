@@ -25,11 +25,12 @@ FROM (VALUES
   ('Nopri Capster', 'Barberstuff Pangkalpinang', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8Rgg6HsbBVXYvBmMLx0no87ikFy6W1aSeDRHrC'),
   ('Arief Capster', 'Barberstuff Pangkalpinang', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8R402Z6AWiN5t1ZMCpsHu4LmzXFhrfyUIJWg0B'),
   ('Rahul Capster', 'Barberstuff Pangkalpinang', NULL),
-  ('Rihad Capster', 'Barberstuff Pondok Gede', NULL),
-  ('Deni Capster', 'Barberstuff Pondok Gede', NULL),
-  ('Abdul Capster', 'Barberstuff Martapura', NULL),
-  ('Madun Capster', 'Barberstuff Karawang', NULL),
-  ('Semman Capster', 'Barberstuff Martapura', NULL)
+  ('Rihad Capster', 'Barberstuff Pondok Gede', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RO8H8lc2pW5EgrYi3n1Bm6hl2zPbFSTDqAOav'),
+  ('Deni Capster', 'Barberstuff Pondok Gede', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RYJwQS1hHTwSLQW6jP5mXK0JEDZMoeshfGzgF'),
+  ('Abdul Capster', 'Barberstuff Martapura', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RqXtksy5VT1e24gRvrpUskJM8OtmzjHw7ba3u'),
+  ('Madun Capster', 'Barberstuff Karawang', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RZxVgggDlXneWLtVipJ8Ds4kq7SvmcugM93oj'),
+  ('Hafid Capster', 'Barberstuff Karawang', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RLXrsKLhCkbhU5SeZHDxfNI489odPvtpF7zA0')
+  ('Semman Capster', 'Barberstuff Martapura', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RFOSZQU0ZfeYsFJGdkB63VwXRNmbtpPEvu1Ka')
 ) AS v(name, store_name, image_url)
 JOIN store s
     ON LOWER(TRIM(s.name)) = LOWER(TRIM(v.store_name))
