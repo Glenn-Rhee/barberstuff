@@ -20,7 +20,7 @@ type Customer struct {
 	DateOfBirth    *time.Time     `gorm:"column:date_of_birth"`
 	Gender         Gender         `gorm:"column:gender"`
 	MemberPoints   int            `gorm:"column:member_points;not null;default:100"`
-	IdPremiumType  uuid.UUID      `gorm:"column:id_premium_type;not null"`
+	IdPremiumType  *uuid.UUID      `gorm:"column:id_premium_type"`
 	ImageCustomer  string         `gorm:"column:image_customer"`
 	CreatedAt      time.Time      `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt      time.Time      `gorm:"column:updated_at;not null;autoUpdateTime"`

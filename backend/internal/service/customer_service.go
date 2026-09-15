@@ -112,7 +112,7 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		PhoneNumber:   &dataNewCustomer.PhoneNumber,
 		DateOfBirth:   &dataNewCustomer.DateOfBirth,
 		Gender:        dataNewCustomer.Gender,
-		IdPremiumType: dataPremium.ID,
+		IdPremiumType: &dataPremium.ID,
 		ImageCustomer: dataNewCustomer.ImageUrl,
 	}
 
@@ -254,7 +254,7 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		PhoneNumber:   &dataNewCustomer.PhoneNumber,
 		DateOfBirth:   &dataNewCustomer.DateOfBirth,
 		Gender:        dataNewCustomer.Gender,
-		IdPremiumType: dataPremium.ID,
+		IdPremiumType: &dataPremium.ID,
 		MemberPoints:  100,
 		ImageCustomer: dataNewCustomer.ImageUrl,
 	}
@@ -673,14 +673,16 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 		serviceCount := make(map[uuid.UUID]int)
 		serviceNameMap := make(map[uuid.UUID]string)
 
-		for i, b := range c.Bookings {
+		firstCompletedFound := false
+		for _, b := range c.Bookings {
 			if b.StatusBooking != entity.BookingStatusCompleted {
 				continue
 			}
 
 			totalVisited++
-			if i == 0 {
+			if !firstCompletedFound {
 				lastVisitedAt = &b.ScheduledAt
+				firstCompletedFound = true
 			}
 
 			capsterCount[b.IDCapster]++
