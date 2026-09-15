@@ -144,6 +144,21 @@ func (h *CapsterHandler) GetCapsters(ctx *gin.Context) {
 	})
 }
 
+// UpdateCapster godoc
+// @Summary      Update data capster
+// @Description  Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim.
+// @Tags         Capster
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        id path string true "ID capster" format(uuid)
+// @Param        body body dto.UpdateCapsterRequest true "Data capster yang ingin diupdate"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil mengupdate capster"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid atau gagal mengupdate capster"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /capster/{id} [patch]
 func (h *CapsterHandler) UpdateCapster(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -197,6 +212,19 @@ func (h *CapsterHandler) UpdateCapster(ctx *gin.Context) {
 	})
 }
 
+// DeleteCapster godoc
+// @Summary      Hapus capster
+// @Description  Menghapus data capster berdasarkan ID.
+// @Tags         Capster
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        id path string true "ID capster" format(uuid)
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menghapus capster"
+// @Failure      400 {object} dto.SwaggerResponse "Gagal menghapus capster"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /capster/{id} [delete]
 func (h *CapsterHandler) DeleteCapster(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

@@ -341,6 +341,25 @@ func (h *BookingHandler) GetDataBookingCustomer(ctx *gin.Context) {
 	})
 }
 
+// GetDataBookings godoc
+// @Summary      Daftar booking
+// @Description  Mengambil daftar booking berdasarkan status booking, dapat difilter berdasarkan nama customer dan diurutkan berdasarkan jadwal booking atau nama customer. Data booking ini ditampilkan khusus untuk kasir
+// @Tags         Booking
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        q query string false "Pencarian berdasarkan nama customer, nama capster, atau nama service"
+// @Param        status_booking query string false "Status booking" Enums(booked, progress, completed, canceled)
+// @Param        sort_by query string false "Kolom untuk pengurutan" Enums(scheduled_at, name) default(scheduled_at)
+// @Param        page query int false "Page" minimum(1) default(1)
+// @Param        limit query int false "Limit" minimum(1) maximum(50) default(20)
+// @Param        order query string false "Urutan data" Enums(asc, desc) default(desc)
+//
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.GetBookingsResponse,meta=dto.ResponsePagination} "Succes get data bookings"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengambil data bookings"
+// @Router       /booking [get]
 func (h *BookingHandler) GetDataBookings(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

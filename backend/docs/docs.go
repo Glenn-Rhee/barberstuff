@@ -486,6 +486,124 @@ const docTemplate = `{
             }
         },
         "/booking": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil daftar booking berdasarkan status booking, dapat difilter berdasarkan nama customer dan diurutkan berdasarkan jadwal booking atau nama customer. Data booking ini ditampilkan khusus untuk kasir",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Daftar booking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pencarian berdasarkan nama customer, nama capster, atau nama service",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "booked",
+                            "progress",
+                            "completed",
+                            "canceled"
+                        ],
+                        "type": "string",
+                        "description": "Status booking",
+                        "name": "status_booking",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "scheduled_at",
+                            "name"
+                        ],
+                        "type": "string",
+                        "default": "scheduled_at",
+                        "description": "Kolom untuk pengurutan",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Urutan data",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Succes get data bookings",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.GetBookingsResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.ResponsePagination"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal mengambil data bookings",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -989,6 +1107,110 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/capster/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menghapus data capster berdasarkan ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Capster"
+                ],
+                "summary": "Hapus capster",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "ID capster",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menghapus capster",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Gagal menghapus capster",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Capster"
+                ],
+                "summary": "Update data capster",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "ID capster",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data capster yang ingin diupdate",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateCapsterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengupdate capster",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Data tidak valid atau gagal mengupdate capster",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
                         "schema": {
                             "$ref": "#/definitions/dto.SwaggerResponse"
                         }
@@ -1805,13 +2027,57 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
+            "delete": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Mengubah data toko cabang berdasarkan ID. Hanya dapat diakses oleh admin",
+                "description": "Menghapus data toko cabang berdasarkan ID. Hanya dapat diakses oleh admin",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Store"
+                ],
+                "summary": "Hapus toko cabang",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID toko",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menghapus toko cabang!",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Gagal menghapus data",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengubah data toko cabang berdasarkan ID. Hanya dapat diakses oleh admin dan Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1849,50 +2115,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Data tidak valid",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak memiliki akses",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Menghapus data toko cabang berdasarkan ID. Hanya dapat diakses oleh admin",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Store"
-                ],
-                "summary": "Hapus toko cabang",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID toko",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Berhasil menghapus toko cabang!",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Gagal menghapus data",
                         "schema": {
                             "$ref": "#/definitions/dto.SwaggerResponse"
                         }
@@ -1973,6 +2195,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CapsterBookings": {
+            "type": "object",
+            "properties": {
+                "avg_rating": {
+                    "type": "number"
+                },
+                "id": {
                     "type": "string"
                 },
                 "name": {
@@ -2202,6 +2438,29 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CustomerBookings": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "member_points": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "premium_type": {
+                    "type": "string"
+                },
+                "service_favorite": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CustomerResponseRating": {
             "type": "object",
             "properties": {
@@ -2216,6 +2475,38 @@ const docTemplate = `{
                 },
                 "premium_type": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.DataBooking": {
+            "type": "object",
+            "properties": {
+                "capster": {
+                    "$ref": "#/definitions/dto.CapsterBookings"
+                },
+                "discount_amount": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "scheduled_at": {
+                    "type": "string"
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.DataServiceBooking"
+                    }
+                },
+                "status_booking": {
+                    "$ref": "#/definitions/entity.BookingStatusEnum"
+                },
+                "sub_total": {
+                    "type": "number"
+                },
+                "total_price": {
+                    "type": "number"
                 }
             }
         },
@@ -2423,6 +2714,17 @@ const docTemplate = `{
                 },
                 "total_price": {
                     "type": "number"
+                }
+            }
+        },
+        "dto.GetBookingsResponse": {
+            "type": "object",
+            "properties": {
+                "booking": {
+                    "$ref": "#/definitions/dto.DataBooking"
+                },
+                "customer": {
+                    "$ref": "#/definitions/dto.CustomerBookings"
                 }
             }
         },
@@ -2956,21 +3258,30 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateCapsterRequest": {
+            "type": "object",
+            "properties": {
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "enum": [
+                        "active",
+                        "inactive"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.CapsterStatusEnum"
+                        }
+                    ]
+                }
+            }
+        },
         "dto.UpdateStoreRequest": {
             "type": "object",
-            "required": [
-                "address",
-                "banner_url",
-                "close_hour",
-                "lat",
-                "long",
-                "name",
-                "open_hour",
-                "phone_number",
-                "status",
-                "store_type",
-                "timezone"
-            ],
             "properties": {
                 "address": {
                     "type": "string"
@@ -3073,6 +3384,21 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "entity.BookingStatusEnum": {
+            "type": "string",
+            "enum": [
+                "booked",
+                "progress",
+                "completed",
+                "canceled"
+            ],
+            "x-enum-varnames": [
+                "BookingStatusBooked",
+                "BookingStatusProgress",
+                "BookingStatusCompleted",
+                "BookingStatusCanceled"
+            ]
         },
         "entity.CapsterStatusEnum": {
             "type": "string",

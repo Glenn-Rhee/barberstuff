@@ -218,7 +218,7 @@ func (h *StoreHandler) GetStore(ctx *gin.Context) {
 
 // UpdateStore godoc
 // @Summary      Ubah toko cabang
-// @Description  Mengubah data toko cabang berdasarkan ID. Hanya dapat diakses oleh admin
+// @Description  Mengubah data toko cabang berdasarkan ID. Hanya dapat diakses oleh admin dan Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim.
 // @Tags         Store
 // @Accept       json
 // @Produce      json

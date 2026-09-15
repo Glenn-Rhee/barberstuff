@@ -45,6 +45,15 @@ definitions:
       name:
         type: string
     type: object
+  dto.CapsterBookings:
+    properties:
+      avg_rating:
+        type: number
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   dto.CapsterDataResponse:
     properties:
       avg_rating:
@@ -194,6 +203,21 @@ definitions:
     - email
     - password
     type: object
+  dto.CustomerBookings:
+    properties:
+      id:
+        type: string
+      member_points:
+        type: integer
+      name:
+        type: string
+      phone_number:
+        type: string
+      premium_type:
+        type: string
+      service_favorite:
+        type: string
+    type: object
   dto.CustomerResponseRating:
     properties:
       id:
@@ -204,6 +228,27 @@ definitions:
         type: string
       premium_type:
         type: string
+    type: object
+  dto.DataBooking:
+    properties:
+      capster:
+        $ref: '#/definitions/dto.CapsterBookings'
+      discount_amount:
+        type: number
+      id:
+        type: string
+      scheduled_at:
+        type: string
+      services:
+        items:
+          $ref: '#/definitions/dto.DataServiceBooking'
+        type: array
+      status_booking:
+        $ref: '#/definitions/entity.BookingStatusEnum'
+      sub_total:
+        type: number
+      total_price:
+        type: number
     type: object
   dto.DataCapsterBooking:
     properties:
@@ -338,6 +383,13 @@ definitions:
         $ref: '#/definitions/dto.DataStoreBooking'
       total_price:
         type: number
+    type: object
+  dto.GetBookingsResponse:
+    properties:
+      booking:
+        $ref: '#/definitions/dto.DataBooking'
+      customer:
+        $ref: '#/definitions/dto.CustomerBookings'
     type: object
   dto.GetServiceResponse:
     properties:
@@ -697,6 +749,19 @@ definitions:
     - name
     - password
     type: object
+  dto.UpdateCapsterRequest:
+    properties:
+      image_url:
+        type: string
+      name:
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/entity.CapsterStatusEnum'
+        enum:
+        - active
+        - inactive
+    type: object
   dto.UpdateStoreRequest:
     properties:
       address:
@@ -738,18 +803,6 @@ definitions:
         - Asia/Jakarta
         - Asia/Makassar
         - Asia/Jayapura
-    required:
-    - address
-    - banner_url
-    - close_hour
-    - lat
-    - long
-    - name
-    - open_hour
-    - phone_number
-    - status
-    - store_type
-    - timezone
     type: object
   dto.UserAuth:
     properties:
@@ -775,6 +828,18 @@ definitions:
       reset_token:
         type: string
     type: object
+  entity.BookingStatusEnum:
+    enum:
+    - booked
+    - progress
+    - completed
+    - canceled
+    type: string
+    x-enum-varnames:
+    - BookingStatusBooked
+    - BookingStatusProgress
+    - BookingStatusCompleted
+    - BookingStatusCanceled
   entity.CapsterStatusEnum:
     enum:
     - active
@@ -1153,6 +1218,87 @@ paths:
       tags:
       - Customer
   /booking:
+    get:
+      description: Mengambil daftar booking berdasarkan status booking, dapat difilter
+        berdasarkan nama customer dan diurutkan berdasarkan jadwal booking atau nama
+        customer. Data booking ini ditampilkan khusus untuk kasir
+      parameters:
+      - description: Pencarian berdasarkan nama customer, nama capster, atau nama
+          service
+        in: query
+        name: q
+        type: string
+      - description: Status booking
+        enum:
+        - booked
+        - progress
+        - completed
+        - canceled
+        in: query
+        name: status_booking
+        type: string
+      - default: scheduled_at
+        description: Kolom untuk pengurutan
+        enum:
+        - scheduled_at
+        - name
+        in: query
+        name: sort_by
+        type: string
+      - default: 1
+        description: Page
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 20
+        description: Limit
+        in: query
+        maximum: 50
+        minimum: 1
+        name: limit
+        type: integer
+      - default: desc
+        description: Urutan data
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Succes get data bookings
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GetBookingsResponse'
+                  type: array
+                meta:
+                  $ref: '#/definitions/dto.ResponsePagination'
+              type: object
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengambil data bookings
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Daftar booking
+      tags:
+      - Booking
     post:
       consumes:
       - application/json
@@ -1481,6 +1627,74 @@ paths:
       security:
       - BearerAuth: []
       summary: Tambah capster baru
+      tags:
+      - Capster
+  /capster/{id}:
+    delete:
+      description: Menghapus data capster berdasarkan ID.
+      parameters:
+      - description: ID capster
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menghapus capster
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Gagal menghapus capster
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus capster
+      tags:
+      - Capster
+    patch:
+      consumes:
+      - application/json
+      description: Mengupdate data capster berdasarkan ID. Field yang ingin diubah
+        dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim.
+      parameters:
+      - description: ID capster
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data capster yang ingin diupdate
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCapsterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengupdate capster
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid atau gagal mengupdate capster
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Update data capster
       tags:
       - Capster
   /customer:
@@ -2025,11 +2239,12 @@ paths:
       summary: Detail toko cabang
       tags:
       - Store
-    put:
+    patch:
       consumes:
       - application/json
       description: Mengubah data toko cabang berdasarkan ID. Hanya dapat diakses oleh
-        admin
+        admin dan Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak
+        semua field wajib dikirim.
       parameters:
       - description: ID toko
         in: path
