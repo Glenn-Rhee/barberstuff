@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"barberstuff_backend/internal/entity"
 	"time"
 
 	"github.com/google/uuid"
@@ -111,7 +112,7 @@ type DataRatingBooking struct {
 	CapsterRating int     `json:"capster_rating"`
 	StaffRating   int     `json:"staff_rating"`
 	StoreRating   int     `json:"store_rating"`
-	Message       string  `json:"message"`
+	Message       *string  `json:"message"`
 }
 
 type GetBookingUserResponse struct {
@@ -123,4 +124,45 @@ type GetBookingUserResponse struct {
 	BookingDate time.Time            `json:"booking_date"`
 	TotalPrice  decimal.Decimal      `json:"total_price"`
 	Rating      *DataRatingBooking   `json:"rating"`
+}
+
+// Data booking yang diambil oleh kasir
+type GetBookingsRequest struct {
+	Query         *string                   `form:"q" binding:"omitempty"`
+	StatusBooking *entity.BookingStatusEnum `form:"status_booking" binding:"omitempty,oneof=booked progress completed canceled"`
+	SortBy        *SortBooking              `form:"sort_by" binding:"omitempty,oneof=scheduled_at name"`
+	RequestParamsPagination
+}
+
+// Data Booking yang diberikan ke kasir
+type GetBookingsResponse struct {
+	Customer CustomerBookings `json:"customer"`
+	Booking  DataBooking      `json:"booking"`
+}
+
+// Untuk kasir
+type CustomerBookings struct {
+	Id              uuid.UUID `json:"id"`
+	Name            string    `json:"name"`
+	PhoneNumber     *string   `json:"phone_number"`
+	PremiumType     string    `json:"premium_type"`
+	MemberPoints    int64     `json:"member_points"`
+	ServiceFavorite string    `json:"service_favorite"`
+}
+
+type DataBooking struct {
+	Id             uuid.UUID                `json:"id"`
+	ScheduledAt    time.Time                `json:"scheduled_at"`
+	Capster        CapsterBookings          `json:"capster"`
+	SubTotal       decimal.Decimal          `json:"sub_total"`
+	DiscountAmount decimal.Decimal          `json:"discount_amount"`
+	TotalPrice     decimal.Decimal          `json:"total_price"`
+	Status         entity.BookingStatusEnum `json:"status_booking"`
+	Services       []DataServiceBooking     `json:"services"`
+}
+
+// Untuk kasir
+type CapsterBookings struct {
+	AvgRating float32 `json:"avg_rating"`
+	DataCapsterBooking
 }

@@ -104,6 +104,7 @@ func main() {
 	{
 		booking.Use(h.AuthMiddleware)
 		booking.POST("/", h.BookingHandler.CreateBooking)
+		booking.GET("/", h.BookingHandler.GetDataBookings)
 		booking.GET("/store", h.BookingHandler.GetDataBookingStore)
 		booking.GET("/customer", h.BookingHandler.GetDataBookingCustomer)
 

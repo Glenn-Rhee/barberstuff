@@ -44,6 +44,7 @@ type Booking struct {
 	Capster        Capster           `gorm:"foreignKey:IDCapster"`
 	Staff          Staff             `gorm:"foreignKey:IDStaff"`
 	Ratings        []Rating          `gorm:"foreignKey:IDBooking"`
+	Customer       Customer          `gorm:"foreignKey:IDCustomer"`
 }
 
 func (Booking) TableName() string {
@@ -62,4 +63,11 @@ type BookingItem struct {
 
 func (BookingItem) TableName() string {
 	return "booking_item"
+}
+
+type FavoriteServiceResult struct {
+	IDUser      uuid.UUID `gorm:"column:id_user"`
+	IDService   uuid.UUID `gorm:"column:id_service"`
+	ServiceName string    `gorm:"column:service_name"`
+	TotalOrder  int       `gorm:"column:total_order"`
 }

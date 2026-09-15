@@ -13,6 +13,7 @@ type BookingRepository interface {
 	Create(tx *gorm.DB, b *entity.Booking) error
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	UpdateStatusMany(ids []uuid.UUID, status entity.BookingStatusEnum) error
+	FindFavoriteServiceByUserIDs(userIDs []uuid.UUID) ([]entity.FavoriteServiceResult, error)
 }
 
 type bookingRepository struct {
@@ -37,6 +38,9 @@ func (r *bookingRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 		Preload("Store").
 		Preload("Capster").
 		Preload("Staff").
+		Preload("Customer", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("PremiumType")
+		}).
 		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Store").
 				Preload("Capster").
@@ -65,4 +69,32 @@ func (r *bookingRepository) UpdateStatusMany(ids []uuid.UUID, status entity.Book
 	return r.db.Model(&entity.Booking{}).
 		Where("id IN ?", ids).
 		Update("status_booking", status).Error
+}
+
+func (r *bookingRepository) FindFavoriteServiceByUserIDs(userIDs []uuid.UUID) ([]entity.FavoriteServiceResult, error) {
+	var results []entity.FavoriteServiceResult
+
+	err := r.db.Raw(`
+		SELECT id_user, id_service, service_name, total_order
+        FROM (
+            SELECT
+                b.id_user,
+                s.id AS id_service,
+                s.name AS service_name,
+                COUNT(*) AS total_order,
+                ROW_NUMBER() OVER (
+                    PARTITION BY b.id_user
+                    ORDER BY COUNT(*) DESC, MAX(b.created_at) DESC
+                ) AS rn
+            FROM booking b
+            JOIN booking_item bi ON bi.id_booking = b.id
+            JOIN service s ON s.id = bi.id_service
+            WHERE b.id_user IN ?
+              AND b.status_booking = ?
+            GROUP BY b.id_user, s.id, s.name
+        ) ranked
+        WHERE rn = 1
+	`, userIDs, entity.BookingStatusCompleted).Scan(&results).Error
+
+	return results, err
 }

@@ -340,3 +340,56 @@ func (h *BookingHandler) GetDataBookingCustomer(ctx *gin.Context) {
 		Meta:       &paginationData,
 	})
 }
+
+func (h *BookingHandler) GetDataBookings(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleCashier {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	var reqParams dto.GetBookingsRequest
+	if err := ctx.ShouldBindQuery(&reqParams); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, paginationData, err := h.service.GetBookings(reqParams, claimsResult)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[[]dto.GetBookingsResponse]{
+		Data:       result,
+		Message:    "Succes get data bookings",
+		StatusCode: http.StatusOK,
+		Meta:       &paginationData,
+	})
+}

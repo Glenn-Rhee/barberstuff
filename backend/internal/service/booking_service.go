@@ -27,6 +27,7 @@ type BookingService interface {
 	DeleteLockBooking(ctx context.Context, claims *lib.CustomClaims, reqParams dto.DeleteLockBookingRequest) error
 	GetBookingUser(claims *lib.CustomClaims, reqParams dto.GetBookingUserRequest) ([]dto.GetBookingUserResponse, dto.ResponsePagination, error)
 	AutoCancelBookings(ctx context.Context) error
+	GetBookings(reqParams dto.GetBookingsRequest, claims *lib.CustomClaims) ([]dto.GetBookingsResponse, dto.ResponsePagination, error)
 }
 
 type bookingService struct {
@@ -945,7 +946,7 @@ func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Where("status_booking IN ?", status)
+		return d.Where("status_booking IN ?", status).Where("id_user = ?", claims.UserId)
 	})
 
 	totalData, err := s.bookingRepo.Count(scopes...)
@@ -999,7 +1000,7 @@ func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.
 				Id:   b.Staff.ID,
 				Name: b.Staff.Name,
 			},
-			BookingDate: b.ScheduledAt,
+			BookingDate: b.ScheduledAt.Local(),
 			TotalPrice:  b.TotalPrice,
 			Service:     dataServices,
 			Rating:      nil,
@@ -1012,22 +1013,25 @@ func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.
 			ratingStaff := 0
 			ratingStore := 0
 			countRating := 0
-			message := ""
+			var message *string
+
 			for _, r := range b.Ratings {
 				if r.Type == entity.RatingTypeCapster {
 					ratingCapster = int(r.Score)
-					countRating = 1
+					countRating++
 				}
 
 				if r.Type == entity.RatingTypeStaff {
 					ratingStaff = int(r.Score)
-					countRating = 2
+					countRating++
 				}
 
 				if r.Type == entity.RatingTypeStore {
 					ratingStore = int(r.Score)
-					countRating = 3
-					message = *r.Message
+					countRating++
+					if r.Message != nil {
+						message = r.Message
+					}
 				}
 
 				totalRating += int(r.Score)
@@ -1088,4 +1092,208 @@ func (s *bookingService) AutoCancelBookings(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *lib.CustomClaims) ([]dto.GetBookingsResponse, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data booking!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idCashier, err := uuid.Parse(claims.UserId)
+	if err != nil {
+		return []dto.GetBookingsResponse{}, dto.ResponsePagination{}, errors.New("Identitas anda tidak valid")
+	}
+
+	dataStaff, err := s.staffRepo.FindOne("id = ?", idCashier)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []dto.GetBookingsResponse{}, dto.ResponsePagination{}, errors.New("Toko tidak ditemukan atau telah dihapus!")
+		}
+
+		helper.Logger("find datat staff", filePath, err)
+		return []dto.GetBookingsResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	if dataStaff.IdStore == nil {
+		return []dto.GetBookingsResponse{}, dto.ResponsePagination{}, errors.New("Data tidak valid! Harap hubungi pusat.")
+	}
+
+	var status = []entity.BookingStatusEnum{
+		entity.BookingStatusBooked,
+		entity.BookingStatusCanceled,
+		entity.BookingStatusCompleted,
+		entity.BookingStatusProgress,
+	}
+
+	if reqParams.StatusBooking != nil {
+		switch *reqParams.StatusBooking {
+		case entity.BookingStatusBooked:
+			status = []entity.BookingStatusEnum{entity.BookingStatusBooked}
+		case entity.BookingStatusCanceled:
+			status = []entity.BookingStatusEnum{entity.BookingStatusCanceled}
+		case entity.BookingStatusCompleted:
+			status = []entity.BookingStatusEnum{entity.BookingStatusCompleted}
+		default:
+			status = []entity.BookingStatusEnum{entity.BookingStatusProgress}
+		}
+	}
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	if reqParams.Query != nil {
+		q := "%" + *reqParams.Query + "%"
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.
+				Joins("JOIN customer ON customer.id = booking.id_user").
+				Joins("LEFT JOIN capster ON capster.id = booking.id_capster").
+				Where(
+					d.Where("customer.name ILIKE ?", q).
+						Or("capster.name ILIKE ?", q).
+						Or(`EXISTS (
+					SELECT 1 FROM
+					booking_item bi
+					JOIN service s ON s.id = bi.id_service
+					WHERE bi.id_booking = booking.id
+					AND s.name ILIKE ?
+				)`, q),
+				)
+		})
+	}
+
+	var page = 1
+	var limit = 20
+	var sortBy = dto.SortByBookingDate
+	var orderBy = dto.OrderAsc
+
+	if reqParams.Page != nil {
+		page = *reqParams.Page
+	}
+
+	if reqParams.Limit != nil {
+		limit = *reqParams.Limit
+	}
+
+	if reqParams.SortBy != nil {
+		sortBy = *reqParams.SortBy
+	}
+
+	if reqParams.OrderBy != nil {
+		orderBy = *reqParams.OrderBy
+	}
+
+	now := time.Now()
+	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	endOfDay := startOfDay.Add(24 * time.Hour)
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.
+			Where("status_booking IN ?", status).
+			Where("scheduled_at >= ? AND scheduled_at < ?", startOfDay, endOfDay).
+			Where("booking_type = ?", entity.BookingScheduled).
+			Where("id_store = ?", dataStaff.IdStore)
+	})
+
+	totalData, err := s.bookingRepo.Count(scopes...)
+	if err != nil {
+		helper.Logger("counte total booking", filePath, err)
+		return []dto.GetBookingsResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{
+					Column: clause.Column{
+						Name: string(sortBy),
+					},
+					Desc: dto.SortBooking(orderBy) == "desc",
+				},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
+	bookings, err := s.bookingRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("count total booking", filePath, err)
+		return []dto.GetBookingsResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	userIDs := make([]uuid.UUID, 0, len(bookings))
+	seen := make(map[uuid.UUID]bool)
+	for _, b := range bookings {
+		if !seen[b.IDCustomer] {
+			seen[b.IDCustomer] = true
+			userIDs = append(userIDs, b.IDCustomer)
+		}
+	}
+
+	favoriteServices, err := s.bookingRepo.FindFavoriteServiceByUserIDs(userIDs)
+	if err != nil {
+		helper.Logger("find favorite services", filePath, err)
+		return []dto.GetBookingsResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	favoriteMap := make(map[uuid.UUID]string, len(favoriteServices))
+	for _, f := range favoriteServices {
+		favoriteMap[f.IDUser] = f.ServiceName
+	}
+
+	dataBookings := make([]dto.GetBookingsResponse, 0, len(bookings))
+
+	for _, b := range bookings {
+		premiumType := "reguler"
+		if b.Customer.PremiumType != nil {
+			premiumType = b.Customer.PremiumType.Name
+		}
+
+		totalRatingCapster := 0
+		var avgRating float32 = 5.0
+		for _, v := range b.Ratings {
+			if v.IDCapster != nil && v.Type == entity.RatingTypeCapster {
+				totalRatingCapster += int(v.Score)
+			}
+		}
+
+		if len(b.Ratings) > 0 {
+			avgRating = float32(totalRatingCapster) / float32(len(b.Ratings))
+		}
+
+		services := make([]dto.DataServiceBooking, 0, len(b.BookingItems))
+
+		for _, v := range b.BookingItems {
+			services = append(services, dto.DataServiceBooking{
+				Id:    v.Service.ID,
+				Name:  v.Service.Name,
+				Price: v.Service.Price,
+			})
+		}
+
+		dataBookings = append(dataBookings, dto.GetBookingsResponse{
+			Customer: dto.CustomerBookings{
+				Id:              b.IDCustomer,
+				Name:            b.Customer.Name,
+				PhoneNumber:     b.Customer.PhoneNumber,
+				PremiumType:     premiumType,
+				MemberPoints:    int64(b.Customer.MemberPoints),
+				ServiceFavorite: favoriteMap[b.IDCustomer],
+			},
+			Booking: dto.DataBooking{
+				Id:          b.ID,
+				ScheduledAt: b.ScheduledAt.Local(),
+				Capster: dto.CapsterBookings{
+					DataCapsterBooking: dto.DataCapsterBooking{
+						Id:   b.Capster.ID,
+						Name: b.Capster.Name,
+					},
+					AvgRating: avgRating,
+				},
+				SubTotal:       b.SubTotal,
+				DiscountAmount: b.DiscountAmount,
+				TotalPrice:     b.TotalPrice,
+				Status:         b.StatusBooking,
+				Services:       services,
+			},
+		})
+	}
+
+	return dataBookings, paginationData, nil
 }
