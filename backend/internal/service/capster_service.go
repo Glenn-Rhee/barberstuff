@@ -17,6 +17,7 @@ import (
 type CapsterService interface {
 	Create(req dto.CreateCapsterRequest) error
 	GetCapsters(query dto.QueryParamsCapsters, claims *lib.CustomClaims) ([]dto.CapsterDataResponse, dto.ResponsePagination, error)
+	UpdateCapster(req dto.UpdateCapsterRequest, id string) error
 }
 
 type capsterService struct {
@@ -190,4 +191,44 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.
 	}
 
 	return dataCapsters, paginationData, nil
+}
+
+func (s *capsterService) UpdateCapster(req dto.UpdateCapsterRequest, id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data capster!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idCapster, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Data capster tidak valid!")
+	}
+
+	if req.ImageUrl == nil && req.Name == nil && req.Status == nil {
+		return errors.New("Minimal update salah satu data!")
+	}
+
+	updates := make(map[string]interface{})
+
+	if req.ImageUrl != nil {
+		updates["image_url"] = req.ImageUrl
+	}
+
+	if req.Name != nil {
+		updates["name"] = req.Name
+	}
+
+	if req.Status != nil {
+		updates["status"] = req.Status
+	}
+
+	rowsAffected, err := s.capsterRepo.Updates(updates, idCapster)
+	if err != nil {
+		helper.Logger("updates capster", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Data capster tidak ditemukan atau telah dihapus!")
+	}
+
+	return nil
 }

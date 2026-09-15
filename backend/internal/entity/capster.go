@@ -21,6 +21,7 @@ type Capster struct {
 	IDStore   uuid.UUID         `gorm:"column:id_store;not null"`
 	CreatedAt time.Time         `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt time.Time         `gorm:"column:updated_at;not null;autoUpdateTime"`
+	DeletedAt *time.Time        `gorm:"column:deleted_at"`
 	Ratings   []Rating          `gorm:"foreignKey:IDCapster;references:ID"`
 }
 

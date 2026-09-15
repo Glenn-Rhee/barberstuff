@@ -79,7 +79,7 @@ func (h *CapsterHandler) Create(ctx *gin.Context) {
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
 		Data:       nil,
 		Message:    "Berhasil membuat capster baru!",
-		StatusCode: http.StatusOK,
+		StatusCode: http.StatusCreated,
 	})
 }
 
@@ -141,5 +141,58 @@ func (h *CapsterHandler) GetCapsters(ctx *gin.Context) {
 		Message:    "Succes get data capsters!",
 		StatusCode: http.StatusOK,
 		Meta:       &paginationData,
+	})
+}
+
+func (h *CapsterHandler) UpdateCapster(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleAdmin {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	var dataBody dto.UpdateCapsterRequest
+	if err := ctx.ShouldBindJSON(&dataBody); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	idCapster := ctx.Param("id")
+	err := h.service.UpdateCapster(dataBody, idCapster)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+		Data:       nil,
+		Message:    "Berhasil mengupdate capster!",
+		StatusCode: http.StatusOK,
 	})
 }

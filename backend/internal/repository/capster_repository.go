@@ -3,6 +3,7 @@ package repository
 import (
 	"barberstuff_backend/internal/entity"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +12,7 @@ type CapsterRepository interface {
 	FindOne(query interface{}, args ...interface{}) (entity.Capster, error)
 	Create(c *entity.Capster) error
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
+	Updates(value interface{}, id uuid.UUID) (int64, error)
 }
 
 type capsterRepository struct {
@@ -29,6 +31,7 @@ func (r *capsterRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 				Where("id_capster IS NOT NULL").
 				Where("type = ?", entity.RatingTypeCapster)
 		}).
+		Where("deleted_at IS NULL").
 		Scopes(scopes...).
 		Find(&dataCapster)
 	return dataCapster, result.Error
@@ -53,4 +56,13 @@ func (r *capsterRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, err
 	var total int64
 	result := r.db.Model(&entity.Capster{}).Count(&total).Scopes(scopes...)
 	return total, result.Error
+}
+
+func (r *capsterRepository) Updates(value interface{}, id uuid.UUID) (int64, error) {
+	result := r.db.
+		Model(&entity.Capster{}).
+		Where("id = ?", id).
+		Updates(value)
+
+	return result.RowsAffected, result.Error
 }

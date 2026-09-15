@@ -92,6 +92,7 @@ func main() {
 		capster.Use(h.AuthMiddleware)
 		capster.POST("/", h.CapsterHandler.Create)
 		capster.GET("/", h.CapsterHandler.GetCapsters)
+		capster.PATCH("/:id", h.CapsterHandler.UpdateCapster)
 	}
 
 	service := r.Group("/service")
