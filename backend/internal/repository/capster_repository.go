@@ -2,6 +2,7 @@ package repository
 
 import (
 	"barberstuff_backend/internal/entity"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -13,6 +14,7 @@ type CapsterRepository interface {
 	Create(c *entity.Capster) error
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	Updates(value interface{}, id uuid.UUID) (int64, error)
+	SoftDelete(id uuid.UUID) (int64, error)
 }
 
 type capsterRepository struct {
@@ -64,5 +66,13 @@ func (r *capsterRepository) Updates(value interface{}, id uuid.UUID) (int64, err
 		Where("id = ?", id).
 		Updates(value)
 
+	return result.RowsAffected, result.Error
+}
+
+func (r *capsterRepository) SoftDelete(id uuid.UUID) (int64, error) {
+	result := r.db.
+		Model(&entity.Capster{}).
+		Where("id = ?", id).
+		Update("deleted_at",time.Now())
 	return result.RowsAffected, result.Error
 }

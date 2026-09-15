@@ -93,6 +93,7 @@ func main() {
 		capster.POST("/", h.CapsterHandler.Create)
 		capster.GET("/", h.CapsterHandler.GetCapsters)
 		capster.PATCH("/:id", h.CapsterHandler.UpdateCapster)
+		capster.DELETE("/:id", h.CapsterHandler.DeleteCapster)
 	}
 
 	service := r.Group("/service")
@@ -108,7 +109,6 @@ func main() {
 		booking.GET("/", h.BookingHandler.GetDataBookings)
 		booking.GET("/store", h.BookingHandler.GetDataBookingStore)
 		booking.GET("/customer", h.BookingHandler.GetDataBookingCustomer)
-
 		booking.POST("/lock", h.BookingHandler.LockBooking)
 		booking.DELETE("/lock", h.BookingHandler.DeleteLockBooking)
 	}

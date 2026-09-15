@@ -18,6 +18,7 @@ type CapsterService interface {
 	Create(req dto.CreateCapsterRequest) error
 	GetCapsters(query dto.QueryParamsCapsters, claims *lib.CustomClaims) ([]dto.CapsterDataResponse, dto.ResponsePagination, error)
 	UpdateCapster(req dto.UpdateCapsterRequest, id string) error
+	DeleteCapster(id string) error
 }
 
 type capsterService struct {
@@ -131,7 +132,7 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Where("deleted_at IS NULL").Where("id_store = ?", idStore)
+		return d.Where("id_store = ?", idStore)
 	})
 
 	totalData, err := s.capsterRepo.Count(scopes...)
@@ -194,7 +195,7 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.
 }
 
 func (s *capsterService) UpdateCapster(req dto.UpdateCapsterRequest, id string) error {
-	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data capster!"
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data capster!"
 	_, filePath, _, _ := runtime.Caller(0)
 
 	idCapster, err := uuid.Parse(id)
@@ -228,6 +229,28 @@ func (s *capsterService) UpdateCapster(req dto.UpdateCapsterRequest, id string) 
 
 	if rowsAffected == 0 {
 		return errors.New("Data capster tidak ditemukan atau telah dihapus!")
+	}
+
+	return nil
+}
+
+func (s *capsterService) DeleteCapster(id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat menghapus data capster!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idCapster, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Data capster tidak valid!")
+	}
+
+	rowsAffected, err := s.capsterRepo.SoftDelete(idCapster)
+	if err != nil {
+		helper.Logger("soft delete capster", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Data capster tidak ditemukan atau telah dihapus.")
 	}
 
 	return nil
