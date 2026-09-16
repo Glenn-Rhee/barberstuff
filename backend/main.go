@@ -100,6 +100,7 @@ func main() {
 	{
 		service.Use(h.AuthMiddleware)
 		service.GET("/", h.Servicehandler.GetServices)
+		service.POST("/", h.Servicehandler.CreateService)
 	}
 
 	booking := r.Group("/booking")

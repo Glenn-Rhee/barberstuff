@@ -2,6 +2,7 @@ package handler
 
 import (
 	"barberstuff_backend/internal/dto"
+	"barberstuff_backend/internal/entity"
 	"barberstuff_backend/internal/helper"
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/service"
@@ -78,5 +79,57 @@ func (h *ServiceHandler) GetServices(ctx *gin.Context) {
 		Message:    "Succes get data stores!",
 		StatusCode: http.StatusOK,
 		Meta:       &paginationData,
+	})
+}
+
+func (h *ServiceHandler) CreateService(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleAdmin {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	var dataBody dto.CreateServiceRequest
+	if err := ctx.ShouldBindJSON(&dataBody); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	err := h.service.CreateService(dataBody)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+		Message:    "Succes create new service",
+		StatusCode: http.StatusCreated,
 	})
 }

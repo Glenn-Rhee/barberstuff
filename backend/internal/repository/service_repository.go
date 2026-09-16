@@ -10,6 +10,7 @@ type ServiceRepository interface {
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Service, error)
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	FindOne(query interface{}, args ...interface{}) (entity.Service, error)
+	Create(s *entity.Service) error
 }
 
 type serviceRepository struct {
@@ -39,4 +40,9 @@ func (r *serviceRepository) FindOne(query interface{}, args ...interface{}) (ent
 		First(&data)
 
 	return data, result.Error
+}
+
+func (r *serviceRepository) Create(s *entity.Service) error {
+	result := r.db.Model(&s).Create(s)
+	return result.Error
 }

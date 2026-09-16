@@ -10,12 +10,14 @@ import (
 	"runtime"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 type ServiceService interface {
 	GetServices(query dto.QueryParamsService, claims *lib.CustomClaims) ([]dto.GetServiceResponse, dto.ResponsePagination, error)
+	CreateService(req dto.CreateServiceRequest) error
 }
 
 type serviceService struct {
@@ -128,4 +130,52 @@ func (s *serviceService) GetServices(query dto.QueryParamsService, claims *lib.C
 	}
 
 	return dataServices, paginationData, nil
+}
+
+func (s *serviceService) CreateService(req dto.CreateServiceRequest) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idStore, err := uuid.Parse(req.IdStore)
+	if err != nil {
+		return errors.New("Data toko tidak valid!")
+	}
+
+	_, err = s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Toko tidak ditemukan atau telah dihapus!")
+		}
+
+		helper.Logger("find one service", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	_, err = s.serviceRepo.FindOne("name = ? AND type = ?", req.Name, req.Type)
+	if err == nil {
+		return errors.New("Service atau paket ini sudah tersedia")
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		helper.Logger("find one service", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	newProduct := entity.Service{
+		ID:          uuid.New(),
+		Name:        req.Name,
+		Price:       decimal.NewFromFloat(req.Price),
+		Description: req.Description,
+		Status:      entity.ProductStatusActive,
+		IdStore:     idStore,
+		Type:        req.Type,
+	}
+
+	err = s.serviceRepo.Create(&newProduct)
+	if err != nil {
+		helper.Logger("create data service", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
 }

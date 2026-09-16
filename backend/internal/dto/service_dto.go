@@ -34,3 +34,11 @@ type QueryParamsService struct {
 	SortBy      *SortService           `form:"sort_by" binding:"omitempty,oneof=name price created_at"`
 	RequestParamsPagination
 }
+
+type CreateServiceRequest struct {
+	Name        string                 `json:"name" binding:"required"`
+	Price       float64                `json:"price" binding:"required,min=1000"`
+	Description *string                `json:"description" binding:"omitempty"`
+	IdStore     string                 `json:"id_store" binding:"required"`
+	Type        entity.ProductTypeEnum `json:"type" binding:"required,oneof=service package"`
+}
