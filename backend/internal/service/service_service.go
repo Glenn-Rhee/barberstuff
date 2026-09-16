@@ -19,6 +19,7 @@ type ServiceService interface {
 	GetServices(query dto.QueryParamsService, claims *lib.CustomClaims) ([]dto.GetServiceResponse, dto.ResponsePagination, error)
 	CreateService(req dto.CreateServiceRequest) error
 	UpdateService(req dto.UpdateServiceRequest, id string) error
+	DeleteService(id string) error
 }
 
 type serviceService struct {
@@ -219,6 +220,28 @@ func (s *serviceService) UpdateService(req dto.UpdateServiceRequest, id string) 
 
 	if rowsAffected == 0 {
 		return errors.New("Data service tidak ditemukan atau telah dihapus!")
+	}
+
+	return nil
+}
+
+func (s *serviceService) DeleteService(id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengubah data!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idService, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id service tidak valid!")
+	}
+
+	rowsAffected, err := s.serviceRepo.SoftDelete(idService)
+	if err != nil {
+		helper.Logger("Soft delete service", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Data service tidak dapata ditemukan atau telah dihapu.")
 	}
 
 	return nil

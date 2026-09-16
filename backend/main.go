@@ -102,6 +102,7 @@ func main() {
 		service.GET("/", h.Servicehandler.GetServices)
 		service.POST("/", h.Servicehandler.CreateService)
 		service.PATCH("/:id", h.Servicehandler.UpdateService)
+		service.DELETE("/:id", h.Servicehandler.DeleteService)
 	}
 
 	booking := r.Group("/booking")

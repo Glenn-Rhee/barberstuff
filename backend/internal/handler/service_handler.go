@@ -187,3 +187,48 @@ func (h *ServiceHandler) UpdateService(ctx *gin.Context) {
 		StatusCode: http.StatusCreated,
 	})
 }
+
+func (h *ServiceHandler) DeleteService(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleAdmin {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	id := ctx.Param("id")
+
+	err := h.service.DeleteService(id)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+		Message:    "Succes update data service",
+		StatusCode: http.StatusCreated,
+	})
+}

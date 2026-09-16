@@ -41,6 +41,7 @@ func (r *serviceRepository) FindOne(query interface{}, args ...interface{}) (ent
 	var data entity.Service
 	result := r.db.
 		Where(query, args...).
+		Where("deleted_at IS NULL").
 		First(&data)
 
 	return data, result.Error
@@ -53,7 +54,7 @@ func (r *serviceRepository) Create(s *entity.Service) error {
 
 func (r *serviceRepository) Updates(v interface{}, id uuid.UUID) (int64, error) {
 	result := r.db.
-		Model(&entity.Service{}). 
+		Model(&entity.Service{}).
 		Where("id = ?", id).
 		Where("deleted_at IS NULL").
 		Updates(v)
