@@ -82,6 +82,18 @@ func (h *ServiceHandler) GetServices(ctx *gin.Context) {
 	})
 }
 
+// Create godoc
+// @Summary      Tambah service/package baru
+// @Description  Membuat data service/package pada suato toko tertentu. Hanya dapat diakses oleh admin
+// @Tags         Service
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.CreateServiceRequest true "Data service baru"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membuat service baru!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /service [post]
 func (h *ServiceHandler) CreateService(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -134,6 +146,21 @@ func (h *ServiceHandler) CreateService(ctx *gin.Context) {
 	})
 }
 
+// UpdateService godoc
+// @Summary      Update data service/package
+// @Description  Mengupdate data service/package berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim.
+// @Tags         Service
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        id path string true "ID service/package" format(uuid)
+// @Param        body body dto.UpdateServiceRequest true "Data service/package yang ingin diupdate"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil mengupdate service/package"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid atau gagal mengupdate service/package"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /service/{id} [patch]
 func (h *ServiceHandler) UpdateService(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -188,6 +215,19 @@ func (h *ServiceHandler) UpdateService(ctx *gin.Context) {
 	})
 }
 
+// DeleteService godoc
+// @Summary      Hapus service/package
+// @Description  Menghapus data service/package berdasarkan ID.
+// @Tags         Service
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        id path string true "ID service" format(uuid)
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menghapus service"
+// @Failure      400 {object} dto.SwaggerResponse "Gagal menghapus service"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /service/{id} [delete]
 func (h *ServiceHandler) DeleteService(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

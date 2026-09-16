@@ -154,6 +154,29 @@ definitions:
     - id_booking
     - rating
     type: object
+  dto.CreateServiceRequest:
+    properties:
+      description:
+        type: string
+      id_store:
+        type: string
+      name:
+        type: string
+      price:
+        minimum: 1000
+        type: number
+      type:
+        allOf:
+        - $ref: '#/definitions/entity.ProductTypeEnum'
+        enum:
+        - service
+        - package
+    required:
+    - id_store
+    - name
+    - price
+    - type
+    type: object
   dto.CredentialCustomerRequest:
     properties:
       date_of_birth:
@@ -758,6 +781,22 @@ definitions:
       status:
         allOf:
         - $ref: '#/definitions/entity.CapsterStatusEnum'
+        enum:
+        - active
+        - inactive
+    type: object
+  dto.UpdateServiceRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        minimum: 1000
+        type: number
+      status:
+        allOf:
+        - $ref: '#/definitions/entity.ProductStatusEnum'
         enum:
         - active
         - inactive
@@ -1932,6 +1971,106 @@ paths:
       security:
       - BearerAuth: []
       summary: Mengambil semua data service
+      tags:
+      - Service
+    post:
+      consumes:
+      - application/json
+      description: Membuat data service/package pada suato toko tertentu. Hanya dapat
+        diakses oleh admin
+      parameters:
+      - description: Data service baru
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat service baru!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah service/package baru
+      tags:
+      - Service
+  /service/{id}:
+    delete:
+      description: Menghapus data service/package berdasarkan ID.
+      parameters:
+      - description: ID service
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menghapus service
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Gagal menghapus service
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus service/package
+      tags:
+      - Service
+    patch:
+      consumes:
+      - application/json
+      description: Mengupdate data service/package berdasarkan ID. Field yang ingin
+        diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim.
+      parameters:
+      - description: ID service/package
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data service/package yang ingin diupdate
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengupdate service/package
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid atau gagal mengupdate service/package
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Update data service/package
       tags:
       - Service
   /staff:
