@@ -137,8 +137,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   ? NotificationEmptyState(message: l10n.notificationEmpty)
                   : _NotificationList(
                       items: visible,
-                      labelOf: (DateTime day) =>
-                          _groupLabel(day, l10n, locale),
+                      labelOf: (DateTime day) => _groupLabel(day, l10n, locale),
                       onTap: p.markRead,
                     ),
             ),
@@ -193,10 +192,7 @@ class _NotificationList extends StatelessWidget {
           ),
           child: Column(
             children: <Widget>[
-              NotificationTile(
-                notification: item,
-                onTap: () => onTap(item.id),
-              ),
+              NotificationTile(notification: item, onTap: () => onTap(item.id)),
               Divider(
                 height: 1,
                 thickness: 1,
@@ -208,9 +204,6 @@ class _NotificationList extends StatelessWidget {
       );
     }
 
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 24),
-      children: rows,
-    );
+    return ListView(padding: const EdgeInsets.only(bottom: 24), children: rows);
   }
 }

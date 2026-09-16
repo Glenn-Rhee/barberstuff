@@ -80,13 +80,7 @@ class _StoreCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            Image.asset(
-              store.imageAsset,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.medium,
-              errorBuilder: (BuildContext _, Object _, StackTrace? _) =>
-                  const ColoredBox(color: AppColor.border),
-            ),
+            _StoreImage(store: store),
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -159,7 +153,10 @@ class _StoreCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    _BookingPill(label: l10n.homeActionBooking, onTap: onBooking),
+                    _BookingPill(
+                      label: l10n.homeActionBooking,
+                      onTap: onBooking,
+                    ),
                   ],
                 ),
               ),
@@ -167,6 +164,35 @@ class _StoreCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Banner dari server kalau ada, kalau gagal jatuh ke aset bawaan.
+class _StoreImage extends StatelessWidget {
+  const _StoreImage({required this.store});
+
+  final NearbyStore store;
+
+  @override
+  Widget build(BuildContext context) {
+    final String? url = store.imageUrl;
+
+    final Widget fallback = Image.asset(
+      store.imageAsset,
+      fit: BoxFit.cover,
+      filterQuality: FilterQuality.medium,
+      errorBuilder: (BuildContext _, Object _, StackTrace? _) =>
+          const ColoredBox(color: AppColor.border),
+    );
+
+    if (url == null) return fallback;
+
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      filterQuality: FilterQuality.medium,
+      errorBuilder: (BuildContext _, Object _, StackTrace? _) => fallback,
     );
   }
 }

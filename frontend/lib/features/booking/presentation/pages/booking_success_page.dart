@@ -3,14 +3,14 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
+import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 
 class BookingSuccessPage extends StatelessWidget {
-  const BookingSuccessPage({super.key, required this.result});
+  const BookingSuccessPage({super.key, required this.record});
 
-  final BookingResult result;
+  final BookingRecord record;
 
   @override
   Widget build(BuildContext context) {
@@ -63,17 +63,18 @@ class BookingSuccessPage extends StatelessWidget {
                   const SizedBox(height: 28),
                   BoxButton(
                     label: l10n.bookingSuccessReceipt,
-                    onPressed: () => Navigator.of(context).pushNamed(
-                      AppRoute.bookingReceipt,
-                      arguments: result,
-                    ),
+                    onPressed: () => Navigator.of(
+                      context,
+                    ).pushNamed(AppRoute.bookingReceipt, arguments: record),
                   ),
                   const SizedBox(height: 12),
                   _SoftButton(
                     label: l10n.bookingSuccessHome,
-                    onPressed: () => Navigator.of(
-                      context,
-                    ).pushNamedAndRemoveUntil(AppRoute.home, (Route<dynamic> r) => false),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          AppRoute.home,
+                          (Route<dynamic> r) => false,
+                        ),
                   ),
                 ],
               ),
@@ -105,7 +106,7 @@ class _SoftButton extends StatelessWidget {
           child: Text(
             label,
             style: AppTextStyle.labelLarge.copyWith(
-              color: AppColor.goldDeep,
+              color: AppColor.ink,
               fontWeight: FontWeight.w600,
             ),
           ),

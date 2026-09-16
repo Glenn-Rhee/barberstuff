@@ -1,3 +1,5 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
@@ -12,78 +14,117 @@ class DashboardHeader extends StatelessWidget {
     required this.onNotificationTap,
     required this.onProfileTap,
     this.photoUrl,
+    this.collapsed = false,
   });
 
+  static const Duration collapseDuration = Duration(milliseconds: 240);
+
   static const double _avatarSize = 48;
+  static const double _avatarSizeMin = 36;
   static const double _radius = 30;
+  static const double _radiusMin = 20;
+  static const double _greetingSize = 24;
+  static const double _greetingSizeMin = 17;
 
   final String name;
   final String? photoUrl;
   final VoidCallback onNotificationTap;
   final VoidCallback onProfileTap;
+  final bool collapsed;
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    return ColoredBox(
-      color: AppColor.surface,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: AppColor.ink,
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(_radius),
-          ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 14, 24, 28),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Opacity(
-                        opacity: name.isEmpty ? 0 : 1,
-                        child: Text(
-                          l10n.homeGreeting(name),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyle.headlineMedium.copyWith(
-                            color: AppColor.surface,
-                            fontWeight: FontWeight.w700,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: collapsed ? 1 : 0),
+      duration: collapseDuration,
+      curve: Curves.easeOutCubic,
+      builder: (BuildContext context, double t, Widget? child) {
+        final double avatar = lerpDouble(_avatarSize, _avatarSizeMin, t)!;
+
+        return ColoredBox(
+          color: AppColor.surface,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColor.ink,
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(lerpDouble(_radius, _radiusMin, t)!),
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  24,
+                  lerpDouble(14, 8, t)!,
+                  24,
+                  lerpDouble(28, 12, t)!,
+                ),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Opacity(
+                            opacity: name.isEmpty ? 0 : 1,
+                            child: Text(
+                              l10n.homeGreeting(name),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyle.headlineMedium.copyWith(
+                                fontSize: lerpDouble(
+                                  _greetingSize,
+                                  _greetingSizeMin,
+                                  t,
+                                ),
+                                color: AppColor.surface,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
-                        ),
+                          // Subjudul ikut mengecil sampai hilang saat menyusut.
+                          ClipRect(
+                            child: Align(
+                              alignment: Alignment.topLeft,
+                              heightFactor: 1 - t,
+                              child: Opacity(
+                                opacity: 1 - t,
+                                child: Text(
+                                  l10n.homeWelcomeBack,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyle.labelMedium.copyWith(
+                                    color: AppColor.inkFaint,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        l10n.homeWelcomeBack,
-                        style: AppTextStyle.labelMedium.copyWith(
-                          color: AppColor.inkFaint,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 12),
+                    CircleIconButton(
+                      iconPath: AppAssets.bellDashboard,
+                      onPressed: onNotificationTap,
+                      size: avatar,
+                    ),
+                    const SizedBox(width: 12),
+                    _ProfileAvatar(
+                      photoUrl: photoUrl,
+                      size: avatar,
+                      onTap: onProfileTap,
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                CircleIconButton(
-                  iconPath: AppAssets.bellDashboard,
-                  onPressed: onNotificationTap,
-                  size: _avatarSize,
-                ),
-                const SizedBox(width: 12),
-                _ProfileAvatar(
-                  photoUrl: photoUrl,
-                  size: _avatarSize,
-                  onTap: onProfileTap,
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -103,6 +144,15 @@ class _ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final String? url = photoUrl;
 
+    final Widget fallback = ColoredBox(
+      color: AppColor.inkSoft,
+      child: Icon(
+        Icons.person_rounded,
+        color: AppColor.surface,
+        size: size * 0.5,
+      ),
+    );
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -115,26 +165,12 @@ class _ProfileAvatar extends StatelessWidget {
         ),
         child: ClipOval(
           child: url == null
-              ? const ColoredBox(
-                  color: AppColor.inkSoft,
-                  child: Icon(
-                    Icons.person_rounded,
-                    color: AppColor.surface,
-                    size: 24,
-                  ),
-                )
+              ? fallback
               : Image.network(
                   url,
                   fit: BoxFit.cover,
                   errorBuilder: (BuildContext _, Object _, StackTrace? _) =>
-                      const ColoredBox(
-                        color: AppColor.inkSoft,
-                        child: Icon(
-                          Icons.person_rounded,
-                          color: AppColor.surface,
-                          size: 24,
-                        ),
-                      ),
+                      fallback,
                 ),
         ),
       ),

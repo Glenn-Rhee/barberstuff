@@ -53,35 +53,32 @@ void main() {
   for (final Locale locale in <Locale>[Locale('id'), Locale('en')]) {
     for (final double width in _widths) {
       for (final double scale in _scales) {
-        testWidgets(
-          'notifikasi tanpa overflow: '
-          '${locale.languageCode} ${width.toInt()}dp x$scale',
-          (WidgetTester tester) async {
-            tester.view.physicalSize = Size(width, 900);
-            tester.view.devicePixelRatio = 1;
-            tester.platformDispatcher.textScaleFactorTestValue = scale;
-            addTearDown(tester.view.reset);
-            addTearDown(
-              tester.platformDispatcher.clearTextScaleFactorTestValue,
-            );
+        testWidgets('notifikasi tanpa overflow: '
+            '${locale.languageCode} ${width.toInt()}dp x$scale', (
+          WidgetTester tester,
+        ) async {
+          tester.view.physicalSize = Size(width, 900);
+          tester.view.devicePixelRatio = 1;
+          tester.platformDispatcher.textScaleFactorTestValue = scale;
+          addTearDown(tester.view.reset);
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
-            final NotificationProvider provider = NotificationProvider();
-            addTearDown(provider.dispose);
+          final NotificationProvider provider = NotificationProvider();
+          addTearDown(provider.dispose);
 
-            await pumpPage(tester, provider, locale);
-            expect(tester.takeException(), isNull, reason: 'daftar penuh');
+          await pumpPage(tester, provider, locale);
+          expect(tester.takeException(), isNull, reason: 'daftar penuh');
 
-            provider.markAllRead();
-            provider.setFilter(NotificationFilter.unread);
-            await tester.pump();
-            expect(tester.takeException(), isNull, reason: 'state kosong');
+          provider.markAllRead();
+          provider.setFilter(NotificationFilter.unread);
+          await tester.pump();
+          expect(tester.takeException(), isNull, reason: 'state kosong');
 
-            provider.reset();
-            provider.push();
-            await tester.pump();
-            expect(tester.takeException(), isNull, reason: 'notifikasi baru');
-          },
-        );
+          provider.reset();
+          provider.push();
+          await tester.pump();
+          expect(tester.takeException(), isNull, reason: 'notifikasi baru');
+        });
       }
     }
   }

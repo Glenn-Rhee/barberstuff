@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/services/permission_prompt.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
+import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
 import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
+import 'package:mobile_barberstuff/features/home/presentation/provider/dashboard_provider.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/active_booking_card.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/benefit_carousel.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/birthday_promo_card.dart';
@@ -17,31 +21,57 @@ import 'package:mobile_barberstuff/features/home/presentation/widgets/quick_acti
 import 'package:mobile_barberstuff/features/home/presentation/widgets/section_header.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
+import 'package:mobile_barberstuff/features/promo/presentation/pages/promo_page.dart';
+import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, this.onProfileTap});
+  const HomePage({super.key, this.onProfileTap, this.onHistoryTap});
 
-  static const double sidePadding = 20;
+  static const double sidePadding = 12;
   static const int birthdayDiscount = 30;
 
   final VoidCallback? onProfileTap;
+  final VoidCallback? onHistoryTap;
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  /// Di bawah ambang ini header selalu penuh, supaya tidak berkedip di puncak.
+  static const double _collapseThreshold = 12;
+
+  final ScrollController _scroll = ScrollController();
+  bool _collapsed = false;
+
   @override
   void initState() {
     super.initState();
+    _scroll.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((Duration _) {
       _askPermissions();
     });
+  }
+
+  @override
+  void dispose() {
+    _scroll.removeListener(_onScroll);
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scroll.hasClients) return;
+
+    final bool next =
+        _scroll.offset > _collapseThreshold &&
+        _scroll.position.userScrollDirection == ScrollDirection.reverse;
+
+    if (next != _collapsed) setState(() => _collapsed = next);
   }
 
   Future<void> _askPermissions() async {
@@ -61,6 +91,7 @@ class _HomePageState extends State<HomePage> {
         DashboardHeader(
           name: profile?.name ?? '',
           photoUrl: profile?.imageUrl,
+          collapsed: _collapsed,
           onNotificationTap: () {
             Navigator.of(context).pushNamed(AppRoute.notification);
           },
@@ -71,7 +102,12 @@ class _HomePageState extends State<HomePage> {
             color: AppColor.surface,
             child: profile == null
                 ? _PlaceholderBody(provider: p)
-                : _DashboardBody(profile: profile, onRefresh: p.load),
+                : _DashboardBody(
+                    profile: profile,
+                    onRefresh: p.load,
+                    controller: _scroll,
+                    onHistoryTap: widget.onHistoryTap,
+                  ),
           ),
         ),
       ],
@@ -80,72 +116,17 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _DashboardBody extends StatelessWidget {
-  const _DashboardBody({required this.profile, required this.onRefresh});
+  const _DashboardBody({
+    required this.profile,
+    required this.onRefresh,
+    required this.controller,
+    this.onHistoryTap,
+  });
 
   final CustomerProfile profile;
   final Future<void> Function() onRefresh;
-
-  static final ActiveBooking _booking = ActiveBooking(
-    orderId: '9821',
-    storeName: 'Jati Asih',
-    storeAddress: 'Jl. Jati Asih No. 20, Bekasi',
-    capsterName: 'Iqbal',
-    schedule: DateTime(2026, 5, 25, 16),
-  );
-
-  static const List<NearbyStore> _stores = <NearbyStore>[
-    NearbyStore(
-      id: '1',
-      name: 'Pondok Indah',
-      city: 'Jakarta Selatan',
-      rating: 4.9,
-      distanceKm: 0.7,
-      imageAsset: AppAssets.storeDepok,
-    ),
-    NearbyStore(
-      id: '2',
-      name: 'Ciracas',
-      city: 'Jakarta Timur',
-      rating: 4.8,
-      distanceKm: 3.2,
-      imageAsset: AppAssets.storeCiracas,
-    ),
-    NearbyStore(
-      id: '3',
-      name: 'Pondok Gede',
-      city: 'Bekasi',
-      rating: 4.6,
-      distanceKm: 5.1,
-      imageAsset: AppAssets.storePondokgede,
-    ),
-  ];
-
-  static final List<HaircutHistory> _histories = <HaircutHistory>[
-    HaircutHistory(
-      id: '1',
-      serviceName: 'Anti Frizz & Treatment',
-      capsterName: 'Joni Akbar',
-      date: DateTime(2026, 8, 12),
-      storeName: 'Pondok Indah',
-      price: 95000,
-    ),
-    HaircutHistory(
-      id: '2',
-      serviceName: 'Haircut & Styling',
-      capsterName: 'Danarmas',
-      date: DateTime(2026, 7, 28),
-      storeName: 'Pondok Gede',
-      price: 55000,
-    ),
-    HaircutHistory(
-      id: '3',
-      serviceName: 'Hair Toner',
-      capsterName: 'Mas Ariel',
-      date: DateTime(2026, 6, 8),
-      storeName: 'Ciracas',
-      price: 25000,
-    ),
-  ];
+  final ScrollController controller;
+  final VoidCallback? onHistoryTap;
 
   static List<BenefitItem> _benefitsOf(AppLocalizations l10n) {
     return <BenefitItem>[
@@ -171,14 +152,37 @@ class _DashboardBody extends StatelessWidget {
     Navigator.of(context).pushNamed(AppRoute.booking);
   }
 
+  void _openPromo(BuildContext context) {
+    Navigator.of(
+      context,
+    ).pushNamed(AppRoute.promo, arguments: PromoArgs(profile: profile));
+  }
+
+  void _openReceipt(BuildContext context, BookingRecord record) {
+    Navigator.of(context).pushNamed(AppRoute.bookingReceipt, arguments: record);
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final DashboardProvider dashboard = context.watch<DashboardProvider>();
+
+    final BookingRecord? upcoming = dashboard.upcoming;
+    final List<BookingRecord> histories = dashboard.history;
+    final List<NearbyStore> stores = dashboard.stores
+        .map(
+          (StoreSummary s) =>
+              NearbyStore.fromSummary(s, distanceKm: dashboard.distanceOf(s)),
+        )
+        .toList(growable: false);
 
     return RefreshIndicator(
-      onRefresh: onRefresh,
+      onRefresh: () async {
+        await Future.wait(<Future<void>>[onRefresh(), dashboard.load()]);
+      },
       color: AppColor.goldDeep,
       child: ListView(
+        controller: controller,
         padding: const EdgeInsets.only(top: 20, bottom: 28),
         children: <Widget>[
           _Inset(
@@ -193,9 +197,7 @@ class _DashboardBody extends StatelessWidget {
             child: PointsCard(
               points: profile.memberPoints,
               tier: profile.tier,
-              onTap: () {
-                showComingSoonDialog(context);
-              },
+              onTap: () => _openPromo(context),
             ),
           ),
 
@@ -203,11 +205,19 @@ class _DashboardBody extends StatelessWidget {
           _Inset(
             child: QuickActionRow(
               onSelect: (QuickAction action) {
-                if (action == QuickAction.booking) {
-                  _openBooking(context);
-                  return;
+                switch (action) {
+                  case QuickAction.booking:
+                  case QuickAction.package:
+                    _openBooking(context);
+                  case QuickAction.promo:
+                    _openPromo(context);
+                  case QuickAction.history:
+                    if (onHistoryTap != null) {
+                      onHistoryTap!.call();
+                    } else {
+                      Navigator.of(context).pushNamed(AppRoute.history);
+                    }
                 }
-                showComingSoonDialog(context);
               },
             ),
           ),
@@ -220,59 +230,55 @@ class _DashboardBody extends StatelessWidget {
             horizontalPadding: HomePage.sidePadding,
           ),
 
-          const SizedBox(height: 28),
-          _Inset(child: SectionHeader(title: l10n.homeActiveBookingTitle)),
-          const SizedBox(height: 12),
-          _Inset(
-            child: ActiveBookingCard(
-              booking: _booking,
-              onDetail: () {
-                showComingSoonDialog(context);
-              },
-            ),
-          ),
-
-          const SizedBox(height: 28),
-          _Inset(
-            child: SectionHeader(
-              title: l10n.homeNearbyTitle,
-              actionLabel: l10n.homeNearbySeeAll,
-              onAction: () {
-                showComingSoonDialog(context);
-              },
-            ),
-          ),
-          const SizedBox(height: 12),
-          NearbyStoreList(
-            stores: _stores,
-            horizontalPadding: HomePage.sidePadding,
-            onSelect: (NearbyStore _) {
-              showComingSoonDialog(context);
-            },
-            onBooking: (NearbyStore _) => _openBooking(context),
-          ),
-
-          const SizedBox(height: 28),
-          _Inset(
-            child: SectionHeader(
-              title: l10n.homeHistoryTitle,
-              actionLabel: l10n.homeHistorySeeAll,
-              onAction: () =>
-                  Navigator.of(context).pushNamed(AppRoute.history),
-            ),
-          ),
-          const SizedBox(height: 12),
-          for (final HaircutHistory history in _histories) ...<Widget>[
+          if (upcoming != null) ...<Widget>[
+            const SizedBox(height: 28),
+            _Inset(child: SectionHeader(title: l10n.homeActiveBookingTitle)),
+            const SizedBox(height: 12),
             _Inset(
-              child: HistoryTile(
-                history: history,
-                onTap: () {
-                  showComingSoonDialog(context);
-                },
-                onRebook: () => _openBooking(context),
+              child: ActiveBookingCard(
+                booking: ActiveBooking.fromRecord(upcoming),
+                onDetail: () => _openReceipt(context, upcoming),
+              ),
+            ),
+          ],
+
+          if (stores.isNotEmpty) ...<Widget>[
+            const SizedBox(height: 28),
+            _Inset(child: SectionHeader(title: l10n.homeNearbyTitle)),
+            const SizedBox(height: 12),
+            NearbyStoreList(
+              stores: stores,
+              horizontalPadding: HomePage.sidePadding,
+              onSelect: (NearbyStore store) => Navigator.of(context).pushNamed(
+                AppRoute.storeDetail,
+                arguments: StoreDetailArgs(storeId: store.id),
+              ),
+              onBooking: (NearbyStore _) => _openBooking(context),
+            ),
+          ],
+
+          if (histories.isNotEmpty) ...<Widget>[
+            const SizedBox(height: 28),
+            _Inset(
+              child: SectionHeader(
+                title: l10n.homeHistoryTitle,
+                actionLabel: l10n.homeHistorySeeAll,
+                onAction:
+                    onHistoryTap ??
+                    () => Navigator.of(context).pushNamed(AppRoute.history),
               ),
             ),
             const SizedBox(height: 12),
+            for (final BookingRecord record in histories) ...<Widget>[
+              _Inset(
+                child: HistoryTile(
+                  history: HaircutHistory.fromRecord(record),
+                  onTap: () => _openReceipt(context, record),
+                  onRebook: () => _openBooking(context),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
           ],
         ],
       ),

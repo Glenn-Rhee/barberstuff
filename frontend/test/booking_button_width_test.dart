@@ -1,10 +1,12 @@
-import 'dart:io';
 
+
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
+import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_flow_page.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
@@ -12,7 +14,6 @@ import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-
 import 'support/fake_booking_repository.dart';
 
 void main() {
@@ -45,14 +46,20 @@ void main() {
         MultiProvider(
           providers: <SingleChildWidget>[
             Provider<AppCache>.value(value: cache),
-      ChangeNotifierProvider<DebugOverrides>(
-        create: (_) => DebugOverrides(),
-      ),
-      Provider<LocationService>.value(value: LocationService(cache)),
             ChangeNotifierProvider<DebugOverrides>(
               create: (_) => DebugOverrides(),
             ),
             Provider<LocationService>.value(value: LocationService(cache)),
+            ChangeNotifierProvider<BookingJournal>.value(
+              value: BookingJournal(cache),
+            ),
+            ChangeNotifierProvider<DebugOverrides>(
+              create: (_) => DebugOverrides(),
+            ),
+            Provider<LocationService>.value(value: LocationService(cache)),
+            ChangeNotifierProvider<BookingJournal>.value(
+              value: BookingJournal(cache),
+            ),
             Provider<BookingRepository>.value(
               value: FakeBookingRepository(cache),
             ),

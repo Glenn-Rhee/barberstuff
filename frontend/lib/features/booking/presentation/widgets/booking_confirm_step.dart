@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/provider/booking_flow_provider.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_step_shell.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
@@ -40,9 +41,15 @@ class BookingConfirmStep extends StatelessWidget {
             ),
             _DetailRow(
               label: l10n.bookingConfirmService,
-              value: p.service?.name ?? '-',
+              value: p.selectedServices.isEmpty
+                  ? '-'
+                  : p.selectedServices
+                        .map((ServiceItem s) => s.name)
+                        .join(', '),
               iconPath: AppAssets.scissorsDashboard,
-              trailing: p.service == null ? null : formatRupiah(subTotal),
+              trailing: p.selectedServices.isEmpty
+                  ? null
+                  : formatRupiah(subTotal),
             ),
             _DetailRow(
               label: l10n.bookingConfirmBarber,
@@ -134,18 +141,14 @@ class _DetailCard extends StatelessWidget {
                           rows[i].value,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: AppTextStyle.titleSmall.copyWith(
-                            fontSize: 13,
-                          ),
+                          style: AppTextStyle.titleSmall.copyWith(fontSize: 13),
                         ),
                       ),
                       if (rows[i].trailing != null) ...<Widget>[
                         const SizedBox(width: 10),
                         Text(
                           rows[i].trailing!,
-                          style: AppTextStyle.titleSmall.copyWith(
-                            fontSize: 13,
-                          ),
+                          style: AppTextStyle.titleSmall.copyWith(fontSize: 13),
                         ),
                       ],
                     ],
@@ -242,10 +245,7 @@ class _Line extends StatelessWidget {
             ),
           ),
         ),
-        Text(
-          value,
-          style: AppTextStyle.bodySmall.copyWith(fontSize: 12),
-        ),
+        Text(value, style: AppTextStyle.bodySmall.copyWith(fontSize: 12)),
       ],
     );
   }

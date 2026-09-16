@@ -102,8 +102,7 @@ class NotificationProvider extends ChangeNotifier {
   void push([NotificationCategory? category]) {
     _serial += 1;
     final List<NotificationCategory> all = NotificationCategory.values;
-    final NotificationCategory picked =
-        category ?? all[_serial % all.length];
+    final NotificationCategory picked = category ?? all[_serial % all.length];
 
     final AppNotification created = AppNotification(
       id: 'sim-$_serial',

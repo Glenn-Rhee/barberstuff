@@ -87,9 +87,7 @@ class StoreActionButton extends StatelessWidget {
         Material(
           color: AppColor.surface,
           clipBehavior: Clip.antiAlias,
-          shape: const CircleBorder(
-            side: BorderSide(color: AppColor.goldDeep),
-          ),
+          shape: const CircleBorder(side: BorderSide(color: AppColor.goldDeep)),
           child: InkWell(
             onTap: onTap,
             child: SizedBox(
@@ -154,6 +152,8 @@ class BarberChip extends StatelessWidget {
                 const SizedBox(height: 2),
                 Row(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Image.asset(
                       AppAssets.starHistoryFilled,
@@ -167,7 +167,7 @@ class BarberChip extends StatelessWidget {
                       capster.avgRating.toStringAsFixed(1),
                       style: AppTextStyle.bodySmall.copyWith(
                         fontSize: 10,
-                        color: AppColor.goldSoft,
+                        color: AppColor.surface,
                       ),
                     ),
                   ],

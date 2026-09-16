@@ -6,6 +6,7 @@ import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart';
 import 'package:mobile_barberstuff/features/store/data/repositories/store_repository.dart';
@@ -78,24 +79,7 @@ class _StoreDetailView extends StatelessWidget {
   }
 
   Future<void> _route(StoreDetail detail) async {
-    final StoreCoordinateLike? at = detail.coordinate == null
-        ? null
-        : StoreCoordinateLike(
-            detail.coordinate!.latitude,
-            detail.coordinate!.longitude,
-          );
-
-    final Uri uri = at == null
-        ? Uri.parse(
-            'https://www.google.com/maps/search/?api=1&query='
-            '${Uri.encodeComponent(detail.address)}',
-          )
-        : Uri.parse(
-            'https://www.google.com/maps/search/?api=1&query='
-            '${at.latitude},${at.longitude}',
-          );
-
-    await _open(uri);
+    await _open(directionsUri(detail));
   }
 
   Future<void> _share(BuildContext context, StoreDetail detail) async {
@@ -230,11 +214,17 @@ class _StoreDetailView extends StatelessWidget {
   }
 }
 
-class StoreCoordinateLike {
-  const StoreCoordinateLike(this.latitude, this.longitude);
+/// Rute belok-per-belok diserahkan ke aplikasi peta, bukan digambar sendiri.
+Uri directionsUri(StoreDetail detail) {
+  final StoreCoordinate? at = detail.coordinate;
+  final String destination = at == null
+      ? Uri.encodeComponent(detail.address)
+      : '${at.latitude},${at.longitude}';
 
-  final double latitude;
-  final double longitude;
+  return Uri.parse(
+    'https://www.google.com/maps/dir/?api=1'
+    '&destination=$destination&travelmode=driving',
+  );
 }
 
 class _TabBody extends StatelessWidget {
@@ -254,15 +244,11 @@ class _TabBody extends StatelessWidget {
       );
     }
 
-    void openBooking() =>
-        Navigator.of(context).pushNamed(AppRoute.booking);
+    void openBooking() => Navigator.of(context).pushNamed(AppRoute.booking);
 
     switch (provider.tab) {
       case StoreTab.about:
-        return StoreAboutTab(
-          detail: detail,
-          onOpenMap: () => _openMap(detail),
-        );
+        return StoreAboutTab(detail: detail, onOpenMap: () => _openMap(detail));
       case StoreTab.service:
         return StoreProductTab(
           title: l10n.storeServicesTitle,
@@ -285,18 +271,11 @@ class _TabBody extends StatelessWidget {
   }
 
   Future<void> _openMap(StoreDetail detail) async {
-    final Uri uri = detail.coordinate == null
-        ? Uri.parse(
-            'https://www.google.com/maps/search/?api=1&query='
-            '${Uri.encodeComponent(detail.address)}',
-          )
-        : Uri.parse(
-            'https://www.google.com/maps/search/?api=1&query='
-            '${detail.coordinate!.latitude},${detail.coordinate!.longitude}',
-          );
-
     try {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      await launchUrl(
+        directionsUri(detail),
+        mode: LaunchMode.externalApplication,
+      );
     } on Object catch (_) {
       return;
     }
@@ -360,9 +339,7 @@ class _TitleRow extends StatelessWidget {
             style: AppTextStyle.labelSmall.copyWith(
               fontSize: 9.5,
               fontWeight: FontWeight.w700,
-              color: detail.isOpen
-                  ? const Color(0xFF3A8DC4)
-                  : AppColor.inkSoft,
+              color: detail.isOpen ? const Color(0xFF3A8DC4) : AppColor.inkSoft,
               letterSpacing: 0.4,
             ),
           ),

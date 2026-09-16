@@ -38,8 +38,9 @@ class LocalNotificationService {
   Future<void> init() async {
     if (_ready) return;
 
-    const AndroidInitializationSettings android =
-        AndroidInitializationSettings('ic_notification');
+    const AndroidInitializationSettings android = AndroidInitializationSettings(
+      'ic_notification',
+    );
     const DarwinInitializationSettings darwin = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -77,7 +78,11 @@ class LocalNotificationService {
             IOSFlutterLocalNotificationsPlugin
           >();
       _granted =
-          await ios?.requestPermissions(alert: true, badge: true, sound: true) ??
+          await ios?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          ) ??
           false;
       return _granted;
     } on Object catch (error) {

@@ -16,6 +16,7 @@ import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_sou
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/password_toggle.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
+import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
 import 'package:provider/provider.dart';
@@ -83,144 +84,148 @@ class _RegisterView extends StatelessWidget {
 
     return LoadingOverlay(
       isVisible: p.isLoading,
-      child: Scaffold(
-        backgroundColor: AppColor.surface,
-        appBar: AppBar(
-          backgroundColor: AppColor.surface,
-          elevation: 0,
-          titleSpacing: 0,
-          leading: const BackButton(color: AppColor.ink),
-          title: Text(l10n.registerHeadline, style: AppTextStyle.titleLarge),
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-            child: Form(
-              key: p.formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Center(
-                    child: AvatarPicker(
-                      imageUrl: p.imageUrl,
-                      imageFile: p.imageFile,
-                      onEdit: () => editAvatar(context, p),
-                    ),
-                  ),
-                  const SizedBox(height: _gapSection),
-
-                  AppTextField(
-                    hint: l10n.registerNameLabel,
-                    controller: p.nameController,
-                    keyboardType: TextInputType.name,
-                    validator: (String? v) =>
-                        validators.required(v, label: l10n.registerNameLabel),
-                  ),
-                  const SizedBox(height: AppField.gap),
-
-                  AppTextField(
-                    hint: l10n.registerEmailLabel,
-                    iconPath: AppAssets.mailIcon,
-                    controller: p.emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: validators.email,
-                  ),
-                  const SizedBox(height: AppField.gap),
-
-                  AppTextField(
-                    hint: l10n.registerPasswordLabel,
-                    iconPath: AppAssets.lockIcon,
-                    controller: p.passwordController,
-                    obscureText: p.obscurePassword,
-                    validator: validators.password,
-                    suffixIcon: PasswordToggle(
-                      obscured: p.obscurePassword,
-                      onPressed: p.toggleObscurePassword,
-                    ),
-                  ),
-                  const SizedBox(height: AppField.gap),
-
-                  AppTextField(
-                    hint: l10n.registerBirthDateLabel,
-                    iconPath: AppAssets.birthDateIcon,
-                    controller: p.birthDateController,
-                    readOnly: true,
-                    onTap: () => _pickDate(context, p),
-                    validator: (String? v) => validators.required(
-                      v,
-                      label: l10n.registerBirthDateLabel,
-                    ),
-                  ),
-                  const SizedBox(height: AppField.gap),
-
-                  AppTextField(
-                    hint: l10n.registerPhoneLabel,
-                    iconPath: AppAssets.phoneIcon,
-                    controller: p.phoneController,
-                    keyboardType: TextInputType.phone,
-                    validator: validators.phoneNumber,
-                  ),
-                  const SizedBox(height: AppField.gap),
-
-                  AppDropdownField<String>(
-                    hint: l10n.registerGenderLabel,
-                    value: p.gender,
-                    onChanged: p.setGender,
-                    validator: (String? v) =>
-                        validators.required(v, label: l10n.registerGenderLabel),
-                    items: <DropdownMenuItem<String>>[
-                      DropdownMenuItem<String>(
-                        value: 'male',
-                        child: Text(l10n.genderMale),
+      child: BarberPatternBackground.auth(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            titleSpacing: 0,
+            leading: const BackButton(color: AppColor.ink),
+            title: Text(l10n.registerHeadline, style: AppTextStyle.titleLarge),
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+              child: Form(
+                key: p.formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Center(
+                      child: AvatarPicker(
+                        imageUrl: p.imageUrl,
+                        imageFile: p.imageFile,
+                        onEdit: () => editAvatar(context, p),
                       ),
-                      DropdownMenuItem<String>(
-                        value: 'female',
-                        child: Text(l10n.genderFemale),
+                    ),
+                    const SizedBox(height: _gapSection),
+
+                    AppTextField(
+                      hint: l10n.registerNameLabel,
+                      controller: p.nameController,
+                      keyboardType: TextInputType.name,
+                      validator: (String? v) =>
+                          validators.required(v, label: l10n.registerNameLabel),
+                    ),
+                    const SizedBox(height: AppField.gap),
+
+                    AppTextField(
+                      hint: l10n.registerEmailLabel,
+                      iconPath: AppAssets.mailIcon,
+                      controller: p.emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: validators.email,
+                    ),
+                    const SizedBox(height: AppField.gap),
+
+                    AppTextField(
+                      hint: l10n.registerPasswordLabel,
+                      iconPath: AppAssets.lockIcon,
+                      controller: p.passwordController,
+                      obscureText: p.obscurePassword,
+                      validator: validators.password,
+                      suffixIcon: PasswordToggle(
+                        obscured: p.obscurePassword,
+                        onPressed: p.toggleObscurePassword,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: _gapSection),
+                    ),
+                    const SizedBox(height: AppField.gap),
 
-                  BoxButton(
-                    label: l10n.registerSubmitButton,
-                    isLoading: p.isLoading,
-                    onPressed: p.isLoading || !p.isComplete
-                        ? null
-                        : () => _submit(context, p),
-                  ),
-                  const SizedBox(height: 20),
+                    AppTextField(
+                      hint: l10n.registerBirthDateLabel,
+                      iconPath: AppAssets.birthDateIcon,
+                      controller: p.birthDateController,
+                      readOnly: true,
+                      onTap: () => _pickDate(context, p),
+                      validator: (String? v) => validators.required(
+                        v,
+                        label: l10n.registerBirthDateLabel,
+                      ),
+                    ),
+                    const SizedBox(height: AppField.gap),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        l10n.registerHaveAccountQuestion,
-                        style: AppTextStyle.bodyMedium.copyWith(
-                          color: AppColor.inkFaint,
+                    AppTextField(
+                      hint: l10n.registerPhoneLabel,
+                      iconPath: AppAssets.phoneIcon,
+                      controller: p.phoneController,
+                      keyboardType: TextInputType.phone,
+                      validator: validators.phoneNumber,
+                    ),
+                    const SizedBox(height: AppField.gap),
+
+                    AppDropdownField<String>(
+                      hint: l10n.registerGenderLabel,
+                      value: p.gender,
+                      onChanged: p.setGender,
+                      validator: (String? v) => validators.required(
+                        v,
+                        label: l10n.registerGenderLabel,
+                      ),
+                      items: <DropdownMenuItem<String>>[
+                        DropdownMenuItem<String>(
+                          value: 'male',
+                          child: Text(l10n.genderMale),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: () =>
-                            Navigator.of(context).pushNamed(AppRoute.login),
-                        behavior: HitTestBehavior.opaque,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 4,
+                        DropdownMenuItem<String>(
+                          value: 'female',
+                          child: Text(l10n.genderFemale),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: _gapSection),
+
+                    BoxButton(
+                      label: l10n.registerSubmitButton,
+                      isLoading: p.isLoading,
+                      onPressed: p.isLoading || !p.isComplete
+                          ? null
+                          : () => _submit(context, p),
+                    ),
+                    const SizedBox(height: 20),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          l10n.registerHaveAccountQuestion,
+                          style: AppTextStyle.bodyMedium.copyWith(
+                            color: AppColor.inkFaint,
                           ),
-                          child: Text(
-                            l10n.registerLoginAction,
-                            style: AppTextStyle.bodyMedium.copyWith(
-                              color: AppColor.orangeLight,
-                              fontWeight: FontWeight.w700,
+                        ),
+                        const SizedBox(width: 4),
+                        GestureDetector(
+                          onTap: () =>
+                              Navigator.of(context).pushNamed(AppRoute.login),
+                          behavior: HitTestBehavior.opaque,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 4,
+                            ),
+                            child: Text(
+                              l10n.registerLoginAction,
+                              style: AppTextStyle.bodyMedium.copyWith(
+                                color: AppColor.orangeLight,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

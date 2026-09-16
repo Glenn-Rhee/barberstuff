@@ -29,7 +29,7 @@ class HistoryTile extends StatelessWidget {
         '${DateFormat('d MMM y', locale).format(history.date)}';
 
     return Material(
-      color: AppColor.surface,
+      color: AppColor.ink,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(_radius),
@@ -50,7 +50,10 @@ class HistoryTile extends StatelessWidget {
                       history.serviceName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyle.titleSmall.copyWith(fontSize: 15),
+                      style: AppTextStyle.titleSmall.copyWith(
+                        fontSize: 15,
+                        color: AppColor.surface,
+                      ),
                     ),
                     const SizedBox(height: 3),
                     Text(
@@ -93,7 +96,12 @@ class _ByLine extends StatelessWidget {
     final int at = text.indexOf(name);
 
     if (at < 0) {
-      return Text(text, maxLines: 1, overflow: TextOverflow.ellipsis, style: base);
+      return Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: base,
+      );
     }
 
     return Text.rich(
@@ -104,7 +112,7 @@ class _ByLine extends StatelessWidget {
           TextSpan(
             text: name,
             style: base.copyWith(
-              color: AppColor.inkSoft,
+              color: AppColor.surface,
               fontWeight: FontWeight.w700,
             ),
           ),

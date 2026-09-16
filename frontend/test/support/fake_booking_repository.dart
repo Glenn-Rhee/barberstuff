@@ -48,10 +48,9 @@ class FakeBookingRepository extends BookingRepository {
 
   @override
   Future<CachedResult<List<StoreSummary>>> getStores({String? name}) async =>
-      const CachedResult<List<StoreSummary>>(
-        <StoreSummary>[sampleStore],
-        fromCache: false,
-      );
+      const CachedResult<List<StoreSummary>>(<StoreSummary>[
+        sampleStore,
+      ], fromCache: false);
 
   @override
   Future<StoreSlots> getStoreSlots({

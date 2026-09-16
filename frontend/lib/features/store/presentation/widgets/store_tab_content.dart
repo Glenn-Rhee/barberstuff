@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_step_shell.dart';
 import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart';
 import 'package:mobile_barberstuff/features/store/presentation/widgets/store_detail_parts.dart';
+import 'package:mobile_barberstuff/features/store/presentation/widgets/store_map_preview.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:provider/provider.dart';
 
 class StoreAboutTab extends StatelessWidget {
   const StoreAboutTab({
@@ -87,6 +90,7 @@ class StoreAboutTab extends StatelessWidget {
   }
 }
 
+/// Peta asli kalau koordinat tersedia; kalau tidak, jatuh ke tombol polos.
 class _MapCard extends StatelessWidget {
   const _MapCard({required this.detail, required this.onTap});
 
@@ -96,6 +100,16 @@ class _MapCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final StoreCoordinate? at = detail.coordinate;
+
+    if (at != null) {
+      return StoreMapPreview(
+        storeLatitude: at.latitude,
+        storeLongitude: at.longitude,
+        userPosition: context.read<LocationService>().lastKnown,
+        onTap: onTap,
+      );
+    }
 
     return Material(
       color: AppColor.border.withValues(alpha: 0.35),
@@ -157,7 +171,11 @@ class StoreProductTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SectionTitle(title: title, actionLabel: l10n.storeSeeAll, onAction: () {}),
+        SectionTitle(
+          title: title,
+          actionLabel: l10n.storeSeeAll,
+          onAction: () {},
+        ),
         const SizedBox(height: 12),
         if (items.isEmpty)
           Padding(
@@ -173,11 +191,7 @@ class StoreProductTab extends StatelessWidget {
           )
         else
           for (final ServiceItem item in items) ...<Widget>[
-            _ProductCard(
-              item: item,
-              isPackage: isPackage,
-              onBook: onBook,
-            ),
+            _ProductCard(item: item, isPackage: isPackage, onBook: onBook),
             const SizedBox(height: 10),
           ],
       ],

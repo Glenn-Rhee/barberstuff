@@ -664,10 +664,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Temukan tren gaya rambut pria terbaru tahun ini yang cocok dengan bentuk wajah Anda.';
 
   @override
-  String get profileTierSilver => 'Silver Member';
+  String get profileTierSilver => 'Silver Member Barberstuff';
 
   @override
-  String get profileTierGold => 'Gold Member';
+  String get profileTierGold => 'Gold Member Barberstuff';
 
   @override
   String get profileTierPlatinum => 'Platinum Member';
@@ -1043,6 +1043,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get bookingPackageLabel => 'Paket';
 
   @override
+  String get bookingServiceSingleOnly =>
+      'Server baru menerima satu layanan per booking. Pilih satu dulu, sisanya booking terpisah.';
+
+  @override
   String get bookingServiceEmpty => 'Belum ada layanan tersedia.';
 
   @override
@@ -1131,4 +1135,58 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get commonLogout => 'Keluar';
+
+  @override
+  String get promoTitle => 'Pilih Promo';
+
+  @override
+  String get promoGradeTitle => 'Keuntungan Grade Ini';
+
+  @override
+  String get promoTerms => 'S&K Berlaku';
+
+  @override
+  String get promoSectionTitle => 'Promo';
+
+  @override
+  String get promoSectionSubtitle =>
+      'Promo menarik dari barberstuff, untuk pengguna';
+
+  @override
+  String get promoRedeemTitle => 'Tukar Poin';
+
+  @override
+  String get promoRedeemSubtitle =>
+      'Tukarkan poin Anda dengan berbagai voucher menarik.';
+
+  @override
+  String get promoClaim => 'Klaim';
+
+  @override
+  String get promoClaimReward => 'Klaim Hadiah';
+
+  @override
+  String get promoAboutVoucher => 'Tentang Voucher';
+
+  @override
+  String get promoClaimed => 'Hadiah berhasil diklaim.';
+
+  @override
+  String get promoNotEnoughPoints =>
+      'Poin belum cukup untuk menukar hadiah ini.';
+
+  @override
+  String promoPoints(String count) {
+    return '$count Points';
+  }
+
+  @override
+  String promoXp(String count) {
+    return '$count XP';
+  }
+
+  @override
+  String promoProgress(String owned, String needed) {
+    return '$owned/$needed';
+  }
 }

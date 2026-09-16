@@ -60,6 +60,7 @@ class ProfilePage extends StatelessWidget {
     if (confirmed != true || !context.mounted) return;
 
     final NavigatorState navigator = Navigator.of(context);
+    context.read<ProfileProvider>().reset();
     await context.read<AppSession>().clearSession();
 
     navigator.pushNamedAndRemoveUntil(
@@ -137,91 +138,65 @@ class ProfilePage extends StatelessWidget {
                   ),
                   child: OfflineBanner(),
                 ),
-              _MenuGroup(
-                children: <Widget>[
-                  ProfileMenuTile(
-                    iconPath: AppAssets.userProfile,
-                    label: l10n.profileMenuPersonalInfo,
-                    onTap: () => Navigator.of(context).pushNamed(
-                      AppRoute.personalInfo,
-                      arguments: PersonalInfoArgs(profile: profile),
-                    ),
-                  ),
-                  ProfileMenuTile(
-                    iconPath: AppAssets.globeProfile,
-                    label: l10n.profileMenuLanguage,
-                    onTap: () =>
-                        Navigator.of(context).pushNamed(AppRoute.language),
-                  ),
-                  ProfileMenuTile(
-                    iconPath: AppAssets.idCardProfile,
-                    label: l10n.profileMenuCard,
-                    onTap: () => Navigator.of(context).pushNamed(
-                      AppRoute.barberstuffCard,
-                      arguments: BarberstuffCardArgs(profile: profile),
-                    ),
-                  ),
-                  ProfileMenuTile(
-                    iconPath: AppAssets.bellProfile,
-                    label: l10n.profileMenuNotification,
-                    onTap: () =>
-                        Navigator.of(context).pushNamed(AppRoute.notification),
-                  ),
-                  ProfileMenuTile(
-                    iconPath: AppAssets.helpCircleProfile,
-                    label: l10n.profileMenuHelp,
-                    onTap: () => Navigator.of(context).pushNamed(
-                      AppRoute.helpCenter,
-                      arguments: HelpCenterArgs(profile: profile),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              _MenuGroup(
-                children: <Widget>[
-                  ProfileMenuTile(
-                    iconPath: AppAssets.infoProfile,
-                    label: l10n.profileMenuAbout,
-                    onTap: () =>
-                        Navigator.of(context).pushNamed(AppRoute.about),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
-                child: ProfileMenuTile(
-                  iconPath: AppAssets.logOutProfile,
-                  label: l10n.profileMenuLogout,
-                  danger: true,
-                  onTap: () => _confirmLogout(context),
+                child: ProfileMenuGroup(
+                  children: <Widget>[
+                    ProfileMenuTile(
+                      iconPath: AppAssets.userProfile,
+                      label: l10n.profileMenuPersonalInfo,
+                      onTap: () => Navigator.of(context).pushNamed(
+                        AppRoute.personalInfo,
+                        arguments: PersonalInfoArgs(profile: profile),
+                      ),
+                    ),
+                    ProfileMenuTile(
+                      iconPath: AppAssets.globeProfile,
+                      label: l10n.profileMenuLanguage,
+                      onTap: () =>
+                          Navigator.of(context).pushNamed(AppRoute.language),
+                    ),
+                    ProfileMenuTile(
+                      iconPath: AppAssets.idCardProfile,
+                      label: l10n.profileMenuCard,
+                      onTap: () => Navigator.of(context).pushNamed(
+                        AppRoute.barberstuffCard,
+                        arguments: BarberstuffCardArgs(profile: profile),
+                      ),
+                    ),
+                    ProfileMenuTile(
+                      iconPath: AppAssets.bellProfile,
+                      label: l10n.profileMenuNotification,
+                      onTap: () => Navigator.of(
+                        context,
+                      ).pushNamed(AppRoute.notification),
+                    ),
+                    ProfileMenuTile(
+                      iconPath: AppAssets.helpCircleProfile,
+                      label: l10n.profileMenuHelp,
+                      onTap: () => Navigator.of(context).pushNamed(
+                        AppRoute.helpCenter,
+                        arguments: HelpCenterArgs(profile: profile),
+                      ),
+                    ),
+                    ProfileMenuTile(
+                      iconPath: AppAssets.infoProfile,
+                      label: l10n.profileMenuAbout,
+                      onTap: () =>
+                          Navigator.of(context).pushNamed(AppRoute.about),
+                    ),
+                    ProfileMenuTile(
+                      iconPath: AppAssets.logOutProfile,
+                      label: l10n.profileMenuLogout,
+                      danger: true,
+                      onTap: () => _confirmLogout(context),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _MenuGroup extends StatelessWidget {
-  const _MenuGroup({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: ProfilePage._sidePadding),
-      child: Column(
-        children: <Widget>[
-          for (int i = 0; i < children.length; i++) ...<Widget>[
-            if (i > 0) const SizedBox(height: 8),
-            children[i],
-          ],
-        ],
       ),
     );
   }
@@ -243,7 +218,7 @@ class _ProfileAvatar extends StatelessWidget {
       height: _size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppColor.orangeLight, width: 3),
+        border: Border.all(color: AppColor.ink, width: 3),
       ),
       child: ClipOval(
         child: url == null

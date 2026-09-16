@@ -9,6 +9,7 @@ import 'package:mobile_barberstuff/features/booking/presentation/provider/bookin
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_step_shell.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
 import 'package:mobile_barberstuff/shared/widgets/offline_banner.dart';
 import 'package:provider/provider.dart';
 
@@ -32,11 +33,10 @@ class BookingBranchStep extends StatelessWidget {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-          child: _SearchBar(
+          child: AppSearchBar(
             controller: p.searchController,
             hint: l10n.bookingSearchHint,
             onSubmit: p.loadStores,
-            onRefresh: () => _refresh(context, p),
           ),
         ),
         if (p.storesFromCache)
@@ -73,97 +73,6 @@ class BookingBranchStep extends StatelessWidget {
   }
 }
 
-class _SearchBar extends StatelessWidget {
-  const _SearchBar({
-    required this.controller,
-    required this.hint,
-    required this.onSubmit,
-    required this.onRefresh,
-  });
-
-  final TextEditingController controller;
-  final String hint;
-  final VoidCallback onSubmit;
-  final VoidCallback onRefresh;
-
-  static OutlineInputBorder _border(Color color) => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8),
-    borderSide: BorderSide(color: color),
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: TextField(
-            controller: controller,
-            onSubmitted: (String _) => onSubmit(),
-            textInputAction: TextInputAction.search,
-            style: AppTextStyle.bodySmall.copyWith(fontSize: 13),
-            cursorColor: AppColor.goldDeep,
-            decoration: InputDecoration(
-              isDense: true,
-              hintText: hint,
-              hintStyle: AppTextStyle.bodySmall.copyWith(
-                fontSize: 13,
-                color: AppColor.inkFaint,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 13,
-              ),
-              border: _border(AppColor.border),
-              enabledBorder: _border(AppColor.border),
-              focusedBorder: _border(AppColor.goldDeep),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Material(
-          color: AppColor.goldDeep,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(8),
-          child: InkWell(
-            onTap: onSubmit,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Image.asset(
-                AppAssets.searchBookingIcon,
-                width: 18,
-                height: 18,
-                fit: BoxFit.contain,
-                color: AppColor.surface,
-                filterQuality: FilterQuality.medium,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Material(
-          color: AppColor.surface,
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: const BorderSide(color: AppColor.goldDeep),
-          ),
-          child: InkWell(
-            onTap: onRefresh,
-            child: const Padding(
-              padding: EdgeInsets.all(12),
-              child: Icon(
-                Icons.refresh_rounded,
-                size: 18,
-                color: AppColor.goldDeep,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _StoreCard extends StatelessWidget {
   const _StoreCard({
     required this.store,
@@ -190,7 +99,7 @@ class _StoreCard extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: BookingRadioDot(selected: selected),
+            child: BookingRadioDot(selected: selected, check: true),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -213,35 +122,7 @@ class _StoreCard extends StatelessWidget {
                       const _LiteBadge(),
                     ],
                     const SizedBox(width: 8),
-                    if (distanceKm != null)
-                      Text(
-                        l10n.homeNearbyDistance(
-                          distanceKm! < 10
-                              ? distanceKm!.toStringAsFixed(1)
-                              : distanceKm!.round().toString(),
-                        ),
-                        style: AppTextStyle.bodySmall.copyWith(
-                          fontSize: 11,
-                          color: AppColor.inkSoft,
-                        ),
-                      )
-                    else ...<Widget>[
-                      Image.asset(
-                        AppAssets.starDashboard,
-                        width: 12,
-                        height: 12,
-                        fit: BoxFit.contain,
-                        filterQuality: FilterQuality.medium,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        store.avgRating.toStringAsFixed(1),
-                        style: AppTextStyle.bodySmall.copyWith(
-                          fontSize: 11,
-                          color: AppColor.inkSoft,
-                        ),
-                      ),
-                    ],
+                    _StoreMetric(store: store, distanceKm: distanceKm),
                   ],
                 ),
                 const SizedBox(height: 3),
@@ -265,14 +146,28 @@ class _StoreCard extends StatelessWidget {
                         arguments: StoreDetailArgs(storeId: store.id),
                       ),
                       behavior: HitTestBehavior.opaque,
-                      child: Text(
-                        l10n.bookingViewStore,
-                        style: AppTextStyle.bodySmall.copyWith(
-                          fontSize: 11,
-                          color: AppColor.goldDeep,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColor.goldDeep,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            l10n.bookingViewStore,
+                            style: AppTextStyle.bodySmall.copyWith(
+                              fontSize: 11,
+                              color: AppColor.goldDeep,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColor.goldDeep,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Image.asset(
+                            AppAssets.arrowLongIcon,
+                            width: 12,
+                            height: 10,
+                            fit: BoxFit.contain,
+                            color: AppColor.goldDeep,
+                            filterQuality: FilterQuality.medium,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -286,23 +181,69 @@ class _StoreCard extends StatelessWidget {
   }
 }
 
+/// Jarak kalau lokasi tersedia, kalau tidak jatuh ke rating.
+class _StoreMetric extends StatelessWidget {
+  const _StoreMetric({required this.store, required this.distanceKm});
+
+  final StoreSummary store;
+  final double? distanceKm;
+
+  @override
+  Widget build(BuildContext context) {
+    final double? km = distanceKm;
+
+    if (km == null) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Image.asset(
+            AppAssets.starDashboard,
+            width: 12,
+            height: 12,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.medium,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            store.avgRating.toStringAsFixed(1),
+            style: AppTextStyle.bodySmall.copyWith(
+              fontSize: 11,
+              color: AppColor.inkSoft,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Text(
+      AppLocalizations.of(context).homeNearbyDistance(
+        km < 10 ? km.toStringAsFixed(1) : km.round().toString(),
+      ),
+      style: AppTextStyle.bodySmall.copyWith(
+        fontSize: 11.5,
+        color: AppColor.inkSoft,
+      ),
+    );
+  }
+}
+
 class _LiteBadge extends StatelessWidget {
   const _LiteBadge();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColor.ink,
-        borderRadius: BorderRadius.circular(4),
+        color: AppColor.goldSoft.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
         'LITE',
         style: AppTextStyle.labelSmall.copyWith(
           fontSize: 8,
           fontWeight: FontWeight.w700,
-          color: AppColor.surface,
+          color: AppColor.orangeDark,
           letterSpacing: 0.5,
         ),
       ),
