@@ -84,6 +84,7 @@ func main() {
 	{
 		profile.Use(h.AuthMiddleware)
 		profile.GET("/customer", h.CustomerHandler.GetProfile)
+		profile.PATCH("/customer", h.CustomerHandler.UpdateProfile)
 		profile.GET("/staff", h.StaffHandler.GetProfile)
 	}
 

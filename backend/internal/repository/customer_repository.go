@@ -4,6 +4,7 @@ import (
 	"barberstuff_backend/internal/entity"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -16,6 +17,7 @@ type CustomerRepository interface {
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Customer, error)
 	CountNewCustomers(startDate, endDate time.Time) (int64, error)
+	UpdateProfile(v interface{}, id uuid.UUID) (int64, error)
 }
 
 type customerRepository struct {
@@ -97,4 +99,13 @@ func (r *customerRepository) CountNewCustomers(startDate, endDate time.Time) (in
 		Where("created_at >= ? AND created_at < ?", startDate, endDate).
 		Count(&count).Error
 	return count, err
+}
+
+func (r *customerRepository) UpdateProfile(v interface{}, id uuid.UUID) (int64, error) {
+	result := r.db.
+		Model(&entity.Customer{}).
+		Where("id = ?", id).
+		Updates(v)
+
+	return result.RowsAffected, result.Error
 }

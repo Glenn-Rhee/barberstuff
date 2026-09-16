@@ -27,6 +27,7 @@ type CustomerService interface {
 	ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) (dto.ForgotPassswordResponse, error)
 	GetProfile(claims *lib.CustomClaims) (dto.ProfileCustomerResponse, error)
 	FindCustomers(params dto.FindCustomerRequest) (dto.FindCustomerResponse, dto.ResponsePagination, error)
+	UpdateProfile(claims *lib.CustomClaims, req dto.UpdateProfileRequest) error
 }
 
 type customerService struct {
@@ -523,6 +524,46 @@ func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCusto
 	}
 
 	return dataResult, nil
+}
+
+func (c *customerService) UpdateProfile(claims *lib.CustomClaims, req dto.UpdateProfileRequest) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data profile user!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idUser, err := uuid.Parse(claims.UserId)
+	if err != nil {
+		return errors.New("Data anda tidak valid. Mohon untuk login ulang.")
+	}
+
+	if helper.IsAllFieldsNil(req) {
+		return errors.New("Update minimal 1 data profile.")
+	}
+
+	var updates = make(map[string]interface{})
+
+	if req.Name != nil {
+		updates["name"] = req.Name
+	}
+
+	if req.ImageUrl != nil {
+		updates["image_url"] = req.ImageUrl
+	}
+
+	if req.PhoneNumber != nil {
+		updates["phone_number"] = req.PhoneNumber
+	}
+
+	rowsAffected, err := c.customerRepo.UpdateProfile(updates, idUser)
+	if err != nil {
+		helper.Logger("update data profile", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Data tidak ditemukan atau telah dihapus.")
+	}
+
+	return nil
 }
 
 func (c *customerService) sendOtp(ctx context.Context, userId uuid.UUID, otpPlain string, email string, name string, description string) error {

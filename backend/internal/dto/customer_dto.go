@@ -8,7 +8,7 @@ import (
 )
 
 type CredentialCustomerRequest struct {
-	Name        string        `json:"name" binding:"required"`
+	Name        string        `json:"name" binding:"required,min=1"`
 	PhoneNumber string        `json:"phoneNumber" binding:"required,min=9,max=15"`
 	DateOfBirth time.Time     `json:"date_of_birth" binding:"required"`
 	Gender      entity.Gender `json:"gender" binding:"required,oneof=male female"`
@@ -23,7 +23,7 @@ type CredentialCustomerResponse struct {
 }
 
 type OauthCustomerRequest struct {
-	Name        string        `json:"name" binding:"required"`
+	Name        string        `json:"name" binding:"required,min=1"`
 	TempToken   string        `json:"temp_token" binding:"required"`
 	PhoneNumber string        `json:"phoneNumber" binding:"required,min=9,max=15"`
 	DateOfBirth time.Time     `json:"date_of_birth" binding:"required"`
@@ -84,6 +84,12 @@ type ProfileCustomerResponse struct {
 	IsVerified    bool             `json:"is_verified"`
 	LoginType     entity.LoginType `json:"login_type"`
 	OauthProvider string           `json:"oauth_provider"`
+}
+
+type UpdateProfileRequest struct {
+	Name        *string `json:"name" binding:"omitempty,min=1"`
+	ImageUrl    *string `json:"image_url" binding:"omitempty,url"`
+	PhoneNumber *string `json:"phoneNumber" binding:"omitempty,min=9,max=15"`
 }
 
 type SortCustomer string
