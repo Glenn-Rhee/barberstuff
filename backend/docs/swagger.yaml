@@ -192,6 +192,7 @@ definitions:
       image_url:
         type: string
       name:
+        minLength: 1
         type: string
       password:
         minLength: 5
@@ -506,6 +507,7 @@ definitions:
       image_url:
         type: string
       name:
+        minLength: 1
         type: string
       phoneNumber:
         maxLength: 15
@@ -784,6 +786,18 @@ definitions:
         enum:
         - active
         - inactive
+    type: object
+  dto.UpdateProfileRequest:
+    properties:
+      image_url:
+        type: string
+      name:
+        minLength: 1
+        type: string
+      phoneNumber:
+        maxLength: 15
+        minLength: 9
+        type: string
     type: object
   dto.UpdateServiceRequest:
     properties:
@@ -1830,6 +1844,39 @@ paths:
       security:
       - BearerAuth: []
       summary: Ambil profil customer
+      tags:
+      - Customer
+    patch:
+      consumes:
+      - application/json
+      description: Mengupdate data customer. Field yang ingin diubah dapat dikirim
+        secara parsial, sehingga tidak semua field wajib dikirim. Hanya customer yang
+        dapat mengakses.
+      parameters:
+      - description: Data customer yang ingin diupdate
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengupdate customer
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid atau gagal mengupdate customer
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Update data customer
       tags:
       - Customer
   /profile/staff:

@@ -261,6 +261,20 @@ func (h *CustomerHandler) GetProfile(ctx *gin.Context) {
 	})
 }
 
+// UpdateProfile godoc
+// @Summary      Update data customer
+// @Description  Mengupdate data customer. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Hanya customer yang dapat mengakses.
+// @Tags         Customer
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        body body dto.UpdateProfileRequest true "Data customer yang ingin diupdate"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil mengupdate customer"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid atau gagal mengupdate customer"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /profile/customer [patch]
 func (h *CustomerHandler) UpdateProfile(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
