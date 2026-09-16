@@ -15,11 +15,10 @@ FROM alpine:latest
 
 WORKDIR /app
 
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache tzdata && touch .env
 
 COPY --from=builder /app/app .
 COPY --from=builder /app/templates ./templates
-COPY --from=builder /app/.env .
 
 EXPOSE 8080
 
