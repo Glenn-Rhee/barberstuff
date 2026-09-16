@@ -18,6 +18,7 @@ import (
 type ServiceService interface {
 	GetServices(query dto.QueryParamsService, claims *lib.CustomClaims) ([]dto.GetServiceResponse, dto.ResponsePagination, error)
 	CreateService(req dto.CreateServiceRequest) error
+	UpdateService(req dto.UpdateServiceRequest, id string) error
 }
 
 type serviceService struct {
@@ -175,6 +176,49 @@ func (s *serviceService) CreateService(req dto.CreateServiceRequest) error {
 	if err != nil {
 		helper.Logger("create data service", filePath, err)
 		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *serviceService) UpdateService(req dto.UpdateServiceRequest, id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengubah data!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idService, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id service tidak valid!")
+	}
+
+	if helper.IsAllFieldsNil(req) {
+		return errors.New("Update setidaknya 1 data.")
+	}
+
+	var updates = make(map[string]interface{})
+	if req.Name != nil {
+		updates["name"] = req.Name
+	}
+
+	if req.Price != nil {
+		updates["price"] = decimal.NewFromFloat(*req.Price)
+	}
+
+	if req.Description != nil {
+		updates["description"] = req.Description
+	}
+
+	if req.Status != nil {
+		updates["status"] = req.Status
+	}
+
+	rowsAffected, err := s.serviceRepo.Updates(updates, idService)
+	if err != nil {
+		helper.Logger("update data service", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Data service tidak ditemukan atau telah dihapus!")
 	}
 
 	return nil

@@ -73,6 +73,6 @@ func (r *capsterRepository) SoftDelete(id uuid.UUID) (int64, error) {
 	result := r.db.
 		Model(&entity.Capster{}).
 		Where("id = ?", id).
-		Update("deleted_at",time.Now())
+		Update("deleted_at", time.Now())
 	return result.RowsAffected, result.Error
 }

@@ -42,3 +42,10 @@ type CreateServiceRequest struct {
 	IdStore     string                 `json:"id_store" binding:"required"`
 	Type        entity.ProductTypeEnum `json:"type" binding:"required,oneof=service package"`
 }
+
+type UpdateServiceRequest struct {
+	Name        *string                   `json:"name" binding:"omitempty"`
+	Price       *float64                  `json:"price" binding:"omitempty,min=1000"`
+	Description *string                   `json:"description" binding:"omitempty"`
+	Status      *entity.ProductStatusEnum `json:"status" binding:"omitempty,oneof=active inactive"`
+}
