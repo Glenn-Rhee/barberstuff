@@ -144,6 +144,27 @@ definitions:
     - id_store
     - name
     type: object
+  dto.CreateCashireBookingRequest:
+    properties:
+      booking_date:
+        type: string
+      customer:
+        $ref: '#/definitions/dto.CustomerBookingCashier'
+      id_capster:
+        type: string
+      id_services:
+        items:
+          type: string
+        type: array
+      id_store:
+        type: string
+    required:
+    - booking_date
+    - customer
+    - id_capster
+    - id_services
+    - id_store
+    type: object
   dto.CreateRatingRequest:
     properties:
       id_booking:
@@ -226,6 +247,17 @@ definitions:
     required:
     - email
     - password
+    type: object
+  dto.CustomerBookingCashier:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      phoneNumber:
+        maxLength: 15
+        minLength: 9
+        type: string
     type: object
   dto.CustomerBookings:
     properties:
@@ -903,12 +935,14 @@ definitions:
     - CapsterStatusInactive
   entity.Gender:
     enum:
-    - Male
-    - Female
+    - male
+    - female
+    - other
     type: string
     x-enum-varnames:
     - GenderMale
     - GenderFemale
+    - GenderOther
   entity.LoginType:
     enum:
     - OAuth
@@ -2267,6 +2301,43 @@ paths:
       security:
       - BearerAuth: []
       summary: Ubah akun staff
+      tags:
+      - Staff
+  /staff/booking:
+    post:
+      consumes:
+      - application/json
+      description: Membuat booking baru untuk customer yang dilakukan oleh cashier.
+        Data booking meliputi toko, capster, layanan, jadwal booking, serta data customer.
+      parameters:
+      - description: Data booking
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCashireBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal membuat booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Membuat booking customer
       tags:
       - Staff
   /store:

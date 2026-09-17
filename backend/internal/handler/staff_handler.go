@@ -382,6 +382,21 @@ func (h *StaffHandler) DeleteAccountStaff(ctx *gin.Context) {
 	})
 }
 
+// CreateBooking godoc
+// @Summary      Membuat booking customer
+// @Description  Membuat booking baru untuk customer yang dilakukan oleh cashier. Data booking meliputi toko, capster, layanan, jadwal booking, serta data customer.
+// @Tags         Staff
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        body body dto.CreateCashireBookingRequest true "Data booking"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membuat booking"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal membuat booking"
+// @Router       /staff/booking [post]
 func (h *StaffHandler) CreateBooking(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

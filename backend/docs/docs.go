@@ -1918,6 +1918,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/staff/booking": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Membuat booking baru untuk customer yang dilakukan oleh cashier. Data booking meliputi toko, capster, layanan, jadwal booking, serta data customer.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Membuat booking customer",
+                "parameters": [
+                    {
+                        "description": "Data booking",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCashireBookingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membuat booking",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal membuat booking",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/staff/{id}": {
             "delete": {
                 "security": [
@@ -2553,6 +2610,36 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateCashireBookingRequest": {
+            "type": "object",
+            "required": [
+                "booking_date",
+                "customer",
+                "id_capster",
+                "id_services",
+                "id_store"
+            ],
+            "properties": {
+                "booking_date": {
+                    "type": "string"
+                },
+                "customer": {
+                    "$ref": "#/definitions/dto.CustomerBookingCashier"
+                },
+                "id_capster": {
+                    "type": "string"
+                },
+                "id_services": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id_store": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateRatingRequest": {
             "type": "object",
             "required": [
@@ -2673,6 +2760,22 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "minLength": 5
+                }
+            }
+        },
+        "dto.CustomerBookingCashier": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "maxLength": 15,
+                    "minLength": 9
                 }
             }
         },
@@ -3696,12 +3799,14 @@ const docTemplate = `{
         "entity.Gender": {
             "type": "string",
             "enum": [
-                "Male",
-                "Female"
+                "male",
+                "female",
+                "other"
             ],
             "x-enum-varnames": [
                 "GenderMale",
-                "GenderFemale"
+                "GenderFemale",
+                "GenderOther"
             ]
         },
         "entity.LoginType": {
