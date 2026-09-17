@@ -1,3 +1,7 @@
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
+import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
+
 class ActiveBooking {
   const ActiveBooking({
     required this.orderId,
@@ -14,6 +18,15 @@ class ActiveBooking {
   final String capsterName;
   final DateTime schedule;
   final String? capsterPhotoUrl;
+
+  /// 8 karakter pertama UUID dipakai sebagai nomor order yang enak dibaca.
+  factory ActiveBooking.fromRecord(BookingRecord record) => ActiveBooking(
+    orderId: record.id.length > 8 ? record.id.substring(0, 8) : record.id,
+    storeName: record.storeName,
+    storeAddress: record.storeAddress,
+    capsterName: record.capsterName,
+    schedule: record.scheduledAt,
+  );
 }
 
 class NearbyStore {
@@ -24,6 +37,7 @@ class NearbyStore {
     required this.rating,
     required this.distanceKm,
     required this.imageAsset,
+    this.imageUrl,
   });
 
   final String id;
@@ -32,6 +46,19 @@ class NearbyStore {
   final double rating;
   final double distanceKm;
   final String imageAsset;
+  final String? imageUrl;
+
+  factory NearbyStore.fromSummary(StoreSummary store, {double? distanceKm}) {
+    return NearbyStore(
+      id: store.id,
+      name: store.name,
+      city: store.address,
+      rating: store.avgRating,
+      distanceKm: distanceKm ?? 0,
+      imageAsset: AppAssets.storeDepok,
+      imageUrl: store.bannerUrl.isEmpty ? null : store.bannerUrl,
+    );
+  }
 }
 
 class HaircutHistory {
@@ -50,6 +77,15 @@ class HaircutHistory {
   final DateTime date;
   final String storeName;
   final int price;
+
+  factory HaircutHistory.fromRecord(BookingRecord record) => HaircutHistory(
+    id: record.id,
+    serviceName: record.serviceName,
+    capsterName: record.capsterName,
+    date: record.scheduledAt,
+    storeName: record.storeName,
+    price: record.grandTotal.round(),
+  );
 }
 
 class BenefitItem {

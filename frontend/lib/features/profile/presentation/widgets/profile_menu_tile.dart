@@ -3,6 +3,7 @@ import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 
+/// Satu baris menu. Rangka kartu dipegang [ProfileMenuGroup].
 class ProfileMenuTile extends StatelessWidget {
   const ProfileMenuTile({
     super.key,
@@ -13,7 +14,6 @@ class ProfileMenuTile extends StatelessWidget {
   });
 
   static const double _badge = 38;
-  static const double _radius = 12;
 
   final String iconPath;
   final String label;
@@ -28,15 +28,6 @@ class ProfileMenuTile extends StatelessWidget {
       color: danger
           ? AppColor.danger.withValues(alpha: 0.07)
           : AppColor.surface,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_radius),
-        side: BorderSide(
-          color: danger
-              ? AppColor.danger.withValues(alpha: 0.3)
-              : AppColor.border,
-        ),
-      ),
       child: InkWell(
         onTap: onTap,
         splashColor: tint.withValues(alpha: 0.08),
@@ -88,6 +79,35 @@ class ProfileMenuTile extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Membungkus tile jadi satu kartu dempet dengan garis pemisah.
+class ProfileMenuGroup extends StatelessWidget {
+  const ProfileMenuGroup({super.key, required this.children});
+
+  static const double _radius = 12;
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(_radius),
+        border: Border.all(color: AppColor.border),
+      ),
+      child: Column(
+        children: <Widget>[
+          for (int i = 0; i < children.length; i++) ...<Widget>[
+            if (i > 0)
+              const Divider(height: 1, thickness: 1, color: AppColor.border),
+            children[i],
+          ],
+        ],
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
@@ -8,6 +7,7 @@ import 'package:mobile_barberstuff/features/history/presentation/provider/histor
 import 'package:mobile_barberstuff/features/history/presentation/widgets/history_card.dart';
 import 'package:mobile_barberstuff/features/history/presentation/widgets/review_sheet.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +51,7 @@ class HistoryView extends StatelessWidget {
     final ReviewDraft? draft = await showReviewSheet(
       context,
       readOnly: item.isReviewed,
+      initial: context.read<HistoryRepository>().reviewOf(item.id),
     );
     if (draft == null || !context.mounted) return;
 
@@ -72,7 +73,12 @@ class HistoryView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(sidePadding, 18, sidePadding, 14),
+              padding: const EdgeInsets.fromLTRB(
+                sidePadding,
+                18,
+                sidePadding,
+                14,
+              ),
               child: Text(
                 l10n.historyTitle,
                 style: AppTextStyle.headlineMedium.copyWith(
@@ -81,8 +87,13 @@ class HistoryView extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(sidePadding, 0, sidePadding, 12),
-              child: _SearchBar(
+              padding: const EdgeInsets.fromLTRB(
+                sidePadding,
+                0,
+                sidePadding,
+                12,
+              ),
+              child: AppSearchBar(
                 controller: p.searchController,
                 hint: l10n.bookingSearchHint,
               ),
@@ -136,64 +147,6 @@ class HistoryView extends StatelessWidget {
   }
 }
 
-class _SearchBar extends StatelessWidget {
-  const _SearchBar({required this.controller, required this.hint});
-
-  final TextEditingController controller;
-  final String hint;
-
-  static OutlineInputBorder _border(Color color) => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8),
-    borderSide: BorderSide(color: color),
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: TextField(
-            controller: controller,
-            style: AppTextStyle.bodySmall.copyWith(fontSize: 13),
-            cursorColor: AppColor.goldDeep,
-            decoration: InputDecoration(
-              isDense: true,
-              hintText: hint,
-              hintStyle: AppTextStyle.bodySmall.copyWith(
-                fontSize: 13,
-                color: AppColor.inkFaint,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 13,
-              ),
-              border: _border(AppColor.border),
-              enabledBorder: _border(AppColor.border),
-              focusedBorder: _border(AppColor.goldDeep),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColor.goldDeep,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.all(12),
-          child: Image.asset(
-            AppAssets.searchBookingIcon,
-            width: 18,
-            height: 18,
-            fit: BoxFit.contain,
-            color: AppColor.surface,
-            filterQuality: FilterQuality.medium,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _TabChip extends StatelessWidget {
   const _TabChip({
     required this.label,
@@ -225,7 +178,7 @@ class _TabChip extends StatelessWidget {
               style: AppTextStyle.labelMedium.copyWith(
                 fontSize: 12.5,
                 fontWeight: active ? FontWeight.w600 : FontWeight.w500,
-                color: active ? AppColor.surface : AppColor.goldDeep,
+                color: active ? AppColor.surface : AppColor.ink,
               ),
             ),
           ),

@@ -1,10 +1,12 @@
-import 'dart:io';
 
+
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/store/data/datasources/store_remote_datasource.dart';
@@ -14,7 +16,6 @@ import 'package:mobile_barberstuff/features/store/presentation/pages/store_detai
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-
 import 'support/fake_booking_repository.dart';
 
 class _FakeStoreRepository extends StoreRepository {
@@ -125,11 +126,7 @@ void main() {
     await loader.load();
   });
 
-  Future<void> pump(
-    WidgetTester tester,
-    double width,
-    Locale locale,
-  ) async {
+  Future<void> pump(WidgetTester tester, double width, Locale locale) async {
     final cache = await FakeBookingRepository.emptyCache();
 
     await tester.pumpWidget(
@@ -139,6 +136,7 @@ void main() {
           Provider<BookingRepository>.value(
             value: _ServiceBookingRepository(cache),
           ),
+          Provider<LocationService>.value(value: LocationService(cache)),
         ],
         child: MaterialApp(
           locale: locale,
@@ -185,29 +183,26 @@ void main() {
   for (final Locale locale in <Locale>[Locale('id'), Locale('en')]) {
     for (final double width in <double>[320, 360, 390, 430]) {
       for (final double scale in <double>[1.0, 1.3]) {
-        testWidgets(
-          'detail toko tanpa overflow: '
-          '${locale.languageCode} ${width.toInt()}dp x$scale',
-          (WidgetTester tester) async {
-            tester.view.physicalSize = Size(width, 1200);
-            tester.view.devicePixelRatio = 1;
-            tester.platformDispatcher.textScaleFactorTestValue = scale;
-            addTearDown(tester.view.reset);
-            addTearDown(
-              tester.platformDispatcher.clearTextScaleFactorTestValue,
-            );
+        testWidgets('detail toko tanpa overflow: '
+            '${locale.languageCode} ${width.toInt()}dp x$scale', (
+          WidgetTester tester,
+        ) async {
+          tester.view.physicalSize = Size(width, 1200);
+          tester.view.devicePixelRatio = 1;
+          tester.platformDispatcher.textScaleFactorTestValue = scale;
+          addTearDown(tester.view.reset);
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
-            await pump(tester, width, locale);
-            expect(tester.takeException(), isNull, reason: 'tab tentang kami');
+          await pump(tester, width, locale);
+          expect(tester.takeException(), isNull, reason: 'tab tentang kami');
 
-            for (final String label in <String>['Paket', 'Packages']) {
-              if (find.text(label).evaluate().isEmpty) continue;
-              await tester.tap(find.text(label));
-              await tester.pumpAndSettle();
-            }
-            expect(tester.takeException(), isNull, reason: 'tab paket');
-          },
-        );
+          for (final String label in <String>['Paket', 'Packages']) {
+            if (find.text(label).evaluate().isEmpty) continue;
+            await tester.tap(find.text(label));
+            await tester.pumpAndSettle();
+          }
+          expect(tester.takeException(), isNull, reason: 'tab paket');
+        });
       }
     }
   }

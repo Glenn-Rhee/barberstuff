@@ -19,9 +19,9 @@ class BenefitCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double scale = MediaQuery.textScalerOf(context)
-        .scale(1)
-        .clamp(1.0, 1.8);
+    final double scale = MediaQuery.textScalerOf(
+      context,
+    ).scale(1).clamp(1.0, 1.8);
     final double cardWidth =
         MediaQuery.sizeOf(context).width - (horizontalPadding * 2) - _peek;
 

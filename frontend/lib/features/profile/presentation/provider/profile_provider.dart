@@ -29,6 +29,15 @@ class ProfileProvider extends ChangeNotifier {
   bool get isFromCache => _fromCache;
   DateTime? get cachedAt => _cachedAt;
 
+  /// Dipanggil saat logout supaya sesi berikutnya tidak melihat data lama.
+  void reset() {
+    _fetched = null;
+    _error = null;
+    _fromCache = false;
+    _cachedAt = null;
+    notifyListeners();
+  }
+
   Future<void> load() async {
     if (_isLoading) return;
 

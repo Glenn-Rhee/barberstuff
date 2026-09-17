@@ -13,7 +13,7 @@ class DashboardBottomNav extends StatelessWidget {
     required this.onSelect,
   });
 
-  static const double _radius = 26;
+  static const double _radius = 28;
 
   final DashboardTab current;
   final void Function(DashboardTab tab) onSelect;
@@ -48,18 +48,20 @@ class DashboardBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    return Container(
+    // Dipisahkan bayangan, bukan garis: border tak seragam dilarang dipakai
+    // bersama borderRadius, dan garis kerasnya terputus di lengkung sudut.
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: AppColor.surface,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(_radius),
         ),
-        border: Border.all(color: AppColor.border),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: AppColor.backdrop.withValues(alpha: 0.07),
+            color: AppColor.backdrop.withValues(alpha: 0.12),
             blurRadius: 18,
-            offset: const Offset(0, -4),
+            spreadRadius: 1,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
@@ -70,7 +72,7 @@ class DashboardBottomNav extends StatelessWidget {
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.fromLTRB(4, 10, 4, 6),
             child: Row(
               children: <Widget>[
                 for (final DashboardTab tab in DashboardTab.values)

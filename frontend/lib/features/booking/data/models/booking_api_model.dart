@@ -195,8 +195,8 @@ class StoreSlots {
 
     return StoreSlots(
       idStore: _toText(json['id_store']),
-      date: DateTime.tryParse(_toText(json['date']))?.toLocal() ??
-          DateTime.now(),
+      date:
+          DateTime.tryParse(_toText(json['date']))?.toLocal() ?? DateTime.now(),
       slots: rawSlots is List
           ? rawSlots
                 .whereType<Map<String, dynamic>>()

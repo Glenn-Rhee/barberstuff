@@ -79,6 +79,7 @@ class BookingSelectCard extends StatelessWidget {
     required this.onTap,
     required this.child,
     this.padding = const EdgeInsets.fromLTRB(14, 12, 12, 12),
+    this.tinted = true,
   });
 
   final bool selected;
@@ -87,12 +88,15 @@ class BookingSelectCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
 
+  /// Latar krem saat terpilih. Kartu barber di desain tetap putih.
+  final bool tinted;
+
   @override
   Widget build(BuildContext context) {
     return Opacity(
       opacity: enabled ? 1 : 0.45,
       child: Material(
-        color: selected
+        color: selected && tinted
             ? AppColor.goldSoft.withValues(alpha: 0.18)
             : AppColor.surface,
         clipBehavior: Clip.antiAlias,
@@ -112,12 +116,18 @@ class BookingSelectCard extends StatelessWidget {
   }
 }
 
+/// [check] memakai centang penuh (pilih cabang); selain itu titik radio.
 class BookingRadioDot extends StatelessWidget {
-  const BookingRadioDot({super.key, required this.selected});
+  const BookingRadioDot({
+    super.key,
+    required this.selected,
+    this.check = false,
+  });
 
-  static const double _size = 20;
+  static const double _size = 22;
 
   final bool selected;
+  final bool check;
 
   @override
   Widget build(BuildContext context) {
@@ -126,24 +136,32 @@ class BookingRadioDot extends StatelessWidget {
       height: _size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: selected ? AppColor.goldDeep : AppColor.surface,
+        color: selected && check ? AppColor.orange : AppColor.surface,
         border: Border.all(
-          color: selected ? AppColor.goldDeep : AppColor.inkFaint,
-          width: 1.5,
+          color: selected ? AppColor.goldDeep : AppColor.border,
+          width: selected ? 2 : 1.5,
         ),
       ),
-      child: selected
-          ? Center(
-              child: Container(
-                width: 7,
-                height: 7,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColor.surface,
-                ),
+      child: !selected
+          ? null
+          : check
+          ? const Center(
+              child: Icon(
+                Icons.check_rounded,
+                size: 14,
+                color: AppColor.surface,
               ),
             )
-          : null,
+          : Center(
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColor.goldDeep,
+                ),
+              ),
+            ),
     );
   }
 }

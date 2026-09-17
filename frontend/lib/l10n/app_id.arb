@@ -1,29 +1,21 @@
 {
   "@@locale": "id",
   "appTitle": "Barberstuff",
-
   "onboardingFirstTitle": "Gaya yang pas untuk keseharianmu",
   "onboardingFirstDescription": "Temukan gaya rambut yang sesuai dengan karakter dan aktivitas harianmu.",
-
   "onboardingSecondTitle": "Booking cukur jadi lebih mudah",
   "onboardingSecondDescription": "Pilih cabang, barber, dan jam yang kamu mau tanpa perlu antre di tempat.",
-
   "onboardingThirdTitle": "Nikmati berbagai keuntungan member",
   "onboardingThirdDescription": "Kumpulkan poin di setiap kunjungan dan tukarkan dengan potongan harga.",
-
   "onboardingStart": "Ayo Mulai!",
-
   "chooseLoginWelcome": "Selamat Datang",
   "chooseLoginGoogleText": "Lanjutkan dengan Google",
   "chooseLoginDividerOr": "atau",
   "chooseLoginWithPasswordText": "Masuk dengan Kata Sandi",
   "chooseLoginTextMessage": "Belum punya akun?",
   "chooseLoginTextLink": "Daftar",
-
-
   "genderMale": "Laki-laki",
   "genderFemale": "Perempuan",
-
   "registerHeadline": "Buat Akun Anda",
   "registerNameLabel": "Nama Lengkap",
   "registerPhoneLabel": "Nomor Telepon",
@@ -35,13 +27,14 @@
   "registerHaveAccountQuestion": "Sudah punya akun?",
   "registerLoginAction": "Masuk",
   "registerOtpSentMessage": "OTP telah dikirim ke email Anda.",
-
   "verifyPageBarText": "Verifikasi Email",
   "verifyHeadline": "Periksa Email Anda",
   "verifyDescription": "Kami telah mengirimkan kode verifikasi 6 digit ke {email}. Silakan masukkan kode di bawah ini.",
   "@verifyDescription": {
     "placeholders": {
-      "email": { "type": "String" }
+      "email": {
+        "type": "String"
+      }
     }
   },
   "verifySubmitButton": "Verifikasi",
@@ -50,7 +43,9 @@
   "verifyResendCountdown": "Kirim ulang dalam {time}",
   "@verifyResendCountdown": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "verifyAttemptExhausted": "Kesempatan mencoba habis. Silakan kirim ulang kode.",
@@ -59,7 +54,6 @@
   "verifySuccessTitle": "Selamat!",
   "verifySuccessMessage": "Email Anda telah berhasil diverifikasi. Anda sekarang dapat mengakses semua fitur aplikasi kami.",
   "verifySuccessButton": "Lanjutkan",
-
   "loginHeadline": "Masuk ke Akun Anda",
   "loginEmailHint": "Email",
   "loginPasswordHint": "Kata Sandi",
@@ -68,12 +62,10 @@
   "loginForgotQuestion": "Lupa kata sandi?",
   "loginForgotAction": "Klik disini",
   "loginWithGoogle": "Masuk dengan Google",
-
   "forgotPageBarText": "Lupa Kata Sandi",
   "forgotHeadline": "Lupa Kata Sandi?",
   "forgotDescription": "Masukkan email akun Anda. Kami akan mengirimkan kode verifikasi untuk mengatur ulang kata sandi.",
   "forgotSubmitButton": "Kirim Kode",
-
   "resetPageBarText": "Kata Sandi Baru",
   "resetHeadline": "Buat Kata Sandi Baru",
   "resetDescription": "Kata sandi baru harus berbeda dari kata sandi yang pernah Anda pakai sebelumnya.",
@@ -84,64 +76,71 @@
   "resetSuccessTitle": "Selamat!",
   "resetSuccessMessage": "Kata sandi Anda berhasil diperbarui. Anda akan diarahkan ke halaman beranda.",
   "resetSuccessButton": "Ke Beranda",
-
   "exceptionReceiveTimeout": "Koneksi timeout. Periksa jaringan Anda.",
   "exceptionConnectionError": "Tidak dapat terhubung ke server.",
   "exceptionDefaultType": "Terjadi kesalahan pada server.",
   "exceptionDefault": "Terjadi Kesalahan yang tak terduga.",
-
   "validatorRequired": "{label} wajib diisi",
   "@validatorRequired": {
     "placeholders": {
-      "label": { "type": "String" }
+      "label": {
+        "type": "String"
+      }
     }
   },
   "validatorEmailInvalid": "Format email tidak valid",
   "validatorPasswordMin": "Kata Sandi minimal {min} karakter",
   "@validatorPasswordMin": {
     "placeholders": {
-      "min": { "type": "int" }
+      "min": {
+        "type": "int"
+      }
     }
   },
   "validatorPhoneMin": "Nomor Telepon minimal {min} digit",
   "@validatorPhoneMin": {
     "placeholders": {
-      "min": { "type": "int" }
+      "min": {
+        "type": "int"
+      }
     }
   },
   "validatorPhoneMax": "Nomor Telepon maksimal {max} digit",
   "@validatorPhoneMax": {
     "placeholders": {
-      "max": { "type": "int" }
+      "max": {
+        "type": "int"
+      }
     }
   },
   "validatorPhoneDigits": "Hanya boleh angka",
   "validatorPasswordMismatch": "Kata sandi tidak sama",
-
   "googleSignInFailed": "Gagal masuk dengan Google. Silakan coba lagi.",
   "completeProfileTitle": "Lengkapi Profil",
   "completeProfileSubtitle": "Sedikit lagi. Lengkapi data dirimu untuk mulai memakai Barberstuff.",
   "completeProfileSubmit": "Lanjutkan",
   "completeProfileEmailLocked": "Email dari Google tidak bisa diubah",
-
   "avatarSheetTitle": "Foto Profil",
   "avatarSheetCamera": "Ambil Foto",
   "avatarSheetGallery": "Pilih dari Galeri",
   "avatarSheetRemove": "Hapus Foto",
   "avatarPickFailed": "Gagal membuka galeri atau kamera. Coba lagi.",
   "avatarPermissionDenied": "Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.",
-
   "homeGreeting": "Halo, {name}!",
   "@homeGreeting": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "homeWelcomeBack": "Selamat datang kembali",
   "homePoints": "{points} Poin",
   "@homePoints": {
     "placeholders": {
-      "points": { "type": "String" }
+      "points": {
+        "type": "String"
+      }
     }
   },
   "homeMemberBadge": "MEMBER",
@@ -150,7 +149,9 @@
   "homeRedeemPoints": "Tukarkan point anda",
   "@homePointsToPremium": {
     "placeholders": {
-      "points": { "type": "String" }
+      "points": {
+        "type": "String"
+      }
     }
   },
   "homeBirthdayTitle": "Spesial Hari Ulang Tahun!",
@@ -158,13 +159,11 @@
   "homeSeePromo": "Lihat Promo",
   "homeBirthdayBadge": "Tampil terbaik setiap hari",
   "homeBookingNow": "Booking Sekarang",
-
   "homeActionBooking": "Booking",
   "homeActionPackage": "Paket",
   "homeActionPromo": "Promo",
   "homeActionHistory": "Riwayat",
   "bookingBranchNewBadge": "NEWBIE",
-
   "homeBenefitTitle": "Benefit Barberstuff",
   "homeBenefitPoints": "Poin reward setiap kali potong rambut",
   "homeBenefitBirthday": "Diskon khusus dan penawaran ulang tahun",
@@ -172,33 +171,36 @@
   "homeBenefitDiscountTitle": "Diskon Lebih Banyak Cukur!",
   "homeBenefitPointsTitle": "Poin di Setiap Potongan",
   "homeBenefitPriorityTitle": "Prioritas Tanpa Antre",
-
   "homeActiveBookingTitle": "Booking Aktif",
   "homeBookingUpcoming": "MENDATANG",
   "homeBookingOrderId": "Order ID #{id}",
   "@homeBookingOrderId": {
     "placeholders": {
-      "id": { "type": "String" }
+      "id": {
+        "type": "String"
+      }
     }
   },
   "homeBookingDetail": "Lihat Detail",
   "homeBookingCapster": "Capster {name}",
   "@homeBookingCapster": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "homeBookingEmpty": "Belum ada booking aktif.",
-
   "homeNearbyTitle": "Cabang Terdekat",
   "homeNearbySeeAll": "Lihat Semua",
   "homeNearbyDistance": "{distance} km",
   "@homeNearbyDistance": {
     "placeholders": {
-      "distance": { "type": "String" }
+      "distance": {
+        "type": "String"
+      }
     }
   },
-
   "homeHistoryTitle": "Riwayat Potongan",
   "homeHistorySeeAll": "Lihat Riwayat",
   "homeHistoryEmpty": "Belum ada riwayat potongan.",
@@ -206,17 +208,22 @@
   "homeHistoryBy": "oleh {name}",
   "@homeHistoryBy": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "homeNearbyLocation": "{city} • {distance} km",
   "@homeNearbyLocation": {
     "placeholders": {
-      "city": { "type": "String" },
-      "distance": { "type": "String" }
+      "city": {
+        "type": "String"
+      },
+      "distance": {
+        "type": "String"
+      }
     }
   },
-
   "navHome": "Home",
   "navBooking": "Booking",
   "navHistory": "Riwayat",
@@ -228,7 +235,9 @@
   "storeReviewCount": "({count} reviews)",
   "@storeReviewCount": {
     "placeholders": {
-      "count": { "type": "String" }
+      "count": {
+        "type": "String"
+      }
     }
   },
   "storeActionCall": "Telepon",
@@ -252,7 +261,9 @@
   "storeTypeCount": "{count} types",
   "@storeTypeCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "storeShareCopied": "Info toko disalin ke clipboard",
@@ -281,7 +292,6 @@
   "reviewSubmit": "Kirim",
   "reviewNeedStars": "Beri bintang dulu untuk semua penilaian.",
   "reviewThanks": "Terima kasih atas ulasanmu!",
-
   "notificationTitle": "Notifikasi",
   "notificationSearchHint": "Cari notifikasi...",
   "notificationFilterAll": "Semua",
@@ -296,19 +306,25 @@
   "notificationTimeMinute": "{count} mnt lalu",
   "@notificationTimeMinute": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "notificationTimeHour": "{count} jam lalu",
   "@notificationTimeHour": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "notificationTimeDay": "{count} hari lalu",
   "@notificationTimeDay": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "notificationBookingTitle": "Jadwal Booking Dikonfirmasi!",
@@ -319,11 +335,9 @@
   "notificationMembershipBody": "Anda telah mencapai level Premium! Nikmati berbagai keuntungan eksklusif tanpa antre.",
   "notificationRecommendationTitle": "Rekomendasi Gaya Rambut Baru",
   "notificationRecommendationBody": "Temukan tren gaya rambut pria terbaru tahun ini yang cocok dengan bentuk wajah Anda.",
-
-  "profileTierSilver": "Silver Member",
-  "profileTierGold": "Gold Member",
+  "profileTierSilver": "Silver Member Barberstuff",
+  "profileTierGold": "Gold Member Barberstuff",
   "profileTierPlatinum": "Platinum Member",
-
   "profileMenuPersonalInfo": "Informasi Pribadi",
   "profileMenuLanguage": "Bahasa",
   "profileMenuCard": "Barberstuff Card",
@@ -331,21 +345,16 @@
   "profileMenuHelp": "Pusat Bantuan",
   "profileMenuAbout": "Tentang Aplikasi",
   "profileMenuLogout": "Keluar",
-
   "profileLogoutTitle": "Keluar dari akun?",
   "profileLogoutMessage": "Anda perlu masuk lagi untuk memakai Barberstuff.",
-
   "languagePageTitle": "Pilih Bahasa",
   "languagePageDescription": "Silakan pilih bahasa yang nyaman bagi Anda untuk menikmati pengalaman terbaik bersama kami.",
   "languageIndonesian": "Bahasa Indonesia",
   "languageEnglish": "Inggris",
   "languageSelectAction": "Pilih",
-
   "commonCancel": "Batal",
-
   "cardPageTitle": "Barberstuff Card",
   "cardIdLabel": "ID User",
-
   "personalInfoTitle": "Informasi Pribadi",
   "personalInfoChangePhoto": "Ganti Foto Profil",
   "personalInfoPhotoFormat": "Support Format: JPEG, PNG, JPG",
@@ -355,7 +364,6 @@
   "personalInfoPasswordSubtitle": "Ganti Password Saya",
   "personalInfoPasswordAction": "Ganti Sekarang",
   "personalInfoSave": "Simpan Perubahan",
-
   "helpTitle": "Pusat Bantuan",
   "helpHeadline": "Butuh Bantuan? Ceritakan Masalah Anda",
   "helpSubtitle": "Isi formulir di bawah ini dan tim kami akan menghubungi Anda secepatnya.",
@@ -363,12 +371,13 @@
   "helpProblemLabel": "Ceritakan Masalah Anda",
   "helpProblemHint": "Tulis masalah yang Anda alami",
   "helpSubmit": "Kirim",
-
   "aboutTitle": "Tentang Aplikasi",
   "aboutLastUpdated": "Terakhir diperbarui: {date}",
   "@aboutLastUpdated": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "aboutIntro": "Dengan mengakses atau menggunakan aplikasi Barberstuff, Anda setuju untuk terikat pada Ketentuan Penggunaan ini.",
@@ -393,14 +402,17 @@
   "aboutDisclaimerBody": "Barberstuff disediakan sebagaimana adanya dan sebagaimana tersedia, tanpa jaminan dalam bentuk apa pun.",
   "aboutChangesTitle": "8. Perubahan Ketentuan",
   "aboutChangesBody": "Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.",
-
   "bookingTitle": "Booking",
   "bookingBranchTitle": "Pilih Cabang",
   "bookingStepLabel": "LANGKAH {current} DARI {total}",
   "@bookingStepLabel": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "bookingBranchSubtitle": "Tentukan cabang barbershop terdekat kamu",
@@ -422,7 +434,9 @@
   "bookingLockRemaining": "Sisa waktu {time}",
   "@bookingLockRemaining": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "bookingLockExpired": "Waktu kunci habis. Silakan pilih jadwal lagi.",
@@ -454,13 +468,13 @@
   "bookingStoreEmpty": "Cabang tidak ditemukan.",
   "bookingCapsterEmpty": "Belum ada capster di cabang ini.",
   "commonContinue": "Lanjutkan",
-
   "bookingScheduleTitle": "Pilih Jadwal",
   "bookingServiceTitle": "Pilih Layanan",
   "bookingDateLabel": "Tanggal",
   "bookingTimeLabel": "Jam",
   "bookingSingleServiceLabel": "Jasa Satuan",
   "bookingPackageLabel": "Paket",
+  "bookingServiceSingleOnly": "Server baru menerima satu layanan per booking. Pilih satu dulu, sisanya booking terpisah.",
   "bookingServiceEmpty": "Belum ada layanan tersedia.",
   "bookingSuccessTitle": "Pemesanan Berhasil!",
   "bookingSuccessMessage": "Pemesanan Anda telah berhasil dilakukan",
@@ -476,7 +490,6 @@
   "receiptSpecialist": "Specialist",
   "receiptTotal": "Total Harga",
   "receiptDownload": "Download E-Receipt",
-
   "comingSoonMessage": "Segera hadir!",
   "commonRetry": "Coba Lagi",
   "offlineCachedData": "Sedang offline — menampilkan data tersimpan",
@@ -490,6 +503,44 @@
   "permissionLocationOffMessage": "Layanan lokasi di HP kamu sedang mati. Nyalakan dulu supaya jarak cabang bisa dihitung.",
   "permissionOpenLocationSettings": "Nyalakan Lokasi",
   "commonUnderstood": "Oke",
-  "commonLogout": "Keluar"
-
+  "commonLogout": "Keluar",
+  "promoTitle": "Pilih Promo",
+  "promoGradeTitle": "Keuntungan Grade Ini",
+  "promoTerms": "S&K Berlaku",
+  "promoSectionTitle": "Promo",
+  "promoSectionSubtitle": "Promo menarik dari barberstuff, untuk pengguna",
+  "promoRedeemTitle": "Tukar Poin",
+  "promoRedeemSubtitle": "Tukarkan poin Anda dengan berbagai voucher menarik.",
+  "promoClaim": "Klaim",
+  "promoClaimReward": "Klaim Hadiah",
+  "promoAboutVoucher": "Tentang Voucher",
+  "promoClaimed": "Hadiah berhasil diklaim.",
+  "promoNotEnoughPoints": "Poin belum cukup untuk menukar hadiah ini.",
+  "promoPoints": "{count} Points",
+  "@promoPoints": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "promoXp": "{count} XP",
+  "@promoXp": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "promoProgress": "{owned}/{needed}",
+  "@promoProgress": {
+    "placeholders": {
+      "owned": {
+        "type": "String"
+      },
+      "needed": {
+        "type": "String"
+      }
+    }
+  }
 }

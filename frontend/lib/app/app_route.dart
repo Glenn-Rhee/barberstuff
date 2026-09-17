@@ -6,7 +6,7 @@ import 'package:mobile_barberstuff/features/auth/presentation/pages/login_page.d
 import 'package:mobile_barberstuff/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_success_page.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
+import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_flow_page.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_receipt_page.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_success_page.dart';
@@ -22,6 +22,7 @@ import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstu
 import 'package:mobile_barberstuff/features/profile/presentation/pages/help_center_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/language_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_info_page.dart';
+import 'package:mobile_barberstuff/features/promo/presentation/pages/promo_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
@@ -55,6 +56,7 @@ class AppRoute {
   static const String storeDetail = '/store-detail';
   static const String bookingSuccess = '/booking-success';
   static const String bookingReceipt = '/booking-receipt';
+  static const String promo = '/promo';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -125,17 +127,24 @@ class AppRoute {
         );
       case bookingSuccess:
         final Object? args = settings.arguments;
-        if (args is! BookingResult) return null;
+        if (args is! BookingRecord) return null;
         return MaterialPageRoute<void>(
           settings: settings,
-          builder: (BuildContext context) => BookingSuccessPage(result: args),
+          builder: (BuildContext context) => BookingSuccessPage(record: args),
         );
       case bookingReceipt:
         final Object? args = settings.arguments;
-        if (args is! BookingResult) return null;
+        if (args is! BookingRecord) return null;
         return MaterialPageRoute<void>(
           settings: settings,
-          builder: (BuildContext context) => BookingReceiptPage(result: args),
+          builder: (BuildContext context) => BookingReceiptPage(record: args),
+        );
+      case promo:
+        final Object? args = settings.arguments;
+        if (args is! PromoArgs) return null;
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => PromoPage(args: args),
         );
       case about:
         return MaterialPageRoute<void>(

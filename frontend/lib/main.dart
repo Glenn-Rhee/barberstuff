@@ -13,6 +13,7 @@ import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
 import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
+import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
 import 'package:mobile_barberstuff/features/booking/data/datasources/booking_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
@@ -20,6 +21,7 @@ import 'package:mobile_barberstuff/features/history/data/history_repository.dart
 import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/store/data/datasources/store_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/store/data/repositories/store_repository.dart';
 import 'package:provider/provider.dart';
@@ -56,8 +58,14 @@ Future<void> main() async {
         ChangeNotifierProvider<LocalController>.value(value: localController),
         ChangeNotifierProvider<DebugOverrides>(create: (_) => DebugOverrides()),
         ChangeNotifierProvider<BookingCatalog>(create: (_) => BookingCatalog()),
-        ChangeNotifierProvider<HistoryRepository>(
-          create: (_) => HistoryRepository(),
+        ChangeNotifierProvider<BookingJournal>(
+          create: (_) => BookingJournal(cache),
+        ),
+        ChangeNotifierProxyProvider<BookingJournal, HistoryRepository>(
+          create: (BuildContext ctx) =>
+              HistoryRepository(ctx.read<BookingJournal>()),
+          update: (_, BookingJournal journal, HistoryRepository? previous) =>
+              previous ?? HistoryRepository(journal),
         ),
         ChangeNotifierProvider<NotificationProvider>(
           create: (_) => NotificationProvider(),
@@ -87,14 +95,21 @@ Future<void> main() async {
           ),
         ),
         Provider<StoreRepository>(
-          create: (BuildContext ctx) => StoreRepository(
-            StoreRemoteDataSource(ctx.read<DioClient>().dio),
-          ),
+          create: (BuildContext ctx) =>
+              StoreRepository(StoreRemoteDataSource(ctx.read<DioClient>().dio)),
         ),
         Provider<ProfileRepository>(
           create: (BuildContext ctx) => ProfileRepository(
             ProfileRemoteDataSource(ctx.read<DioClient>().dio),
             ctx.read<AppCache>(),
+          ),
+        ),
+        // Lazy: baru memuat profil saat layar pertama membacanya, bukan saat
+        // aplikasi dibuka, supaya tidak menembak API sebelum login.
+        ChangeNotifierProvider<ProfileProvider>(
+          create: (BuildContext ctx) => ProfileProvider(
+            ctx.read<ProfileRepository>(),
+            ctx.read<DebugOverrides>(),
           ),
         ),
       ],

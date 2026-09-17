@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
+import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
+import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
+import 'package:mobile_barberstuff/features/booking/domain/store_distance.dart';
 
 enum BookingStep { terms, branch, schedule, capster, service, confirm }
 
@@ -14,8 +17,10 @@ class BookingFlowProvider extends ChangeNotifier {
     this._repo,
     this._cache, {
     LocationService? location,
+    BookingJournal? journal,
     Duration? lockDuration,
   }) : _location = location,
+       _journal = journal,
        _lockDuration = lockDuration ?? defaultLockDuration {
     searchController.addListener(_onSearchChanged);
     _selectedDay = DateUtils.dateOnly(DateTime.now());
@@ -30,6 +35,7 @@ class BookingFlowProvider extends ChangeNotifier {
   final BookingRepository _repo;
   final AppCache _cache;
   final LocationService? _location;
+  final BookingJournal? _journal;
   final Duration _lockDuration;
 
   final TextEditingController searchController = TextEditingController();
@@ -63,39 +69,23 @@ class BookingFlowProvider extends ChangeNotifier {
       <ProductType, List<ServiceItem>>{};
   bool _loadingServices = false;
   ApiException? _servicesError;
-  ServiceItem? _service;
+  final Map<ProductType, List<ServiceItem>> _picked =
+      <ProductType, List<ServiceItem>>{};
 
   bool _submitting = false;
   ApiException? _submitError;
   BookingResult? _result;
+  BookingRecord? _record;
 
   BookingStep get step => _step;
   bool get agreed => _agreed;
 
   List<StoreSummary> get stores => _stores;
 
-  double? distanceOf(StoreSummary store) {
-    final UserPosition? from = _position;
-    final StoreCoordinate? at = store.coordinate;
-    if (from == null || at == null) return null;
-
-    return LocationService.distanceKm(
-      from: from,
-      latitude: at.latitude,
-      longitude: at.longitude,
-    );
-  }
+  double? distanceOf(StoreSummary store) => storeDistanceKm(store, _position);
 
   void _sortByDistance() {
-    if (_position == null) return;
-
-    final List<StoreSummary> sorted = List<StoreSummary>.of(_stores);
-    sorted.sort((StoreSummary a, StoreSummary b) {
-      final double da = distanceOf(a) ?? double.infinity;
-      final double db = distanceOf(b) ?? double.infinity;
-      return da.compareTo(db);
-    });
-    _stores = sorted;
+    _stores = sortStoresByDistance(_stores, _position);
   }
 
   Future<void> _refreshPosition() async {
@@ -110,6 +100,7 @@ class BookingFlowProvider extends ChangeNotifier {
     _sortByDistance();
     notifyListeners();
   }
+
   bool get loadingStores => _loadingStores;
   bool get storesFromCache => _storesFromCache;
   ApiException? get storesError => _storesError;
@@ -139,11 +130,24 @@ class BookingFlowProvider extends ChangeNotifier {
       _services[_serviceTab] ?? const <ServiceItem>[];
   bool get loadingServices => _loadingServices;
   ApiException? get servicesError => _servicesError;
-  ServiceItem? get service => _service;
+
+  /// Hanya pilihan tab yang sedang aktif; tab lain tidak ikut terbawa.
+  List<ServiceItem> get selectedServices =>
+      _picked[_serviceTab] ?? const <ServiceItem>[];
+
+  ServiceItem? get service =>
+      selectedServices.isEmpty ? null : selectedServices.first;
+
+  bool isServiceSelected(ServiceItem item) =>
+      selectedServices.any((ServiceItem s) => s.id == item.id);
+
+  /// Server baru menerima satu layanan per booking.
+  bool get exceedsServerLimit => selectedServices.length > 1;
 
   bool get submitting => _submitting;
   ApiException? get submitError => _submitError;
   BookingResult? get result => _result;
+  BookingRecord? get record => _record;
 
   List<DateTime> get days {
     final DateTime today = DateUtils.dateOnly(DateTime.now());
@@ -181,7 +185,10 @@ class BookingFlowProvider extends ChangeNotifier {
     );
   }
 
-  double get subTotal => _service?.price ?? 0;
+  double get subTotal => selectedServices.fold<double>(
+    0,
+    (double sum, ServiceItem s) => sum + s.price,
+  );
 
   bool get canContinue {
     switch (_step) {
@@ -194,7 +201,7 @@ class BookingFlowProvider extends ChangeNotifier {
       case BookingStep.capster:
         return _capster != null && !_locking;
       case BookingStep.service:
-        return _service != null;
+        return selectedServices.isNotEmpty;
       case BookingStep.confirm:
         return !_submitting;
     }
@@ -238,7 +245,7 @@ class BookingFlowProvider extends ChangeNotifier {
     _storeSlots = null;
     _slot = null;
     _capster = null;
-    _service = null;
+    _picked.clear();
     _services.clear();
     notifyListeners();
   }
@@ -408,7 +415,7 @@ class BookingFlowProvider extends ChangeNotifier {
 
   void _onLockExpired() {
     _stopCountdown();
-    _service = null;
+    _picked.clear();
     _services.clear();
     _capster = null;
     _slot = null;
@@ -441,7 +448,6 @@ class BookingFlowProvider extends ChangeNotifier {
   void setServiceTab(ProductType value) {
     if (_serviceTab == value) return;
     _serviceTab = value;
-    _service = null;
     notifyListeners();
     if (!_services.containsKey(value)) loadServices();
   }
@@ -467,15 +473,31 @@ class BookingFlowProvider extends ChangeNotifier {
     }
   }
 
-  void selectService(ServiceItem value) {
-    _service = value;
+  /// Tab layanan maksimal satu pilihan, tab paket boleh lebih dari satu.
+  void toggleService(ServiceItem value) {
+    final List<ServiceItem> current = List<ServiceItem>.of(selectedServices);
+    final int at = current.indexWhere((ServiceItem s) => s.id == value.id);
+
+    if (_serviceTab == ProductType.service) {
+      _picked[_serviceTab] = at >= 0
+          ? const <ServiceItem>[]
+          : <ServiceItem>[value];
+    } else {
+      if (at >= 0) {
+        current.removeAt(at);
+      } else {
+        current.add(value);
+      }
+      _picked[_serviceTab] = List<ServiceItem>.unmodifiable(current);
+    }
+
     notifyListeners();
   }
 
   Future<bool> submit() async {
     final StoreSummary? pickedStore = _store;
     final SlotCapster? pickedCapster = _capster;
-    final ServiceItem? pickedService = _service;
+    final ServiceItem? pickedService = service;
     final DateTime? at = bookingDateTime;
 
     if (pickedStore == null ||
@@ -491,13 +513,21 @@ class BookingFlowProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _result = await _repo.createBooking(
+      final BookingResult created = await _repo.createBooking(
         idStore: pickedStore.id,
         idCapster: pickedCapster.id,
         idService: pickedService.id,
         bookingDate: at,
       );
+      _result = created;
       _stopCountdown();
+
+      _record = BookingRecord.fromResult(
+        created,
+        capsterId: pickedCapster.id,
+        capsterName: pickedCapster.name,
+      );
+      await _journal?.add(_record!);
       return true;
     } on ApiException catch (e) {
       _submitError = e;
@@ -540,7 +570,7 @@ class BookingFlowProvider extends ChangeNotifier {
 
     if (hasLock) {
       _stopCountdown();
-      _service = null;
+      _picked.clear();
       _services.clear();
       _step = BookingStep.capster;
       notifyListeners();

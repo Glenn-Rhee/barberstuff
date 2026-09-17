@@ -68,7 +68,7 @@ void main() {
     expect(find.byType(DecoratedBox), findsWidgets);
   });
 
-  testWidgets('box loader: jejak menumpuk lalu bersih tiap putaran', (
+  testWidgets('box loader: tiga batang memanjang bergantian', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
@@ -77,55 +77,35 @@ void main() {
       ),
     );
 
-    List<Rect> rectsOf(Color color) {
-      final Offset root = tester.getRect(find.byType(BoxLoader)).topLeft;
-      return find
-          .byWidgetPredicate((Widget w) => w is Image && w.color == color)
-          .evaluate()
-          .map(
-            (Element e) => tester
-                .getRect(find.byElementPredicate((Element x) => x == e))
-                .shift(-root),
-          )
-          .toList();
-    }
-
-    Rect trailArea() => rectsOf(
-      AppColor.cream,
-    ).reduce((Rect a, Rect b) => a.expandToInclude(b));
-
-    Rect head() => rectsOf(AppColor.orangeLight).single;
-
-    expect(rectsOf(AppColor.cream), hasLength(1));
-    expect(trailArea(), head(), reason: 'awal putaran belum ada jejak');
-
-    await tester.pump(const Duration(milliseconds: 200));
-    expect(rectsOf(AppColor.cream), hasLength(1));
-    expect(
-      trailArea().width,
-      greaterThan(head().width),
-      reason: 'jejak memanjang mulus mengikuti oranye',
+    Finder bars() => find.descendant(
+      of: find.byType(BoxLoader),
+      matching: find.byType(Container),
     );
 
-    for (final ({int gap, int count}) tick in <({int gap, int count})>[
-      (gap: 400, count: 2),
-      (gap: 400, count: 3),
-      (gap: 400, count: 4),
-    ]) {
-      await tester.pump(Duration(milliseconds: tick.gap));
-      expect(
-        rectsOf(AppColor.cream),
-        hasLength(tick.count),
-        reason: 'jejak bertambah tiap langkah',
-      );
-      expect(trailArea().expandToInclude(head()), trailArea());
-    }
+    List<double> heights() => bars()
+        .evaluate()
+        .map(
+          (Element e) => tester
+              .getSize(find.byElementPredicate((Element x) => x == e))
+              .height,
+        )
+        .toList();
 
-    await tester.pump(const Duration(milliseconds: 200));
+    expect(bars(), findsNWidgets(BoxLoader.barCount));
+
+    final List<double> first = heights();
+    await tester.pump(BoxLoader.cycle ~/ 3);
+    final List<double> second = heights();
+
     expect(
-      rectsOf(AppColor.cream),
-      hasLength(1),
-      reason: 'jejak harus bersih saat putaran mengulang',
+      first,
+      isNot(equals(second)),
+      reason: 'tinggi batang harus berubah seiring putaran',
+    );
+    expect(
+      second.reduce((double a, double b) => a > b ? a : b),
+      greaterThan(second.reduce((double a, double b) => a < b ? a : b)),
+      reason: 'batang memanjang bergantian, tidak serentak',
     );
   });
 }

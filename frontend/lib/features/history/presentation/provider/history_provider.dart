@@ -26,12 +26,14 @@ class HistoryProvider extends ChangeNotifier {
   List<BookingHistory> get items {
     final String needle = _query.toLowerCase();
 
-    return _all.where((BookingHistory item) {
-      if (item.tab != _tab) return false;
-      if (needle.isEmpty) return true;
-      return item.serviceName.toLowerCase().contains(needle) ||
-          item.storeName.toLowerCase().contains(needle);
-    }).toList(growable: false);
+    return _all
+        .where((BookingHistory item) {
+          if (item.tab != _tab) return false;
+          if (needle.isEmpty) return true;
+          return item.serviceName.toLowerCase().contains(needle) ||
+              item.storeName.toLowerCase().contains(needle);
+        })
+        .toList(growable: false);
   }
 
   Future<void> load() async {

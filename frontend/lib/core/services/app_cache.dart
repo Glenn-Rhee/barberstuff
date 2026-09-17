@@ -13,9 +13,9 @@ class CachedPayload {
       value is Map<String, dynamic> ? value as Map<String, dynamic> : null;
 
   List<Map<String, dynamic>> get asList => value is List
-      ? (value as List<dynamic>)
-            .whereType<Map<String, dynamic>>()
-            .toList(growable: false)
+      ? (value as List<dynamic>).whereType<Map<String, dynamic>>().toList(
+          growable: false,
+        )
       : const <Map<String, dynamic>>[];
 }
 
@@ -36,6 +36,7 @@ class AppCache {
   static const String keyStores = 'booking_stores';
   static const String keyBookingTermsAgreed = 'booking_terms_agreed';
   static const String keyBookingLock = 'booking_lock';
+  static const String keyBookingJournal = 'booking_journal';
 
   final SharedPreferences _prefs;
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
@@ -63,13 +64,12 @@ class BookingScheduleStep extends StatelessWidget {
             onRetry: p.loadSlots,
             child: GridView.builder(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 2.1,
-                  ),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 2.1,
+              ),
               itemCount: p.slots.length,
               itemBuilder: (BuildContext context, int index) {
                 final BookingSlot s = p.slots[index];
@@ -84,12 +84,32 @@ class BookingScheduleStep extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
-          child: Text(
-            p.isSlotTooSoon ? l10n.bookingSlotTooSoon : l10n.bookingSlotFullNote,
-            style: AppTextStyle.bodySmall.copyWith(
-              fontSize: 11,
-              color: p.isSlotTooSoon ? AppColor.danger : AppColor.inkFaint,
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Image.asset(
+                AppAssets.questionSlotBook,
+                width: 13,
+                height: 13,
+                fit: BoxFit.contain,
+                color: p.isSlotTooSoon ? AppColor.danger : AppColor.inkFaint,
+                filterQuality: FilterQuality.medium,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  p.isSlotTooSoon
+                      ? l10n.bookingSlotTooSoon
+                      : l10n.bookingSlotFullNote,
+                  style: AppTextStyle.bodySmall.copyWith(
+                    fontSize: 11,
+                    color: p.isSlotTooSoon
+                        ? AppColor.danger
+                        : AppColor.inkFaint,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -117,9 +137,7 @@ class _DayChip extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: selected ? AppColor.goldDeep : AppColor.border,
-        ),
+        side: BorderSide(color: selected ? AppColor.goldDeep : AppColor.border),
       ),
       child: InkWell(
         onTap: onTap,

@@ -44,8 +44,8 @@ class BookingServiceStep extends StatelessWidget {
                 final ServiceItem item = p.visibleServices[index];
                 return _ServiceCard(
                   item: item,
-                  selected: p.service?.id == item.id,
-                  onTap: () => p.selectService(item),
+                  selected: p.isServiceSelected(item),
+                  onTap: () => p.toggleService(item),
                 );
               },
             ),

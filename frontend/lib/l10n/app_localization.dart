@@ -1295,13 +1295,13 @@ abstract class AppLocalizations {
   /// No description provided for @profileTierSilver.
   ///
   /// In id, this message translates to:
-  /// **'Silver Member'**
+  /// **'Silver Member Barberstuff'**
   String get profileTierSilver;
 
   /// No description provided for @profileTierGold.
   ///
   /// In id, this message translates to:
-  /// **'Gold Member'**
+  /// **'Gold Member Barberstuff'**
   String get profileTierGold;
 
   /// No description provided for @profileTierPlatinum.
@@ -1982,6 +1982,12 @@ abstract class AppLocalizations {
   /// **'Paket'**
   String get bookingPackageLabel;
 
+  /// No description provided for @bookingServiceSingleOnly.
+  ///
+  /// In id, this message translates to:
+  /// **'Server baru menerima satu layanan per booking. Pilih satu dulu, sisanya booking terpisah.'**
+  String get bookingServiceSingleOnly;
+
   /// No description provided for @bookingServiceEmpty.
   ///
   /// In id, this message translates to:
@@ -2155,6 +2161,96 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Keluar'**
   String get commonLogout;
+
+  /// No description provided for @promoTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Promo'**
+  String get promoTitle;
+
+  /// No description provided for @promoGradeTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Keuntungan Grade Ini'**
+  String get promoGradeTitle;
+
+  /// No description provided for @promoTerms.
+  ///
+  /// In id, this message translates to:
+  /// **'S&K Berlaku'**
+  String get promoTerms;
+
+  /// No description provided for @promoSectionTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo'**
+  String get promoSectionTitle;
+
+  /// No description provided for @promoSectionSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo menarik dari barberstuff, untuk pengguna'**
+  String get promoSectionSubtitle;
+
+  /// No description provided for @promoRedeemTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tukar Poin'**
+  String get promoRedeemTitle;
+
+  /// No description provided for @promoRedeemSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tukarkan poin Anda dengan berbagai voucher menarik.'**
+  String get promoRedeemSubtitle;
+
+  /// No description provided for @promoClaim.
+  ///
+  /// In id, this message translates to:
+  /// **'Klaim'**
+  String get promoClaim;
+
+  /// No description provided for @promoClaimReward.
+  ///
+  /// In id, this message translates to:
+  /// **'Klaim Hadiah'**
+  String get promoClaimReward;
+
+  /// No description provided for @promoAboutVoucher.
+  ///
+  /// In id, this message translates to:
+  /// **'Tentang Voucher'**
+  String get promoAboutVoucher;
+
+  /// No description provided for @promoClaimed.
+  ///
+  /// In id, this message translates to:
+  /// **'Hadiah berhasil diklaim.'**
+  String get promoClaimed;
+
+  /// No description provided for @promoNotEnoughPoints.
+  ///
+  /// In id, this message translates to:
+  /// **'Poin belum cukup untuk menukar hadiah ini.'**
+  String get promoNotEnoughPoints;
+
+  /// No description provided for @promoPoints.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} Points'**
+  String promoPoints(String count);
+
+  /// No description provided for @promoXp.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} XP'**
+  String promoXp(String count);
+
+  /// No description provided for @promoProgress.
+  ///
+  /// In id, this message translates to:
+  /// **'{owned}/{needed}'**
+  String promoProgress(String owned, String needed);
 }
 
 class _AppLocalizationsDelegate

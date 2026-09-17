@@ -134,9 +134,7 @@ class PermissionPrompt {
             onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(
               l10n.permissionLater,
-              style: AppTextStyle.labelMedium.copyWith(
-                color: AppColor.inkSoft,
-              ),
+              style: AppTextStyle.labelMedium.copyWith(color: AppColor.inkSoft),
             ),
           ),
           TextButton(

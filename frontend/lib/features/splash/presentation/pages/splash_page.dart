@@ -57,7 +57,7 @@ class _SplashPageState extends State<SplashPage>
     _backdrop.dispose();
     super.dispose();
   }
-  
+
   Future<void> _openBrandSplash() async {
     if (_isLeaving) return;
     _isLeaving = true;

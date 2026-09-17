@@ -59,6 +59,7 @@ class _CapsterCard extends StatelessWidget {
     return BookingSelectCard(
       selected: selected,
       enabled: capster.available,
+      tinted: false,
       onTap: onTap,
       child: Row(
         children: <Widget>[

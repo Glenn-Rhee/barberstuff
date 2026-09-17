@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/theme/app_color.dart';
 
 class BarberPatternBackground extends StatelessWidget {
   const BarberPatternBackground({
@@ -14,6 +15,17 @@ class BarberPatternBackground extends StatelessWidget {
     this.progress = 1,
     this.riseOffset = 64,
   });
+
+  /// Preset halaman auth: pola bawah yang sama dengan splash, tanpa animasi.
+  const BarberPatternBackground.auth({super.key, required this.child})
+    : backgroundColor = AppColor.surface,
+      patternColor = null,
+      patternIntensity = 1.2,
+      patternScale = 1.25,
+      coverage = 0.56,
+      fadeSpan = 0.45,
+      progress = 1,
+      riseOffset = 0;
 
   final Widget child;
   final Color backgroundColor;

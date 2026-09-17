@@ -96,12 +96,14 @@ class ReviewDraft {
 
   List<Map<String, dynamic>> toRatingPayload() {
     return <Map<String, dynamic>>[
-      <String, dynamic>{'type': 'capster', 'score': capster},
-      <String, dynamic>{'type': 'staff', 'score': cashier},
-      <String, dynamic>{'type': 'store', 'score': store},
-    ].map((Map<String, dynamic> item) {
-      if (message.trim().isNotEmpty) item['message'] = message.trim();
-      return item;
-    }).toList(growable: false);
+          <String, dynamic>{'type': 'capster', 'score': capster},
+          <String, dynamic>{'type': 'staff', 'score': cashier},
+          <String, dynamic>{'type': 'store', 'score': store},
+        ]
+        .map((Map<String, dynamic> item) {
+          if (message.trim().isNotEmpty) item['message'] = message.trim();
+          return item;
+        })
+        .toList(growable: false);
   }
 }

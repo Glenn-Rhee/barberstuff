@@ -9,6 +9,7 @@ import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 Future<ReviewDraft?> showReviewSheet(
   BuildContext context, {
   required bool readOnly,
+  ReviewDraft? initial,
 }) {
   return showModalBottomSheet<ReviewDraft>(
     context: context,
@@ -17,14 +18,18 @@ Future<ReviewDraft?> showReviewSheet(
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    builder: (BuildContext sheetContext) => ReviewSheet(readOnly: readOnly),
+    builder: (BuildContext sheetContext) =>
+        ReviewSheet(readOnly: readOnly, initial: initial),
   );
 }
 
 class ReviewSheet extends StatefulWidget {
-  const ReviewSheet({super.key, this.readOnly = false});
+  const ReviewSheet({super.key, this.readOnly = false, this.initial});
 
   final bool readOnly;
+
+  /// Ulasan yang sudah tersimpan, ditampilkan saat mode baca.
+  final ReviewDraft? initial;
 
   @override
   State<ReviewSheet> createState() => _ReviewSheetState();
@@ -33,9 +38,15 @@ class ReviewSheet extends StatefulWidget {
 class _ReviewSheetState extends State<ReviewSheet> {
   final TextEditingController _message = TextEditingController();
 
-  int _capster = 0;
-  int _cashier = 0;
-  int _store = 0;
+  late int _capster = widget.initial?.capster ?? 0;
+  late int _cashier = widget.initial?.cashier ?? 0;
+  late int _store = widget.initial?.store ?? 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _message.text = widget.initial?.message ?? '';
+  }
 
   @override
   void dispose() {
@@ -69,9 +80,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.viewInsetsOf(context).bottom,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),

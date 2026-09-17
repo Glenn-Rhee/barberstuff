@@ -26,12 +26,13 @@ class AppAssets {
 
   static const String logo = '$_iconSplash/main_barberstuff.png';
   static const String arrowSlide = '$_iconSplash/arrow_slide.png';
-  static const String patternTile = '$_imageSplash/background_bottom.png';
+  static const String patternTile = '$_imageGeneral/background_bottom.png';
   static const String onboardingFirst = '$_imageSplash/slide_1.png';
   static const String onboardingSecond = '$_imageSplash/slide_2.png';
   static const String onboardingThird = '$_imageSplash/slide_3.png';
 
-  static const String barberstuffLogoLogin = '$_imageChoose/logo_barberstuff.png';
+  static const String barberstuffLogoLogin =
+      '$_imageChoose/logo_barberstuff.png';
   static const String topBox = '$_iconLoading/top_box.png';
 
   static const String emailVerification = '$_imageVerification/email_verif.png';
@@ -106,7 +107,6 @@ class AppAssets {
   static const String logOutProfile = '$_iconProfile/logout.png';
   static const String toolsMaintenance = '$_iconGeneral/maintenace.png';
   static const String keyIcon = '$_iconProfile/key.png';
-
 
   static const String cutsBook = '$_iconBook/cuts.png';
   static const String hairStylingBook = '$_iconBook/hair_styling.png';

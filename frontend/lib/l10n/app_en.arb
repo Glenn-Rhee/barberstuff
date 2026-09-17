@@ -1,29 +1,21 @@
 {
   "@@locale": "en",
   "appTitle": "Barberstuff",
-
   "onboardingFirstTitle": "Style that fits your day",
   "onboardingFirstDescription": "Find a cut that matches your character and daily routine.",
-
   "onboardingSecondTitle": "Booking made simple",
   "onboardingSecondDescription": "Pick your branch, barber, and time slot without queueing.",
-
   "onboardingThirdTitle": "Enjoy member benefits",
   "onboardingThirdDescription": "Collect points on every visit and redeem them for discounts.",
-
   "onboardingStart": "Get Started!",
-
   "chooseLoginWelcome": "Welcome",
   "chooseLoginGoogleText": "Continue with Google",
   "chooseLoginDividerOr": "or",
   "chooseLoginWithPasswordText": "Sign In with Password",
   "chooseLoginTextMessage": "Don't have an account yet?",
   "chooseLoginTextLink": "Sign Up",
-
-
   "genderMale": "Male",
   "genderFemale": "Female",
-
   "registerHeadline": "Create Your Account",
   "registerNameLabel": "Full Name",
   "registerPhoneLabel": "Phone Number",
@@ -35,7 +27,6 @@
   "registerHaveAccountQuestion": "Already have an account?",
   "registerLoginAction": "Sign In",
   "registerOtpSentMessage": "An OTP has been sent to your email.",
-
   "verifyPageBarText": "Email Verification",
   "verifyHeadline": "Check Your Email",
   "verifyDescription": "We have sent a 6-digit verification code to {email}. Please enter the code below.",
@@ -49,7 +40,6 @@
   "verifySuccessTitle": "Congratulations!",
   "verifySuccessMessage": "Your email has been verified successfully. You can now access all features of our app.",
   "verifySuccessButton": "Continue",
-
   "loginHeadline": "Sign In to Your Account",
   "loginEmailHint": "Email",
   "loginPasswordHint": "Password",
@@ -58,12 +48,10 @@
   "loginForgotQuestion": "Forgot your password?",
   "loginForgotAction": "Click here",
   "loginWithGoogle": "Sign in with Google",
-
   "forgotPageBarText": "Forgot Password",
   "forgotHeadline": "Forgot Password?",
   "forgotDescription": "Enter your account email. We will send a verification code so you can reset your password.",
   "forgotSubmitButton": "Send Code",
-
   "resetPageBarText": "New Password",
   "resetHeadline": "Create New Password",
   "resetDescription": "Your new password must be different from any password you have used before.",
@@ -74,12 +62,10 @@
   "resetSuccessTitle": "Congratulations!",
   "resetSuccessMessage": "Your password has been updated. You will be taken to the home page.",
   "resetSuccessButton": "Go to Home",
-
   "exceptionReceiveTimeout": "Connection timed out. Please check your network.",
   "exceptionConnectionError": "Unable to connect to the server.",
   "exceptionDefaultType": "A server error occurred.",
   "exceptionDefault": "An unexpected error occurred.",
-
   "validatorRequired": "{label} is required",
   "validatorEmailInvalid": "Invalid email format",
   "validatorPasswordMin": "Password must be at least {min} characters",
@@ -87,20 +73,17 @@
   "validatorPhoneMax": "Phone Number must be at most {max} digits",
   "validatorPhoneDigits": "Numbers only",
   "validatorPasswordMismatch": "Passwords do not match",
-
   "googleSignInFailed": "Google sign-in failed. Please try again.",
   "completeProfileTitle": "Complete Your Profile",
   "completeProfileSubtitle": "Almost there. Fill in your details to start using Barberstuff.",
   "completeProfileSubmit": "Continue",
   "completeProfileEmailLocked": "Email from Google cannot be changed",
-
   "avatarSheetTitle": "Profile Photo",
   "avatarSheetCamera": "Take a Photo",
   "avatarSheetGallery": "Choose from Gallery",
   "avatarSheetRemove": "Remove Photo",
   "avatarPickFailed": "Could not open the gallery or camera. Please try again.",
   "avatarPermissionDenied": "Photo or camera access was denied. Enable it in your device settings.",
-
   "homeGreeting": "Hi, {name}!",
   "homeWelcomeBack": "Welcome back",
   "homePoints": "{points} Points",
@@ -113,13 +96,11 @@
   "homeSeePromo": "See Promo",
   "homeBirthdayBadge": "Look your best every day",
   "homeBookingNow": "Book Now",
-
   "homeActionBooking": "Booking",
   "homeActionPackage": "Packages",
   "homeActionPromo": "Promo",
   "homeActionHistory": "History",
   "bookingBranchNewBadge": "NEW",
-
   "homeBenefitTitle": "Barberstuff Benefits",
   "homeBenefitPoints": "Reward points on every haircut",
   "homeBenefitBirthday": "Special discounts and birthday offers",
@@ -127,25 +108,21 @@
   "homeBenefitDiscountTitle": "More Haircut Discounts!",
   "homeBenefitPointsTitle": "Points on Every Cut",
   "homeBenefitPriorityTitle": "Priority Without Queueing",
-
   "homeActiveBookingTitle": "Active Booking",
   "homeBookingUpcoming": "UPCOMING",
   "homeBookingOrderId": "Order ID #{id}",
   "homeBookingDetail": "View Detail",
   "homeBookingCapster": "Capster {name}",
   "homeBookingEmpty": "No active booking yet.",
-
   "homeNearbyTitle": "Nearby Branches",
   "homeNearbySeeAll": "See All",
   "homeNearbyDistance": "{distance} km",
-
   "homeHistoryTitle": "Haircut History",
   "homeHistorySeeAll": "See History",
   "homeHistoryEmpty": "No haircut history yet.",
   "homeHistoryRebook": "Book Again",
   "homeHistoryBy": "by {name}",
   "homeNearbyLocation": "{city} • {distance} km",
-
   "navHome": "Home",
   "navBooking": "Booking",
   "navHistory": "History",
@@ -200,7 +177,6 @@
   "reviewSubmit": "Send",
   "reviewNeedStars": "Please rate every category first.",
   "reviewThanks": "Thanks for your review!",
-
   "notificationTitle": "Notifications",
   "notificationSearchHint": "Search notifications...",
   "notificationFilterAll": "All",
@@ -223,11 +199,9 @@
   "notificationMembershipBody": "You have reached Premium level! Enjoy exclusive perks with no queueing.",
   "notificationRecommendationTitle": "New Hairstyle Recommendation",
   "notificationRecommendationBody": "Discover this year latest men hairstyle trends that suit your face shape.",
-
-  "profileTierSilver": "Silver Member",
-  "profileTierGold": "Gold Member",
+  "profileTierSilver": "Silver Member Barberstuff",
+  "profileTierGold": "Gold Member ",
   "profileTierPlatinum": "Platinum Member",
-
   "profileMenuPersonalInfo": "Personal Information",
   "profileMenuLanguage": "Language",
   "profileMenuCard": "Barberstuff Card",
@@ -235,21 +209,16 @@
   "profileMenuHelp": "Help Center",
   "profileMenuAbout": "About the App",
   "profileMenuLogout": "Log out",
-
   "profileLogoutTitle": "Log out of your account?",
   "profileLogoutMessage": "You will need to sign in again to use Barberstuff.",
-
   "languagePageTitle": "Choose Language",
   "languagePageDescription": "Please choose the language you are most comfortable with so you can get the best experience with us.",
   "languageIndonesian": "Indonesian",
   "languageEnglish": "English",
   "languageSelectAction": "Select",
-
   "commonCancel": "Cancel",
-
   "cardPageTitle": "Barberstuff Card",
   "cardIdLabel": "User ID",
-
   "personalInfoTitle": "Personal Information",
   "personalInfoChangePhoto": "Change Profile Photo",
   "personalInfoPhotoFormat": "Supported Format: JPEG, PNG, JPG",
@@ -259,7 +228,6 @@
   "personalInfoPasswordSubtitle": "Change My Password",
   "personalInfoPasswordAction": "Change Now",
   "personalInfoSave": "Save Changes",
-
   "helpTitle": "Help Center",
   "helpHeadline": "Need Help? Tell Us What's Going On",
   "helpSubtitle": "Fill out the form below and our team will get back to you as soon as possible.",
@@ -267,7 +235,6 @@
   "helpProblemLabel": "Tell Us Your Problem",
   "helpProblemHint": "Tell us what's your problem",
   "helpSubmit": "Submit",
-
   "aboutTitle": "About the App",
   "aboutLastUpdated": "Last Updated: {date}",
   "aboutIntro": "By accessing or using the Barberstuff application, you agree to be bound by these Terms of Use.",
@@ -292,7 +259,6 @@
   "aboutDisclaimerBody": "Barberstuff is provided on an \"as is\" and \"as available\" basis without warranties of any kind.",
   "aboutChangesTitle": "8. Changes to Terms",
   "aboutChangesBody": "Barberstuff may update these Terms at any time. Continued use of the platform indicates acceptance of the updated Terms.",
-
   "bookingTitle": "Booking",
   "bookingBranchTitle": "Choose Branch",
   "bookingStepLabel": "STEP {current} OF {total}",
@@ -342,13 +308,13 @@
   "bookingStoreEmpty": "No branch found.",
   "bookingCapsterEmpty": "No barber available at this branch yet.",
   "commonContinue": "Continue",
-
   "bookingScheduleTitle": "Choose Schedule",
   "bookingServiceTitle": "Choose Service",
   "bookingDateLabel": "Date",
   "bookingTimeLabel": "Time",
   "bookingSingleServiceLabel": "Single Services",
   "bookingPackageLabel": "Packages",
+  "bookingServiceSingleOnly": "The server accepts one item per booking. Pick one now and book the rest separately.",
   "bookingServiceEmpty": "No service available yet.",
   "bookingSuccessTitle": "Booking Confirmed!",
   "bookingSuccessMessage": "Your booking has been made successfully",
@@ -364,7 +330,6 @@
   "receiptSpecialist": "Specialist",
   "receiptTotal": "Total Price",
   "receiptDownload": "Download E-Receipt",
-
   "comingSoonMessage": "Comming soon!",
   "commonRetry": "Try Again",
   "offlineCachedData": "You are offline — showing saved data",
@@ -378,6 +343,44 @@
   "permissionLocationOffMessage": "Location services are off on your phone. Turn them on so branch distance can be calculated.",
   "permissionOpenLocationSettings": "Turn On Location",
   "commonUnderstood": "Oke",
-  "commonLogout": "Log out"
-
+  "commonLogout": "Log out",
+  "promoTitle": "Choose Promo",
+  "promoGradeTitle": "This Grade's Perks",
+  "promoTerms": "T&C Apply",
+  "promoSectionTitle": "Promo",
+  "promoSectionSubtitle": "Deals from barberstuff, for members",
+  "promoRedeemTitle": "Redeem Points",
+  "promoRedeemSubtitle": "Trade your points for a range of vouchers.",
+  "promoClaim": "Claim",
+  "promoClaimReward": "Claim Reward",
+  "promoAboutVoucher": "About This Voucher",
+  "promoClaimed": "Reward claimed.",
+  "promoNotEnoughPoints": "Not enough points for this reward yet.",
+  "promoPoints": "{count} Points",
+  "@promoPoints": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "promoXp": "{count} XP",
+  "@promoXp": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "promoProgress": "{owned}/{needed}",
+  "@promoProgress": {
+    "placeholders": {
+      "owned": {
+        "type": "String"
+      },
+      "needed": {
+        "type": "String"
+      }
+    }
+  }
 }

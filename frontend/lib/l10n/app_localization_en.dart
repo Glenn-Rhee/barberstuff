@@ -664,10 +664,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Discover this year latest men hairstyle trends that suit your face shape.';
 
   @override
-  String get profileTierSilver => 'Silver Member';
+  String get profileTierSilver => 'Silver Member Barberstuff';
 
   @override
-  String get profileTierGold => 'Gold Member';
+  String get profileTierGold => 'Gold Member ';
 
   @override
   String get profileTierPlatinum => 'Platinum Member';
@@ -1041,6 +1041,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingPackageLabel => 'Packages';
 
   @override
+  String get bookingServiceSingleOnly =>
+      'The server accepts one item per booking. Pick one now and book the rest separately.';
+
+  @override
   String get bookingServiceEmpty => 'No service available yet.';
 
   @override
@@ -1129,4 +1133,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonLogout => 'Log out';
+
+  @override
+  String get promoTitle => 'Choose Promo';
+
+  @override
+  String get promoGradeTitle => 'This Grade\'s Perks';
+
+  @override
+  String get promoTerms => 'T&C Apply';
+
+  @override
+  String get promoSectionTitle => 'Promo';
+
+  @override
+  String get promoSectionSubtitle => 'Deals from barberstuff, for members';
+
+  @override
+  String get promoRedeemTitle => 'Redeem Points';
+
+  @override
+  String get promoRedeemSubtitle =>
+      'Trade your points for a range of vouchers.';
+
+  @override
+  String get promoClaim => 'Claim';
+
+  @override
+  String get promoClaimReward => 'Claim Reward';
+
+  @override
+  String get promoAboutVoucher => 'About This Voucher';
+
+  @override
+  String get promoClaimed => 'Reward claimed.';
+
+  @override
+  String get promoNotEnoughPoints => 'Not enough points for this reward yet.';
+
+  @override
+  String promoPoints(String count) {
+    return '$count Points';
+  }
+
+  @override
+  String promoXp(String count) {
+    return '$count XP';
+  }
+
+  @override
+  String promoProgress(String owned, String needed) {
+    return '$owned/$needed';
+  }
 }

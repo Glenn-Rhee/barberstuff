@@ -6,6 +6,7 @@ import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/provider/booking_flow_provider.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_branch_step.dart';
@@ -27,13 +28,13 @@ class BookingFlowPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<BookingFlowProvider>(
-      create: (BuildContext ctx) =>
-          BookingFlowProvider(
-            ctx.read<BookingRepository>(),
-            ctx.read<AppCache>(),
-            location: ctx.read<LocationService>(),
-            lockDuration: ctx.read<DebugOverrides>().lockDuration,
-          ),
+      create: (BuildContext ctx) => BookingFlowProvider(
+        ctx.read<BookingRepository>(),
+        ctx.read<AppCache>(),
+        location: ctx.read<LocationService>(),
+        journal: ctx.read<BookingJournal>(),
+        lockDuration: ctx.read<DebugOverrides>().lockDuration,
+      ),
       child: const _BookingFlowView(),
     );
   }
@@ -120,13 +121,8 @@ class _BookingFlowView extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
         backgroundColor: AppColor.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Text(
-          l10n.bookingCancelTitle,
-          style: AppTextStyle.titleMedium,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(l10n.bookingCancelTitle, style: AppTextStyle.titleMedium),
         content: Text(
           l10n.bookingCancelMessage,
           style: AppTextStyle.bodyMedium.copyWith(color: AppColor.inkSoft),
@@ -136,9 +132,7 @@ class _BookingFlowView extends StatelessWidget {
             onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(
               l10n.bookingCancelKeep,
-              style: AppTextStyle.labelMedium.copyWith(
-                color: AppColor.inkSoft,
-              ),
+              style: AppTextStyle.labelMedium.copyWith(color: AppColor.inkSoft),
             ),
           ),
           TextButton(
@@ -163,6 +157,11 @@ class _BookingFlowView extends StatelessWidget {
     final NavigatorState navigator = Navigator.of(context);
 
     if (p.step != BookingStep.confirm) {
+      if (p.step == BookingStep.service && p.exceedsServerLimit) {
+        AppToast.show(context, message: l10n.bookingServiceSingleOnly);
+        return;
+      }
+
       await p.next();
       if (!context.mounted) return;
 
@@ -185,7 +184,7 @@ class _BookingFlowView extends StatelessWidget {
 
     navigator.pushReplacementNamed(
       AppRoute.bookingSuccess,
-      arguments: p.result,
+      arguments: p.record,
     );
   }
 
@@ -244,7 +243,10 @@ class _BookingFlowView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          l10n.bookingStepLabel(_stepNumber(p.step), totalSteps),
+                          l10n.bookingStepLabel(
+                            _stepNumber(p.step),
+                            totalSteps,
+                          ),
                           style: AppTextStyle.labelSmall.copyWith(
                             fontSize: 11,
                             color: AppColor.inkFaint,
@@ -287,9 +289,7 @@ class _BookingFlowView extends StatelessWidget {
                   child: BoxButton(
                     label: _cta(p.step, l10n),
                     isLoading: p.submitting || p.locking,
-                    onPressed: p.canContinue
-                        ? () => _onCta(context, p)
-                        : null,
+                    onPressed: p.canContinue ? () => _onCta(context, p) : null,
                   ),
                 ),
               ],
@@ -320,9 +320,7 @@ class _LockCountdown extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        l10n.bookingLockRemaining(
-          _BookingFlowView.formatRemaining(remaining),
-        ),
+        l10n.bookingLockRemaining(_BookingFlowView.formatRemaining(remaining)),
         style: AppTextStyle.labelSmall.copyWith(
           fontSize: 11,
           fontWeight: FontWeight.w700,

@@ -2,6 +2,18 @@ import 'package:mobile_barberstuff/features/booking/data/models/booking_api_mode
 
 String _text(Object? value) => value is String ? value : '';
 
+/// Jam operasional adalah jam dinding toko, bukan titik waktu: backend memakai
+/// Hour()/Minute() apa adanya lalu menanamkannya ke zona toko. Penanda zona pada
+/// string dibuang, bukan dikonversi, supaya 10:00 tetap terbaca 10:00.
+DateTime? _wallClock(Object? value) {
+  final String text = _text(value).trim();
+  if (text.isEmpty) return null;
+
+  return DateTime.tryParse(
+    text.replaceFirst(RegExp(r'(?:Z|[+-]\d{2}:?\d{2})$'), ''),
+  );
+}
+
 double _toDouble(Object? value) {
   if (value is num) return value.toDouble();
   return double.tryParse('${value ?? ''}') ?? 0;
@@ -132,8 +144,8 @@ class StoreDetail {
       totalCapster: _toInt(json['total_capster']),
       totalPackage: _toInt(json['total_package']),
       coordinate: StoreCoordinate.parse(json['coordinate']),
-      openHour: DateTime.tryParse(_text(json['open_hour']))?.toLocal(),
-      closeHour: DateTime.tryParse(_text(json['close_hour']))?.toLocal(),
+      openHour: _wallClock(json['open_hour']),
+      closeHour: _wallClock(json['close_hour']),
       reviews: rawReviews is List
           ? rawReviews
                 .whereType<Map<String, dynamic>>()
