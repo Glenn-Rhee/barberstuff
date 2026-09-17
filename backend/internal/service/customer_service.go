@@ -643,7 +643,7 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 			return d.
 				Joins("LEFT JOIN authentication ON authentication.id_customer = customer.id").
-				Where("customer.id ILIKE ? OR customer.phone_number ILIKE ? OR customer.name ILIKE ? OR authentication.email = ?", params.Query, params.Query, q, params.Query)
+				Where("customer.id::text ILIKE ? OR customer.phone_number ILIKE ? OR customer.name ILIKE ? OR authentication.email = ?", params.Query, params.Query, q, params.Query)
 		})
 	}
 
@@ -669,7 +669,7 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Select("id", "name", "phone_number", "member_points", "id_premium_type")
+		return d.Select("customer.id", "customer.name", "customer.phone_number", "customer.member_points", "customer.id_premium_type")
 	})
 
 	totalData, err := c.customerRepo.Count(scopes...)
@@ -699,12 +699,11 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 	dataCustomers := make([]dto.DataUserFindCustomer, 0, len(customers))
 	for _, c := range customers {
 		var status dto.StatusCustomer
-		if c.IdPremiumType.String() == "" {
+		if c.IdPremiumType == nil {
 			status = dto.StatusReguler
 		} else {
 			status = dto.StatusMember
 		}
-
 		var totalVisited int64 = 0
 		var lastVisitedAt *time.Time
 
