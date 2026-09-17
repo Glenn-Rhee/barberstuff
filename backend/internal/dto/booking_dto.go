@@ -112,7 +112,7 @@ type DataRatingBooking struct {
 	CapsterRating int     `json:"capster_rating"`
 	StaffRating   int     `json:"staff_rating"`
 	StoreRating   int     `json:"store_rating"`
-	Message       *string  `json:"message"`
+	Message       *string `json:"message"`
 }
 
 type GetBookingUserResponse struct {

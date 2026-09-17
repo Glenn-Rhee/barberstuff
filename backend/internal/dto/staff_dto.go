@@ -40,3 +40,18 @@ type UpdateAccountStaffRequest struct {
 	Name     string `json:"name" binding:"required,min=3"`
 	Password string `json:"password" binding:"required,min=5"`
 }
+
+type CustomerBookingCashier struct {
+	Id          *string `json:"id" binding:"omitempty"`
+	Name        *string `json:"name" binding:"omitempty"`
+	PhoneNumber *string `json:"phoneNumber" binding:"omitempty,min=9,max=15"`
+}
+
+// Create booking from cashire
+type CashierBooking struct {
+	IdStore     string                 `json:"id_store" binding:"required"`
+	IdCapster   string                 `json:"id_capster" binding:"required"`
+	IdServices  []string               `json:"id_services" binding:"required"`
+	BookingDate time.Time              `json:"booking_date" binding:"required"`
+	Customer    CustomerBookingCashier `json:"customer" binding:"required"`
+}
