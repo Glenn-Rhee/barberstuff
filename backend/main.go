@@ -78,6 +78,7 @@ func main() {
 		staff.GET("/", h.StaffHandler.GetAccountStaffes)
 		staff.PATCH("/:id", h.StaffHandler.UpdateAccountStaff)
 		staff.DELETE("/:id", h.StaffHandler.DeleteAccountStaff)
+		staff.POST("/booking", h.StaffHandler.CreateBooking)
 	}
 
 	profile := r.Group("/profile")

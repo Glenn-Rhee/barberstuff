@@ -9,8 +9,9 @@ import (
 type Gender string
 
 const (
-	GenderMale   Gender = "Male"
-	GenderFemale Gender = "Female"
+	GenderMale   Gender = "male"
+	GenderFemale Gender = "female"
+	GenderOther  Gender = "other"
 )
 
 type Customer struct {
@@ -20,8 +21,8 @@ type Customer struct {
 	DateOfBirth    *time.Time     `gorm:"column:date_of_birth"`
 	Gender         Gender         `gorm:"column:gender"`
 	MemberPoints   int            `gorm:"column:member_points;not null;default:100"`
-	IdPremiumType  *uuid.UUID      `gorm:"column:id_premium_type"`
-	ImageCustomer  string         `gorm:"column:image_customer"`
+	IdPremiumType  *uuid.UUID     `gorm:"column:id_premium_type"`
+	ImageCustomer  *string        `gorm:"column:image_customer"`
 	CreatedAt      time.Time      `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt      time.Time      `gorm:"column:updated_at;not null;autoUpdateTime"`
 	PremiumType    *PremiumType   `gorm:"foreignKey:IdPremiumType;references:ID"`

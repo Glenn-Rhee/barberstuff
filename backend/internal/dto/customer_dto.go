@@ -14,7 +14,7 @@ type CredentialCustomerRequest struct {
 	Gender      entity.Gender `json:"gender" binding:"required,oneof=male female"`
 	Email       string        `json:"email" binding:"required,email"`
 	Password    string        `json:"password" binding:"required,min=5"`
-	ImageUrl    string        `json:"image_url" binding:"omitempty,url"`
+	ImageUrl    *string       `json:"image_url" binding:"omitempty,url"`
 }
 
 type CredentialCustomerResponse struct {
@@ -28,7 +28,7 @@ type OauthCustomerRequest struct {
 	PhoneNumber string        `json:"phoneNumber" binding:"required,min=9,max=15"`
 	DateOfBirth time.Time     `json:"date_of_birth" binding:"required"`
 	Gender      entity.Gender `json:"gender" binding:"required,oneof=male female"`
-	ImageUrl    string        `json:"image_url" binding:"omitempty,url"`
+	ImageUrl    *string       `json:"image_url" binding:"omitempty,url"`
 }
 
 type VerifyCredentialRequest struct {
@@ -65,7 +65,7 @@ type VerifyOTPResponse struct {
 type CustomerResponseRating struct {
 	Id          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
-	ImageUrl    string    `json:"image_url"`
+	ImageUrl    *string   `json:"image_url"`
 	PremiumType string    `json:"premium_type"`
 }
 

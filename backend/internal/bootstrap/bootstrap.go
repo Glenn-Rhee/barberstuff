@@ -40,7 +40,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis, premiumTypeRepo)
 	authService := service.NewAuthService(authRepo, lib.ClientRedis)
-	staffService := service.NewStaffService(storeRepo, staffRepo, authRepo, db)
+	staffService := service.NewStaffService(storeRepo, staffRepo, authRepo, customerRepo, capsterRepo, bookingRepo, serviceRepo, db)
 	storeService := service.NewStoreService(storeRepo, serviceRepo, ratingRepo, capsterRepo, staffRepo)
 	capsterService := service.NewCapsterService(capsterRepo, storeRepo)
 	serviceService := service.NewServiceService(serviceRepo, storeRepo)

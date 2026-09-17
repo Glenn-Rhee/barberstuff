@@ -48,7 +48,7 @@ type CustomerBookingCashier struct {
 }
 
 // Create booking from cashire
-type CashierBooking struct {
+type CreateCashireBookingRequest struct {
 	IdStore     string                 `json:"id_store" binding:"required"`
 	IdCapster   string                 `json:"id_capster" binding:"required"`
 	IdServices  []string               `json:"id_services" binding:"required"`

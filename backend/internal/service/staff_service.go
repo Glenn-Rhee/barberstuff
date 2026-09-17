@@ -11,9 +11,11 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -24,17 +26,40 @@ type StaffService interface {
 	GetProfile(claims *lib.CustomClaims) (dto.StaffAccountsResponse, error)
 	UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims, idStaff string) error
 	DeleteAccount(idStaff string, claims *lib.CustomClaims) error
+	CreateBooking(claims *lib.CustomClaims, req dto.CreateCashireBookingRequest) error
 }
 
 type staffService struct {
-	staffRepo repository.StaffRepository
-	authRepo  repository.AuthenticationRepository
-	storeRepo repository.StoreRepository
-	db        *gorm.DB
+	staffRepo    repository.StaffRepository
+	authRepo     repository.AuthenticationRepository
+	storeRepo    repository.StoreRepository
+	customerRepo repository.CustomerRepository
+	capsterRepo  repository.CapsterRepository
+	bookingRepo  repository.BookingRepository
+	serviceRepo  repository.ServiceRepository
+	db           *gorm.DB
 }
 
-func NewStaffService(str repository.StoreRepository, sr repository.StaffRepository, ar repository.AuthenticationRepository, db *gorm.DB) StaffService {
-	return &staffService{staffRepo: sr, authRepo: ar, db: db, storeRepo: str}
+func NewStaffService(
+	str repository.StoreRepository,
+	sr repository.StaffRepository,
+	ar repository.AuthenticationRepository,
+	cr repository.CustomerRepository,
+	cpr repository.CapsterRepository,
+	br repository.BookingRepository,
+	svr repository.ServiceRepository,
+	db *gorm.DB,
+) StaffService {
+	return &staffService{
+		staffRepo:    sr,
+		authRepo:     ar,
+		db:           db,
+		storeRepo:    str,
+		customerRepo: cr,
+		capsterRepo:  cpr,
+		bookingRepo:  br,
+		serviceRepo:  svr,
+	}
 }
 
 func (s *staffService) CreateAdmin(req dto.StaffRequest) error {
@@ -419,6 +444,271 @@ func (s *staffService) DeleteAccount(idStaff string, claims *lib.CustomClaims) e
 	err = s.staffRepo.SoftDelete(id)
 	if err != nil {
 		helper.Logger("Delete data", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCashireBookingRequest) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat booking. Coba lagi nanti!"
+	const BUSY_WINDOW = 1 * time.Hour // FIX: jendela waktu dianggap "masih sibuk"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idStaff, err := uuid.Parse(claims.UserId)
+	if err != nil {
+		return errors.New("Data Anda tidak valid. Mohon login ulang.")
+	}
+
+	idStore, err := uuid.Parse(req.IdStore)
+	if err != nil {
+		return errors.New("Data Toko tidak valid.")
+	}
+
+	idCapster, err := uuid.Parse(req.IdCapster)
+	if err != nil {
+		return errors.New("Data Capster tidak valid.")
+	}
+
+	idServices := make([]uuid.UUID, 0, len(req.IdServices))
+	isIdServiceValid := true
+	for _, id := range req.IdServices {
+		idService, err := uuid.Parse(id)
+		if err != nil {
+			isIdServiceValid = false
+			break
+		}
+
+		idServices = append(idServices, idService)
+	}
+
+	if len(idServices) == 0 {
+		return errors.New("Pilih setidaknya satu data service")
+	}
+
+	if !isIdServiceValid {
+		return errors.New("Data service tidak valid. Periksa kembali data Anda.")
+	}
+
+	if helper.IsAllFieldsNil(req.Customer) {
+		return errors.New("Masukkan setidaknya salah satu identitas data customer.")
+	}
+
+	var idCustomer uuid.UUID
+	if req.Customer.Id != nil {
+		// Punya aplikassi
+		id, err := uuid.Parse(*req.Customer.Id)
+		if err != nil {
+			return errors.New("Data id customer tidak valid.")
+		}
+		dataCustomer, err := s.customerRepo.FindOne("id = ?", id)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("Data customer tidak ditemukaan atau telah dihapus.")
+			}
+
+			helper.Logger("find one customer", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+
+		idCustomer = dataCustomer.ID
+	} else {
+		// Gapunya aplikassi
+		if (req.Customer.Name != nil && req.Customer.PhoneNumber == nil) || (req.Customer.Name == nil && req.Customer.PhoneNumber != nil) {
+			return errors.New("Nama dan no telpon wajib diisi untuk membuat customer baru")
+		}
+
+		dataCustomer, err := s.customerRepo.FindOne("phone_number = ?", *req.Customer.PhoneNumber)
+		if err == nil {
+			idCustomer = dataCustomer.ID
+		} else {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				helper.Logger("find one customer by phone number", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+
+			newCustomer := entity.Customer{
+				ID:           uuid.New(),
+				Name:         *req.Customer.Name,
+				PhoneNumber:  req.Customer.PhoneNumber,
+				MemberPoints: 0,
+				Gender:       entity.GenderOther,
+			}
+
+			err = s.db.Transaction(func(tx *gorm.DB) error {
+				err = s.customerRepo.Create(tx, &newCustomer)
+				return err
+			})
+
+			if err != nil {
+				helper.Logger("create new customer", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+
+			idCustomer = newCustomer.ID
+		}
+
+	}
+
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Toko tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find one store", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load timezone", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	now := time.Now().In(loc)
+	scheduledAt := req.BookingDate.In(loc)
+
+	if scheduledAt.Before(now) {
+		return errors.New("Tanggal dan jam booking tidak boleh kurang dari waktu sekarang")
+	}
+
+	_, err = s.capsterRepo.FindOne(&entity.Capster{ID: idCapster, Status: entity.CapsterStatusActive, IDStore: idStore})
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Capster tidak ditemukan atau telah dihapus!")
+		}
+
+		helper.Logger("find one capster", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	_, err = s.bookingRepo.FindOne(
+		"id_user = ? AND status_booking IN ?",
+		idCustomer,
+		[]entity.BookingStatusEnum{entity.BookingStatusBooked, entity.BookingStatusProgress},
+	)
+
+	if err == nil {
+		return errors.New("Customer ini telah memiliki booking. Selesaikan booking terlebih dahulu.")
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		helper.Logger("Find one booking", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	var scopeActiveBookings []func(*gorm.DB) *gorm.DB
+	scopeActiveBookings = append(scopeActiveBookings, func(d *gorm.DB) *gorm.DB {
+		return d.
+			Where("id_store = ?", idStore).
+			Where("status_booking IN ?", []entity.BookingStatusEnum{
+				entity.BookingStatusBooked,
+				entity.BookingStatusProgress,
+			})
+	})
+
+	dataActiveBookings, err := s.bookingRepo.FindAll(scopeActiveBookings...)
+	if err != nil {
+		helper.Logger("find all active booking by store", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	busyCapsterSet := make(map[uuid.UUID]bool)
+	for _, v := range dataActiveBookings {
+		existingTime := v.ScheduledAt.In(loc)
+		diff := existingTime.Sub(scheduledAt)
+		if diff < 0 {
+			diff = -diff
+		}
+
+		if diff < BUSY_WINDOW {
+			busyCapsterSet[v.IDCapster] = true
+		}
+	}
+
+	var scopesActiveCapster []func(*gorm.DB) *gorm.DB
+	scopesActiveCapster = append(scopesActiveCapster, func(d *gorm.DB) *gorm.DB {
+		return d.
+			Where("id_store = ?", idStore).
+			Where("status = ?", entity.CapsterStatusActive)
+	})
+
+	dataCapsters, err := s.capsterRepo.FindAll(scopesActiveCapster...)
+	if err != nil {
+		helper.Logger("find all capsters", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	var freeCapsterIDs []uuid.UUID
+	for _, c := range dataCapsters {
+		if !busyCapsterSet[c.ID] {
+			freeCapsterIDs = append(freeCapsterIDs, c.ID)
+		}
+	}
+
+	if len(freeCapsterIDs) == 0 {
+		return errors.New("Sudah tidak ada lagi capster yang tersedia.")
+	}
+
+	if busyCapsterSet[idCapster] {
+		return errors.New("Capster ini sedang tidak tersedia pada rentang waktu tersebut.")
+	}
+
+	var scopesService []func(*gorm.DB) *gorm.DB
+	scopesService = append(scopesService, func(d *gorm.DB) *gorm.DB {
+		return d.Where("id IN ? AND status = ? AND id_store = ?", idServices, entity.ProductStatusActive, idStore)
+	})
+
+	dataServices, err := s.serviceRepo.FindAll(scopesService...)
+	if err != nil {
+		helper.Logger("find all services", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if len(dataServices) == 0 {
+		return errors.New("Data service tidak ada yang ditemukan.")
+	}
+
+	var subTotal decimal.Decimal = decimal.Zero
+	idBooking := uuid.New()
+	bookingItems := make([]entity.BookingItem, 0, len(dataServices))
+	for _, v := range dataServices {
+		subTotal = subTotal.Add(v.Price)
+		bookingItems = append(bookingItems, entity.BookingItem{
+			ID:          uuid.New(),
+			IDBooking:   idBooking,
+			IDService:   v.ID,
+			Price:       v.Price,
+			AddedOnSpot: true,
+		})
+	}
+
+	totalPrice := subTotal
+
+	qrCode := fmt.Sprintf("bk%v", idBooking)
+	data := entity.Booking{
+		ID:             idBooking,
+		StatusBooking:  entity.BookingStatusBooked,
+		IDStore:        idStore,
+		IDCustomer:     idCustomer,
+		IDCapster:      idCapster,
+		IDStaff:        idStaff,
+		SubTotal:       subTotal,
+		DiscountAmount: decimal.Zero,
+		TotalPrice:     totalPrice,
+		ScheduledAt:    scheduledAt,
+		QRCode:         qrCode,
+		BookingType:    entity.BookingScheduled,
+		BookingItems:   bookingItems,
+	}
+
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		return s.bookingRepo.Create(tx, &data)
+	})
+
+	if err != nil {
+		helper.Logger("Create data booking", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 

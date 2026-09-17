@@ -514,7 +514,7 @@ func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCusto
 		Gender:        dataCustomers.Gender,
 		MemberPoints:  dataCustomers.MemberPoints,
 		PremiumType:   dataPremium.Name,
-		ImageUrl:      &dataCustomers.ImageCustomer,
+		ImageUrl:      dataCustomers.ImageCustomer,
 		CreatedAt:     dataCustomers.CreatedAt,
 		Role:          dataCustomers.Authentication.Role,
 		Email:         dataCustomers.Authentication.Email,
@@ -748,7 +748,7 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 			LastVisitedAt:   lastVisitedAt,
 			ServiceFavorite: favoriteServiceName,
 			CapsterFavorite: favoriteCapsterName,
-			ImageUrl:        &c.ImageCustomer,
+			ImageUrl:        c.ImageCustomer,
 			Email:           c.Authentication.Email,
 		})
 	}
