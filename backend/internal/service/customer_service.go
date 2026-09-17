@@ -697,12 +697,14 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 	}
 
 	dataCustomers := make([]dto.DataUserFindCustomer, 0, len(customers))
+	totalMembers := 0
 	for _, c := range customers {
 		var status dto.StatusCustomer
 		if c.IdPremiumType == nil {
 			status = dto.StatusReguler
 		} else {
 			status = dto.StatusMember
+			totalMembers++
 		}
 		var totalVisited int64 = 0
 		var lastVisitedAt *time.Time
@@ -765,17 +767,6 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 	totalNewCustomers, err := c.customerRepo.CountNewCustomers(startDate, endDate)
 	if err != nil {
 		helper.Logger("count total new cust", filePath, err)
-		return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
-	}
-
-	var scopesTotalMember []func(*gorm.DB) *gorm.DB
-	scopesTotalMember = append(scopesTotalMember, func(d *gorm.DB) *gorm.DB {
-		return d.Where("id_premium_type IS NOT NULL")
-	})
-
-	totalMembers, err := c.customerRepo.Count(scopesTotalMember...)
-	if err != nil {
-		helper.Logger("count total members", filePath, err)
 		return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 
