@@ -54,7 +54,6 @@ class AppAssets {
   static const String capster2 = '$_imageGeneral/capster2.png';
   static const String capster3 = '$_imageGeneral/capster3.png';
   static const String capster4 = '$_imageGeneral/capster4.png';
-  static const String dummyCapster = capster1;
 
   static const String googleIcon = '$_iconGeneral/google_icon.png';
   static const String mailIcon = '$_iconGeneral/mails.png';

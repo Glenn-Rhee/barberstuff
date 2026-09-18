@@ -37,6 +37,10 @@ class ActiveBookingCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Row(
+            // spaceBetween: badge mepet kiri, order id mepet kanan.
+            // Sebelumnya sisa ruang menggantung di ujung kanan karena
+            // dua anak Flex sama-sama kebagian setengah lebar.
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Flexible(
                 child: Container(
@@ -59,16 +63,18 @@ class ActiveBookingCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  l10n.homeBookingOrderId(booking.orderId),
-                  textAlign: TextAlign.right,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.bodySmall.copyWith(
-                    color: AppColor.goldDeep,
-                    fontSize: 13,
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    l10n.homeBookingOrderId(booking.orderId),
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.bodySmall.copyWith(
+                      color: AppColor.goldDeep,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ),

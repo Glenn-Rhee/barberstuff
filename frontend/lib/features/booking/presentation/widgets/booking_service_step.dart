@@ -36,6 +36,7 @@ class BookingServiceStep extends StatelessWidget {
             emptyMessage: l10n.bookingServiceEmpty,
             onRetry: p.loadServices,
             child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
               itemCount: p.visibleServices.length,
               separatorBuilder: (BuildContext _, int _) =>

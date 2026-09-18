@@ -10,7 +10,7 @@ import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:mobile_barberstuff/shared/widgets/filter_chip_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -113,11 +113,40 @@ class HistoryView extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Expanded(
-              child: p.isLoading
-                  ? const Center(child: BoxLoader())
+              child: p.isLoading && p.items.isEmpty
+                  ? SkeletonList(
+                      itemCount: 4,
+                      padding: EdgeInsets.fromLTRB(
+                        sidePadding,
+                        0,
+                        sidePadding,
+                        20 + DashboardBottomNav.spaceOf(context),
+                      ),
+                      itemBuilder: (BuildContext _, int _) =>
+                          const SkeletonListTile(thumbSize: 64, lines: 3),
+                    )
                   : p.items.isEmpty
-                  ? _Empty(message: l10n.historyEmpty)
-                  : ListView.separated(
+                  ? RefreshIndicator(
+                      onRefresh: p.load,
+                      color: AppColor.goldDeep,
+                      child: LayoutBuilder(
+                        builder: (BuildContext context, BoxConstraints c) {
+                          return SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minHeight: c.maxHeight,
+                              ),
+                              child: _Empty(message: l10n.historyEmpty),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: p.load,
+                      color: AppColor.goldDeep,
+                      child: ListView.separated(
                       padding: EdgeInsets.fromLTRB(
                         sidePadding,
                         0,
@@ -134,6 +163,7 @@ class HistoryView extends StatelessWidget {
                           onReview: () => _openReview(context, p, item),
                         );
                       },
+                      ),
                     ),
             ),
           ],

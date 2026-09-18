@@ -118,7 +118,7 @@ class PointsCard extends StatelessWidget {
                             l10n.homeRedeemPoints,
                             maxLines: 1,
                             style: AppTextStyle.bodySmall.copyWith(
-                              color: AppColor.inkFaint,
+                              color: AppColor.surface,
                             ),
                           ),
                           const SizedBox(width: 6),

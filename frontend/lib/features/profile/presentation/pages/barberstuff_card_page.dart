@@ -5,8 +5,10 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:provider/provider.dart';
 
 class BarberstuffCardArgs {
   const BarberstuffCardArgs({required this.profile});
@@ -22,6 +24,11 @@ class BarberstuffCardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+
+    // Profil hidup dari provider, args cuma nilai awal, supaya tarik-ulang
+    // benar-benar memperbarui poin dan tier di kartu.
+    final ProfileProvider profileProvider = context.watch<ProfileProvider>();
+    final CustomerProfile profile = profileProvider.profile ?? args.profile;
 
     return Scaffold(
       backgroundColor: AppColor.surface,
@@ -48,9 +55,14 @@ class BarberstuffCardPage extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-          child: MemberCard(profile: args.profile),
+        child: RefreshIndicator(
+          onRefresh: profileProvider.load,
+          color: AppColor.goldDeep,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+            child: MemberCard(profile: profile),
+          ),
         ),
       ),
     );

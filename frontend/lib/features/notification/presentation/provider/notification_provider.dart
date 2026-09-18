@@ -8,13 +8,14 @@ typedef NotificationPresenter = void Function(AppNotification notification);
 enum NotificationFilter { all, unread }
 
 class NotificationProvider extends ChangeNotifier {
-  NotificationProvider() {
-    _items = _seed();
-  }
+  NotificationProvider();
+
+  // TODO(api): backend belum punya route notifikasi. Begitu ada,
+  // isi refresh() dengan panggilan repository dan hapus catatan ini.
 
   static const Duration simulatorInterval = Duration(seconds: 8);
 
-  late List<AppNotification> _items;
+  List<AppNotification> _items = const <AppNotification>[];
   NotificationFilter _filter = NotificationFilter.all;
   String _query = '';
   Timer? _simulator;
@@ -26,43 +27,6 @@ class NotificationProvider extends ChangeNotifier {
   String get query => _query;
   bool get isSimulating => _simulator != null;
 
-  static List<AppNotification> _seed() {
-    final DateTime now = DateTime.now();
-    final DateTime yesterday = now.subtract(const Duration(days: 1));
-
-    return <AppNotification>[
-      AppNotification(
-        id: 'seed-1',
-        category: NotificationCategory.booking,
-        createdAt: now.subtract(const Duration(minutes: 2)),
-      ),
-      AppNotification(
-        id: 'seed-2',
-        category: NotificationCategory.points,
-        createdAt: now.subtract(const Duration(hours: 1)),
-      ),
-      AppNotification(
-        id: 'seed-3',
-        category: NotificationCategory.membership,
-        createdAt: yesterday,
-      ),
-      AppNotification(
-        id: 'seed-4',
-        category: NotificationCategory.points,
-        createdAt: yesterday.subtract(const Duration(minutes: 20)),
-      ),
-      AppNotification(
-        id: 'seed-5',
-        category: NotificationCategory.booking,
-        createdAt: yesterday.subtract(const Duration(minutes: 40)),
-      ),
-      AppNotification(
-        id: 'seed-6',
-        category: NotificationCategory.recommendation,
-        createdAt: now.subtract(const Duration(days: 10)),
-      ),
-    ];
-  }
 
   void attachPresenter(NotificationPresenter? presenter) {
     _presenter = presenter;
@@ -115,6 +79,11 @@ class NotificationProvider extends ChangeNotifier {
     _presenter?.call(created);
   }
 
+  /// Dipanggil saat pengguna menarik layar ke bawah.
+  Future<void> refresh() async {
+    notifyListeners();
+  }
+
   void clear() {
     if (_items.isEmpty) return;
     _items = <AppNotification>[];
@@ -123,7 +92,7 @@ class NotificationProvider extends ChangeNotifier {
 
   void reset() {
     stopSimulator();
-    _items = _seed();
+    _items = const <AppNotification>[];
     _filter = NotificationFilter.all;
     _query = '';
     _serial = 0;

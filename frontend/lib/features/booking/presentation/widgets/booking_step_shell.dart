@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
+import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 
 class BookingStepState extends StatelessWidget {
   const BookingStepState({
@@ -16,6 +15,7 @@ class BookingStepState extends StatelessWidget {
     required this.emptyMessage,
     required this.onRetry,
     required this.child,
+    this.skeletonCount = 4,
   });
 
   final bool loading;
@@ -25,49 +25,50 @@ class BookingStepState extends StatelessWidget {
   final VoidCallback onRetry;
   final Widget child;
 
+  /// Banyak baris kerangka saat memuat, disesuaikan tiap langkah.
+  final int skeletonCount;
+
+  /// onRetry di sini VoidCallback, sedangkan tarik-ulang minta Future.
+  Future<void> _retry() async => onRetry();
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    if (loading) return const Center(child: BoxLoader());
+    if (loading) {
+      // ListView, bukan Column, supaya tidak meluber kalau layarnya pendek.
+      return SkeletonGroup(
+        child: ListView.separated(
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          itemCount: skeletonCount,
+          separatorBuilder: (BuildContext _, int _) =>
+              const SizedBox(height: 10),
+          itemBuilder: (BuildContext _, int _) =>
+              const SkeletonBox(height: 66, radius: 12),
+        ),
+      );
+    }
 
     final ApiException? failure = error;
     if (failure != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                failure.message(l10n),
-                textAlign: TextAlign.center,
-                style: AppTextStyle.bodyMedium.copyWith(
-                  color: AppColor.inkSoft,
-                ),
-              ),
-              const SizedBox(height: 18),
-              BoxButton(label: l10n.commonRetry, onPressed: onRetry),
-            ],
-          ),
-        ),
-      );
+      return ErrorRetryView(message: failure.message(l10n), onRetry: _retry);
     }
 
     if (isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Text(
-            emptyMessage,
-            textAlign: TextAlign.center,
-            style: AppTextStyle.bodyMedium.copyWith(color: AppColor.inkFaint),
-          ),
-        ),
+      return ErrorRetryView(
+        message: emptyMessage,
+        onRetry: _retry,
+        showButton: false,
       );
     }
 
-    return child;
+    // Isi yang sudah tampil pun tetap bisa ditarik untuk muat ulang.
+    return RefreshIndicator(
+      onRefresh: _retry,
+      color: AppColor.goldDeep,
+      child: child,
+    );
   }
 }
 

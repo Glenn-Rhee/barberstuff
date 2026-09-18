@@ -4,6 +4,10 @@ import 'package:mobile_barberstuff/features/promo/domain/promo_content.dart';
 
 /// Isi promo sementara. Tabel `promo` sudah ada di database tapi belum punya
 /// route, jadi teksnya ditulis di sini sampai endpointnya tersedia.
+///
+/// TODO(api): ini satu-satunya data yang masih ditulis tangan di aplikasi.
+/// Begitu route promo jadi di backend, ganti `grades`, `benefits`, `banners`,
+/// dan `rewards` dengan panggilan repository, lalu hapus berkas ini.
 class PromoCatalog {
   const PromoCatalog._();
 

@@ -3,11 +3,13 @@ import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/promo/data/promo_catalog.dart';
 import 'package:mobile_barberstuff/features/promo/domain/promo_content.dart';
 import 'package:mobile_barberstuff/features/promo/presentation/widgets/promo_parts.dart';
 import 'package:mobile_barberstuff/features/promo/presentation/widgets/reward_detail_sheet.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:provider/provider.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 
 class PromoArgs {
@@ -47,7 +49,10 @@ class PromoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    final CustomerProfile profile = args.profile;
+    // Profil hidup dari provider supaya tarik-ulang benar-benar mengubah
+    // poin dan tier di layar; args cuma dipakai sebagai nilai awal.
+    final ProfileProvider profileProvider = context.watch<ProfileProvider>();
+    final CustomerProfile profile = profileProvider.profile ?? args.profile;
 
     return Scaffold(
       backgroundColor: AppColor.surface,
@@ -75,7 +80,11 @@ class PromoPage extends StatelessWidget {
       ),
       body: SafeArea(
         top: false,
-        child: ListView(
+        child: RefreshIndicator(
+          onRefresh: profileProvider.load,
+          color: AppColor.goldDeep,
+          child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(_sidePadding, 4, _sidePadding, 28),
           children: <Widget>[
             PromoHeaderCard(profile: profile),
@@ -127,6 +136,7 @@ class PromoPage extends StatelessWidget {
               const SizedBox(height: 14),
             ],
           ],
+          ),
         ),
       ),
     );

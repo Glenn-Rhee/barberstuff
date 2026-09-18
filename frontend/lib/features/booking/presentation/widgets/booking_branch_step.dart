@@ -52,6 +52,7 @@ class BookingBranchStep extends StatelessWidget {
             emptyMessage: l10n.bookingStoreEmpty,
             onRetry: () => _refresh(context, p),
             child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
               itemCount: p.stores.length,
               separatorBuilder: (BuildContext _, int _) =>

@@ -1,4 +1,3 @@
-import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
 
@@ -35,8 +34,7 @@ class NearbyStore {
     required this.name,
     required this.city,
     required this.rating,
-    required this.distanceKm,
-    required this.imageAsset,
+    this.distanceKm,
     this.imageUrl,
   });
 
@@ -44,8 +42,9 @@ class NearbyStore {
   final String name;
   final String city;
   final double rating;
-  final double distanceKm;
-  final String imageAsset;
+
+  /// null kalau izin lokasi belum diberi. Jangan ditulis 0, itu bohong.
+  final double? distanceKm;
   final String? imageUrl;
 
   factory NearbyStore.fromSummary(StoreSummary store, {double? distanceKm}) {
@@ -54,8 +53,7 @@ class NearbyStore {
       name: store.name,
       city: store.address,
       rating: store.avgRating,
-      distanceKm: distanceKm ?? 0,
-      imageAsset: AppAssets.storeDepok,
+      distanceKm: distanceKm,
       imageUrl: store.bannerUrl.isEmpty ? null : store.bannerUrl,
     );
   }

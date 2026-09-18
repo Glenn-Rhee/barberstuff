@@ -16,8 +16,8 @@ import 'package:mobile_barberstuff/features/profile/presentation/provider/profil
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/profile_menu_tile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
+import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:mobile_barberstuff/shared/widgets/offline_banner.dart';
 import 'package:provider/provider.dart';
 
@@ -283,27 +283,53 @@ class _PlaceholderBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (provider.isFirstLoad) {
-      return const Center(child: BoxLoader());
-    }
+    if (provider.isFirstLoad) return const _ProfileSkeleton();
 
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              provider.error?.message(l10n) ?? l10n.exceptionDefault,
-              textAlign: TextAlign.center,
-              style: AppTextStyle.bodyMedium.copyWith(color: AppColor.inkSoft),
-            ),
-            const SizedBox(height: 20),
-            BoxButton(label: l10n.commonRetry, onPressed: provider.load),
-          ],
+    return ErrorRetryView(
+      message: provider.error?.message(l10n) ?? l10n.exceptionDefault,
+      onRetry: provider.load,
+    );
+  }
+}
+
+/// Kerangka halaman profil: foto bulat, nama, tier, lalu daftar menu.
+class _ProfileSkeleton extends StatelessWidget {
+  const _ProfileSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SkeletonGroup(
+      child: ListView(
+        padding: EdgeInsets.fromLTRB(
+          ProfilePage._sidePadding,
+          24,
+          ProfilePage._sidePadding,
+          28 + DashboardBottomNav.spaceOf(context),
         ),
+        children: <Widget>[
+          const Center(child: SkeletonBox.circle(size: 96)),
+          const SizedBox(height: 18),
+          const Center(child: SkeletonBox(width: 170, height: 20)),
+          const SizedBox(height: 10),
+          const Center(child: SkeletonBox(width: 210, height: 13)),
+          const SizedBox(height: 8),
+          const Center(child: SkeletonBox(width: 150, height: 13)),
+          const SizedBox(height: 18),
+          const Center(child: SkeletonBox(width: 240, height: 44, radius: 22)),
+          const SizedBox(height: 26),
+          for (int i = 0; i < 7; i++) ...<Widget>[
+            if (i > 0) const SizedBox(height: 10),
+            Row(
+              children: <Widget>[
+                const SkeletonBox(width: 44, height: 44, radius: 12),
+                const SizedBox(width: 14),
+                SkeletonBox(width: 120 + (i % 3) * 40, height: 15),
+              ],
+            ),
+          ],
+        ],
       ),
     );
   }

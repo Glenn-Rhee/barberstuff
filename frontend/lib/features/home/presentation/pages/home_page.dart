@@ -5,7 +5,6 @@ import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/services/permission_prompt.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
 import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
@@ -25,8 +24,8 @@ import 'package:mobile_barberstuff/features/profile/presentation/provider/profil
 import 'package:mobile_barberstuff/features/promo/presentation/pages/promo_page.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
+import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -80,6 +79,9 @@ class _HomePageState extends State<HomePage> {
     await PermissionPrompt.askNotification(context);
     if (!mounted) return;
     await PermissionPrompt.askLocation(context);
+    if (!mounted) return;
+
+    await context.read<DashboardProvider>().refreshLocation();
   }
 
   @override
@@ -318,27 +320,56 @@ class _PlaceholderBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (provider.isFirstLoad) {
-      return const Center(child: BoxLoader());
-    }
+    if (provider.isFirstLoad) return const _DashboardSkeleton();
 
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              provider.error?.message(l10n) ?? l10n.exceptionDefault,
-              textAlign: TextAlign.center,
-              style: AppTextStyle.bodyMedium.copyWith(color: AppColor.inkSoft),
-            ),
-            const SizedBox(height: 20),
-            BoxButton(label: l10n.commonRetry, onPressed: provider.load),
-          ],
+    return ErrorRetryView(
+      message: provider.error?.message(l10n) ?? l10n.exceptionDefault,
+      onRetry: provider.load,
+    );
+  }
+}
+
+/// Kerangka dashboard: bentuknya mengikuti isi asli supaya tidak lompat
+/// waktu datanya masuk.
+class _DashboardSkeleton extends StatelessWidget {
+  const _DashboardSkeleton();
+
+  static const double _pad = HomePage.sidePadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return SkeletonGroup(
+      child: ListView(
+        padding: EdgeInsets.fromLTRB(
+          _pad,
+          20,
+          _pad,
+          28 + DashboardBottomNav.spaceOf(context),
         ),
+        children: <Widget>[
+          const SkeletonBox(height: 96, radius: 16),
+          const SizedBox(height: 16),
+          Row(
+            children: <Widget>[
+              for (int i = 0; i < 4; i++) ...<Widget>[
+                if (i > 0) const SizedBox(width: 10),
+                const Expanded(child: SkeletonBox(height: 78, radius: 14)),
+              ],
+            ],
+          ),
+          const SizedBox(height: 16),
+          const SkeletonBox(height: 120, radius: 16),
+          const SizedBox(height: 28),
+          const SkeletonBox(width: 180, height: 20),
+          const SizedBox(height: 12),
+          const SkeletonBox(height: 140, radius: 16),
+          const SizedBox(height: 28),
+          const SkeletonBox(width: 150, height: 20),
+          const SizedBox(height: 12),
+          const SkeletonBox(height: 200, radius: 16),
+        ],
       ),
     );
   }

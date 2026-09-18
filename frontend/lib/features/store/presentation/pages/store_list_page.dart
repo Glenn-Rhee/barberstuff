@@ -13,7 +13,9 @@ import 'package:mobile_barberstuff/features/store/presentation/pages/store_detai
 import 'package:mobile_barberstuff/features/store/presentation/provider/store_list_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
+import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
+import 'package:mobile_barberstuff/shared/widgets/store_image.dart';
 import 'package:provider/provider.dart';
 
 class StoreListPage extends StatelessWidget {
@@ -100,15 +102,30 @@ class _Body extends StatelessWidget {
     final List<StoreSummary> stores = provider.stores;
 
     if (provider.isLoading && stores.isEmpty) {
-      return const Center(child: BoxLoader());
+      return const SkeletonList(
+        itemCount: 6,
+        padding: EdgeInsets.fromLTRB(
+          _StoreListView._sidePadding,
+          0,
+          _StoreListView._sidePadding,
+          24,
+        ),
+      );
     }
 
     if (error != null && stores.isEmpty) {
-      return _Message(text: error.message(l10n));
+      return ErrorRetryView(
+        message: error.message(l10n),
+        onRetry: provider.load,
+      );
     }
 
     if (stores.isEmpty) {
-      return _Message(text: l10n.bookingStoreEmpty);
+      return ErrorRetryView(
+        message: l10n.bookingStoreEmpty,
+        onRetry: provider.load,
+        showButton: false,
+      );
     }
 
     return RefreshIndicator(
@@ -174,7 +191,7 @@ class _StoreRow extends StatelessWidget {
                 child: SizedBox(
                   width: _thumbSize,
                   height: _thumbSize,
-                  child: _Thumb(url: store.bannerUrl),
+                  child: StoreImage(url: store.bannerUrl),
                 ),
               ),
               const SizedBox(width: 12),
@@ -247,49 +264,3 @@ class _StoreRow extends StatelessWidget {
   }
 }
 
-/// Banner dari server kalau ada, kalau gagal jatuh ke aset bawaan.
-class _Thumb extends StatelessWidget {
-  const _Thumb({required this.url});
-
-  final String url;
-
-  @override
-  Widget build(BuildContext context) {
-    final Widget fallback = Image.asset(
-      AppAssets.storeDepok,
-      fit: BoxFit.cover,
-      filterQuality: FilterQuality.medium,
-      errorBuilder: (BuildContext _, Object _, StackTrace? _) =>
-          const ColoredBox(color: AppColor.border),
-    );
-
-    if (url.isEmpty) return fallback;
-
-    return Image.network(
-      url,
-      fit: BoxFit.cover,
-      filterQuality: FilterQuality.medium,
-      errorBuilder: (BuildContext _, Object _, StackTrace? _) => fallback,
-    );
-  }
-}
-
-class _Message extends StatelessWidget {
-  const _Message({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: AppTextStyle.bodyMedium.copyWith(color: AppColor.inkFaint),
-        ),
-      ),
-    );
-  }
-}

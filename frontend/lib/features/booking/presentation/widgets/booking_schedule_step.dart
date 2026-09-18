@@ -63,6 +63,7 @@ class BookingScheduleStep extends StatelessWidget {
             emptyMessage: l10n.bookingSlotEmpty,
             onRetry: p.loadSlots,
             child: GridView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,

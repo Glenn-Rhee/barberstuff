@@ -38,6 +38,18 @@ class DashboardProvider extends ChangeNotifier {
   List<BookingRecord> get history =>
       _journal.past.take(historyLimit).toList(growable: false);
 
+  /// Dipanggil setelah pengguna menjawab dialog izin lokasi.
+  /// load() kadang sudah jalan duluan waktu izin belum ada, jadi posisinya
+  /// perlu diambil ulang supaya jarak cabang muncul tanpa buka tutup aplikasi.
+  Future<void> refreshLocation() async {
+    final UserPosition? fresh = await _location.current();
+    if (fresh == null) return;
+
+    _position = fresh;
+    _stores = sortStoresByDistance(_stores, _position);
+    notifyListeners();
+  }
+
   Future<void> load() async {
     _loadingStores = true;
     _storesError = null;

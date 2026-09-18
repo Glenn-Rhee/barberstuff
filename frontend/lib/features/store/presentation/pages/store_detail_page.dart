@@ -15,8 +15,8 @@ import 'package:mobile_barberstuff/features/store/presentation/widgets/store_det
 import 'package:mobile_barberstuff/features/store/presentation/widgets/store_tab_content.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
+import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -125,11 +125,14 @@ class _StoreDetailView extends StatelessWidget {
       ),
       body: SafeArea(
         top: false,
-        child: p.isLoading
-            ? const Center(child: BoxLoader())
+        child: p.isLoading && detail == null
+            ? const _StoreDetailSkeleton()
             : detail == null
             ? _ErrorBody(provider: p)
-            : ListView(
+            : RefreshIndicator(
+                onRefresh: p.load,
+                color: AppColor.goldDeep,
+                child: ListView(
                 padding: const EdgeInsets.only(bottom: 28),
                 children: <Widget>[
                   _Banner(url: detail.bannerUrl),
@@ -208,6 +211,7 @@ class _StoreDetailView extends StatelessWidget {
                     child: _TabBody(provider: p, detail: detail),
                   ),
                 ],
+                ),
               ),
       ),
     );
@@ -238,9 +242,19 @@ class _TabBody extends StatelessWidget {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     if (provider.isLoadingProducts) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 40),
-        child: Center(child: BoxLoader()),
+      return const SkeletonGroup(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          child: Column(
+            children: <Widget>[
+              SkeletonListTile(thumbSize: 56, lines: 2),
+              SizedBox(height: 10),
+              SkeletonListTile(thumbSize: 56, lines: 2),
+              SizedBox(height: 10),
+              SkeletonListTile(thumbSize: 56, lines: 2),
+            ],
+          ),
+        ),
       );
     }
 
@@ -467,19 +481,55 @@ class _ErrorBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+    return ErrorRetryView(
+      message: provider.error?.message(l10n) ?? l10n.exceptionDefault,
+      onRetry: provider.load,
+    );
+  }
+}
+
+/// Kerangka detail cabang: banner, judul, ringkasan, lalu tab.
+class _StoreDetailSkeleton extends StatelessWidget {
+  const _StoreDetailSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SkeletonGroup(
+      child: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              provider.error?.message(l10n) ?? l10n.exceptionDefault,
-              textAlign: TextAlign.center,
-              style: AppTextStyle.bodyMedium.copyWith(color: AppColor.inkSoft),
+            SkeletonBox(height: 190, radius: 0),
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 18, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SkeletonBox(width: 210, height: 22),
+                  SizedBox(height: 10),
+                  SkeletonBox(width: 260, height: 13),
+                  SizedBox(height: 8),
+                  SkeletonBox(width: 140, height: 13),
+                  SizedBox(height: 18),
+                  SkeletonBox(height: 84, radius: 14),
+                  SizedBox(height: 18),
+                  Row(
+                    children: <Widget>[
+                      SkeletonBox(width: 96, height: 34, radius: 17),
+                      SizedBox(width: 8),
+                      SkeletonBox(width: 80, height: 34, radius: 17),
+                      SizedBox(width: 8),
+                      SkeletonBox(width: 72, height: 34, radius: 17),
+                    ],
+                  ),
+                  SizedBox(height: 18),
+                  SkeletonListTile(thumbSize: 56, lines: 2),
+                  SizedBox(height: 10),
+                  SkeletonListTile(thumbSize: 56, lines: 2),
+                ],
+              ),
             ),
-            const SizedBox(height: 18),
-            BoxButton(label: l10n.commonRetry, onPressed: provider.load),
           ],
         ),
       ),

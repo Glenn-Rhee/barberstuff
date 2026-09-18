@@ -23,6 +23,7 @@ class BookingCapsterStep extends StatelessWidget {
       emptyMessage: l10n.bookingCapsterEmpty,
       onRetry: p.loadSlots,
       child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
         itemCount: p.capsters.length,
         separatorBuilder: (BuildContext _, int _) => const SizedBox(height: 10),

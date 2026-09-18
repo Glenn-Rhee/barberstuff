@@ -5,6 +5,7 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/store_image.dart';
 
 class NearbyStoreList extends StatelessWidget {
   const NearbyStoreList({
@@ -70,6 +71,7 @@ class _StoreCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final NumberFormat decimal = NumberFormat('0.0', 'id');
+    final double? km = store.distanceKm;
 
     return Material(
       color: AppColor.border,
@@ -80,7 +82,7 @@ class _StoreCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            _StoreImage(store: store),
+            StoreImage(url: store.imageUrl, iconSize: 40),
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -116,10 +118,12 @@ class _StoreCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            l10n.homeNearbyLocation(
-                              store.city,
-                              decimal.format(store.distanceKm),
-                            ),
+                            km == null
+                                ? store.city
+                                : l10n.homeNearbyLocation(
+                                    store.city,
+                                    decimal.format(km),
+                                  ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyle.bodySmall.copyWith(
@@ -164,35 +168,6 @@ class _StoreCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-/// Banner dari server kalau ada, kalau gagal jatuh ke aset bawaan.
-class _StoreImage extends StatelessWidget {
-  const _StoreImage({required this.store});
-
-  final NearbyStore store;
-
-  @override
-  Widget build(BuildContext context) {
-    final String? url = store.imageUrl;
-
-    final Widget fallback = Image.asset(
-      store.imageAsset,
-      fit: BoxFit.cover,
-      filterQuality: FilterQuality.medium,
-      errorBuilder: (BuildContext _, Object _, StackTrace? _) =>
-          const ColoredBox(color: AppColor.border),
-    );
-
-    if (url == null) return fallback;
-
-    return Image.network(
-      url,
-      fit: BoxFit.cover,
-      filterQuality: FilterQuality.medium,
-      errorBuilder: (BuildContext _, Object _, StackTrace? _) => fallback,
     );
   }
 }

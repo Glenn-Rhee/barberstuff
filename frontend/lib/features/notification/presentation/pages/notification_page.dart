@@ -133,13 +133,32 @@ class _NotificationPageState extends State<NotificationPage> {
               ),
             ),
             Expanded(
-              child: visible.isEmpty
-                  ? NotificationEmptyState(message: l10n.notificationEmpty)
-                  : _NotificationList(
-                      items: visible,
-                      labelOf: (DateTime day) => _groupLabel(day, l10n, locale),
-                      onTap: p.markRead,
-                    ),
+              child: RefreshIndicator(
+                onRefresh: p.refresh,
+                color: AppColor.goldDeep,
+                child: visible.isEmpty
+                    ? LayoutBuilder(
+                        builder: (BuildContext context, BoxConstraints c) {
+                          return SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minHeight: c.maxHeight,
+                              ),
+                              child: NotificationEmptyState(
+                                message: l10n.notificationEmpty,
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : _NotificationList(
+                        items: visible,
+                        labelOf: (DateTime day) =>
+                            _groupLabel(day, l10n, locale),
+                        onTap: p.markRead,
+                      ),
+              ),
             ),
           ],
         ),
@@ -204,6 +223,10 @@ class _NotificationList extends StatelessWidget {
       );
     }
 
-    return ListView(padding: const EdgeInsets.only(bottom: 24), children: rows);
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 24),
+      children: rows,
+    );
   }
 }
