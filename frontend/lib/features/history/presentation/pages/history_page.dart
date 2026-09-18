@@ -10,6 +10,7 @@ import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/filter_chip_bar.dart';
 import 'package:provider/provider.dart';
 
 class HistoryPage extends StatelessWidget {
@@ -98,21 +99,15 @@ class HistoryView extends StatelessWidget {
                 hint: l10n.bookingSearchHint,
               ),
             ),
-            SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: sidePadding),
-                children: <Widget>[
-                  for (final HistoryTab tab in HistoryTab.values) ...<Widget>[
-                    _TabChip(
-                      label: _tabLabel(tab, l10n),
-                      active: p.tab == tab,
-                      onTap: () => p.setTab(tab),
-                    ),
-                    const SizedBox(width: 10),
-                  ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+              child: FilterChipBar(
+                labels: <String>[
+                  for (final HistoryTab tab in HistoryTab.values)
+                    _tabLabel(tab, l10n),
                 ],
+                activeIndex: HistoryTab.values.indexOf(p.tab),
+                onSelect: (int i) => p.setTab(HistoryTab.values[i]),
               ),
             ),
             const SizedBox(height: 14),
@@ -141,47 +136,6 @@ class HistoryView extends StatelessWidget {
                     ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TabChip extends StatelessWidget {
-  const _TabChip({
-    required this.label,
-    required this.active,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: active ? AppColor.goldDeep : AppColor.surface,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(999),
-        side: const BorderSide(color: AppColor.goldDeep),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-          child: Center(
-            child: Text(
-              label,
-              maxLines: 1,
-              style: AppTextStyle.labelMedium.copyWith(
-                fontSize: 12.5,
-                fontWeight: active ? FontWeight.w600 : FontWeight.w500,
-                color: active ? AppColor.surface : AppColor.ink,
-              ),
-            ),
-          ),
         ),
       ),
     );
