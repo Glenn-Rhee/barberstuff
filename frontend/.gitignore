@@ -44,17 +44,15 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# ==========================================================
-# Tambahan BarberStuff. Jangan dihapus.
-# ==========================================================
+
 
 # ---------- RAHASIA. Wajib diblokir ----------
 .env
 .env.*
+env.dart
 !.env.example
 *.jks
 *.keystore
-ANALISIS.md
 android/key.properties
 android/app/google-services.json
 android/app/src/*/google-services.json
@@ -97,3 +95,5 @@ screenshot*.png
 # ---------- Coverage ----------
 coverage/
 lcov.info
+# Widget Preview related
+.widget_preview/

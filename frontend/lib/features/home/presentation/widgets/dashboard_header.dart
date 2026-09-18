@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/core/utils/name_formatter.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/circle_icon_button.dart';
 
@@ -35,6 +36,8 @@ class DashboardHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+
+    final String greetingName = NameFormatter.firstName(name);
 
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(end: collapsed ? 1 : 0),
@@ -69,9 +72,9 @@ class DashboardHeader extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Opacity(
-                            opacity: name.isEmpty ? 0 : 1,
+                            opacity: greetingName.isEmpty ? 0 : 1,
                             child: Text(
-                              l10n.homeGreeting(name),
+                              l10n.homeGreeting(greetingName),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyle.headlineMedium.copyWith(

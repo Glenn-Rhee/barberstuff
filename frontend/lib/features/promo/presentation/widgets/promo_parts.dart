@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
+import 'package:mobile_barberstuff/core/utils/name_formatter.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
 import 'package:mobile_barberstuff/features/promo/domain/promo_content.dart';
@@ -29,6 +30,7 @@ class PromoHeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
+
     return Container(
       decoration: BoxDecoration(
         color: AppColor.ink,
@@ -48,7 +50,7 @@ class PromoHeaderCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
-                      l10n.homeGreeting(profile.name),
+                      l10n.homeGreeting(NameFormatter.firstName(profile.name)),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyle.titleMedium.copyWith(

@@ -53,7 +53,7 @@ class ChooseLoginPage extends StatelessWidget {
                                         CrossAxisAlignment.stretch,
                                     children: <Widget>[
                                       Image.asset(
-                                        AppAssets.barberstuffLogoLogin,
+                                        AppAssets.barberstuffLogin,
                                         height: logoHeight,
                                         fit: BoxFit.contain,
                                       ),

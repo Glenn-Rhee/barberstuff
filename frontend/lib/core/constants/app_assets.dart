@@ -33,6 +33,8 @@ class AppAssets {
 
   static const String barberstuffLogoLogin =
       '$_imageChoose/logo_barberstuff.png';
+  static const String barberstuffLogin =
+      '$_imageChoose/logo_barberstuffLogin.png';
   static const String topBox = '$_iconLoading/top_box.png';
 
   static const String emailVerification = '$_imageVerification/email_verif.png';

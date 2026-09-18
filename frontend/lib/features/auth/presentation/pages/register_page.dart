@@ -84,148 +84,144 @@ class _RegisterView extends StatelessWidget {
 
     return LoadingOverlay(
       isVisible: p.isLoading,
-      child: BarberPatternBackground.auth(
-        child: Scaffold(
+      child: Scaffold(
+        backgroundColor: AppColor.surface,
+        appBar: AppBar(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            titleSpacing: 0,
-            leading: const BackButton(color: AppColor.ink),
-            title: Text(l10n.registerHeadline, style: AppTextStyle.titleLarge),
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-              child: Form(
-                key: p.formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Center(
-                      child: AvatarPicker(
-                        imageUrl: p.imageUrl,
-                        imageFile: p.imageFile,
-                        onEdit: () => editAvatar(context, p),
+          elevation: 0,
+          titleSpacing: 0,
+          leading: const BackButton(color: AppColor.ink),
+          title: Text(l10n.registerHeadline, style: AppTextStyle.titleLarge),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+            child: Form(
+              key: p.formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Center(
+                    child: AvatarPicker(
+                      imageUrl: p.imageUrl,
+                      imageFile: p.imageFile,
+                      onEdit: () => editAvatar(context, p),
+                    ),
+                  ),
+                  const SizedBox(height: _gapSection),
+
+                  AppTextField(
+                    hint: l10n.registerNameLabel,
+                    controller: p.nameController,
+                    keyboardType: TextInputType.name,
+                    validator: (String? v) =>
+                        validators.required(v, label: l10n.registerNameLabel),
+                  ),
+                  const SizedBox(height: AppField.gap),
+
+                  AppTextField(
+                    hint: l10n.registerEmailLabel,
+                    iconPath: AppAssets.mailIcon,
+                    controller: p.emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: validators.email,
+                  ),
+                  const SizedBox(height: AppField.gap),
+
+                  AppTextField(
+                    hint: l10n.registerPasswordLabel,
+                    iconPath: AppAssets.lockIcon,
+                    controller: p.passwordController,
+                    obscureText: p.obscurePassword,
+                    validator: validators.password,
+                    suffixIcon: PasswordToggle(
+                      obscured: p.obscurePassword,
+                      onPressed: p.toggleObscurePassword,
+                    ),
+                  ),
+                  const SizedBox(height: AppField.gap),
+
+                  AppTextField(
+                    hint: l10n.registerBirthDateLabel,
+                    iconPath: AppAssets.birthDateIcon,
+                    controller: p.birthDateController,
+                    readOnly: true,
+                    onTap: () => _pickDate(context, p),
+                    validator: (String? v) => validators.required(
+                      v,
+                      label: l10n.registerBirthDateLabel,
+                    ),
+                  ),
+                  const SizedBox(height: AppField.gap),
+
+                  AppTextField(
+                    hint: l10n.registerPhoneLabel,
+                    iconPath: AppAssets.phoneIcon,
+                    controller: p.phoneController,
+                    keyboardType: TextInputType.phone,
+                    validator: validators.phoneNumber,
+                  ),
+                  const SizedBox(height: AppField.gap),
+
+                  AppDropdownField<String>(
+                    hint: l10n.registerGenderLabel,
+                    value: p.gender,
+                    onChanged: p.setGender,
+                    validator: (String? v) =>
+                        validators.required(v, label: l10n.registerGenderLabel),
+                    items: <DropdownMenuItem<String>>[
+                      DropdownMenuItem<String>(
+                        value: 'male',
+                        child: Text(l10n.genderMale),
                       ),
-                    ),
-                    const SizedBox(height: _gapSection),
-
-                    AppTextField(
-                      hint: l10n.registerNameLabel,
-                      controller: p.nameController,
-                      keyboardType: TextInputType.name,
-                      validator: (String? v) =>
-                          validators.required(v, label: l10n.registerNameLabel),
-                    ),
-                    const SizedBox(height: AppField.gap),
-
-                    AppTextField(
-                      hint: l10n.registerEmailLabel,
-                      iconPath: AppAssets.mailIcon,
-                      controller: p.emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: validators.email,
-                    ),
-                    const SizedBox(height: AppField.gap),
-
-                    AppTextField(
-                      hint: l10n.registerPasswordLabel,
-                      iconPath: AppAssets.lockIcon,
-                      controller: p.passwordController,
-                      obscureText: p.obscurePassword,
-                      validator: validators.password,
-                      suffixIcon: PasswordToggle(
-                        obscured: p.obscurePassword,
-                        onPressed: p.toggleObscurePassword,
+                      DropdownMenuItem<String>(
+                        value: 'female',
+                        child: Text(l10n.genderFemale),
                       ),
-                    ),
-                    const SizedBox(height: AppField.gap),
+                    ],
+                  ),
+                  const SizedBox(height: _gapSection),
 
-                    AppTextField(
-                      hint: l10n.registerBirthDateLabel,
-                      iconPath: AppAssets.birthDateIcon,
-                      controller: p.birthDateController,
-                      readOnly: true,
-                      onTap: () => _pickDate(context, p),
-                      validator: (String? v) => validators.required(
-                        v,
-                        label: l10n.registerBirthDateLabel,
-                      ),
-                    ),
-                    const SizedBox(height: AppField.gap),
+                  BoxButton(
+                    label: l10n.registerSubmitButton,
+                    isLoading: p.isLoading,
+                    onPressed: p.isLoading || !p.isComplete
+                        ? null
+                        : () => _submit(context, p),
+                  ),
+                  const SizedBox(height: 20),
 
-                    AppTextField(
-                      hint: l10n.registerPhoneLabel,
-                      iconPath: AppAssets.phoneIcon,
-                      controller: p.phoneController,
-                      keyboardType: TextInputType.phone,
-                      validator: validators.phoneNumber,
-                    ),
-                    const SizedBox(height: AppField.gap),
-
-                    AppDropdownField<String>(
-                      hint: l10n.registerGenderLabel,
-                      value: p.gender,
-                      onChanged: p.setGender,
-                      validator: (String? v) => validators.required(
-                        v,
-                        label: l10n.registerGenderLabel,
-                      ),
-                      items: <DropdownMenuItem<String>>[
-                        DropdownMenuItem<String>(
-                          value: 'male',
-                          child: Text(l10n.genderMale),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        l10n.registerHaveAccountQuestion,
+                        style: AppTextStyle.bodyMedium.copyWith(
+                          color: AppColor.inkFaint,
                         ),
-                        DropdownMenuItem<String>(
-                          value: 'female',
-                          child: Text(l10n.genderFemale),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: _gapSection),
-
-                    BoxButton(
-                      label: l10n.registerSubmitButton,
-                      isLoading: p.isLoading,
-                      onPressed: p.isLoading || !p.isComplete
-                          ? null
-                          : () => _submit(context, p),
-                    ),
-                    const SizedBox(height: 20),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          l10n.registerHaveAccountQuestion,
-                          style: AppTextStyle.bodyMedium.copyWith(
-                            color: AppColor.inkFaint,
+                      ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () =>
+                            Navigator.of(context).pushNamed(AppRoute.login),
+                        behavior: HitTestBehavior.opaque,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 4,
                           ),
-                        ),
-                        const SizedBox(width: 4),
-                        GestureDetector(
-                          onTap: () =>
-                              Navigator.of(context).pushNamed(AppRoute.login),
-                          behavior: HitTestBehavior.opaque,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 4,
-                            ),
-                            child: Text(
-                              l10n.registerLoginAction,
-                              style: AppTextStyle.bodyMedium.copyWith(
-                                color: AppColor.orangeLight,
-                                fontWeight: FontWeight.w700,
-                              ),
+                          child: Text(
+                            l10n.registerLoginAction,
+                            style: AppTextStyle.bodyMedium.copyWith(
+                              color: AppColor.orangeLight,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),

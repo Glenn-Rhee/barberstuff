@@ -28,7 +28,6 @@ class ReviewSheet extends StatefulWidget {
 
   final bool readOnly;
 
-  /// Ulasan yang sudah tersimpan, ditampilkan saat mode baca.
   final ReviewDraft? initial;
 
   @override
