@@ -116,6 +116,7 @@
   "homeBookingEmpty": "No active booking yet.",
   "homeNearbyTitle": "Nearby Branches",
   "homeNearbySeeAll": "See All",
+  "storeListTitle": "All Branches",
   "homeNearbyDistance": "{distance} km",
   "homeHistoryTitle": "Haircut History",
   "homeHistorySeeAll": "See History",

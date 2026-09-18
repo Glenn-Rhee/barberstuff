@@ -794,6 +794,12 @@ abstract class AppLocalizations {
   /// **'Lihat Semua'**
   String get homeNearbySeeAll;
 
+  /// No description provided for @storeListTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua Cabang'**
+  String get storeListTitle;
+
   /// No description provided for @homeNearbyDistance.
   ///
   /// In id, this message translates to:

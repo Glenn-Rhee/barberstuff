@@ -248,7 +248,14 @@ class _DashboardBody extends StatelessWidget {
 
           if (stores.isNotEmpty) ...<Widget>[
             const SizedBox(height: 28),
-            _Inset(child: SectionHeader(title: l10n.homeNearbyTitle)),
+            _Inset(
+              child: SectionHeader(
+                title: l10n.homeNearbyTitle,
+                actionLabel: l10n.homeNearbySeeAll,
+                onAction: () =>
+                    Navigator.of(context).pushNamed(AppRoute.storeList),
+              ),
+            ),
             const SizedBox(height: 12),
             NearbyStoreList(
               stores: stores,

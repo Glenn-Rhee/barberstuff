@@ -394,6 +394,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get homeNearbySeeAll => 'Lihat Semua';
 
   @override
+  String get storeListTitle => 'Semua Cabang';
+
+  @override
   String homeNearbyDistance(String distance) {
     return '$distance km';
   }

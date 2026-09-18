@@ -193,6 +193,7 @@
   "homeBookingEmpty": "Belum ada booking aktif.",
   "homeNearbyTitle": "Cabang Terdekat",
   "homeNearbySeeAll": "Lihat Semua",
+  "storeListTitle": "Semua Cabang",
   "homeNearbyDistance": "{distance} km",
   "@homeNearbyDistance": {
     "placeholders": {
