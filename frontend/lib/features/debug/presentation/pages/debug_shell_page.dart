@@ -66,9 +66,10 @@ class _MainShellViewState extends State<_MainShellView> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: onHome ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        // Putih di semua tab: warna ini yang terlihat di balik sudut membulat
-        // nav bawah. Area status bar sudah dicat hitam oleh DashboardHeader.
+        // Area status bar sudah dicat hitam oleh DashboardHeader.
         backgroundColor: AppColor.surface,
+        // Konten dibiarkan memanjang ke belakang nav bawah yang tembus pandang.
+        extendBody: true,
         body: IndexedStack(
           index: index,
           children: <Widget>[

@@ -6,6 +6,7 @@ import 'package:mobile_barberstuff/features/history/domain/booking_history.dart'
 import 'package:mobile_barberstuff/features/history/presentation/provider/history_provider.dart';
 import 'package:mobile_barberstuff/features/history/presentation/widgets/history_card.dart';
 import 'package:mobile_barberstuff/features/history/presentation/widgets/review_sheet.dart';
+import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
@@ -117,11 +118,11 @@ class HistoryView extends StatelessWidget {
                   : p.items.isEmpty
                   ? _Empty(message: l10n.historyEmpty)
                   : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(
+                      padding: EdgeInsets.fromLTRB(
                         sidePadding,
                         0,
                         sidePadding,
-                        20,
+                        20 + DashboardBottomNav.spaceOf(context),
                       ),
                       itemCount: p.items.length,
                       separatorBuilder: (BuildContext _, int _) =>

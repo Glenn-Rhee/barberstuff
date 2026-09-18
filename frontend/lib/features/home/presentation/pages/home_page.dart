@@ -13,6 +13,7 @@ import 'package:mobile_barberstuff/features/home/presentation/provider/dashboard
 import 'package:mobile_barberstuff/features/home/presentation/widgets/active_booking_card.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/benefit_carousel.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/birthday_promo_card.dart';
+import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_header.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/history_tile.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/nearby_store_list.dart';
@@ -183,7 +184,10 @@ class _DashboardBody extends StatelessWidget {
       color: AppColor.goldDeep,
       child: ListView(
         controller: controller,
-        padding: const EdgeInsets.only(top: 20, bottom: 28),
+        padding: EdgeInsets.only(
+          top: 20,
+          bottom: 28 + DashboardBottomNav.spaceOf(context),
+        ),
         children: <Widget>[
           _Inset(
             child: BirthdayPromoCard(

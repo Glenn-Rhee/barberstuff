@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
@@ -14,6 +16,20 @@ class DashboardBottomNav extends StatelessWidget {
   });
 
   static const double _radius = 28;
+
+  /// Tinggi isi navbar pada ukuran font normal.
+  /// 10 + 6 padding luar, 6 + 24 ikon + 5 + 16.6 label + 6 isi item = 73.6,
+  /// dibulatkan ke 76 biar ada sisa napas.
+  static const double _baseHeight = 76;
+
+  /// Tinggi navbar tanpa area aman bawah, ikut skala font HP.
+  static double heightOf(BuildContext context) =>
+      _baseHeight * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.3);
+
+  /// Ruang yang harus disisakan halaman di bagian bawah biar
+  /// isi terakhirnya tidak ketutup navbar.
+  static double spaceOf(BuildContext context) =>
+      heightOf(context) + MediaQuery.paddingOf(context).bottom;
 
   final DashboardTab current;
   final void Function(DashboardTab tab) onSelect;
@@ -48,43 +64,39 @@ class DashboardBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    // Dipisahkan bayangan, bukan garis: border tak seragam dilarang dipakai
-    // bersama borderRadius, dan garis kerasnya terputus di lengkung sudut.
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColor.surface,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(_radius),
-        ),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: AppColor.backdrop.withValues(alpha: 0.12),
-            blurRadius: 18,
-            spreadRadius: 1,
-            offset: const Offset(0, -3),
+    // Konten halaman jalan di belakang navbar, jadi latarnya dibuat buram
+    // tembus pandang biar ikon tetap kebaca tanpa blok putih solid.
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(_radius)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppColor.surface.withValues(alpha: 0.82),
+            border: Border(
+              top: BorderSide(color: AppColor.backdrop.withValues(alpha: 0.06)),
+            ),
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(_radius),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(4, 10, 4, 6),
-            child: Row(
-              children: <Widget>[
-                for (final DashboardTab tab in DashboardTab.values)
-                  Expanded(
-                    child: _NavItem(
-                      iconPath: _iconOf(tab),
-                      label: _labelOf(tab, l10n),
-                      active: tab == current,
-                      onTap: () => onSelect(tab),
-                    ),
-                  ),
-              ],
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              height: heightOf(context),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(4, 10, 4, 6),
+                child: Row(
+                  children: <Widget>[
+                    for (final DashboardTab tab in DashboardTab.values)
+                      Expanded(
+                        child: _NavItem(
+                          iconPath: _iconOf(tab),
+                          label: _labelOf(tab, l10n),
+                          active: tab == current,
+                          onTap: () => onSelect(tab),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

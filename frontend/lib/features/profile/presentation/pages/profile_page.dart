@@ -7,6 +7,7 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/core/utils/phone_formatter.dart';
+import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/help_center_page.dart';
@@ -90,7 +91,10 @@ class ProfilePage extends StatelessWidget {
           onRefresh: p.load,
           color: AppColor.orangeLight,
           child: ListView(
-            padding: const EdgeInsets.only(top: 24, bottom: 28),
+            padding: EdgeInsets.only(
+              top: 24,
+              bottom: 28 + DashboardBottomNav.spaceOf(context),
+            ),
             children: <Widget>[
               Center(child: _ProfileAvatar(photoUrl: profile.imageUrl)),
               const SizedBox(height: 18),
