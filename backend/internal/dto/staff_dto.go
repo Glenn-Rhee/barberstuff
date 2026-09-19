@@ -47,6 +47,13 @@ type CustomerBookingCashier struct {
 	PhoneNumber *string `json:"phoneNumber" binding:"omitempty,min=9,max=15"`
 }
 
+type BookingTypeCashier string
+
+const (
+	BookingTypeOrder   BookingTypeCashier = "order"
+	BookingTypeBooking BookingTypeCashier = "booking"
+)
+
 // Create booking from cashire
 type CreateCashireBookingRequest struct {
 	IdStore     string                 `json:"id_store" binding:"required"`
@@ -54,5 +61,5 @@ type CreateCashireBookingRequest struct {
 	IdServices  []string               `json:"id_services" binding:"required"`
 	BookingDate time.Time              `json:"booking_date" binding:"required"`
 	Customer    CustomerBookingCashier `json:"customer" binding:"required"`
-	IsBooking   bool                   `json:"is_booking" binding:"required"`
+	BookingType BookingTypeCashier     `json:"is_booking" binding:"required"`
 }

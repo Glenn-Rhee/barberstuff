@@ -697,7 +697,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 
 	statusBooking := entity.BookingStatusBooked
 	bookingType := entity.BookingScheduled
-	if req.IsBooking {
+	if req.BookingType == dto.BookingTypeOrder {
 		statusBooking = entity.BookingStatusProgress
 		bookingType = entity.BookingWalkIn
 	}
