@@ -110,13 +110,7 @@ func (s *storeService) GetStores(query dto.QueryParamsStores, claims *lib.Custom
 			return d.Where("name ILIKE ?", q)
 		})
 	}
-
-	if claims.Role == entity.RoleCustomer {
-		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-			return d.Where("status = ?", entity.StoreStatusOpen)
-		})
-	}
-
+	
 	var page = 1
 	var limit = 20
 	var sortBy = dto.SortByName

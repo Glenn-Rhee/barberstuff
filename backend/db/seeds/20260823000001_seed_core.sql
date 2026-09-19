@@ -9,7 +9,7 @@ INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner
 VALUES (
   'Barberstuff Pondok Gede',
   '08972314505',
-  '106.821810,-6.193125',
+  '-6.2812736,106.930027',
   '2026-09-09T09:00:00Z',
   '2026-09-09T22:00:00Z',
   'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8R3HIsTc9dSjia278LrRoyIYcz9tkvHBPJOmVl',
@@ -24,7 +24,7 @@ INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner
 VALUES (
   'Barberstuff Duta Indah',
   '08972314505',
-  '106.9366931,-6.284902',  -- cek ulang longitude, data sumber tidak konsisten
+  '-6.2849007,106.934199',  -- cek ulang longitude, data sumber tidak konsisten
   '2026-09-09T10:00:00Z',
   '2026-09-09T21:00:00Z',
   'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RAjoAmLjMuZ7xYEWTwVi20bnzlShfoeUL3Nr8',
@@ -39,7 +39,7 @@ INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner
 VALUES (
   'Barber Stuff Bali Jimbaran',
   '851-1933-6919',
-  NULL, -- koordinat tidak tersedia di sumber data
+  '-8.7885959,115.1752581', -- koordinat tidak tersedia di sumber data
   '2026-09-09T10:00:00Z',
   '2026-09-09T21:00:00Z',
   NULL,
@@ -54,7 +54,7 @@ INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner
 VALUES (
   'Barberstuff Tenjo',
   '0813-1337-8900',
-  '106.5124,-6.4548',  -- cek ulang, data sumber tidak konsisten
+  '-6.3429212,106.4567601', 
   '2026-09-09T10:00:00Z',
   '2026-09-09T21:00:00Z',
   'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RvAG0zX9FSf2aVsD3IYTmUrQC9cbWtBMKnpRi',
@@ -69,10 +69,10 @@ INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner
 VALUES (
   'Barberstuff Karawang',
   '0822-5882-1530',
-  NULL, -- koordinat tidak tersedia di sumber data
+  '8ef59c04-2a5f-487b-8b8a-b45a42748758', -- koordinat tidak tersedia di sumber data
   '2026-09-09T10:00:00Z',
   '2026-09-09T21:00:00Z',
-  NULL,
+  'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RYJoGBKvHTwSLQW6jP5mXK0JEDZMoeshfGzgF',
   'Ruko, Jl. Court Yard Blok C VIIA No.15, Puseurjaya, Telukjambe Timur, Karawang,',
   'Toko Barberstuff cabang Karawang dengan varian premium',
   'premium',
@@ -84,10 +84,10 @@ INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner
 VALUES (
   'Barberstuff Pangkalpinang',
   '082210027055',
-  NULL, -- koordinat tidak tersedia di sumber data
+  '-2.1299367,106.112518', -- koordinat tidak tersedia di sumber data
   '2026-09-09T10:00:00Z',
   '2026-09-09T21:00:00Z',
-  NULL,
+  'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RWMZ0JOQpN3yjz06bhQBerRKPomFvdTfU2lV9',
   'Jl. Jendral Sudirman, Klenteng Pasar BTC, Pangkalpinang',
   'Toko Barberstuff cabang Pangkalpinang dengan varian premium',
   'premium',
@@ -99,7 +99,7 @@ INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner
 VALUES (
   'Barberstuff Martapura',
   '082319341073',
-  NULL, -- koordinat tidak tersedia di sumber data
+  '-3.410819,114.849438', -- koordinat tidak tersedia di sumber data
   '2026-09-09T10:00:00Z',
   '2026-09-09T21:00:00Z',
   'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RgqQtt4tBVXYvBmMLx0no87ikFy6W1aSeDRHr',

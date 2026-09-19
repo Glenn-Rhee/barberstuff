@@ -88,6 +88,8 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New(BASE_MESSAGE)
 	}
 
+	// if dataStore
+
 	loc, err := time.LoadLocation(string(dataStore.Timezone))
 	if err != nil {
 		helper.Logger("load timezone", filePath, err)
