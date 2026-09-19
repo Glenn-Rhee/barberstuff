@@ -27,8 +27,8 @@ class BarberstuffCardPage extends StatelessWidget {
 
     // Profil hidup dari provider, args cuma nilai awal, supaya tarik-ulang
     // benar-benar memperbarui poin dan tier di kartu.
-    final ProfileProvider profileProvider = context.watch<ProfileProvider>();
-    final CustomerProfile profile = profileProvider.profile ?? args.profile;
+    final ProfileProvider? profileProvider = _liveProfile(context);
+    final CustomerProfile profile = profileProvider?.profile ?? args.profile;
 
     return Scaffold(
       backgroundColor: AppColor.surface,
@@ -56,7 +56,7 @@ class BarberstuffCardPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: profileProvider.load,
+          onRefresh: profileProvider?.load ?? () async {},
           color: AppColor.goldDeep,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -256,5 +256,15 @@ class _CardAvatar extends StatelessWidget {
               ),
       ),
     );
+  }
+}
+
+/// ProfileProvider disediakan di tingkat aplikasi. Kalau halaman dibuka di
+/// luar itu (misalnya di test), pakai profil titipan args saja.
+ProfileProvider? _liveProfile(BuildContext context) {
+  try {
+    return context.watch<ProfileProvider>();
+  } on ProviderNotFoundException {
+    return null;
   }
 }

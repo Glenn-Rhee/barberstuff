@@ -1802,6 +1802,12 @@ abstract class AppLocalizations {
   /// **'Ya, batalkan'**
   String get bookingCancelConfirm;
 
+  /// No description provided for @bookingReleaseFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Slot barber belum terlepas. Tunggu sebentar lalu tekan Lanjut lagi.'**
+  String get bookingReleaseFailed;
+
   /// No description provided for @bookingCancelKeep.
   ///
   /// In id, this message translates to:

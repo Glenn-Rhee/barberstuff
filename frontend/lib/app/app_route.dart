@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/core/deeplink/store_link.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/choose_login_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/complete_profile_page.dart';
@@ -25,6 +26,7 @@ import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_
 import 'package:mobile_barberstuff/features/promo/presentation/pages/promo_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
+import 'package:mobile_barberstuff/features/store/presentation/pages/shared_store_entry.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_list_page.dart';
 import 'package:mobile_barberstuff/shared/transitions/circular_reveal_route.dart';
@@ -59,6 +61,19 @@ class AppRoute {
   static const String bookingSuccess = '/booking-success';
   static const String bookingReceipt = '/booking-receipt';
   static const String promo = '/promo';
+
+  /// Aplikasi dibuka dari tautan saat masih tertutup. Tanpa ini Flutter
+  /// menumpuk detail cabang di atas splash, lalu splash menimpanya waktu
+  /// pindah ke beranda. Jadi selalu mulai dari splash, tautannya disimpan
+  /// dan dibuka setelah user sampai di beranda.
+  static List<Route<dynamic>> onGenerateInitialRoutes(String initialRoute) {
+    final String? sharedStore = StoreLink.storeIdFrom(initialRoute);
+    if (sharedStore != null) StoreLink.hold(sharedStore);
+
+    return <Route<dynamic>>[
+      onGenerateRoute(const RouteSettings(name: splash))!,
+    ];
+  }
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -219,7 +234,14 @@ class AppRoute {
         );
 
       default:
-        return null;
+        final String? sharedStore = StoreLink.storeIdFrom(settings.name);
+        if (sharedStore == null) return null;
+
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) =>
+              SharedStoreEntry(storeId: sharedStore),
+        );
     }
   }
 }

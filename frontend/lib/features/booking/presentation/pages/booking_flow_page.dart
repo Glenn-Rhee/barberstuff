@@ -104,11 +104,18 @@ class _BookingFlowView extends StatelessWidget {
 
   Future<void> _handleBack(BuildContext context, BookingFlowProvider p) async {
     final NavigatorState navigator = Navigator.of(context);
+    final AppLocalizations l10n = AppLocalizations.of(context);
 
     if (p.needsCancelConfirm) {
       final bool confirmed = await _confirmCancel(context);
       if (!confirmed) return;
-      await p.releaseLock();
+
+      final bool released = await p.releaseLock();
+      if (!released && context.mounted) {
+        // Tanpa pesan ini user cuma melihat tombol Lanjut "diam" karena
+        // server masih memegang kunci lama miliknya sendiri.
+        AppToast.show(context, message: l10n.bookingReleaseFailed);
+      }
     }
 
     if (!p.back()) navigator.pop();

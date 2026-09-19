@@ -444,6 +444,7 @@
   "bookingCancelTitle": "Batalkan booking?",
   "bookingCancelMessage": "Slot yang sudah dikunci akan dilepas dan bisa diambil orang lain.",
   "bookingCancelConfirm": "Ya, batalkan",
+  "bookingReleaseFailed": "Slot barber belum terlepas. Tunggu sebentar lalu tekan Lanjut lagi.",
   "bookingCancelKeep": "Lanjut booking",
   "bookingConfirmBranch": "CABANG",
   "bookingConfirmService": "LAYANAN",

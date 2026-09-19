@@ -948,6 +948,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get bookingCancelConfirm => 'Ya, batalkan';
 
   @override
+  String get bookingReleaseFailed =>
+      'Slot barber belum terlepas. Tunggu sebentar lalu tekan Lanjut lagi.';
+
+  @override
   String get bookingCancelKeep => 'Lanjut booking';
 
   @override

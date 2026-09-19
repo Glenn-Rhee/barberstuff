@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
+import 'package:mobile_barberstuff/core/deeplink/store_link.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
@@ -12,6 +13,7 @@ import 'package:mobile_barberstuff/features/home/presentation/pages/home_page.da
 import 'package:mobile_barberstuff/features/home/presentation/provider/dashboard_provider.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/profile_page.dart';
+import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -44,6 +46,22 @@ class _MainShellView extends StatefulWidget {
 
 class _MainShellViewState extends State<_MainShellView> {
   DashboardTab _tab = DashboardTab.home;
+
+  @override
+  void initState() {
+    super.initState();
+    // Tautan cabang yang datang sebelum user sampai beranda (aplikasi baru
+    // dibuka dari tautan, atau user login dulu) dibuka di sini.
+    WidgetsBinding.instance.addPostFrameCallback((Duration _) {
+      final String? storeId = StoreLink.take();
+      if (storeId == null || !mounted) return;
+
+      Navigator.of(context).pushNamed(
+        AppRoute.storeDetail,
+        arguments: StoreDetailArgs(storeId: storeId),
+      );
+    });
+  }
 
   void _select(DashboardTab tab) {
     if (tab == DashboardTab.booking) {

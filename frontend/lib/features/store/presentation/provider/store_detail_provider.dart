@@ -8,8 +8,17 @@ import 'package:mobile_barberstuff/features/store/data/repositories/store_reposi
 enum StoreTab { about, service, package, review }
 
 class StoreDetailProvider extends ChangeNotifier {
-  StoreDetailProvider(this._storeRepo, this._bookingRepo, this.storeId) {
+  StoreDetailProvider(
+    this._storeRepo,
+    this._bookingRepo,
+    this.storeId, {
+    StoreTab initialTab = StoreTab.about,
+  }) : _tab = initialTab {
     load();
+    // Tab selain Tentang perlu tarik produknya sendiri, setTab tidak jalan
+    // karena tabnya memang sudah terpilih sejak awal.
+    if (initialTab == StoreTab.service) _loadProducts(ProductType.service);
+    if (initialTab == StoreTab.package) _loadProducts(ProductType.package);
   }
 
   final StoreRepository _storeRepo;
@@ -21,7 +30,7 @@ class StoreDetailProvider extends ChangeNotifier {
   final Map<ProductType, List<ServiceItem>> _products =
       <ProductType, List<ServiceItem>>{};
 
-  StoreTab _tab = StoreTab.about;
+  StoreTab _tab;
   bool _isLoading = false;
   bool _isLoadingProducts = false;
   ApiException? _error;

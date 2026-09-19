@@ -14,13 +14,13 @@ class QuickActionRow extends StatelessWidget {
   static String _iconOf(QuickAction action) {
     switch (action) {
       case QuickAction.booking:
-        return AppAssets.scissorsDashboard;
+        return AppAssets.bookingQuick;
       case QuickAction.package:
-        return AppAssets.tagDashboard;
+        return AppAssets.packageQuick;
       case QuickAction.promo:
-        return AppAssets.giftDashboard;
+        return AppAssets.promoQuick;
       case QuickAction.history:
-        return AppAssets.barcodeDashboard;
+        return AppAssets.historyQuick;
     }
   }
 
@@ -99,10 +99,9 @@ class _ActionItem extends StatelessWidget {
                     child: Center(
                       child: Image.asset(
                         iconPath,
-                        width: size * 0.42,
-                        height: size * 0.42,
+                        width: size * 0.54,
+                        height: size * 0.54,
                         fit: BoxFit.contain,
-                        color: AppColor.ink,
                         filterQuality: FilterQuality.medium,
                       ),
                     ),

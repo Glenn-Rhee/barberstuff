@@ -131,17 +131,26 @@ class BookingFlowProvider extends ChangeNotifier {
   bool get loadingServices => _loadingServices;
   ApiException? get servicesError => _servicesError;
 
-  /// Hanya pilihan tab yang sedang aktif; tab lain tidak ikut terbawa.
-  List<ServiceItem> get selectedServices =>
-      _picked[_serviceTab] ?? const <ServiceItem>[];
+  /// Semua pilihan dari tab Layanan dan tab Paket digabung. Dulu cuma tab
+  /// yang sedang aktif, jadi paket hilang dari konfirmasi kalau user
+  /// terakhir membuka tab Layanan, begitu juga sebaliknya.
+  List<ServiceItem> get selectedServices => <ServiceItem>[
+    ..._picked[ProductType.service] ?? const <ServiceItem>[],
+    ..._picked[ProductType.package] ?? const <ServiceItem>[],
+  ];
 
-  ServiceItem? get service =>
-      selectedServices.isEmpty ? null : selectedServices.first;
+  /// Pilihan di tab yang sedang dibuka saja, dipakai saat menambah/menghapus.
+  List<ServiceItem> get _pickedInTab =>
+      _picked[_serviceTab] ?? const <ServiceItem>[];
 
   bool isServiceSelected(ServiceItem item) =>
       selectedServices.any((ServiceItem s) => s.id == item.id);
 
-  /// Server baru menerima satu layanan per booking.
+  /// Server (POST /booking) cuma menerima satu `id_service` per booking.
+  /// Pilihan dari kedua tab tetap ditampilkan supaya user sadar apa saja
+  /// yang dia pilih, tapi Lanjut ditahan kalau lebih dari satu, karena
+  /// kalau diteruskan server hanya mencatat yang pertama dan harganya
+  /// jadi tidak cocok dengan yang tampil di layar.
   bool get exceedsServerLimit => selectedServices.length > 1;
 
   bool get submitting => _submitting;
@@ -424,7 +433,9 @@ class BookingFlowProvider extends ChangeNotifier {
     loadSlots();
   }
 
-  Future<void> releaseLock() async {
+  /// Melepas kunci slot di server. Mengembalikan false kalau server
+  /// menolak; kunci server tetap habis sendiri setelah masa kuncinya lewat.
+  Future<bool> releaseLock() async {
     final StoreSummary? pickedStore = _store;
     final SlotCapster? pickedCapster = _capster;
     final DateTime? at = bookingDateTime;
@@ -432,7 +443,9 @@ class BookingFlowProvider extends ChangeNotifier {
     _stopCountdown();
     notifyListeners();
 
-    if (pickedStore == null || pickedCapster == null || at == null) return;
+    if (pickedStore == null || pickedCapster == null || at == null) {
+      return true;
+    }
 
     try {
       await _repo.releaseLock(
@@ -440,8 +453,9 @@ class BookingFlowProvider extends ChangeNotifier {
         idCapster: pickedCapster.id,
         bookingDate: at,
       );
+      return true;
     } on ApiException catch (_) {
-      return;
+      return false;
     }
   }
 
@@ -475,7 +489,7 @@ class BookingFlowProvider extends ChangeNotifier {
 
   /// Tab layanan maksimal satu pilihan, tab paket boleh lebih dari satu.
   void toggleService(ServiceItem value) {
-    final List<ServiceItem> current = List<ServiceItem>.of(selectedServices);
+    final List<ServiceItem> current = List<ServiceItem>.of(_pickedInTab);
     final int at = current.indexWhere((ServiceItem s) => s.id == value.id);
 
     if (_serviceTab == ProductType.service) {
@@ -497,12 +511,12 @@ class BookingFlowProvider extends ChangeNotifier {
   Future<bool> submit() async {
     final StoreSummary? pickedStore = _store;
     final SlotCapster? pickedCapster = _capster;
-    final ServiceItem? pickedService = service;
+    final List<ServiceItem> pickedServices = selectedServices;
     final DateTime? at = bookingDateTime;
 
     if (pickedStore == null ||
         pickedCapster == null ||
-        pickedService == null ||
+        pickedServices.length != 1 ||
         at == null ||
         _submitting) {
       return false;
@@ -516,7 +530,7 @@ class BookingFlowProvider extends ChangeNotifier {
       final BookingResult created = await _repo.createBooking(
         idStore: pickedStore.id,
         idCapster: pickedCapster.id,
-        idService: pickedService.id,
+        idService: pickedServices.first.id,
         bookingDate: at,
       );
       _result = created;
@@ -563,21 +577,37 @@ class BookingFlowProvider extends ChangeNotifier {
     }
   }
 
-  bool get needsCancelConfirm => hasLock;
+  /// Dialog "batalkan booking?" cuma perlu muncul saat mundur dari langkah
+  /// pilih layanan, karena mundur dari situ berarti melepas slot barber.
+  /// Dari langkah konfirmasi, mundur cukup kembali ke pilih layanan dan
+  /// kuncinya tetap dipegang, jadi tidak perlu ditanya.
+  bool get needsCancelConfirm => hasLock && _step == BookingStep.service;
 
   bool back() {
-    if (_step == BookingStep.terms) return false;
+    switch (_step) {
+      case BookingStep.terms:
+        return false;
 
-    if (hasLock) {
-      _stopCountdown();
-      _picked.clear();
-      _services.clear();
-      _step = BookingStep.capster;
-      notifyListeners();
-      return true;
+      case BookingStep.confirm:
+        // Masih dalam masa kunci, pilihan layanan tetap dipertahankan.
+        _step = BookingStep.service;
+
+      case BookingStep.service:
+        // Kunci di server sudah dilepas lewat releaseLock() oleh halaman.
+        // Barber sengaja tetap terpilih, jadi tombol Lanjut langsung aktif
+        // dan menekan Lanjut akan mengunci ulang slot yang sama.
+        _stopCountdown();
+        _picked.clear();
+        _services.clear();
+        _serviceTab = ProductType.service;
+        _step = BookingStep.capster;
+
+      case BookingStep.branch:
+      case BookingStep.schedule:
+      case BookingStep.capster:
+        _step = BookingStep.values[_step.index - 1];
     }
 
-    _step = BookingStep.values[_step.index - 1];
     notifyListeners();
     return true;
   }

@@ -33,6 +33,13 @@ class DashboardProvider extends ChangeNotifier {
 
   double? distanceOf(StoreSummary store) => storeDistanceKm(store, _position);
 
+  /// Cabang paling dekat. null kalau posisi pengguna belum diketahui,
+  /// supaya tidak ada cabang yang diklaim terdekat padahal cuma urutan acak.
+  StoreSummary? get nearest {
+    if (_position == null || _stores.isEmpty) return null;
+    return _stores.first;
+  }
+
   BookingRecord? get upcoming => _journal.upcoming;
 
   List<BookingRecord> get history =>

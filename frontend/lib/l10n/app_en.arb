@@ -284,6 +284,7 @@
   "bookingCancelTitle": "Cancel booking?",
   "bookingCancelMessage": "The slot you are holding will be released and someone else can take it.",
   "bookingCancelConfirm": "Yes, cancel",
+  "bookingReleaseFailed": "The barber slot has not been released yet. Wait a moment, then tap Continue again.",
   "bookingCancelKeep": "Keep booking",
   "bookingConfirmBranch": "BRANCH",
   "bookingConfirmService": "SERVICE",

@@ -947,6 +947,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingCancelConfirm => 'Yes, cancel';
 
   @override
+  String get bookingReleaseFailed =>
+      'The barber slot has not been released yet. Wait a moment, then tap Continue again.';
+
+  @override
   String get bookingCancelKeep => 'Keep booking';
 
   @override

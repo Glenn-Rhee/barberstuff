@@ -71,10 +71,12 @@ class DashboardBottomNav extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
         child: DecoratedBox(
+          // Tanpa border: garis atas saja (border tak seragam) tidak boleh
+          // digabung dengan borderRadius, Flutter akan melempar error.
           decoration: BoxDecoration(
             color: AppColor.surface.withValues(alpha: 0.82),
-            border: Border(
-              top: BorderSide(color: AppColor.backdrop.withValues(alpha: 0.06)),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(_radius),
             ),
           ),
           child: SafeArea(

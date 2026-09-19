@@ -41,15 +41,12 @@ class BookingConfirmStep extends StatelessWidget {
             ),
             _DetailRow(
               label: l10n.bookingConfirmService,
-              value: p.selectedServices.isEmpty
-                  ? '-'
-                  : p.selectedServices
-                        .map((ServiceItem s) => s.name)
-                        .join(', '),
+              value: '-',
               iconPath: AppAssets.scissorsDashboard,
-              trailing: p.selectedServices.isEmpty
-                  ? null
-                  : formatRupiah(subTotal),
+              items: <_PricedItem>[
+                for (final ServiceItem s in p.selectedServices)
+                  _PricedItem(name: s.name, price: s.price),
+              ],
             ),
             _DetailRow(
               label: l10n.bookingConfirmBarber,
@@ -84,12 +81,24 @@ class _DetailRow {
     required this.value,
     required this.iconPath,
     this.trailing,
+    this.items = const <_PricedItem>[],
   });
 
   final String label;
   final String value;
   final String iconPath;
   final String? trailing;
+
+  /// Kalau diisi, baris ini menampilkan daftar produk bersama harganya
+  /// dan [value] hanya dipakai saat daftarnya kosong.
+  final List<_PricedItem> items;
+}
+
+class _PricedItem {
+  const _PricedItem({required this.name, required this.price});
+
+  final String name;
+  final double price;
 }
 
 class _DetailCard extends StatelessWidget {
@@ -125,40 +134,66 @@ class _DetailCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 5),
-                  Row(
-                    children: <Widget>[
-                      Image.asset(
-                        rows[i].iconPath,
-                        width: 14,
-                        height: 14,
-                        fit: BoxFit.contain,
-                        color: AppColor.goldDeep,
-                        filterQuality: FilterQuality.medium,
+                  if (rows[i].items.isEmpty)
+                    _ValueLine(
+                      iconPath: rows[i].iconPath,
+                      text: rows[i].value,
+                      trailing: rows[i].trailing,
+                    )
+                  else
+                    for (int k = 0; k < rows[i].items.length; k++) ...<Widget>[
+                      if (k > 0) const SizedBox(height: 8),
+                      _ValueLine(
+                        iconPath: rows[i].iconPath,
+                        text: rows[i].items[k].name,
+                        trailing: formatRupiah(rows[i].items[k].price),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          rows[i].value,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyle.titleSmall.copyWith(fontSize: 13),
-                        ),
-                      ),
-                      if (rows[i].trailing != null) ...<Widget>[
-                        const SizedBox(width: 10),
-                        Text(
-                          rows[i].trailing!,
-                          style: AppTextStyle.titleSmall.copyWith(fontSize: 13),
-                        ),
-                      ],
                     ],
-                  ),
                 ],
               ),
             ),
           ],
         ],
       ),
+    );
+  }
+}
+
+class _ValueLine extends StatelessWidget {
+  const _ValueLine({required this.iconPath, required this.text, this.trailing});
+
+  final String iconPath;
+  final String text;
+  final String? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final String? price = trailing;
+
+    return Row(
+      children: <Widget>[
+        Image.asset(
+          iconPath,
+          width: 14,
+          height: 14,
+          fit: BoxFit.contain,
+          color: AppColor.goldDeep,
+          filterQuality: FilterQuality.medium,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyle.titleSmall.copyWith(fontSize: 13),
+          ),
+        ),
+        if (price != null) ...<Widget>[
+          const SizedBox(width: 10),
+          Text(price, style: AppTextStyle.titleSmall.copyWith(fontSize: 13)),
+        ],
+      ],
     );
   }
 }

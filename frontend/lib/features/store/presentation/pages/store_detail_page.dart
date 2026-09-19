@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/deeplink/store_link.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
@@ -18,12 +20,16 @@ import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
 import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StoreDetailArgs {
-  const StoreDetailArgs({required this.storeId});
+  const StoreDetailArgs({required this.storeId, this.initialTab});
 
   final String storeId;
+
+  /// Tab yang langsung terbuka, misalnya masuk dari pintasan Paket.
+  final StoreTab? initialTab;
 }
 
 class StoreDetailPage extends StatelessWidget {
@@ -38,6 +44,7 @@ class StoreDetailPage extends StatelessWidget {
         ctx.read<StoreRepository>(),
         ctx.read<BookingRepository>(),
         args.storeId,
+        initialTab: args.initialTab ?? StoreTab.about,
       ),
       child: const _StoreDetailView(),
     );
@@ -79,18 +86,26 @@ class _StoreDetailView extends StatelessWidget {
   }
 
   Future<void> _route(StoreDetail detail) async {
-    await _open(directionsUri(detail));
+    await _open(await mapUriFor(detail));
   }
 
+  /// Buka lembar bagikan bawaan HP (WhatsApp, Telegram, dll) berisi
+  /// tautan https yang bisa diklik dan langsung membuka cabang ini.
   Future<void> _share(BuildContext context, StoreDetail detail) async {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final String text =
+        '${detail.name}\n${detail.address}\n\n${StoreLink.forStore(detail.id)}';
 
-    await Clipboard.setData(
-      ClipboardData(text: '${detail.name}\n${detail.address}'),
-    );
-    if (!context.mounted) return;
-
-    AppToast.show(context, message: l10n.storeShareCopied);
+    try {
+      await SharePlus.instance.share(
+        ShareParams(text: text, subject: detail.name),
+      );
+    } on Object catch (_) {
+      // Lembar bagikan gagal terbuka: salin saja supaya tetap bisa ditempel.
+      await Clipboard.setData(ClipboardData(text: text));
+      if (!context.mounted) return;
+      AppToast.show(context, message: l10n.storeShareCopied);
+    }
   }
 
   @override
@@ -218,6 +233,34 @@ class _StoreDetailView extends StatelessWidget {
   }
 }
 
+/// Tautan peta yang cocok dengan keadaan HP pengguna. Rute butuh lokasi
+/// pengguna; kalau izinnya belum diberi atau GPS mati, aplikasi peta cuma
+/// bisa bingung mencari titik awal. Jadi tampilkan saja titik tokonya.
+Future<Uri> mapUriFor(StoreDetail detail) async {
+  return await _userLocationReady() ? directionsUri(detail) : placeUri(detail);
+}
+
+Future<bool> _userLocationReady() async {
+  try {
+    if (!await Geolocator.isLocationServiceEnabled()) return false;
+    final LocationPermission permission = await Geolocator.checkPermission();
+    return permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
+  } on Object catch (_) {
+    return false;
+  }
+}
+
+/// Titik toko di peta, tanpa rute. Tidak butuh lokasi pengguna sama sekali.
+Uri placeUri(StoreDetail detail) {
+  final StoreCoordinate? at = detail.coordinate;
+  final String query = at == null
+      ? Uri.encodeComponent('${detail.name}, ${detail.address}')
+      : '${at.latitude},${at.longitude}';
+
+  return Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+}
+
 /// Rute belok-per-belok diserahkan ke aplikasi peta, bukan digambar sendiri.
 Uri directionsUri(StoreDetail detail) {
   final StoreCoordinate? at = detail.coordinate;
@@ -287,7 +330,7 @@ class _TabBody extends StatelessWidget {
   Future<void> _openMap(StoreDetail detail) async {
     try {
       await launchUrl(
-        directionsUri(detail),
+        await mapUriFor(detail),
         mode: LaunchMode.externalApplication,
       );
     } on Object catch (_) {

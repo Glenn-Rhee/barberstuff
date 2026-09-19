@@ -31,11 +31,8 @@ class AppAssets {
   static const String onboardingSecond = '$_imageSplash/slide_2.png';
   static const String onboardingThird = '$_imageSplash/slide_3.png';
 
-  static const String barberstuffLogoLogin =
-      '$_imageChoose/logo_barberstuff.png';
   static const String barberstuffLogin =
       '$_imageChoose/logo_barberstuffLogin.png';
-  static const String topBox = '$_iconLoading/top_box.png';
 
   static const String emailVerification = '$_imageVerification/email_verif.png';
   static const String checkVerification = '$_imageGeneral/check_verif.png';
@@ -63,14 +60,10 @@ class AppAssets {
   static const String backArrowIcon = '$_iconGeneral/back_arrow.png';
   static const String searchBookingIcon = '$_iconGeneral/search.png';
   static const String locationIcon = '$_iconGeneral/loc.png';
-  static const String checkIcon = '$_iconGeneral/check.png';
-  static const String checklistBookingIcon = '$_iconGeneral/check.png';
-  static const String checkYelllowDashboard = '$_iconGeneral/check.png';
   static const String arrowRightBooking = '$_iconGeneral/next_arrow.png';
   static const String arrowFilledDashboard = '$_iconGeneral/next_arrow.png';
   static const String arrowLongIcon = '$_iconGeneral/long_next_arrow.png';
   static const String starDashboard = '$_iconGeneral/store_star.png';
-  static const String starFilledIcon = '$_iconGeneral/full_store.png';
   static const String starHistoryFilled = '$_iconGeneral/full_star_history.png';
   static const String starHistoryEmpty =
       '$_iconGeneral/doesnt_star_history.png';
@@ -83,13 +76,17 @@ class AppAssets {
   static const String bellDashboard = '$_iconGeneral/notify.png';
   static const String bellProfile = '$_iconGeneral/notify.png';
   static const String scissorsDashboard = '$_iconGeneral/scrissors_book.png';
-  static const String historyRoundedDashboard = '$_iconGeneral/history.png';
-  static const String barcodeDashboard = '$_iconGeneral/history.png';
   static const String symbolStarDashboard = '$_iconHome/member_star.png';
   static const String tagDashboard = '$_iconHome/tag_detail_store.png';
   static const String giftDashboard = '$_iconHome/gift_promo.png';
-  static const String cakeDashboard = '$_iconHome/gift_promo.png';
   static const String storeDashboard = '$_iconHome/book_store.png';
+
+  // Ikon pintasan dashboard: berwarna penuh, jangan diberi properti `color`
+  // pada Image.asset karena itu mengecat ulang seluruh gambar jadi satu warna.
+  static const String bookingQuick = '$_iconHome/book.png';
+  static const String packageQuick = '$_iconHome/detail_store.png';
+  static const String promoQuick = '$_iconHome/promo.png';
+  static const String historyQuick = '$_iconHome/history_quick.png';
 
   static const String ellipseCard = '$_imageHome/ellipse_card.png';
   static const String ellipseCardSecond = '$_imageHome/ellipse_card_2.png';
@@ -109,16 +106,11 @@ class AppAssets {
   static const String toolsMaintenance = '$_iconGeneral/maintenace.png';
   static const String keyIcon = '$_iconProfile/key.png';
 
-  static const String cutsBook = '$_iconBook/cuts.png';
-  static const String hairStylingBook = '$_iconBook/hair_styling.png';
-  static const String hairTonerBook = '$_iconBook/hair_toner.png';
-  static const String showerBook = '$_iconBook/shower.png';
   static const String questionSlotBook = '$_iconBook/question_slot_book.png';
 
   static const String routeDetailStore = '$_iconDetailStore/rute.png';
   static const String shareDetailStore = '$_iconDetailStore/share.png';
 
-  static const String starHistory = '$_iconHistory/full_star.png';
 
   static const String bookNotify = '$_iconNotify/book.png';
   static const String fileNotify = '$_iconNotify/file.png';
@@ -126,7 +118,6 @@ class AppAssets {
   static const String emptyNotify = '$_imageNotify/empty_notify.png';
 
   static const String pointPromo = '$_iconPromo/point.png';
-  static const String starPromo = '$_iconPromo/star_promo.png';
   static const String ticketPromo = '$_iconPromo/ticket_promo.png';
   static const String goldPromo = '$_imagePromo/gold.png';
   static const String silverPromo = '$_imagePromo/silver.png';

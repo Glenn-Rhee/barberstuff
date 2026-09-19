@@ -33,6 +33,7 @@ class App extends StatelessWidget {
       title: 'BarberStuff',
       theme: AppTheme.light,
       initialRoute: AppRoute.splash,
+      onGenerateInitialRoutes: AppRoute.onGenerateInitialRoutes,
       onGenerateRoute: AppRoute.onGenerateRoute,
 
       builder: (context, child) {

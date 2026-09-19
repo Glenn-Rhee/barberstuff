@@ -23,7 +23,9 @@ import 'package:mobile_barberstuff/features/profile/data/models/customer_profile
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/promo/presentation/pages/promo_page.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
+import 'package:mobile_barberstuff/features/store/presentation/provider/store_detail_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
 import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:provider/provider.dart';
@@ -165,6 +167,37 @@ class _DashboardBody extends StatelessWidget {
     Navigator.of(context).pushNamed(AppRoute.bookingReceipt, arguments: record);
   }
 
+  /// Pintasan Paket: buka detail cabang terdekat, langsung di tab Paket.
+  /// Tanpa lokasi mustahil tahu mana yang terdekat, jadi izinnya diminta
+  /// dulu setiap kali pintasan ini ditekan.
+  Future<void> _openNearestPackage(
+    BuildContext context,
+    DashboardProvider dashboard,
+  ) async {
+    final NavigatorState navigator = Navigator.of(context);
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
+    final bool allowed = await PermissionPrompt.ensureLocation(context);
+    if (!allowed || !context.mounted) return;
+
+    await dashboard.refreshLocation();
+    if (!context.mounted) return;
+
+    final StoreSummary? nearest = dashboard.nearest;
+    if (nearest == null) {
+      AppToast.show(context, message: l10n.bookingStoreEmpty);
+      return;
+    }
+
+    navigator.pushNamed(
+      AppRoute.storeDetail,
+      arguments: StoreDetailArgs(
+        storeId: nearest.id,
+        initialTab: StoreTab.package,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
@@ -213,8 +246,9 @@ class _DashboardBody extends StatelessWidget {
               onSelect: (QuickAction action) {
                 switch (action) {
                   case QuickAction.booking:
-                  case QuickAction.package:
                     _openBooking(context);
+                  case QuickAction.package:
+                    _openNearestPackage(context, dashboard);
                   case QuickAction.promo:
                     _openPromo(context);
                   case QuickAction.history:

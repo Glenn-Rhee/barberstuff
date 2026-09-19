@@ -97,6 +97,65 @@ class PermissionPrompt {
     await _read<LocationService>(context)?.current();
   }
 
+  /// Dipakai fitur yang memang butuh lokasi, misalnya pintasan Paket.
+  /// Beda dengan [askLocation] yang cuma menyapa sekali di awal: ini
+  /// bertanya setiap kali dipanggil sampai izinnya benar-benar diberi,
+  /// dan mengembalikan true kalau lokasi sudah siap dipakai.
+  static Future<bool> ensureLocation(BuildContext context) async {
+    LocationPermission permission;
+
+    try {
+      permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+    } on Object catch (error) {
+      debugPrint('PermissionPrompt ensureLocation gagal: $error');
+      return false;
+    }
+
+    final bool granted =
+        permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
+
+    if (!granted) {
+      if (!context.mounted) return false;
+      final AppLocalizations l10n = AppLocalizations.of(context);
+
+      // Sengaja tidak dikunci _locationDialogShown: pengguna menekan fitur
+      // yang mustahil jalan tanpa lokasi, jadi wajar ditanya lagi.
+      await _showSettingsDialog(
+        context,
+        title: l10n.permissionLocationTitle,
+        message: l10n.permissionLocationMessage,
+        actionLabel: l10n.permissionOpenSettings,
+        target: _SettingsTarget.app,
+      );
+      return false;
+    }
+
+    bool serviceOn = true;
+    try {
+      serviceOn = await Geolocator.isLocationServiceEnabled();
+    } on Object catch (error) {
+      debugPrint('PermissionPrompt cek GPS gagal: $error');
+    }
+
+    if (serviceOn) return true;
+
+    if (!context.mounted) return false;
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    await _showSettingsDialog(
+      context,
+      title: l10n.permissionLocationOffTitle,
+      message: l10n.permissionLocationOffMessage,
+      actionLabel: l10n.permissionOpenLocationSettings,
+      target: _SettingsTarget.location,
+    );
+    return false;
+  }
+
   static void allowDialogsAgain() {
     _notificationDialogShown = false;
     _locationDialogShown = false;

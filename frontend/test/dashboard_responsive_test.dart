@@ -114,7 +114,6 @@ void main() {
           city: 'Jakarta Selatan',
           rating: 4.9,
           distanceKm: 0.7,
-          imageAsset: AppAssets.storeDepok,
         ),
       ],
       horizontalPadding: 20,

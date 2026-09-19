@@ -9,8 +9,8 @@ import 'package:mobile_barberstuff/features/promo/domain/promo_content.dart';
 import 'package:mobile_barberstuff/features/promo/presentation/widgets/promo_parts.dart';
 import 'package:mobile_barberstuff/features/promo/presentation/widgets/reward_detail_sheet.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:provider/provider.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
+import 'package:provider/provider.dart';
 
 class PromoArgs {
   const PromoArgs({required this.profile});
@@ -51,8 +51,8 @@ class PromoPage extends StatelessWidget {
     final AppLocalizations l10n = AppLocalizations.of(context);
     // Profil hidup dari provider supaya tarik-ulang benar-benar mengubah
     // poin dan tier di layar; args cuma dipakai sebagai nilai awal.
-    final ProfileProvider profileProvider = context.watch<ProfileProvider>();
-    final CustomerProfile profile = profileProvider.profile ?? args.profile;
+    final ProfileProvider? profileProvider = _liveProfile(context);
+    final CustomerProfile profile = profileProvider?.profile ?? args.profile;
 
     return Scaffold(
       backgroundColor: AppColor.surface,
@@ -81,7 +81,7 @@ class PromoPage extends StatelessWidget {
       body: SafeArea(
         top: false,
         child: RefreshIndicator(
-          onRefresh: profileProvider.load,
+          onRefresh: profileProvider?.load ?? () async {},
           color: AppColor.goldDeep,
           child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -188,5 +188,15 @@ class _SectionHead extends StatelessWidget {
         ],
       ],
     );
+  }
+}
+
+/// ProfileProvider disediakan di tingkat aplikasi. Kalau halaman dibuka di
+/// luar itu (misalnya di test), pakai profil titipan args saja.
+ProfileProvider? _liveProfile(BuildContext context) {
+  try {
+    return context.watch<ProfileProvider>();
+  } on ProviderNotFoundException {
+    return null;
   }
 }
