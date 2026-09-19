@@ -695,10 +695,17 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 
 	totalPrice := subTotal
 
+	statusBooking := entity.BookingStatusBooked
+	bookingType := entity.BookingScheduled
+	if req.IsBooking {
+		statusBooking = entity.BookingStatusProgress
+		bookingType = entity.BookingWalkIn
+	}
+
 	qrCode := fmt.Sprintf("bk%v", idBooking)
 	data := entity.Booking{
 		ID:             idBooking,
-		StatusBooking:  entity.BookingStatusBooked,
+		StatusBooking:  statusBooking,
 		IDStore:        idStore,
 		IDCustomer:     idCustomer,
 		IDCapster:      idCapster,
@@ -708,7 +715,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 		TotalPrice:     totalPrice,
 		ScheduledAt:    scheduledAt,
 		QRCode:         qrCode,
-		BookingType:    entity.BookingScheduled,
+		BookingType:    bookingType,
 		BookingItems:   bookingItems,
 	}
 

@@ -54,4 +54,5 @@ type CreateCashireBookingRequest struct {
 	IdServices  []string               `json:"id_services" binding:"required"`
 	BookingDate time.Time              `json:"booking_date" binding:"required"`
 	Customer    CustomerBookingCashier `json:"customer" binding:"required"`
+	IsBooking   bool                   `json:"is_booking" binding:"required"`
 }
