@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Build release membuang gambar yang tidak dirujuk kode Kotlin/XML.
+  ic_notification cuma dipanggil lewat nama dari Dart
+  (AndroidInitializationSettings('ic_notification')), jadi ikut terbuang.
+  Akibatnya plugin notifikasi gagal dinyalakan, aplikasi mengira izin
+  notifikasi belum diberi, dan dialog "Izinkan notifikasi" muncul terus.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_notification" />
