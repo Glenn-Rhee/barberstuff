@@ -14,6 +14,7 @@ type BookingRepository interface {
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	UpdateStatusMany(ids []uuid.UUID, status entity.BookingStatusEnum) error
 	FindFavoriteServiceByUserIDs(userIDs []uuid.UUID) ([]entity.FavoriteServiceResult, error)
+	Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
 
 type bookingRepository struct {
@@ -97,4 +98,12 @@ func (r *bookingRepository) FindFavoriteServiceByUserIDs(userIDs []uuid.UUID) ([
 	`, userIDs, entity.BookingStatusCompleted).Scan(&results).Error
 
 	return results, err
+}
+
+func (r *bookingRepository) Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+	result := r.db.
+		Model(&entity.Booking{}).
+		Scopes(scopes...).
+		Updates(value)
+	return result.RowsAffected, result.Error
 }

@@ -79,6 +79,7 @@ func main() {
 		staff.PATCH("/:id", h.StaffHandler.UpdateAccountStaff)
 		staff.DELETE("/:id", h.StaffHandler.DeleteAccountStaff)
 		staff.POST("/booking", h.StaffHandler.CreateBooking)
+		staff.PATCH("/booking/checkin/:qr_code", h.StaffHandler.CheckinBooking)
 	}
 
 	profile := r.Group("/profile")

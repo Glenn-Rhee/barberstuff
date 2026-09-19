@@ -27,6 +27,7 @@ type StaffService interface {
 	UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims, idStaff string) error
 	DeleteAccount(idStaff string, claims *lib.CustomClaims) error
 	CreateBooking(claims *lib.CustomClaims, req dto.CreateCashireBookingRequest) error
+	CheckinBooking(qrCode string) error
 }
 
 type staffService struct {
@@ -392,12 +393,20 @@ func (s *staffService) UpdateAccount(req dto.UpdateAccountStaffRequest, claims *
 	}
 
 	err = s.db.Transaction(func(tx *gorm.DB) error {
-		err = s.staffRepo.Updates(map[string]interface{}{
+		var scopesEdit []func(*gorm.DB) *gorm.DB
+		scopesEdit = append(scopesEdit, func(d *gorm.DB) *gorm.DB {
+			return d.Where("id = ?", id)
+		})
+		rowsAffected, err := s.staffRepo.Updates(map[string]interface{}{
 			"name": req.Name,
-		}, id)
+		}, scopesEdit...)
 
 		if err != nil {
 			return err
+		}
+
+		if rowsAffected == 0 {
+			return errors.New("Data staff yang anda ingin ubah tidak ditemukan atau telah dihapus")
 		}
 
 		err = s.authRepo.Updates(map[string]interface{}{
@@ -710,6 +719,31 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 	if err != nil {
 		helper.Logger("Create data booking", filePath, err)
 		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *staffService) CheckinBooking(qrCode string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat checkin. Mohon coba lagi nanti"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	var scopesUpdate []func(*gorm.DB) *gorm.DB
+	scopesUpdate = append(scopesUpdate, func(d *gorm.DB) *gorm.DB {
+		return d.Where("qr_code = ? AND status_booking = ?", qrCode, entity.BookingStatusBooked)
+	})
+
+	rowsAffected, err := s.bookingRepo.Updates(map[string]interface{}{
+		"status_booking": entity.BookingStatusProgress,
+	}, scopesUpdate...)
+
+	if err != nil {
+		helper.Logger("update status booking", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Data booking tidak ditemukan atau telah checkin sebelumnya.")
 	}
 
 	return nil

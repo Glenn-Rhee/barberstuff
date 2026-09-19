@@ -13,7 +13,7 @@ type StaffRepository interface {
 	FindOne(where string, args ...interface{}) (entity.Staff, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Staff, error)
 	FindProfile(userId string) (entity.Staff, error)
-	Updates(value interface{}, id uuid.UUID) error
+	Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	SoftDelete(id uuid.UUID) error
 }
 
@@ -71,12 +71,12 @@ func (r *staffRepository) FindProfile(userId string) (entity.Staff, error) {
 	return dataStaff, result.Error
 }
 
-func (r *staffRepository) Updates(value interface{}, id uuid.UUID) error {
-	result := r.db.
-		Model(&entity.Staff{}).
-		Where("id = ?", id).
-		Updates(value)
-	return result.Error
+func (r *staffRepository) Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+    result := r.db.
+        Model(&entity.Staff{}).
+        Scopes(scopes...).
+        Updates(value)
+    return result.RowsAffected, result.Error
 }
 
 func (r *staffRepository) SoftDelete(id uuid.UUID) error {
