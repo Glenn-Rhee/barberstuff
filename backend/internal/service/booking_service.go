@@ -714,12 +714,24 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 		}
 	}
 
+	var scopesStaff []func(*gorm.DB) *gorm.DB
+	scopesStaff = append(scopesStaff, func(d *gorm.DB) *gorm.DB {
+		return d.Where("id_store = ?", idStore)
+	})
+
+	dataStaff, err := s.staffRepo.FindAll(scopesStaff...)
+	if err != nil {
+		helper.Logger("find data staff", filePath, err)
+		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
+	}
+
 	now := time.Now().In(loc)
 
 	var resultSlots []dto.SlotAvailable
 	for i, timeStr := range slotStrings {
 		slotDateTime := slots[i]
 		isPastSlot := slotDateTime.Before(now.Add(30 * time.Minute))
+		isNoStaff := len(dataStaff) <= 0
 
 		// FIX: langkah 1 — hitung dulu capster mana saja yang kosong di slot ini,
 		// sebelum decide available/tidaknya masing-masing
@@ -730,7 +742,7 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 			isBookedDb := dbBookedMap[compositeKey]
 			isLockedRedis := lockedMap[compositeKey]
 
-			isFree := !isBookedDb && !isLockedRedis && !isPastSlot
+			isFree := !isBookedDb && !isLockedRedis && !isPastSlot && !isNoStaff
 			if isFree {
 				freeCapsterIndexes = append(freeCapsterIndexes, idx)
 			}
@@ -750,7 +762,7 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 			isBookedDb := dbBookedMap[compositeKey]
 			isLockedRedis := lockedMap[compositeKey]
 
-			available := !isBookedDb && !isLockedRedis && !isPastSlot
+			available := !isBookedDb && !isLockedRedis && !isPastSlot && !isNoStaff
 
 			// FIX: langkah 3 — kalau capster ini adalah satu-satunya yang tersisa, paksa jadi false
 			if idx == reservedIdx {
@@ -787,7 +799,7 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 
 		resultSlots = append(resultSlots, dto.SlotAvailable{
 			Time:      timeStr,
-			Available: !isPastSlot && availableCount > 0, // FIX: >0, karena availableCount sudah otomatis exclude reserved
+			Available: !isPastSlot && availableCount > 0 && !isNoStaff, // FIX: >0, karena availableCount sudah otomatis exclude reserved
 			Capsters:  capstterResults,
 		})
 	}
