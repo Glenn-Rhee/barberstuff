@@ -32,6 +32,14 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserAuth'
     type: object
+  dto.BookingTypeCashier:
+    enum:
+    - order
+    - booking
+    type: string
+    x-enum-varnames:
+    - BookingTypeOrder
+    - BookingTypeBooking
   dto.CapsterAvailable:
     properties:
       available:
@@ -158,12 +166,15 @@ definitions:
         type: array
       id_store:
         type: string
+      is_booking:
+        $ref: '#/definitions/dto.BookingTypeCashier'
     required:
     - booking_date
     - customer
     - id_capster
     - id_services
     - id_store
+    - is_booking
     type: object
   dto.CreateRatingRequest:
     properties:
@@ -2338,6 +2349,42 @@ paths:
       security:
       - BearerAuth: []
       summary: Membuat booking customer
+      tags:
+      - Staff
+  /staff/booking/checkin/{qr_code}:
+    patch:
+      consumes:
+      - application/json
+      description: Kasir dapat melakukan perubahan status booking dari booked ke progress
+        melalui routes ini. Hanya dapat diakses oleh kasir
+      parameters:
+      - description: Qr Code
+        in: path
+        name: qr_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal melakukan checkin booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Kasir checkin booking customer
       tags:
       - Staff
   /store:

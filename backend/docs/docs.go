@@ -1975,6 +1975,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/staff/booking/checkin/{qr_code}": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Kasir dapat melakukan perubahan status booking dari booked ke progress melalui routes ini. Hanya dapat diakses oleh kasir",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Kasir checkin booking customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Qr Code",
+                        "name": "qr_code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membuat booking",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal melakukan checkin booking",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/staff/{id}": {
             "delete": {
                 "security": [
@@ -2441,6 +2496,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.BookingTypeCashier": {
+            "type": "string",
+            "enum": [
+                "order",
+                "booking"
+            ],
+            "x-enum-varnames": [
+                "BookingTypeOrder",
+                "BookingTypeBooking"
+            ]
+        },
         "dto.CapsterAvailable": {
             "type": "object",
             "properties": {
@@ -2617,7 +2683,8 @@ const docTemplate = `{
                 "customer",
                 "id_capster",
                 "id_services",
-                "id_store"
+                "id_store",
+                "is_booking"
             ],
             "properties": {
                 "booking_date": {
@@ -2637,6 +2704,9 @@ const docTemplate = `{
                 },
                 "id_store": {
                     "type": "string"
+                },
+                "is_booking": {
+                    "$ref": "#/definitions/dto.BookingTypeCashier"
                 }
             }
         },

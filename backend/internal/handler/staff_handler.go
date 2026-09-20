@@ -449,6 +449,21 @@ func (h *StaffHandler) CreateBooking(ctx *gin.Context) {
 	})
 }
 
+// CheckinBooking godoc
+// @Summary       Kasir checkin booking customer
+// @Description   Kasir dapat melakukan perubahan status booking dari booked ke progress melalui routes ini. Hanya dapat diakses oleh kasir
+// @Tags          Staff
+// @Accept        json
+// @Produce       json
+// @Security      BearerAuth
+//
+// @Param         qr_code path string true "Qr Code"
+//
+// @Success       200 {object} dto.SwaggerResponse "Berhasil membuat booking"
+// @Failure       400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure       401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure       406 {object} dto.SwaggerResponse "Gagal melakukan checkin booking"
+// @Router        /staff/booking/checkin/{qr_code} [patch]
 func (h *StaffHandler) CheckinBooking(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
