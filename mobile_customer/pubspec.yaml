@@ -1,0 +1,86 @@
+name: mobile_barberstuff
+description: "BarberStuff mobile application."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  shared_preferences: ^2.3.0
+  provider: ^6.1.5+1
+  dio: ^5.11.0
+  google_sign_in: ^7.2.0
+  image_picker: ^1.2.2
+  barcode_widget: ^2.0.4
+  flutter_local_notifications: ^22.3.0
+  geolocator: ^14.0.3
+  url_launcher: ^6.3.2
+  pdf: ^3.13.0
+  printing: ^5.15.0
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+  share_plus: ^13.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+
+  generate: true
+
+  assets:
+    - assets/icons/book/
+    - assets/icons/detail_store/
+    - assets/icons/general/
+    - assets/icons/history/
+    - assets/icons/home/
+    - assets/icons/loading/
+    - assets/icons/nav_bottom/
+    - assets/icons/notify/
+    - assets/icons/profile/
+    - assets/icons/promo/
+    - assets/icons/register/
+    - assets/icons/splash/
+    - assets/images/choose/
+    - assets/images/forgot/
+    - assets/images/general/
+    - assets/images/home/
+    - assets/images/notify/
+    - assets/images/profile/
+    - assets/images/promo/
+    - assets/images/splash/
+    - assets/images/verification/
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+
+flutter_launcher_icons:
+  image_path: "assets/images/choose/logo_barberstuff.png"
+
+  android: "launcher_icon"
+  min_sdk_android: 21
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/images/choose/logo_barberstuff_fg.png"
+
+  ios: true
+  remove_alpha_ios: true

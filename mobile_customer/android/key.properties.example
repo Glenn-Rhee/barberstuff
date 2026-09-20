@@ -1,0 +1,5 @@
+# Salin jadi android/key.properties lalu isi. Jangan pernah di-commit.
+storePassword=ISI_PASSWORD
+keyPassword=ISI_PASSWORD
+keyAlias=barberstuff
+storeFile=/Users/NAMA_KAMU/keys/barberstuff-release.jks

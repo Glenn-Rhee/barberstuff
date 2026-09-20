@@ -1,0 +1,548 @@
+{
+  "@@locale": "id",
+  "appTitle": "Barberstuff",
+  "onboardingFirstTitle": "Gaya yang pas untuk keseharianmu",
+  "onboardingFirstDescription": "Temukan gaya rambut yang sesuai dengan karakter dan aktivitas harianmu.",
+  "onboardingSecondTitle": "Booking cukur jadi lebih mudah",
+  "onboardingSecondDescription": "Pilih cabang, barber, dan jam yang kamu mau tanpa perlu antre di tempat.",
+  "onboardingThirdTitle": "Nikmati berbagai keuntungan member",
+  "onboardingThirdDescription": "Kumpulkan poin di setiap kunjungan dan tukarkan dengan potongan harga.",
+  "onboardingStart": "Ayo Mulai!",
+  "chooseLoginWelcome": "Selamat Datang",
+  "chooseLoginGoogleText": "Lanjutkan dengan Google",
+  "chooseLoginDividerOr": "atau",
+  "chooseLoginWithPasswordText": "Masuk dengan Kata Sandi",
+  "chooseLoginTextMessage": "Belum punya akun?",
+  "chooseLoginTextLink": "Daftar",
+  "genderMale": "Laki-laki",
+  "genderFemale": "Perempuan",
+  "registerHeadline": "Buat Akun Anda",
+  "registerNameLabel": "Nama Lengkap",
+  "registerPhoneLabel": "Nomor Telepon",
+  "registerBirthDateLabel": "Tanggal Lahir",
+  "registerGenderLabel": "Jenis Kelamin",
+  "registerEmailLabel": "Email",
+  "registerPasswordLabel": "Kata Sandi",
+  "registerSubmitButton": "Lanjutkan",
+  "registerHaveAccountQuestion": "Sudah punya akun?",
+  "registerLoginAction": "Masuk",
+  "registerOtpSentMessage": "OTP telah dikirim ke email Anda.",
+  "verifyPageBarText": "Verifikasi Email",
+  "verifyHeadline": "Periksa Email Anda",
+  "verifyDescription": "Kami telah mengirimkan kode verifikasi 6 digit ke {email}. Silakan masukkan kode di bawah ini.",
+  "@verifyDescription": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifySubmitButton": "Verifikasi",
+  "verifyResendQuestion": "Tidak menerima kode?",
+  "verifyResendAction": "Kirim ulang kode",
+  "verifyResendCountdown": "Kirim ulang dalam {time}",
+  "@verifyResendCountdown": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyAttemptExhausted": "Kesempatan mencoba habis. Silakan kirim ulang kode.",
+  "verifyResendSending": "Mengirim...",
+  "verifyResendSuccess": "Kode baru telah dikirim ke email Anda.",
+  "verifySuccessTitle": "Selamat!",
+  "verifySuccessMessage": "Email Anda telah berhasil diverifikasi. Anda sekarang dapat mengakses semua fitur aplikasi kami.",
+  "verifySuccessButton": "Lanjutkan",
+  "loginHeadline": "Masuk ke Akun Anda",
+  "loginEmailHint": "Email",
+  "loginPasswordHint": "Kata Sandi",
+  "loginRememberMe": "Ingat Saya",
+  "loginSubmitButton": "Masuk",
+  "loginForgotQuestion": "Lupa kata sandi?",
+  "loginForgotAction": "Klik disini",
+  "loginWithGoogle": "Masuk dengan Google",
+  "forgotPageBarText": "Lupa Kata Sandi",
+  "forgotHeadline": "Lupa Kata Sandi?",
+  "forgotDescription": "Masukkan email akun Anda. Kami akan mengirimkan kode verifikasi untuk mengatur ulang kata sandi.",
+  "forgotSubmitButton": "Kirim Kode",
+  "resetPageBarText": "Kata Sandi Baru",
+  "resetHeadline": "Buat Kata Sandi Baru",
+  "resetDescription": "Kata sandi baru harus berbeda dari kata sandi yang pernah Anda pakai sebelumnya.",
+  "resetPasswordHint": "Kata Sandi Baru",
+  "resetConfirmHint": "Ulangi Kata Sandi Baru",
+  "resetSubmitButton": "Simpan Kata Sandi",
+  "resetSignInFailed": "Kata sandi berhasil diubah, tetapi kami gagal masuk otomatis. Silakan masuk kembali.",
+  "resetSuccessTitle": "Selamat!",
+  "resetSuccessMessage": "Kata sandi Anda berhasil diperbarui. Anda akan diarahkan ke halaman beranda.",
+  "resetSuccessButton": "Ke Beranda",
+  "exceptionReceiveTimeout": "Koneksi timeout. Periksa jaringan Anda.",
+  "exceptionConnectionError": "Tidak dapat terhubung ke server.",
+  "exceptionDefaultType": "Terjadi kesalahan pada server.",
+  "exceptionDefault": "Terjadi Kesalahan yang tak terduga.",
+  "validatorRequired": "{label} wajib diisi",
+  "@validatorRequired": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "validatorEmailInvalid": "Format email tidak valid",
+  "validatorPasswordMin": "Kata Sandi minimal {min} karakter",
+  "@validatorPasswordMin": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "validatorPhoneMin": "Nomor Telepon minimal {min} digit",
+  "@validatorPhoneMin": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "validatorPhoneMax": "Nomor Telepon maksimal {max} digit",
+  "@validatorPhoneMax": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "validatorPhoneDigits": "Hanya boleh angka",
+  "validatorPasswordMismatch": "Kata sandi tidak sama",
+  "googleSignInFailed": "Gagal masuk dengan Google. Silakan coba lagi.",
+  "completeProfileTitle": "Lengkapi Profil",
+  "completeProfileSubtitle": "Sedikit lagi. Lengkapi data dirimu untuk mulai memakai Barberstuff.",
+  "completeProfileSubmit": "Lanjutkan",
+  "completeProfileEmailLocked": "Email dari Google tidak bisa diubah",
+  "avatarSheetTitle": "Foto Profil",
+  "avatarSheetCamera": "Ambil Foto",
+  "avatarSheetGallery": "Pilih dari Galeri",
+  "avatarSheetRemove": "Hapus Foto",
+  "avatarPickFailed": "Gagal membuka galeri atau kamera. Coba lagi.",
+  "avatarPermissionDenied": "Izin akses foto atau kamera ditolak. Aktifkan lewat pengaturan perangkat.",
+  "homeGreeting": "Halo, {name}!",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWelcomeBack": "Selamat datang kembali",
+  "homePoints": "{points} Poin",
+  "@homePoints": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMemberBadge": "MEMBER",
+  "homePointsToPremium": "{points} Poin lagi ke level premium",
+  "homeMembershipLevel": "Tingkat membership",
+  "homeRedeemPoints": "Tukarkan point anda",
+  "@homePointsToPremium": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "homeBirthdayTitle": "Spesial Hari Ulang Tahun!",
+  "homeBirthdayDescription": "Diskon potongan rambut berlaku s/d 7 hari setelah ultah.",
+  "homeSeePromo": "Lihat Promo",
+  "homeBirthdayBadge": "Tampil terbaik setiap hari",
+  "homeBookingNow": "Booking Sekarang",
+  "homeActionBooking": "Booking",
+  "homeActionPackage": "Paket",
+  "homeActionPromo": "Promo",
+  "homeActionHistory": "Riwayat",
+  "bookingBranchNewBadge": "NEWBIE",
+  "homeBenefitTitle": "Benefit Barberstuff",
+  "homeBenefitPoints": "Poin reward setiap kali potong rambut",
+  "homeBenefitBirthday": "Diskon khusus dan penawaran ulang tahun",
+  "homeBenefitPriority": "Prioritas jadwal tanpa antre panjang",
+  "homeBenefitDiscountTitle": "Diskon Lebih Banyak Cukur!",
+  "homeBenefitPointsTitle": "Poin di Setiap Potongan",
+  "homeBenefitPriorityTitle": "Prioritas Tanpa Antre",
+  "homeActiveBookingTitle": "Booking Aktif",
+  "homeBookingUpcoming": "MENDATANG",
+  "homeBookingOrderId": "Order ID #{id}",
+  "@homeBookingOrderId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "homeBookingDetail": "Lihat Detail",
+  "homeBookingCapster": "Capster {name}",
+  "@homeBookingCapster": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeBookingEmpty": "Belum ada booking aktif.",
+  "homeNearbyTitle": "Cabang Terdekat",
+  "homeNearbySeeAll": "Lihat Semua",
+  "storeListTitle": "Semua Cabang",
+  "homeNearbyDistance": "{distance} km",
+  "@homeNearbyDistance": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "homeHistoryTitle": "Riwayat Potongan",
+  "homeHistorySeeAll": "Lihat Riwayat",
+  "homeHistoryEmpty": "Belum ada riwayat potongan.",
+  "homeHistoryRebook": "Pesan Lagi",
+  "homeHistoryBy": "oleh {name}",
+  "@homeHistoryBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeNearbyLocation": "{city} • {distance} km",
+  "@homeNearbyLocation": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "navHome": "Home",
+  "navBooking": "Booking",
+  "navHistory": "Riwayat",
+  "navProfile": "Profil",
+  "historyTitle": "Riwayat Booking",
+  "storeDetailTitle": "Detail Toko",
+  "storeOpen": "BUKA",
+  "storeClosed": "TUTUP",
+  "storeReviewCount": "({count} reviews)",
+  "@storeReviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "storeActionCall": "Telepon",
+  "storeActionRoute": "Rute",
+  "storeActionShare": "Bagikan",
+  "storeBarbers": "Barber Kami",
+  "storeSeeAll": "Lihat Semua",
+  "storeTabAbout": "Tentang Kami",
+  "storeTabService": "Layanan",
+  "storeTabPackage": "Paket",
+  "storeTabReview": "Ulasan",
+  "storeDescription": "Deskripsi",
+  "storeHours": "Jam Operasional",
+  "storeHoursEveryday": "Setiap hari",
+  "storeAddressTitle": "Alamat Kami",
+  "storeSeeMap": "Lihat di Peta",
+  "storeServicesTitle": "Services Kami",
+  "storePackagesTitle": "Paket Kami",
+  "storeReviewsTitle": "Ulasan Pelanggan",
+  "storeBookNow": "Pesan Sekarang",
+  "storeTypeCount": "{count} types",
+  "@storeTypeCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeShareCopied": "Info toko disalin ke clipboard",
+  "storeNoBarber": "Belum ada barber di cabang ini.",
+  "storeNoService": "Belum ada layanan.",
+  "storeNoPackage": "Belum ada paket.",
+  "storeNoReview": "Belum ada ulasan.",
+  "historyTabUpcoming": "Akan Datang",
+  "historyTabDone": "Selesai",
+  "historyTabCanceled": "Dibatalkan",
+  "historyBadgeProgress": "PROGRESS",
+  "historyBadgeDone": "DONE",
+  "historyBadgeCancel": "CANCEL",
+  "historyNotReviewed": "Belum diulas",
+  "historyWriteReview": "Beri Ulasan",
+  "historySeeReview": "Lihat Ulasan",
+  "historyYourReview": "Ulasanmu",
+  "historyEmpty": "Belum ada booking di daftar ini.",
+  "reviewTitle": "Bagaimana pengalamanmu?",
+  "reviewSubtitle": "pengalamanmu sangat berharga bagi kami",
+  "reviewCapster": "Pelayanan Capster",
+  "reviewCashier": "Pelayanan Kasir",
+  "reviewStore": "Kualitas Outlet",
+  "reviewMessageLabel": "Ceritakan Pengalamanmu Disini",
+  "reviewMessageHint": "Tulis disini untuk riview kamu!",
+  "reviewSubmit": "Kirim",
+  "reviewNeedStars": "Beri bintang dulu untuk semua penilaian.",
+  "reviewThanks": "Terima kasih atas ulasanmu!",
+  "notificationTitle": "Notifikasi",
+  "notificationSearchHint": "Cari notifikasi...",
+  "notificationFilterAll": "Semua",
+  "notificationFilterUnread": "Belum Dibaca",
+  "notificationMarkAllRead": "Tandai semua dibaca",
+  "notificationToday": "Hari ini",
+  "notificationYesterday": "Kemarin",
+  "notificationEmpty": "Belum ada notifikasi saat ini",
+  "notificationChannelName": "Info Barberstuff",
+  "notificationChannelDescription": "Info booking, poin, dan promo Barberstuff.",
+  "notificationTimeNow": "Baru saja",
+  "notificationTimeMinute": "{count} mnt lalu",
+  "@notificationTimeMinute": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationTimeHour": "{count} jam lalu",
+  "@notificationTimeHour": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationTimeDay": "{count} hari lalu",
+  "@notificationTimeDay": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationBookingTitle": "Jadwal Booking Dikonfirmasi!",
+  "notificationBookingBody": "Pemesanan Anda untuk layanan cukur di cabang Jati Asih telah dikonfirmasi oleh barber.",
+  "notificationPointsTitle": "Poin Member Bertambah!",
+  "notificationPointsBody": "Anda mendapatkan 150 poin tambahan dari transaksi cukur terakhir Anda. Tingkatkan terus level Anda!",
+  "notificationMembershipTitle": "Selamat, Level Member Naik!",
+  "notificationMembershipBody": "Anda telah mencapai level Premium! Nikmati berbagai keuntungan eksklusif tanpa antre.",
+  "notificationRecommendationTitle": "Rekomendasi Gaya Rambut Baru",
+  "notificationRecommendationBody": "Temukan tren gaya rambut pria terbaru tahun ini yang cocok dengan bentuk wajah Anda.",
+  "profileTierSilver": "Silver Member Barberstuff",
+  "profileTierGold": "Gold Member Barberstuff",
+  "profileTierPlatinum": "Platinum Member",
+  "profileMenuPersonalInfo": "Informasi Pribadi",
+  "profileMenuLanguage": "Bahasa",
+  "profileMenuCard": "Barberstuff Card",
+  "profileMenuNotification": "Notifikasi",
+  "profileMenuHelp": "Pusat Bantuan",
+  "profileMenuAbout": "Tentang Aplikasi",
+  "profileMenuLogout": "Keluar",
+  "profileLogoutTitle": "Keluar dari akun?",
+  "profileLogoutMessage": "Anda perlu masuk lagi untuk memakai Barberstuff.",
+  "languagePageTitle": "Pilih Bahasa",
+  "languagePageDescription": "Silakan pilih bahasa yang nyaman bagi Anda untuk menikmati pengalaman terbaik bersama kami.",
+  "languageIndonesian": "Bahasa Indonesia",
+  "languageEnglish": "Inggris",
+  "languageSelectAction": "Pilih",
+  "commonCancel": "Batal",
+  "cardPageTitle": "Barberstuff Card",
+  "cardIdLabel": "ID User",
+  "personalInfoTitle": "Informasi Pribadi",
+  "personalInfoChangePhoto": "Ganti Foto Profil",
+  "personalInfoPhotoFormat": "Support Format: JPEG, PNG, JPG",
+  "personalInfoEmailLocked": "Email dipakai untuk masuk dan tidak bisa diubah",
+  "personalInfoBirthDateLocked": "Tanggal lahir mengikuti data pendaftaran dan tidak bisa diubah",
+  "personalInfoPasswordTitle": "Password Saya",
+  "personalInfoPasswordSubtitle": "Ganti Password Saya",
+  "personalInfoPasswordAction": "Ganti Sekarang",
+  "personalInfoSave": "Simpan Perubahan",
+  "helpTitle": "Pusat Bantuan",
+  "helpHeadline": "Butuh Bantuan? Ceritakan Masalah Anda",
+  "helpSubtitle": "Isi formulir di bawah ini dan tim kami akan menghubungi Anda secepatnya.",
+  "helpNameLabel": "Nama",
+  "helpProblemLabel": "Ceritakan Masalah Anda",
+  "helpProblemHint": "Tulis masalah yang Anda alami",
+  "helpSubmit": "Kirim",
+  "aboutTitle": "Tentang Aplikasi",
+  "aboutLastUpdated": "Terakhir diperbarui: {date}",
+  "@aboutLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutIntro": "Dengan mengakses atau menggunakan aplikasi Barberstuff, Anda setuju untuk terikat pada Ketentuan Penggunaan ini.",
+  "aboutAcceptanceTitle": "1. Penerimaan Ketentuan",
+  "aboutAcceptanceBody": "Dengan menggunakan Barberstuff, Anda menyatakan telah membaca, memahami, dan menyetujui Ketentuan Penggunaan ini.",
+  "aboutEligibilityTitle": "2. Kelayakan",
+  "aboutEligibilityBody": "Anda harus berusia minimal 17 tahun atau memiliki izin dari orang tua maupun wali untuk menggunakan Barberstuff.",
+  "aboutAccountTitle": "3. Akun Pengguna",
+  "aboutAccountPoint1": "Anda bertanggung jawab menjaga kerahasiaan akun Anda",
+  "aboutAccountPoint2": "Seluruh informasi yang diberikan harus akurat dan terkini",
+  "aboutAccountPoint3": "Barberstuff tidak bertanggung jawab atas akses tidak sah yang disebabkan kelalaian pengguna",
+  "aboutUsageTitle": "4. Penggunaan Layanan",
+  "aboutUsageIntro": "Anda setuju untuk tidak:",
+  "aboutUsagePoint1": "Menggunakan Barberstuff untuk tujuan melanggar hukum",
+  "aboutUsagePoint2": "Menyalin, menyebarkan, atau mengeksploitasi konten platform tanpa izin",
+  "aboutUsagePoint3": "Mengunggah konten yang melanggar hukum atau hak pihak ketiga",
+  "aboutIpTitle": "5. Hak Kekayaan Intelektual",
+  "aboutIpBody": "Seluruh konten, sistem, dan desain platform dimiliki oleh Barberstuff. Data dan materi yang dibuat pengguna tetap menjadi milik pengguna.",
+  "aboutTerminationTitle": "6. Penghentian Akun",
+  "aboutTerminationBody": "Barberstuff berhak menangguhkan atau menghentikan akun yang melanggar Ketentuan ini.",
+  "aboutDisclaimerTitle": "7. Penafian",
+  "aboutDisclaimerBody": "Barberstuff disediakan sebagaimana adanya dan sebagaimana tersedia, tanpa jaminan dalam bentuk apa pun.",
+  "aboutChangesTitle": "8. Perubahan Ketentuan",
+  "aboutChangesBody": "Barberstuff dapat memperbarui Ketentuan ini sewaktu-waktu. Penggunaan platform yang berkelanjutan menandakan penerimaan atas Ketentuan yang diperbarui.",
+  "bookingTitle": "Booking",
+  "bookingBranchTitle": "Pilih Cabang",
+  "bookingStepLabel": "LANGKAH {current} DARI {total}",
+  "@bookingStepLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingBranchSubtitle": "Tentukan cabang barbershop terdekat kamu",
+  "bookingScheduleSubtitle": "Pilih tanggal dan jam yang tersedia",
+  "bookingBarberSubtitle": "Pilih barber favoritmu atau biarkan kami memilihkan",
+  "bookingServiceSubtitle": "Pilih layanan yang kamu inginkan",
+  "bookingConfirmTitle": "Konfirmasi Booking",
+  "bookingConfirmSubtitle": "Harap periksa kembali detail pesanan Anda",
+  "bookingNextSchedule": "Lanjut Pilih Jadwal",
+  "bookingNextBarber": "Lanjut Pilih Capster",
+  "bookingNextService": "Lanjut Pilih Layanan",
+  "bookingNextConfirm": "Lanjut Konfirmasi Booking",
+  "bookingConfirmCta": "Konfirmasi Pesanan",
+  "bookingSlotFullNote": "Slot yang tidak dapat dipilih sudah penuh",
+  "bookingSlotEmpty": "Belum ada jam tersedia di tanggal ini.",
+  "bookingSlotTooSoon": "Booking minimal 30 menit dari sekarang.",
+  "bookingTabService": "Service",
+  "bookingAvailableToday": "Tersedia hari ini",
+  "bookingLockRemaining": "Sisa waktu {time}",
+  "@bookingLockRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingLockExpired": "Waktu kunci habis. Silakan pilih jadwal lagi.",
+  "bookingCancelTitle": "Batalkan booking?",
+  "bookingCancelMessage": "Slot yang sudah dikunci akan dilepas dan bisa diambil orang lain.",
+  "bookingCancelConfirm": "Ya, batalkan",
+  "bookingReleaseFailed": "Slot barber belum terlepas. Tunggu sebentar lalu tekan Lanjut lagi.",
+  "bookingCancelKeep": "Lanjut booking",
+  "bookingConfirmBranch": "CABANG",
+  "bookingConfirmService": "LAYANAN",
+  "bookingConfirmBarber": "BARBER",
+  "bookingConfirmSchedule": "WAKTU & TANGGAL",
+  "bookingPaymentTitle": "Rincian Pembayaran",
+  "bookingSubtotal": "Subtotal",
+  "bookingAppFee": "Biaya Layanan Aplikasi",
+  "bookingTotal": "Total Pembayaran",
+  "bookingBarberTitle": "Pilih Barber",
+  "bookingTermsHeadline": "📋 Ketentuan Booking Barberstuff",
+  "bookingTermsIntro": "Untuk memberikan pelayanan terbaik dan menjaga jadwal tetap teratur, setiap pelanggan diharapkan mengikuti ketentuan booking yang berlaku.",
+  "bookingTermsRulesLabel": "💡 Aturan Booking:",
+  "bookingTermsRule1": "Booking dilakukan minimal 1 jam sebelum jadwal kedatangan",
+  "bookingTermsRule2": "Pelanggan diharapkan datang sesuai waktu yang telah dipilih",
+  "bookingTermsRule3": "Toleransi keterlambatan maksimal 5 menit",
+  "bookingTermsRule4": "Keterlambatan lebih dari 5 menit dapat menyebabkan booking dibatalkan secara otomatis",
+  "bookingTermsOutro": "Pastikan datang tepat waktu agar proses pelayanan dapat berjalan nyaman dan sesuai jadwal. Terima kasih atas pengertiannya! 😊",
+  "bookingTermsAgree": "Saya sudah baca ketentuan",
+  "bookingNearbyHeadline": "Pilih Barberstuff Terdekat!",
+  "bookingSearchHint": "Ketik disini!",
+  "bookingViewStore": "Lihat Toko",
+  "bookingStoreEmpty": "Cabang tidak ditemukan.",
+  "bookingCapsterEmpty": "Belum ada capster di cabang ini.",
+  "commonContinue": "Lanjutkan",
+  "bookingScheduleTitle": "Pilih Jadwal",
+  "bookingServiceTitle": "Pilih Layanan",
+  "bookingDateLabel": "Tanggal",
+  "bookingTimeLabel": "Jam",
+  "bookingSingleServiceLabel": "Jasa Satuan",
+  "bookingPackageLabel": "Paket",
+  "bookingServiceSingleOnly": "Mohon maaf, layanan hanya menerima satu layanan per booking. Pilih satu dulu, sisanya booking terpisah.",
+  "bookingServiceEmpty": "Belum ada layanan tersedia.",
+  "bookingSuccessTitle": "Pemesanan Berhasil!",
+  "bookingSuccessMessage": "Pemesanan Anda telah berhasil dilakukan",
+  "bookingSuccessReceipt": "Lihat Bukti Pesanan",
+  "bookingSuccessHome": "Beranda",
+  "receiptTitle": "E-Receipt",
+  "receiptStore": "Barber/Salon",
+  "receiptAddress": "Alamat",
+  "receiptName": "Nama",
+  "receiptPhone": "No Telepon",
+  "receiptDate": "Tgl Booking",
+  "receiptTime": "Jam Booking",
+  "receiptSpecialist": "Specialist",
+  "receiptTotal": "Total Harga",
+  "receiptDownload": "Download E-Receipt",
+  "comingSoonMessage": "Segera hadir!",
+  "commonRetry": "Coba Lagi",
+  "offlineCachedData": "Sedang offline — menampilkan data tersimpan",
+  "permissionNotificationTitle": "Izinkan notifikasi",
+  "permissionNotificationMessage": "Aktifkan notifikasi supaya kamu tahu saat booking dikonfirmasi dan poin bertambah.",
+  "permissionLocationTitle": "Izinkan lokasi",
+  "permissionLocationMessage": "Lokasi dipakai untuk mengurutkan cabang dari yang terdekat denganmu.",
+  "permissionOpenSettings": "Buka Pengaturan",
+  "permissionLater": "Nanti saja",
+  "permissionLocationOffTitle": "Nyalakan lokasi",
+  "permissionLocationOffMessage": "Layanan lokasi di HP kamu sedang mati. Nyalakan dulu supaya jarak cabang bisa dihitung.",
+  "permissionOpenLocationSettings": "Nyalakan Lokasi",
+  "commonUnderstood": "Oke",
+  "commonLogout": "Keluar",
+  "promoTitle": "Pilih Promo",
+  "promoGradeTitle": "Keuntungan Grade Ini",
+  "promoTerms": "S&K Berlaku",
+  "promoSectionTitle": "Promo",
+  "promoSectionSubtitle": "Promo menarik dari barberstuff, untuk pengguna",
+  "promoRedeemTitle": "Tukar Poin",
+  "promoRedeemSubtitle": "Tukarkan poin Anda dengan berbagai voucher menarik.",
+  "promoClaim": "Klaim",
+  "promoClaimReward": "Klaim Hadiah",
+  "promoAboutVoucher": "Tentang Voucher",
+  "promoClaimed": "Hadiah berhasil diklaim.",
+  "promoNotEnoughPoints": "Poin belum cukup untuk menukar hadiah ini.",
+  "promoPoints": "{count} Points",
+  "@promoPoints": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "promoXp": "{count} XP",
+  "@promoXp": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "promoProgress": "{owned}/{needed}",
+  "@promoProgress": {
+    "placeholders": {
+      "owned": {
+        "type": "String"
+      },
+      "needed": {
+        "type": "String"
+      }
+    }
+  }
+}
