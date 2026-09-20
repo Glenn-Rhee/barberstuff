@@ -88,6 +88,21 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New(BASE_MESSAGE)
 	}
 
+	var scopesStaff []func(*gorm.DB) *gorm.DB
+	scopesStaff = append(scopesStaff, func(d *gorm.DB) *gorm.DB {
+		return d.Where("id_store = ?", idStore)
+	})
+
+	dataStaff, err := s.staffRepo.FindAll(scopesStaff...)
+	if err != nil {
+		helper.Logger("find data staff", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if len(dataStaff) <= 0 {
+		return errors.New("Toko belum siap menerima booking.")
+	}
+
 	loc, err := time.LoadLocation(string(dataStore.Timezone))
 	if err != nil {
 		helper.Logger("load timezone", filePath, err)
