@@ -719,7 +719,7 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 	var resultSlots []dto.SlotAvailable
 	for i, timeStr := range slotStrings {
 		slotDateTime := slots[i]
-		isPastSlot := slotDateTime.Before(now)
+		isPastSlot := slotDateTime.Before(now.Add(30 * time.Minute))
 
 		// FIX: langkah 1 — hitung dulu capster mana saja yang kosong di slot ini,
 		// sebelum decide available/tidaknya masing-masing
