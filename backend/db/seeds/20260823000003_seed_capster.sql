@@ -29,7 +29,7 @@ FROM (VALUES
   ('Deni Capster', 'Barberstuff Pondok Gede', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RYJwQS1hHTwSLQW6jP5mXK0JEDZMoeshfGzgF'),
   ('Abdul Capster', 'Barberstuff Martapura', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RqXtksy5VT1e24gRvrpUskJM8OtmzjHw7ba3u'),
   ('Madun Capster', 'Barberstuff Karawang', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RZxVgggDlXneWLtVipJ8Ds4kq7SvmcugM93oj'),
-  ('Hafid Capster', 'Barberstuff Karawang', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RLXrsKLhCkbhU5SeZHDxfNI489odPvtpF7zA0')
+  ('Hafid Capster', 'Barberstuff Karawang', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RLXrsKLhCkbhU5SeZHDxfNI489odPvtpF7zA0'),
   ('Semman Capster', 'Barberstuff Martapura', 'https://u7dpeigjk8.ufs.sh/f/H61vyEBotg8RFOSZQU0ZfeYsFJGdkB63VwXRNmbtpPEvu1Ka')
 ) AS v(name, store_name, image_url)
 JOIN store s
