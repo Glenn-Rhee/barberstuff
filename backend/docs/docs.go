@@ -2030,6 +2030,118 @@ const docTemplate = `{
                 }
             }
         },
+        "/staff/booking/item": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menambahkan layanan ke dalam booking yang sudah ada. Endpoint ini hanya dapat digunakan oleh cashier.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Menambahkan item layanan ke booking",
+                "parameters": [
+                    {
+                        "description": "Data booking item",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingItemReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menambahkan booking item",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal menambahkan booking item",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menghapus layanan dari booking yang sudah ada. Endpoint ini hanya dapat digunakan oleh cashier.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Menghapus item layanan dari booking",
+                "parameters": [
+                    {
+                        "description": "Data booking item",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingItemReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menghapus booking item",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal menghapus booking item",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/staff/{id}": {
             "delete": {
                 "security": [
@@ -2493,6 +2605,17 @@ const docTemplate = `{
                 },
                 "user": {
                     "$ref": "#/definitions/dto.UserAuth"
+                }
+            }
+        },
+        "dto.BookingItemReq": {
+            "type": "object",
+            "properties": {
+                "id_booking": {
+                    "type": "string"
+                },
+                "id_service": {
+                    "type": "string"
                 }
             }
         },

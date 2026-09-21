@@ -32,6 +32,13 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserAuth'
     type: object
+  dto.BookingItemReq:
+    properties:
+      id_booking:
+        type: string
+      id_service:
+        type: string
+    type: object
   dto.BookingTypeCashier:
     enum:
     - order
@@ -2385,6 +2392,79 @@ paths:
       security:
       - BearerAuth: []
       summary: Kasir checkin booking customer
+      tags:
+      - Staff
+  /staff/booking/item:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus layanan dari booking yang sudah ada. Endpoint ini hanya
+        dapat digunakan oleh cashier.
+      parameters:
+      - description: Data booking item
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BookingItemReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menghapus booking item
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal menghapus booking item
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Menghapus item layanan dari booking
+      tags:
+      - Staff
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan layanan ke dalam booking yang sudah ada. Endpoint ini
+        hanya dapat digunakan oleh cashier.
+      parameters:
+      - description: Data booking item
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BookingItemReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menambahkan booking item
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal menambahkan booking item
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Menambahkan item layanan ke booking
       tags:
       - Staff
   /store:

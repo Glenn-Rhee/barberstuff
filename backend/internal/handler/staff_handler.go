@@ -576,6 +576,21 @@ func (h *StaffHandler) AddBookingItem(ctx *gin.Context) {
 	})
 }
 
+// DeleteBookingItem godoc
+// @Summary      Menghapus item layanan dari booking
+// @Description  Menghapus layanan dari booking yang sudah ada. Endpoint ini hanya dapat digunakan oleh cashier.
+// @Tags         Staff
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        body body dto.BookingItemReq true "Data booking item"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menghapus booking item"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal menghapus booking item"
+// @Router       /staff/booking/item [delete]
 func (h *StaffHandler) DeleteBookingItem(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
