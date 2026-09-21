@@ -739,6 +739,72 @@ func (s *staffService) CheckinBooking(qrCode string) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat checkin. Mohon coba lagi nanti"
 	_, filePath, _, _ := runtime.Caller(0)
 
+	// Cek capsternya bisa di checkin atau engga klo checkin di luar dari jam
+	dataBooking, err := s.bookingRepo.FindOne("qr_code = ?", qrCode)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Booking tidak ditemukan.")
+		}
+		helper.Logger("find one booking", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	dataStore, err := s.storeRepo.FindOne("id = ?", dataBooking.IDStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Toko tidak ditemukan.")
+		}
+		helper.Logger("find one toko", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load timezone", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	now := time.Now().In(loc)
+	closeToday := time.Date(
+		now.Year(), now.Month(), now.Day(),
+		dataStore.CloseHour.Hour(), dataStore.CloseHour.Minute(), 0, 0,
+		loc,
+	)
+
+	checkinDeadline := closeToday.Add(-30 * time.Minute)
+
+	if now.After(checkinDeadline) {
+		return errors.New("Checkin tidak dapat dilakukan, waktu sudah mendekati jam tutup toko.")
+	}
+	
+	var scopesGetAll []func(*gorm.DB) *gorm.DB
+	scopesGetAll = append(scopesGetAll, func(d *gorm.DB) *gorm.DB {
+		statusBooking := []entity.BookingStatusEnum{
+			entity.BookingStatusBooked,
+			entity.BookingStatusProgress,
+		}
+
+		oneHourLater := now.Add(1 * time.Hour)
+		return d.Where("id_capster = ? AND status_booking IN ? AND id_store = ? AND scheduled_at >= ? AND scheduled_at <= ? AND id != ?",
+			dataBooking.IDCapster,
+			statusBooking,
+			dataBooking.IDStore,
+			now,
+			oneHourLater,
+			dataBooking.ID,
+		)
+	})
+
+	dataBookings, err := s.bookingRepo.FindAll(scopesGetAll...)
+	if err != nil {
+		helper.Logger("find all booking", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if len(dataBookings) > 0 {
+		return errors.New("Tidak dapat checkin. Capster sedang sibuk.")
+	}
+
 	var scopesUpdate []func(*gorm.DB) *gorm.DB
 	scopesUpdate = append(scopesUpdate, func(d *gorm.DB) *gorm.DB {
 		return d.Where("qr_code = ? AND status_booking = ?", qrCode, entity.BookingStatusBooked)
@@ -754,7 +820,7 @@ func (s *staffService) CheckinBooking(qrCode string) error {
 	}
 
 	if rowsAffected == 0 {
-		return errors.New("Data booking tidak ditemukan atau telah checkin sebelumnya.")
+		return errors.New("Booking tidak ditemukan atau telah checkin sebelumnya.")
 	}
 
 	return nil
