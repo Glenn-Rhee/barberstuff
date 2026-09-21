@@ -167,7 +167,3 @@ type CapsterBookings struct {
 	DataCapsterBooking
 }
 
-type AddBookingItemReq struct {
-	IdBooking string `json:"id_booking"`
-	IdService string `json:"id_service"`
-}

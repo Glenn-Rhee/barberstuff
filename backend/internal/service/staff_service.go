@@ -28,7 +28,8 @@ type StaffService interface {
 	DeleteAccount(idStaff string, claims *lib.CustomClaims) error
 	CreateBooking(claims *lib.CustomClaims, req dto.CreateCashireBookingRequest) error
 	CheckinBooking(qrCode string) error
-	AddItemBooking(req dto.AddBookingItemReq) error
+	AddItemBooking(req dto.BookingItemReq) error
+	DeleteItemBooking(req dto.BookingItemReq) error
 }
 
 type staffService struct {
@@ -776,7 +777,7 @@ func (s *staffService) CheckinBooking(qrCode string) error {
 	if now.After(checkinDeadline) {
 		return errors.New("Checkin tidak dapat dilakukan, waktu sudah mendekati jam tutup toko.")
 	}
-	
+
 	var scopesGetAll []func(*gorm.DB) *gorm.DB
 	scopesGetAll = append(scopesGetAll, func(d *gorm.DB) *gorm.DB {
 		statusBooking := []entity.BookingStatusEnum{
@@ -826,7 +827,7 @@ func (s *staffService) CheckinBooking(qrCode string) error {
 	return nil
 }
 
-func (s *staffService) AddItemBooking(req dto.AddBookingItemReq) error {
+func (s *staffService) AddItemBooking(req dto.BookingItemReq) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat checkin. Mohon coba lagi nanti"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -850,8 +851,8 @@ func (s *staffService) AddItemBooking(req dto.AddBookingItemReq) error {
 		return errors.New(BASE_MESSAGE)
 	}
 
-	if dataBooking.StatusBooking == entity.BookingStatusCanceled || dataBooking.StatusBooking == entity.BookingStatusCompleted {
-		return errors.New("Booking ini telah usai, Tidak dapat mengubah item.")
+	if dataBooking.StatusBooking != entity.BookingStatusProgress {
+		return errors.New("Tidak dapat menambahkan item, hanya dapat dilakukan saat booking berlangsung.")
 	}
 
 	dataService, err := s.serviceRepo.FindOne("id = ?", idService)
@@ -891,6 +892,61 @@ func (s *staffService) AddItemBooking(req dto.AddBookingItemReq) error {
 	if err != nil {
 		helper.Logger("create data service", filePath, err)
 		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *staffService) DeleteItemBooking(req dto.BookingItemReq) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat checkin. Mohon coba lagi nanti"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idBooking, err := uuid.Parse(req.IdBooking)
+	if err != nil {
+		return errors.New("Id booking tidak valid!")
+	}
+
+	idService, err := uuid.Parse(req.IdService)
+	if err != nil {
+		return errors.New("Id service tidak valid!")
+	}
+
+	dataBooking, err := s.bookingRepo.FindOne("id = ?", idBooking)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Booking tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find one booking", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if len(dataBooking.BookingItems) <= 1 {
+		return errors.New("Customer wajib memiliki setidaknya 1 service/paket.")
+	}
+
+	if dataBooking.StatusBooking != entity.BookingStatusProgress {
+		return errors.New("Tidak dapat menghapus item, hanya dapat dilakukan saat booking berlangsung.")
+	}
+
+	_, err = s.serviceRepo.FindOne("id = ?", idService)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Service tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find one service", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	rowsAffected, err := s.bookingItemRepo.Delete("id_service = ? AND id_booking = ?", idService, idBooking)
+	if err != nil {
+		helper.Logger("delete booking item", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Data booking item tidak dapat dihapus.")
 	}
 
 	return nil

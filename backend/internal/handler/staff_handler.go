@@ -536,7 +536,7 @@ func (h *StaffHandler) AddBookingItem(ctx *gin.Context) {
 		return
 	}
 
-	var dataBody dto.AddBookingItemReq
+	var dataBody dto.BookingItemReq
 	if err := ctx.ShouldBindJSON(&dataBody); err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    helper.FormatValidationError(err)[0],
@@ -557,6 +557,58 @@ func (h *StaffHandler) AddBookingItem(ctx *gin.Context) {
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
 		Data:       nil,
 		Message:    "Berhasil menambahkan booking item!",
+		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *StaffHandler) DeleteBookingItem(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleCashier {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	var dataBody dto.BookingItemReq
+	if err := ctx.ShouldBindJSON(&dataBody); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	err := h.service.DeleteItemBooking(dataBody)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+		Data:       nil,
+		Message:    "Berhasil menghapus booking item!",
 		StatusCode: http.StatusOK,
 	})
 }

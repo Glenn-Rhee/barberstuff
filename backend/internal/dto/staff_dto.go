@@ -63,3 +63,8 @@ type CreateCashireBookingRequest struct {
 	Customer    CustomerBookingCashier `json:"customer" binding:"required"`
 	BookingType BookingTypeCashier     `json:"is_booking" binding:"required"`
 }
+
+type BookingItemReq struct {
+	IdBooking string `json:"id_booking"`
+	IdService string `json:"id_service"`
+}
