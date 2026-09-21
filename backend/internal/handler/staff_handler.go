@@ -509,6 +509,21 @@ func (h *StaffHandler) CheckinBooking(ctx *gin.Context) {
 	})
 }
 
+// AddBookingItem godoc
+// @Summary      Menambahkan item layanan ke booking
+// @Description  Menambahkan layanan ke dalam booking yang sudah ada. Endpoint ini hanya dapat digunakan oleh cashier.
+// @Tags         Staff
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        body body dto.BookingItemReq true "Data booking item"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menambahkan booking item"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal menambahkan booking item"
+// @Router       /staff/booking/item [post]
 func (h *StaffHandler) AddBookingItem(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
