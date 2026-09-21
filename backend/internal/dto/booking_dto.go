@@ -166,3 +166,8 @@ type CapsterBookings struct {
 	AvgRating float32 `json:"avg_rating"`
 	DataCapsterBooking
 }
+
+type AddBookingItemReq struct {
+	IdBooking string `json:"id_booking"`
+	IdService string `json:"id_service"`
+}

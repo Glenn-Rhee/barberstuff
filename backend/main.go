@@ -78,8 +78,12 @@ func main() {
 		staff.GET("/", h.StaffHandler.GetAccountStaffes)
 		staff.PATCH("/:id", h.StaffHandler.UpdateAccountStaff)
 		staff.DELETE("/:id", h.StaffHandler.DeleteAccountStaff)
-		staff.POST("/booking", h.StaffHandler.CreateBooking)
-		staff.PATCH("/booking/checkin/:qr_code", h.StaffHandler.CheckinBooking)
+		booking := staff.Group("/booking")
+		{
+			booking.POST("/", h.StaffHandler.CreateBooking)
+			booking.PATCH("/checkin/:qr_code", h.StaffHandler.CheckinBooking)
+			booking.POST("/item", h.StaffHandler.AddBookingItem)
+		}
 	}
 
 	profile := r.Group("/profile")

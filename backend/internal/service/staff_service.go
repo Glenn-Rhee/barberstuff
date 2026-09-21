@@ -28,17 +28,19 @@ type StaffService interface {
 	DeleteAccount(idStaff string, claims *lib.CustomClaims) error
 	CreateBooking(claims *lib.CustomClaims, req dto.CreateCashireBookingRequest) error
 	CheckinBooking(qrCode string) error
+	AddItemBooking(req dto.AddBookingItemReq) error
 }
 
 type staffService struct {
-	staffRepo    repository.StaffRepository
-	authRepo     repository.AuthenticationRepository
-	storeRepo    repository.StoreRepository
-	customerRepo repository.CustomerRepository
-	capsterRepo  repository.CapsterRepository
-	bookingRepo  repository.BookingRepository
-	serviceRepo  repository.ServiceRepository
-	db           *gorm.DB
+	staffRepo       repository.StaffRepository
+	authRepo        repository.AuthenticationRepository
+	storeRepo       repository.StoreRepository
+	customerRepo    repository.CustomerRepository
+	capsterRepo     repository.CapsterRepository
+	bookingRepo     repository.BookingRepository
+	serviceRepo     repository.ServiceRepository
+	bookingItemRepo repository.BookingItemRepository
+	db              *gorm.DB
 }
 
 func NewStaffService(
@@ -49,17 +51,19 @@ func NewStaffService(
 	cpr repository.CapsterRepository,
 	br repository.BookingRepository,
 	svr repository.ServiceRepository,
+	bi repository.BookingItemRepository,
 	db *gorm.DB,
 ) StaffService {
 	return &staffService{
-		staffRepo:    sr,
-		authRepo:     ar,
-		db:           db,
-		storeRepo:    str,
-		customerRepo: cr,
-		capsterRepo:  cpr,
-		bookingRepo:  br,
-		serviceRepo:  svr,
+		staffRepo:       sr,
+		authRepo:        ar,
+		db:              db,
+		storeRepo:       str,
+		customerRepo:    cr,
+		capsterRepo:     cpr,
+		bookingRepo:     br,
+		serviceRepo:     svr,
+		bookingItemRepo: bi,
 	}
 }
 
@@ -751,6 +755,76 @@ func (s *staffService) CheckinBooking(qrCode string) error {
 
 	if rowsAffected == 0 {
 		return errors.New("Data booking tidak ditemukan atau telah checkin sebelumnya.")
+	}
+
+	return nil
+}
+
+func (s *staffService) AddItemBooking(req dto.AddBookingItemReq) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat checkin. Mohon coba lagi nanti"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idBooking, err := uuid.Parse(req.IdBooking)
+	if err != nil {
+		return errors.New("Id booking tidak valid!")
+	}
+
+	idService, err := uuid.Parse(req.IdService)
+	if err != nil {
+		return errors.New("Id service tidak valid!")
+	}
+
+	dataBooking, err := s.bookingRepo.FindOne("id = ?", idBooking)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Booking tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find one booking", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if dataBooking.StatusBooking == entity.BookingStatusCanceled || dataBooking.StatusBooking == entity.BookingStatusCompleted {
+		return errors.New("Booking ini telah usai, Tidak dapat mengubah item.")
+	}
+
+	dataService, err := s.serviceRepo.FindOne("id = ?", idService)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Service tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find one service", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	isBookingItemRegist := false
+	for _, v := range dataBooking.BookingItems {
+		if v.IDService == idService && dataBooking.ID == idBooking {
+			isBookingItemRegist = true
+			break
+		}
+	}
+
+	if isBookingItemRegist {
+		return errors.New("Service ini telah ditambahkan.")
+	}
+
+	dataBookingItem := entity.BookingItem{
+		ID:          uuid.New(),
+		IDBooking:   idBooking,
+		IDService:   idService,
+		Price:       dataService.Price,
+		AddedOnSpot: true,
+	}
+
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		return s.bookingItemRepo.Create(tx, &dataBookingItem)
+	})
+
+	if err != nil {
+		helper.Logger("create data service", filePath, err)
+		return errors.New(BASE_MESSAGE)
 	}
 
 	return nil
