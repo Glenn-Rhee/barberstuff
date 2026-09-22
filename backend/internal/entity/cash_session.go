@@ -23,6 +23,7 @@ type CashSession struct {
 	ClosedAt     *time.Time       `gorm:"column:closed_at"`
 	CreatedAt    time.Time        `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt    time.Time        `gorm:"column:updated_at;not null;autoUpdateTime"`
+	Transactions []Transactions   `gorm:"foreignKey:IDCashSession"`
 }
 
 func (CashSession) TableName() string {
