@@ -956,15 +956,44 @@ func (s *staffService) DeleteItemBooking(req dto.BookingItemReq) error {
 		return errors.New(BASE_MESSAGE)
 	}
 
-	rowsAffected, err := s.bookingItemRepo.Delete("id_service = ? AND id_booking = ?", idService, idBooking)
-	if err != nil {
-		helper.Logger("delete booking item", filePath, err)
-		return errors.New(BASE_MESSAGE)
-	}
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		// 1. Ambil dulu data item yang mau dihapus (butuh Price-nya)
+		var bookingItem entity.BookingItem
+		if err := tx.Where("id_service = ? AND id_booking = ?", idService, idBooking).
+			First(&bookingItem).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("Data booking item tidak ditemukan")
+			}
+			return err
+		}
 
-	if rowsAffected == 0 {
-		return errors.New("Data booking item tidak dapat dihapus.")
-	}
+		// 2. Hapus item-nya
+		rowsAffected, err := s.bookingItemRepo.Delete(tx, "id_service = ? AND id_booking = ?", idService, idBooking)
+		if err != nil {
+			helper.Logger("delete booking item", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+		if rowsAffected == 0 {
+			return errors.New("Data booking item tidak dapat dihapus.")
+		}
+
+		// 3. Kurangi subtotal & total_price booking, atomik di level SQL
+		result := tx.Model(&entity.Booking{}).
+			Where("id = ?", idBooking).
+			Updates(map[string]interface{}{
+				"subtotal":    gorm.Expr("subtotal - ?", bookingItem.Price),
+				"total_price": gorm.Expr("subtotal - ? - discount_amount", bookingItem.Price),
+			})
+
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected == 0 {
+			return errors.New("Data booking tidak ditemukan")
+		}
+
+		return nil
+	})
 
 	return nil
 }
