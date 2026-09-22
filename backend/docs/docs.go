@@ -2553,6 +2553,57 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/transactions": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Membuat transaksi baru yang dilakukan oleh cashier. Jika transaction_type bernilai income, maka id_booking dan payment_type wajib diisi. Jika transaction_type bernilai outcome, maka title dan amount wajib diisi.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Membuat transaksi",
+                "parameters": [
+                    {
+                        "description": "Data transaksi",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateTransactionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Berhasil membuat transaksi",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal membuat transaksi",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2878,6 +2929,54 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/entity.ProductTypeEnum"
+                        }
+                    ]
+                }
+            }
+        },
+        "dto.CreateTransactionReq": {
+            "type": "object",
+            "required": [
+                "id_cash_session",
+                "transaction_type"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "minimum": 1000
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id_booking": {
+                    "type": "string"
+                },
+                "id_cash_session": {
+                    "type": "string"
+                },
+                "payment_type": {
+                    "enum": [
+                        "cash",
+                        "cashless"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.PaymentType"
+                        }
+                    ]
+                },
+                "title": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "transaction_type": {
+                    "enum": [
+                        "income",
+                        "outcome"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.TransactionType"
                         }
                     ]
                 }
@@ -4013,6 +4112,17 @@ const docTemplate = `{
                 "LoginWithCredential"
             ]
         },
+        "entity.PaymentType": {
+            "type": "string",
+            "enum": [
+                "cash",
+                "cashless"
+            ],
+            "x-enum-varnames": [
+                "PaymentCash",
+                "PaymentCashless"
+            ]
+        },
         "entity.ProductStatusEnum": {
             "type": "string",
             "enum": [
@@ -4083,6 +4193,17 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "StoreLite",
                 "StorePremium"
+            ]
+        },
+        "entity.TransactionType": {
+            "type": "string",
+            "enum": [
+                "income",
+                "outcome"
+            ],
+            "x-enum-varnames": [
+                "TransactionIncome",
+                "TransactionOutcome"
             ]
         }
     },

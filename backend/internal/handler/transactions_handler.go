@@ -19,6 +19,20 @@ func NewTransactionsHandler(s service.TransactionsService) *TransactionsHandler 
 	return &TransactionsHandler{service: s}
 }
 
+// CreateTransaction godoc
+// @Summary      Membuat transaksi
+// @Description  Membuat transaksi baru yang dilakukan oleh cashier. Jika transaction_type bernilai income, maka id_booking dan payment_type wajib diisi. Jika transaction_type bernilai outcome, maka title dan amount wajib diisi.
+// @Tags         Transactions
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        body body dto.CreateTransactionReq true "Data transaksi"
+//
+// @Success      201 {object} dto.SwaggerResponse "Berhasil membuat transaksi"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal membuat transaksi"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /transactions [post]
 func (h *TransactionsHandler) CreateTransaction(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

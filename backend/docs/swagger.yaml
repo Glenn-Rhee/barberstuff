@@ -216,6 +216,36 @@ definitions:
     - price
     - type
     type: object
+  dto.CreateTransactionReq:
+    properties:
+      amount:
+        minimum: 1000
+        type: number
+      description:
+        type: string
+      id_booking:
+        type: string
+      id_cash_session:
+        type: string
+      payment_type:
+        allOf:
+        - $ref: '#/definitions/entity.PaymentType'
+        enum:
+        - cash
+        - cashless
+      title:
+        minLength: 1
+        type: string
+      transaction_type:
+        allOf:
+        - $ref: '#/definitions/entity.TransactionType'
+        enum:
+        - income
+        - outcome
+    required:
+    - id_cash_session
+    - transaction_type
+    type: object
   dto.CredentialCustomerRequest:
     properties:
       date_of_birth:
@@ -969,6 +999,14 @@ definitions:
     x-enum-varnames:
     - LoginWithOAuth
     - LoginWithCredential
+  entity.PaymentType:
+    enum:
+    - cash
+    - cashless
+    type: string
+    x-enum-varnames:
+    - PaymentCash
+    - PaymentCashless
   entity.ProductStatusEnum:
     enum:
     - active
@@ -1023,6 +1061,14 @@ definitions:
     x-enum-varnames:
     - StoreLite
     - StorePremium
+  entity.TransactionType:
+    enum:
+    - income
+    - outcome
+    type: string
+    x-enum-varnames:
+    - TransactionIncome
+    - TransactionOutcome
 host: localhost:8080
 info:
   contact: {}
@@ -2661,6 +2707,40 @@ paths:
       summary: Ubah toko cabang
       tags:
       - Store
+  /transactions:
+    post:
+      consumes:
+      - application/json
+      description: Membuat transaksi baru yang dilakukan oleh cashier. Jika transaction_type
+        bernilai income, maka id_booking dan payment_type wajib diisi. Jika transaction_type
+        bernilai outcome, maka title dan amount wajib diisi.
+      parameters:
+      - description: Data transaksi
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTransactionReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Berhasil membuat transaksi
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau gagal membuat transaksi
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Membuat transaksi
+      tags:
+      - Transactions
 securityDefinitions:
   BearerAuth:
     description: 'Masukkan token dengan format: Bearer {token}'
