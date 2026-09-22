@@ -142,6 +142,12 @@ func main() {
 		cashSessions.POST("/", h.CashSessionHandler.Create)
 	}
 
+	transactions := r.Group("/transactions")
+	{
+		transactions.Use(h.AuthMiddleware)
+		transactions.POST("/", h.TransactionsHandler.CreateTransaction)
+	}
+
 	c.AddFunc("*/5 * * * *", func() {
 		if err := h.BookingService.AutoCancelBookings(context.Background()); err != nil {
 			log.Println("Error auto cancel booking:", err)

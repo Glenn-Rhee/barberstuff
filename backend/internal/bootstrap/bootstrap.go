@@ -12,17 +12,18 @@ import (
 )
 
 type Handlers struct {
-	CustomerHandler    *handler.CustomerHandler
-	AuthHandler        *handler.AuthHandler
-	StaffHandler       *handler.StaffHandler
-	StoreHandler       *handler.StoreHandler
-	CapsterHandler     *handler.CapsterHandler
-	Servicehandler     *handler.ServiceHandler
-	BookingHandler     *handler.BookingHandler
-	RatingHandler      *handler.RatingHandler
-	CashSessionHandler *handler.CashSessionHandler
-	AuthMiddleware     gin.HandlerFunc
-	BookingService     service.BookingService
+	CustomerHandler     *handler.CustomerHandler
+	AuthHandler         *handler.AuthHandler
+	StaffHandler        *handler.StaffHandler
+	StoreHandler        *handler.StoreHandler
+	CapsterHandler      *handler.CapsterHandler
+	Servicehandler      *handler.ServiceHandler
+	BookingHandler      *handler.BookingHandler
+	RatingHandler       *handler.RatingHandler
+	CashSessionHandler  *handler.CashSessionHandler
+	TransactionsHandler *handler.TransactionsHandler
+	AuthMiddleware      gin.HandlerFunc
+	BookingService      service.BookingService
 }
 
 func InitHandlers(db *gorm.DB) *Handlers {
@@ -39,6 +40,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	promoRepo := repository.NewPromoRepository(db)
 	bookingItemRepo := repository.NewBookingItemRepository(db)
 	cashSessionRepo := repository.NewCashSessionRepository(db)
+	transactionsRepo := repository.NewTransactionsRepository(db)
 
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis, premiumTypeRepo)
@@ -50,6 +52,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	bookingService := service.NewBookingService(bookingRepo, lib.ClientRedis, capsterRepo, storeRepo, serviceRepo, promoRepo, staffRepo, db)
 	ratingService := service.NewRatingService(ratingRepo, bookingRepo, capsterRepo, staffRepo, storeRepo, db)
 	cashSessionService := service.NewCashSessionService(cashSessionRepo, storeRepo)
+	transactionsService := service.NewTransactionsService(cashSessionRepo, transactionsRepo, bookingRepo, db)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
@@ -61,21 +64,23 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	bookingHandler := handler.NewBookingHandler(bookingService)
 	ratingHandler := handler.NewRatingHandler(ratingService)
 	cashSessionHandler := handler.NewCashSessionHandler(cashSessionService)
+	transactionsHandler := handler.NewTransactionsHandler(transactionsService)
 
 	// middleware
 	authMiddleware := middleware.AuthMiddleware(authRepo, staffRepo, customerRepo)
 
 	return &Handlers{
-		CustomerHandler:    customerHandler,
-		AuthHandler:        authHandler,
-		StaffHandler:       staffHandler,
-		StoreHandler:       storeHandler,
-		AuthMiddleware:     authMiddleware,
-		CapsterHandler:     capsterHandler,
-		Servicehandler:     serviceHandler,
-		BookingHandler:     bookingHandler,
-		RatingHandler:      ratingHandler,
-		BookingService:     bookingService,
-		CashSessionHandler: cashSessionHandler,
+		CustomerHandler:     customerHandler,
+		AuthHandler:         authHandler,
+		StaffHandler:        staffHandler,
+		StoreHandler:        storeHandler,
+		AuthMiddleware:      authMiddleware,
+		CapsterHandler:      capsterHandler,
+		Servicehandler:      serviceHandler,
+		BookingHandler:      bookingHandler,
+		RatingHandler:       ratingHandler,
+		BookingService:      bookingService,
+		CashSessionHandler:  cashSessionHandler,
+		TransactionsHandler: transactionsHandler,
 	}
 }

@@ -14,7 +14,7 @@ type BookingRepository interface {
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	UpdateStatusMany(ids []uuid.UUID, status entity.BookingStatusEnum) error
 	FindFavoriteServiceByUserIDs(userIDs []uuid.UUID) ([]entity.FavoriteServiceResult, error)
-	Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
+	Updates(tx *gorm.DB, value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
 
 type bookingRepository struct {
@@ -28,7 +28,9 @@ func NewBookingRepository(db *gorm.DB) BookingRepository {
 func (r *bookingRepository) FindOne(query interface{}, args ...interface{}) (entity.Booking, error) {
 	var data entity.Booking
 	result := r.db.
-		Preload("BookingItems").
+		Preload("BookingItems", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Service")
+		}).
 		Where(query, args...).First(&data)
 	return data, result.Error
 }
@@ -100,8 +102,8 @@ func (r *bookingRepository) FindFavoriteServiceByUserIDs(userIDs []uuid.UUID) ([
 	return results, err
 }
 
-func (r *bookingRepository) Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
-	result := r.db.
+func (r *bookingRepository) Updates(tx *gorm.DB, value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+	result := tx.
 		Model(&entity.Booking{}).
 		Scopes(scopes...).
 		Updates(value)

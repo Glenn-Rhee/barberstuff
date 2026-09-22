@@ -806,22 +806,31 @@ func (s *staffService) CheckinBooking(qrCode string) error {
 		return errors.New("Tidak dapat checkin. Capster sedang sibuk.")
 	}
 
-	var scopesUpdate []func(*gorm.DB) *gorm.DB
-	scopesUpdate = append(scopesUpdate, func(d *gorm.DB) *gorm.DB {
-		return d.Where("qr_code = ? AND status_booking = ?", qrCode, entity.BookingStatusBooked)
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		var scopesUpdate []func(*gorm.DB) *gorm.DB
+		scopesUpdate = append(scopesUpdate, func(d *gorm.DB) *gorm.DB {
+			return d.Where("qr_code = ? AND status_booking = ?", qrCode, entity.BookingStatusBooked)
+		})
+
+		rowsAffected, err := s.bookingRepo.Updates(tx, map[string]interface{}{
+			"status_booking": entity.BookingStatusProgress,
+		}, scopesUpdate...)
+
+		if err != nil {
+			helper.Logger("update status booking", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+
+		if rowsAffected == 0 {
+			return errors.New("Booking tidak ditemukan atau telah checkin sebelumnya.")
+		}
+
+		return nil
 	})
 
-	rowsAffected, err := s.bookingRepo.Updates(map[string]interface{}{
-		"status_booking": entity.BookingStatusProgress,
-	}, scopesUpdate...)
-
 	if err != nil {
-		helper.Logger("update status booking", filePath, err)
+		helper.Logger("commiit trnsaction", filePath, err)
 		return errors.New(BASE_MESSAGE)
-	}
-
-	if rowsAffected == 0 {
-		return errors.New("Booking tidak ditemukan atau telah checkin sebelumnya.")
 	}
 
 	return nil
