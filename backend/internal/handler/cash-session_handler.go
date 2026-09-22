@@ -19,6 +19,20 @@ func NewCashSessionHandler(s service.CashSessionService) *CashSessionHandler {
 	return &CashSessionHandler{service: s}
 }
 
+// Create godoc
+// @Summary      Membuka cash session
+// @Description  Membuka cash session baru dengan menentukan toko dan saldo awal. Endpoint ini hanya dapat digunakan oleh cashier.
+// @Tags         Cash Session
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        body body dto.CreateCashSession true "Data cash session"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membuka uang modal"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal membuka cash session"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /cash-sesssion [post]
 func (h *CashSessionHandler) Create(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

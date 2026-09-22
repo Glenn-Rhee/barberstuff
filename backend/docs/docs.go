@@ -1218,6 +1218,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/cash-sesssion": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Membuka cash session baru dengan menentukan toko dan saldo awal. Endpoint ini hanya dapat digunakan oleh cashier.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cash Session"
+                ],
+                "summary": "Membuka cash session",
+                "parameters": [
+                    {
+                        "description": "Data cash session",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCashSession"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membuka uang modal",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal membuka cash session",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/customer": {
             "get": {
                 "security": [
@@ -2847,6 +2898,22 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "minLength": 3
+                }
+            }
+        },
+        "dto.CreateCashSession": {
+            "type": "object",
+            "required": [
+                "id_store",
+                "saldo_begin"
+            ],
+            "properties": {
+                "id_store": {
+                    "type": "string"
+                },
+                "saldo_begin": {
+                    "type": "number",
+                    "minimum": 1000
                 }
             }
         },

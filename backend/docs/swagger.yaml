@@ -159,6 +159,17 @@ definitions:
     - id_store
     - name
     type: object
+  dto.CreateCashSession:
+    properties:
+      id_store:
+        type: string
+      saldo_begin:
+        minimum: 1000
+        type: number
+    required:
+    - id_store
+    - saldo_begin
+    type: object
   dto.CreateCashireBookingRequest:
     properties:
       booking_date:
@@ -1848,6 +1859,39 @@ paths:
       summary: Update data capster
       tags:
       - Capster
+  /cash-sesssion:
+    post:
+      consumes:
+      - application/json
+      description: Membuka cash session baru dengan menentukan toko dan saldo awal.
+        Endpoint ini hanya dapat digunakan oleh cashier.
+      parameters:
+      - description: Data cash session
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCashSession'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuka uang modal
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau gagal membuka cash session
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Membuka cash session
+      tags:
+      - Cash Session
   /customer:
     get:
       description: Mengambil daftar customer beserta informasi kunjungan, layanan
