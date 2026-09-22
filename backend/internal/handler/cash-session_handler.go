@@ -69,7 +69,7 @@ func (h *CashSessionHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.CreateCashSession(dataBody)
+	err := h.service.CreateCashSession(dataBody, claimsResult)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),

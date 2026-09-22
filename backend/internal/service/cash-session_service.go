@@ -4,6 +4,7 @@ import (
 	"barberstuff_backend/internal/dto"
 	"barberstuff_backend/internal/entity"
 	"barberstuff_backend/internal/helper"
+	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"errors"
 	"runtime"
@@ -14,27 +15,41 @@ import (
 )
 
 type CashSessionService interface {
-	CreateCashSession(req dto.CreateCashSession) error
+	CreateCashSession(req dto.CreateCashSession, claims *lib.CustomClaims) error
 }
 
 type cashSessionService struct {
 	cashSessionRepo repository.CashSessionRepository
 	storeRepo       repository.StoreRepository
+	staffRepo       repository.StaffRepository
 }
 
-func NewCashSessionService(csr repository.CashSessionRepository, sr repository.StoreRepository) CashSessionService {
-	return &cashSessionService{cashSessionRepo: csr, storeRepo: sr}
+func NewCashSessionService(csr repository.CashSessionRepository, sr repository.StoreRepository, str repository.StaffRepository) CashSessionService {
+	return &cashSessionService{cashSessionRepo: csr, storeRepo: sr, staffRepo: str}
 }
 
-func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession) error {
+func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims *lib.CustomClaims) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat saldo awal!"
 	_, filePath, _, _ := runtime.Caller(0)
 
-	idStore, err := uuid.Parse(req.IDstore)
+	idStaff, err := uuid.Parse(claims.UserId)
 	if err != nil {
-		return errors.New("Id toko tidak valid.")
+		return errors.New("Data anda tidak valid.")
 	}
 
+	dataStore, err := s.staffRepo.FindOne("id = ?", idStaff)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Akun tidak ditemukan.")
+		}
+
+		helper.Logger("find one staff account.", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+	if dataStore.IdStore == nil {
+		return errors.New("Anda tidak memiliki akses.")
+	}
+	idStore := *dataStore.IdStore
 	_, err = s.storeRepo.FindOne("id = ?", idStore)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
