@@ -886,7 +886,24 @@ func (s *staffService) AddItemBooking(req dto.BookingItemReq) error {
 	}
 
 	err = s.db.Transaction(func(tx *gorm.DB) error {
-		return s.bookingItemRepo.Create(tx, &dataBookingItem)
+		if err := s.bookingItemRepo.Create(tx, &dataBookingItem); err != nil {
+			return err
+		}
+
+		result := tx.Model(&entity.Booking{}).
+			Where("id = ?", idBooking).
+			Updates(map[string]interface{}{
+				"subtotal":    gorm.Expr("subtotal + ?", dataBookingItem.Price),
+				"total_price": gorm.Expr("subtotal + ? - discount_amount", dataBookingItem.Price),
+			})
+
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected == 0 {
+			return errors.New("data booking tidak ditemukan")
+		}
+		return nil
 	})
 
 	if err != nil {
