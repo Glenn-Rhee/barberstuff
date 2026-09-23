@@ -1218,6 +1218,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/cash-sesions": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil data cash session yang sedang berjalan pada hari ini, berdasarkan toko milik kasir. Endpoint ini hanya dapat digunakan oleh kasir.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cash Session"
+                ],
+                "summary": "Mengambil cash session hari ini",
+                "responses": {
+                    "201": {
+                        "description": "Berhasil mengambil data",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.GetCashSessionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Gagal mengambil data cash session",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/cash-sesssion": {
             "post": {
                 "security": [
@@ -1251,7 +1303,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Berhasil membuka uang modal",
                         "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CreateCashSessionResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -2904,16 +2968,23 @@ const docTemplate = `{
         "dto.CreateCashSession": {
             "type": "object",
             "required": [
-                "id_store",
                 "saldo_begin"
             ],
             "properties": {
-                "id_store": {
-                    "type": "string"
-                },
                 "saldo_begin": {
                     "type": "number",
                     "minimum": 1000
+                }
+            }
+        },
+        "dto.CreateCashSessionResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "saldo_begin": {
+                    "type": "number"
                 }
             }
         },
@@ -3428,6 +3499,32 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.GetCashSessionResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "saldo_begin": {
+                    "type": "number"
+                },
+                "total_income_cash": {
+                    "type": "number"
+                },
+                "total_income_cashless": {
+                    "type": "number"
+                },
+                "total_outcome": {
+                    "type": "number"
+                },
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.TransactionResponse"
+                    }
+                }
+            }
+        },
         "dto.GetServiceResponse": {
             "type": "object",
             "properties": {
@@ -3939,6 +4036,32 @@ const docTemplate = `{
                 },
                 "statusCode": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.TransactionResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "payment_type": {
+                    "$ref": "#/definitions/entity.PaymentType"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "transaction_type": {
+                    "$ref": "#/definitions/entity.TransactionType"
                 }
             }
         },

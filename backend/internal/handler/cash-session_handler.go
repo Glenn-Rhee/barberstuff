@@ -29,7 +29,7 @@ func NewCashSessionHandler(s service.CashSessionService) *CashSessionHandler {
 //
 // @Param        body body dto.CreateCashSession true "Data cash session"
 //
-// @Success      200 {object} dto.SwaggerResponse "Berhasil membuka uang modal"
+// @Success      200 {object} dto.SwaggerResponse{data=dto.CreateCashSessionResponse} "Berhasil membuka uang modal"
 // @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal membuka cash session"
 // @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
 // @Router       /cash-sesssion [post]
@@ -85,6 +85,18 @@ func (h *CashSessionHandler) Create(ctx *gin.Context) {
 	})
 }
 
+// GetToday godoc
+// @Summary      Mengambil cash session hari ini
+// @Description  Mengambil data cash session yang sedang berjalan pada hari ini, berdasarkan toko milik kasir. Endpoint ini hanya dapat digunakan oleh kasir.
+// @Tags         Cash Session
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Success      201 {object} dto.SwaggerResponse{data=dto.GetCashSessionResponse} "Berhasil mengambil data"
+// @Failure      400 {object} dto.SwaggerResponse "Gagal mengambil data cash session"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /cash-sesions [get]
 func (h *CashSessionHandler) GetToday(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -104,7 +116,7 @@ func (h *CashSessionHandler) GetToday(ctx *gin.Context) {
 		return
 	}
 
-	if claimsResult.Role == entity.RoleCustomer {
+	if claimsResult.Role != entity.RoleCashier {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    "Anda tidak memiliki akses!",
 			StatusCode: http.StatusUnauthorized,

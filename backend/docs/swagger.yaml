@@ -161,14 +161,18 @@ definitions:
     type: object
   dto.CreateCashSession:
     properties:
-      id_store:
-        type: string
       saldo_begin:
         minimum: 1000
         type: number
     required:
-    - id_store
     - saldo_begin
+    type: object
+  dto.CreateCashSessionResponse:
+    properties:
+      id:
+        type: string
+      saldo_begin:
+        type: number
     type: object
   dto.CreateCashireBookingRequest:
     properties:
@@ -505,6 +509,23 @@ definitions:
         $ref: '#/definitions/dto.DataBooking'
       customer:
         $ref: '#/definitions/dto.CustomerBookings'
+    type: object
+  dto.GetCashSessionResponse:
+    properties:
+      id:
+        type: string
+      saldo_begin:
+        type: number
+      total_income_cash:
+        type: number
+      total_income_cashless:
+        type: number
+      total_outcome:
+        type: number
+      transactions:
+        items:
+          $ref: '#/definitions/dto.TransactionResponse'
+        type: array
     type: object
   dto.GetServiceResponse:
     properties:
@@ -852,6 +873,23 @@ definitions:
         $ref: '#/definitions/dto.StatusResponse'
       statusCode:
         type: integer
+    type: object
+  dto.TransactionResponse:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      payment_type:
+        $ref: '#/definitions/entity.PaymentType'
+      title:
+        type: string
+      transaction_type:
+        $ref: '#/definitions/entity.TransactionType'
     type: object
   dto.UpdateAccountStaffRequest:
     properties:
@@ -1859,6 +1897,37 @@ paths:
       summary: Update data capster
       tags:
       - Capster
+  /cash-sesions:
+    get:
+      consumes:
+      - application/json
+      description: Mengambil data cash session yang sedang berjalan pada hari ini,
+        berdasarkan toko milik kasir. Endpoint ini hanya dapat digunakan oleh kasir.
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Berhasil mengambil data
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GetCashSessionResponse'
+              type: object
+        "400":
+          description: Gagal mengambil data cash session
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mengambil cash session hari ini
+      tags:
+      - Cash Session
   /cash-sesssion:
     post:
       consumes:
@@ -1878,7 +1947,12 @@ paths:
         "200":
           description: Berhasil membuka uang modal
           schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CreateCashSessionResponse'
+              type: object
         "400":
           description: Parameter tidak valid atau gagal membuka cash session
           schema:
