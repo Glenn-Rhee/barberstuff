@@ -1218,7 +1218,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/cash-sesions": {
+        "/cash-sessions": {
             "get": {
                 "security": [
                     {
@@ -1268,9 +1268,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/cash-sesssion": {
+            },
             "post": {
                 "security": [
                     {
@@ -1320,6 +1318,67 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Parameter tidak valid atau gagal membuka cash session",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menutup cash session dan mencatat jumlah uang aktual yang tersedia. Endpoint ini hanya dapat digunakan oleh cashier. Response akan memberikan selisih antara saldo yang seharusnya tersedia dengan jumlah aktual serta status selisih tersebut.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cash Session"
+                ],
+                "summary": "Menutup cash session",
+                "parameters": [
+                    {
+                        "description": "Data penutupan cash session",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CloseCashSessionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menutup pembukuan",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CloseCashSessionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal menutup cash session",
                         "schema": {
                             "$ref": "#/definitions/dto.SwaggerResponse"
                         }
@@ -2856,6 +2915,33 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CloseCashSessionRequest": {
+            "type": "object",
+            "required": [
+                "amount_actual",
+                "id_cash_session"
+            ],
+            "properties": {
+                "amount_actual": {
+                    "type": "number",
+                    "minimum": 1000
+                },
+                "id_cash_session": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CloseCashSessionResponse": {
+            "type": "object",
+            "properties": {
+                "amount_difference": {
+                    "type": "number"
+                },
+                "status": {
+                    "$ref": "#/definitions/dto.StatusCloseCash"
+                }
+            }
+        },
         "dto.CreateAccountStaffRequest": {
             "type": "object",
             "required": [
@@ -3940,6 +4026,19 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "NEED_COMPLETE_PROFILE",
                 "SUCCESS"
+            ]
+        },
+        "dto.StatusCloseCash": {
+            "type": "string",
+            "enum": [
+                "balance",
+                "positive",
+                "minus"
+            ],
+            "x-enum-varnames": [
+                "StatusBalance",
+                "StatusPositive",
+                "StatusMinus"
             ]
         },
         "dto.StatusCustomer": {

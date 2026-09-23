@@ -32,7 +32,7 @@ func NewCashSessionHandler(s service.CashSessionService) *CashSessionHandler {
 // @Success      200 {object} dto.SwaggerResponse{data=dto.CreateCashSessionResponse} "Berhasil membuka uang modal"
 // @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal membuka cash session"
 // @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
-// @Router       /cash-sesssion [post]
+// @Router       /cash-sessions [post]
 func (h *CashSessionHandler) Create(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -96,7 +96,7 @@ func (h *CashSessionHandler) Create(ctx *gin.Context) {
 // @Success      201 {object} dto.SwaggerResponse{data=dto.GetCashSessionResponse} "Berhasil mengambil data"
 // @Failure      400 {object} dto.SwaggerResponse "Gagal mengambil data cash session"
 // @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
-// @Router       /cash-sesions [get]
+// @Router       /cash-sessions [get]
 func (h *CashSessionHandler) GetToday(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -140,6 +140,20 @@ func (h *CashSessionHandler) GetToday(ctx *gin.Context) {
 	})
 }
 
+// CloseCashSession godoc
+// @Summary      Menutup cash session
+// @Description  Menutup cash session dan mencatat jumlah uang aktual yang tersedia. Endpoint ini hanya dapat digunakan oleh cashier. Response akan memberikan selisih antara saldo yang seharusnya tersedia dengan jumlah aktual serta status selisih tersebut.
+// @Tags         Cash Session
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        body body dto.CloseCashSessionRequest true "Data penutupan cash session"
+//
+// @Success      200 {object} dto.SwaggerResponse{data=dto.CloseCashSessionResponse} "Berhasil menutup pembukuan"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal menutup cash session"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /cash-sessions [patch]
 func (h *CashSessionHandler) CloseCashSession(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -187,7 +201,7 @@ func (h *CashSessionHandler) CloseCashSession(ctx *gin.Context) {
 
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.CloseCashSessionResponse]{
 		Data:       result,
-		Message:    "Berhasil Menutup pemmbukuan.",
+		Message:    "Berhasil Menutup pembukuan.",
 		StatusCode: http.StatusOK,
 	})
 }

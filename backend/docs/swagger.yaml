@@ -86,6 +86,24 @@ definitions:
       status:
         $ref: '#/definitions/entity.CapsterStatusEnum'
     type: object
+  dto.CloseCashSessionRequest:
+    properties:
+      amount_actual:
+        minimum: 1000
+        type: number
+      id_cash_session:
+        type: string
+    required:
+    - amount_actual
+    - id_cash_session
+    type: object
+  dto.CloseCashSessionResponse:
+    properties:
+      amount_difference:
+        type: number
+      status:
+        $ref: '#/definitions/dto.StatusCloseCash'
+    type: object
   dto.CreateAccountStaffRequest:
     properties:
       email:
@@ -808,6 +826,16 @@ definitions:
     x-enum-varnames:
     - NEED_COMPLETE_PROFILE
     - SUCCESS
+  dto.StatusCloseCash:
+    enum:
+    - balance
+    - positive
+    - minus
+    type: string
+    x-enum-varnames:
+    - StatusBalance
+    - StatusPositive
+    - StatusMinus
   dto.StatusCustomer:
     enum:
     - MEMBER
@@ -1897,7 +1925,7 @@ paths:
       summary: Update data capster
       tags:
       - Capster
-  /cash-sesions:
+  /cash-sessions:
     get:
       consumes:
       - application/json
@@ -1928,7 +1956,45 @@ paths:
       summary: Mengambil cash session hari ini
       tags:
       - Cash Session
-  /cash-sesssion:
+    patch:
+      consumes:
+      - application/json
+      description: Menutup cash session dan mencatat jumlah uang aktual yang tersedia.
+        Endpoint ini hanya dapat digunakan oleh cashier. Response akan memberikan
+        selisih antara saldo yang seharusnya tersedia dengan jumlah aktual serta status
+        selisih tersebut.
+      parameters:
+      - description: Data penutupan cash session
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CloseCashSessionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menutup pembukuan
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CloseCashSessionResponse'
+              type: object
+        "400":
+          description: Parameter tidak valid atau gagal menutup cash session
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Menutup cash session
+      tags:
+      - Cash Session
     post:
       consumes:
       - application/json
