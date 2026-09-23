@@ -243,7 +243,7 @@ func (h *CashSessionHandler) GetHistory(ctx *gin.Context) {
 		return
 	}
 
-	result, err := h.service.GetHistory(claimsResult, query)
+	result, pagination, err := h.service.GetHistory(claimsResult, query)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -256,5 +256,6 @@ func (h *CashSessionHandler) GetHistory(ctx *gin.Context) {
 		Data:       result,
 		Message:    "Success get history",
 		StatusCode: http.StatusOK,
+		Meta:       &pagination,
 	})
 }

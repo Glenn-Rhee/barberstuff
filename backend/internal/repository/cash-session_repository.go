@@ -11,6 +11,7 @@ type CashSessionRepository interface {
 	FindOne(query interface{}, args ...interface{}) (entity.CashSession, error)
 	Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.CashSession, error)
+	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
 
 type cashSessionRepository struct {
@@ -54,4 +55,10 @@ func (r *cashSessionRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]en
 		Scopes(scopes...).
 		Find(&data)
 	return data, result.Error
+}
+
+func (r *cashSessionRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+	var total int64
+	result := r.db.Model(&entity.CashSession{}).Count(&total).Scopes(scopes...)
+	return total, result.Error
 }

@@ -58,6 +58,7 @@ type HistoryCashSessionReq struct {
 	Date    *time.Time `form:"date" binding:"omitempty"`
 	Query   *string    `form:"q" binding:"omitempty"`
 	IdStore *string    `form:"id_store" binding:"omitempty"`
+	RequestParamsPagination
 }
 
 type CashSessionStore struct {

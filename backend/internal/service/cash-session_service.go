@@ -13,13 +13,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type CashSessionService interface {
 	CreateCashSession(req dto.CreateCashSession, claims *lib.CustomClaims) (dto.CreateCashSessionResponse, error)
 	GetToday(claims *lib.CustomClaims) (dto.GetCashSessionResponse, error)
 	CloseCashSession(req dto.CloseCashSessionRequest, claims *lib.CustomClaims) (dto.CloseCashSessionResponse, error)
-	GetHistory(claims *lib.CustomClaims, req dto.HistoryCashSessionReq) ([]dto.HistoryCashSessionRes, error)
+	GetHistory(claims *lib.CustomClaims, req dto.HistoryCashSessionReq) ([]dto.HistoryCashSessionRes, dto.ResponsePagination, error)
 }
 
 type cashSessionService struct {
@@ -340,19 +341,19 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 	}, nil
 }
 
-func (s *cashSessionService) GetHistory(claims *lib.CustomClaims, req dto.HistoryCashSessionReq) ([]dto.HistoryCashSessionRes, error) {
+func (s *cashSessionService) GetHistory(claims *lib.CustomClaims, req dto.HistoryCashSessionReq) ([]dto.HistoryCashSessionRes, dto.ResponsePagination, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan mengambil data."
 	_, filePath, _, _ := runtime.Caller(0)
 
 	// Jika admin
 	if claims.Role == entity.RoleAdmin {
 		if req.IdStore == nil {
-			return []dto.HistoryCashSessionRes{}, errors.New("Id toko wajib diisi.")
+			return []dto.HistoryCashSessionRes{}, dto.ResponsePagination{}, errors.New("Id toko wajib diisi.")
 		}
 
 		idStore, err := uuid.Parse(*req.IdStore)
 		if err != nil {
-			return []dto.HistoryCashSessionRes{}, errors.New("Id toko tidak valid.")
+			return []dto.HistoryCashSessionRes{}, dto.ResponsePagination{}, errors.New("Id toko tidak valid.")
 		}
 
 		return s.getHistoryCashStore(req, idStore)
@@ -361,23 +362,33 @@ func (s *cashSessionService) GetHistory(claims *lib.CustomClaims, req dto.Histor
 	dataStaff, err := s.staffRepo.FindOne("id = ?", claims.UserId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []dto.HistoryCashSessionRes{}, errors.New("Data staff tidak dapat ditemukan.")
+			return []dto.HistoryCashSessionRes{}, dto.ResponsePagination{}, errors.New("Data staff tidak dapat ditemukan.")
 		}
 
 		helper.Logger("find one data staff", filePath, err)
-		return []dto.HistoryCashSessionRes{}, errors.New(BASE_MESSAGE)
+		return []dto.HistoryCashSessionRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 
 	if dataStaff.IdStore == nil {
-		return []dto.HistoryCashSessionRes{}, errors.New("Anda tidak memiliki akses. Mohon login ulang.")
+		return []dto.HistoryCashSessionRes{}, dto.ResponsePagination{}, errors.New("Anda tidak memiliki akses. Mohon login ulang.")
 	}
 
 	return s.getHistoryCashStore(req, *dataStaff.IdStore)
 }
 
-func (s *cashSessionService) getHistoryCashStore(req dto.HistoryCashSessionReq, idStore uuid.UUID) ([]dto.HistoryCashSessionRes, error) {
+func (s *cashSessionService) getHistoryCashStore(req dto.HistoryCashSessionReq, idStore uuid.UUID) ([]dto.HistoryCashSessionRes, dto.ResponsePagination, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan mengambil data."
 	_, filePath, _, _ := runtime.Caller(0)
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []dto.HistoryCashSessionRes{}, dto.ResponsePagination{}, errors.New("Toko tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find data store", filePath, err)
+		return []dto.HistoryCashSessionRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
 	var scopes []func(*gorm.DB) *gorm.DB
 	if req.Query != nil {
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
@@ -396,6 +407,22 @@ func (s *cashSessionService) getHistoryCashStore(req dto.HistoryCashSessionReq, 
 	year, month, _ := targetDate.Date()
 	startOfMonth := time.Date(year, month, 1, 0, 0, 0, 0, targetDate.Location())
 	endOfMonth := startOfMonth.AddDate(0, 1, 0)
+
+	var page = 1
+	var limit = 6
+	var orderBy = dto.OrderDesc
+	if req.Page != nil {
+		page = *req.Page
+	}
+
+	if req.Limit != nil {
+		limit = *req.Limit
+	}
+
+	if req.OrderBy != nil {
+		orderBy = *req.OrderBy
+	}
+
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 		return d.
 			Where("created_at >= ? AND created_at < ?", startOfMonth, endOfMonth).
@@ -403,20 +430,26 @@ func (s *cashSessionService) getHistoryCashStore(req dto.HistoryCashSessionReq, 
 			Where("status = ?", entity.SessionClosed)
 	})
 
-	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	totalData, err := s.cashSessionRepo.Count(scopes...)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []dto.HistoryCashSessionRes{}, errors.New("Toko tidak ditemukan atau telah dihapus.")
-		}
-
-		helper.Logger("find data store", filePath, err)
-		return []dto.HistoryCashSessionRes{}, errors.New(BASE_MESSAGE)
+		helper.Logger("count total session", filePath, err)
+		return []dto.HistoryCashSessionRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{Column: clause.Column{Name: "created_at"}, Desc: orderBy == dto.OrderDesc},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
 
 	cashSessions, err := s.cashSessionRepo.FindAll(scopes...)
 	if err != nil {
 		helper.Logger("find all cash sessions", filePath, err)
-		return []dto.HistoryCashSessionRes{}, errors.New(BASE_MESSAGE)
+		return []dto.HistoryCashSessionRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 
 	var dataResult = make([]dto.HistoryCashSessionRes, 0, len(cashSessions))
@@ -479,5 +512,5 @@ func (s *cashSessionService) getHistoryCashStore(req dto.HistoryCashSessionReq, 
 		})
 	}
 
-	return dataResult, nil
+	return dataResult, paginationData, nil
 }
