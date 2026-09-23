@@ -223,6 +223,22 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 		return dto.CloseCashSessionResponse{}, errors.New("Anda tidak memiliki akses")
 	}
 
+	dataStore, err := s.storeRepo.FindOne("id = ?", dataStaff.IdStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.CloseCashSessionResponse{}, errors.New("Toko tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find one store", filePath, err)
+		return dto.CloseCashSessionResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load location", filePath, err)
+		return dto.CloseCashSessionResponse{}, errors.New(BASE_MESSAGE)
+	}
+
 	dataCashSession, err := s.cashSessionRepo.FindOne("id = ? AND status = ?", idCashSession, entity.SessionOpen)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -235,6 +251,38 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 
 	if dataCashSession.IDStore != *dataStaff.IdStore {
 		return dto.CloseCashSessionResponse{}, errors.New("Pembukuan ini bukan milik anda.")
+	}
+
+	// Validasi Jam operasional
+	now := time.Now().In(loc)
+	sessionCreatedAt := dataCashSession.CreatedAt.In(loc)
+
+	isSameDay := now.Year() == sessionCreatedAt.Year() &&
+		now.YearDay() == sessionCreatedAt.YearDay()
+
+	// Kalau kas ini dibuat hari ini
+	if isSameDay {
+		openTime := time.Date(
+			now.Year(), now.Month(), now.Day(),
+			dataStore.OpenHour.Hour(), dataStore.OpenHour.Minute(), dataStore.OpenHour.Second(), 0,
+			loc,
+		)
+
+		closeTime := time.Date(
+			now.Year(), now.Month(), now.Day(),
+			dataStore.CloseHour.Hour(), dataStore.CloseHour.Minute(), dataStore.CloseHour.Second(), 0,
+			loc,
+		)
+
+		// Handle toko yang tutuup tengah malam
+		if closeTime.Before(openTime) {
+			closeTime = closeTime.Add(24 * time.Hour)
+		}
+
+		isWithinOperationalHours := !now.Before(openTime) && !now.After(closeTime)
+		if isWithinOperationalHours {
+			return dto.CloseCashSessionResponse{}, errors.New("Toko masih dalam operasional tidak dapat menutup kas.")
+		}
 	}
 
 	// Total uang di sistem
@@ -268,22 +316,6 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 			Where("id = ?", idCashSession).
 			Where("status = ?", entity.SessionOpen)
 	})
-
-	dataStore, err := s.storeRepo.FindOne("id = ?", dataStaff.IdStore)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return dto.CloseCashSessionResponse{}, errors.New("Toko tidak ditemukan atau telah dihapus.")
-		}
-
-		helper.Logger("find one store", filePath, err)
-		return dto.CloseCashSessionResponse{}, errors.New(BASE_MESSAGE)
-	}
-
-	loc, err := time.LoadLocation(string(dataStore.Timezone))
-	if err != nil {
-		helper.Logger("load location", filePath, err)
-		return dto.CloseCashSessionResponse{}, errors.New(BASE_MESSAGE)
-	}
 
 	var updates = map[string]interface{}{
 		"amount_actual": &amountActual,
