@@ -7,6 +7,7 @@ CREATE TYPE transaction_type AS ENUM('income', 'outcome');
 CREATE TABLE cash_session (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     id_store UUID NOT NULL REFERENCES store(id),
+    id_staff UUID NOT NULL REFERENCES staff(id),
     saldo_begin NUMERIC(12,2) NOT NULL,
     amount_actual NUMERIC(12,2),
     status cash_session_type NOT NULL DEFAULT 'open',

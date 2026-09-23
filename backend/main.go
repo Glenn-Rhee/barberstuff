@@ -142,6 +142,7 @@ func main() {
 		cashSessions.POST("/", h.CashSessionHandler.Create)
 		cashSessions.GET("/", h.CashSessionHandler.GetToday)
 		cashSessions.PATCH("/", h.CashSessionHandler.CloseCashSession)
+		cashSessions.GET("/history", h.CashSessionHandler.GetHistory)
 	}
 
 	transactions := r.Group("/transactions")

@@ -11,6 +11,7 @@ import (
 type StaffRepository interface {
 	Create(tx *gorm.DB, s *entity.Staff) error
 	FindOne(where string, args ...interface{}) (entity.Staff, error)
+	FindOneUnscoped(where string, args ...interface{}) (entity.Staff, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Staff, error)
 	FindProfile(userId string) (entity.Staff, error)
 	Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
@@ -72,11 +73,11 @@ func (r *staffRepository) FindProfile(userId string) (entity.Staff, error) {
 }
 
 func (r *staffRepository) Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
-    result := r.db.
-        Model(&entity.Staff{}).
-        Scopes(scopes...).
-        Updates(value)
-    return result.RowsAffected, result.Error
+	result := r.db.
+		Model(&entity.Staff{}).
+		Scopes(scopes...).
+		Updates(value)
+	return result.RowsAffected, result.Error
 }
 
 func (r *staffRepository) SoftDelete(id uuid.UUID) error {
@@ -85,4 +86,10 @@ func (r *staffRepository) SoftDelete(id uuid.UUID) error {
 		Where("id = ?", id).
 		Update("deleted_at", time.Now())
 	return result.Error
+}
+
+func (r *staffRepository) FindOneUnscoped(where string, args ...interface{}) (entity.Staff, error) {
+	var dataStaff entity.Staff
+	result := r.db.Preload("Authentication").Where(where, args...).First(&dataStaff)
+	return dataStaff, result.Error
 }

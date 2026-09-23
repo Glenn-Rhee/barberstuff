@@ -19,6 +19,7 @@ type CashSessionService interface {
 	CreateCashSession(req dto.CreateCashSession, claims *lib.CustomClaims) (dto.CreateCashSessionResponse, error)
 	GetToday(claims *lib.CustomClaims) (dto.GetCashSessionResponse, error)
 	CloseCashSession(req dto.CloseCashSessionRequest, claims *lib.CustomClaims) (dto.CloseCashSessionResponse, error)
+	GetHistory(claims *lib.CustomClaims, req dto.HistoryCashSessionReq) ([]dto.HistoryCashSessionRes, error)
 }
 
 type cashSessionService struct {
@@ -97,6 +98,7 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 	dataCashSession := entity.CashSession{
 		ID:         uuid.New(),
 		IDStore:    idStore,
+		IDStaff:    idStaff,
 		SaldoBegin: decimal.NewFromFloat(req.SaldoBegin),
 		Status:     entity.SessionOpen,
 	}
@@ -303,9 +305,9 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 	amountDifference := amountActual.Sub(totalAmount)
 	var status dto.StatusCloseCash
 	if amountDifference.IsNegative() {
-		status = dto.StatusMinus
+		status = dto.StatusShort
 	} else if amountDifference.IsPositive() {
-		status = dto.StatusPositive
+		status = dto.StatusOver
 	} else {
 		status = dto.StatusBalance
 	}
@@ -336,4 +338,146 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 		AmountDifference: amountDifference,
 		Status:           status,
 	}, nil
+}
+
+func (s *cashSessionService) GetHistory(claims *lib.CustomClaims, req dto.HistoryCashSessionReq) ([]dto.HistoryCashSessionRes, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan mengambil data."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	// Jika admin
+	if claims.Role == entity.RoleAdmin {
+		if req.IdStore == nil {
+			return []dto.HistoryCashSessionRes{}, errors.New("Id toko wajib diisi.")
+		}
+
+		idStore, err := uuid.Parse(*req.IdStore)
+		if err != nil {
+			return []dto.HistoryCashSessionRes{}, errors.New("Id toko tidak valid.")
+		}
+
+		return s.getHistoryCashStore(req, idStore)
+	}
+
+	dataStaff, err := s.staffRepo.FindOne("id = ?", claims.UserId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []dto.HistoryCashSessionRes{}, errors.New("Data staff tidak dapat ditemukan.")
+		}
+
+		helper.Logger("find one data staff", filePath, err)
+		return []dto.HistoryCashSessionRes{}, errors.New(BASE_MESSAGE)
+	}
+
+	if dataStaff.IdStore == nil {
+		return []dto.HistoryCashSessionRes{}, errors.New("Anda tidak memiliki akses. Mohon login ulang.")
+	}
+
+	return s.getHistoryCashStore(req, *dataStaff.IdStore)
+}
+
+func (s *cashSessionService) getHistoryCashStore(req dto.HistoryCashSessionReq, idStore uuid.UUID) ([]dto.HistoryCashSessionRes, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan mengambil data."
+	_, filePath, _, _ := runtime.Caller(0)
+	var scopes []func(*gorm.DB) *gorm.DB
+	if req.Query != nil {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			q := "%" + *req.Query + "%"
+			return d.
+				Joins("JOIN staff ON staff.id = cash_session.id_staff").
+				Where("staff.name ILIKE ?", q)
+		})
+	}
+
+	targetDate := time.Now()
+	if req.Date != nil {
+		targetDate = *req.Date
+	}
+
+	year, month, _ := targetDate.Date()
+	startOfMonth := time.Date(year, month, 1, 0, 0, 0, 0, targetDate.Location())
+	endOfMonth := startOfMonth.AddDate(0, 1, 0)
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.
+			Where("created_at >= ? AND created_at < ?", startOfMonth, endOfMonth).
+			Where("id_store = ?", idStore).
+			Where("status = ?", entity.SessionClosed)
+	})
+
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []dto.HistoryCashSessionRes{}, errors.New("Toko tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find data store", filePath, err)
+		return []dto.HistoryCashSessionRes{}, errors.New(BASE_MESSAGE)
+	}
+
+	cashSessions, err := s.cashSessionRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("find all cash sessions", filePath, err)
+		return []dto.HistoryCashSessionRes{}, errors.New(BASE_MESSAGE)
+	}
+
+	var dataResult = make([]dto.HistoryCashSessionRes, 0, len(cashSessions))
+	for _, c := range cashSessions {
+		var totalIncomeCash decimal.Decimal
+		var totalIncomeCashless decimal.Decimal
+		var totalOutcome decimal.Decimal
+
+		for _, t := range c.Transactions {
+			if t.TransactionType == entity.TransactionIncome {
+				if t.PaymentType == entity.PaymentCash {
+					totalIncomeCash = totalIncomeCash.Add(t.Amount)
+				} else {
+					totalIncomeCashless = totalIncomeCashless.Add(t.Amount)
+				}
+			} else {
+				totalOutcome = totalOutcome.Add(t.Amount)
+			}
+		}
+
+		var amountActual decimal.Decimal
+		if c.AmountActual != nil {
+			amountActual = *c.AmountActual
+		}
+
+		totalIncome := totalIncomeCash.Add(totalIncomeCashless)
+		totalAmount := totalIncome.Sub(totalOutcome).Add(c.SaldoBegin)
+
+		amountDifference := amountActual.Sub(totalAmount)
+		var status dto.StatusCloseCash
+		if amountDifference.IsNegative() {
+			status = dto.StatusShort
+		} else if amountDifference.IsPositive() {
+			status = dto.StatusOver
+		} else {
+			status = dto.StatusBalance
+		}
+
+		dataResult = append(dataResult, dto.HistoryCashSessionRes{
+			IdCashSession:       c.ID,
+			SaldoBegin:          c.SaldoBegin,
+			AmountActual:        amountActual,
+			AmountDifference:    amountDifference,
+			TotalIncomeCash:     totalIncomeCash,
+			TotalIncomeCashless: totalIncomeCashless,
+			TotalOutcome:        totalOutcome,
+			Status:              status,
+			CreatedAt:           c.CreatedAt,
+			ClosedAt:            c.ClosedAt,
+			Store: dto.CashSessionStore{
+				Id:        idStore,
+				Name:      dataStore.Name,
+				CloseHour: dataStore.CloseHour,
+				OpenHour:  dataStore.OpenHour,
+			},
+			Staff: dto.CashSessionStaff{
+				Id:   c.Staff.ID,
+				Name: c.Staff.Name,
+			},
+		})
+	}
+
+	return dataResult, nil
 }
