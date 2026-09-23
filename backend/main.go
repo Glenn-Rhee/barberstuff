@@ -140,6 +140,7 @@ func main() {
 	{
 		cashSessions.Use(h.AuthMiddleware)
 		cashSessions.POST("/", h.CashSessionHandler.Create)
+		cashSessions.GET("/", h.CashSessionHandler.GetToday)
 	}
 
 	transactions := r.Group("/transactions")

@@ -69,7 +69,7 @@ func (h *CashSessionHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.CreateCashSession(dataBody, claimsResult)
+	result, err := h.service.CreateCashSession(dataBody, claimsResult)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -78,9 +78,52 @@ func (h *CashSessionHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
-		Data:       nil,
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.CreateCashSessionResponse]{
+		Data:       result,
 		Message:    "Berhasil membuka uang modal.",
-		StatusCode: http.StatusOK,
+		StatusCode: http.StatusCreated,
+	})
+}
+
+func (h *CashSessionHandler) GetToday(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role == entity.RoleCustomer {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	result, err := h.service.GetToday(claimsResult)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.GetCashSessionResponse]{
+		Data:       result,
+		Message:    "Berhasil mengambil data.",
+		StatusCode: http.StatusCreated,
 	})
 }
