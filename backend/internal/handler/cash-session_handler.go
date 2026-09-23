@@ -206,6 +206,23 @@ func (h *CashSessionHandler) CloseCashSession(ctx *gin.Context) {
 	})
 }
 
+// GetHistory godoc
+// @Summary      Riwayat cash session
+// @Description  Mengambil riwayat cash session berdasarkan tanggal, pencarian, toko, dan pagination. Endpoint ini hanya dapat diakses oleh admin dan staff. Jika request dilakukan oleh admin, parameter id_store wajib dikirimkan.
+// @Tags         Cash Session
+// @Produce      json
+// @Security     BearerAuth
+// @Param        date query string false "Tanggal cash session" Format(date-time)
+// @Param        q query string false "Pencarian"
+// @Param        id_store query string false "ID toko (wajib untuk admin)"
+// @Param        page query int false "Page" minimum(1) default(1)
+// @Param        limit query int false "Limit" minimum(1) maximum(50) default(6)
+// @Param        order query string false "Urutan" Enums(asc, desc) default(desc)
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.HistoryCashSessionRes,meta=dto.ResponsePagination} "Success get history"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengambil riwayat cash session"
+// @Router       /cash-sessions/history [get]
 func (h *CashSessionHandler) GetHistory(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

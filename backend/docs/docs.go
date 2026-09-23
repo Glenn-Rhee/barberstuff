@@ -1392,6 +1392,116 @@ const docTemplate = `{
                 }
             }
         },
+        "/cash-sessions/history": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil riwayat cash session berdasarkan tanggal, pencarian, toko, dan pagination. Endpoint ini hanya dapat diakses oleh admin dan staff. Jika request dilakukan oleh admin, parameter id_store wajib dikirimkan.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cash Session"
+                ],
+                "summary": "Riwayat cash session",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Tanggal cash session",
+                        "name": "date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Pencarian",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID toko (wajib untuk admin)",
+                        "name": "id_store",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 6,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Urutan",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success get history",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.HistoryCashSessionRes"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.ResponsePagination"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal mengambil riwayat cash session",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/customer": {
             "get": {
                 "security": [
@@ -2915,6 +3025,34 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CashSessionStaff": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CashSessionStore": {
+            "type": "object",
+            "properties": {
+                "close_hour": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "open_hour": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CloseCashSessionRequest": {
             "type": "object",
             "required": [
@@ -3640,6 +3778,47 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.HistoryCashSessionRes": {
+            "type": "object",
+            "properties": {
+                "amount_actual": {
+                    "type": "number"
+                },
+                "amount_difference": {
+                    "type": "number"
+                },
+                "closed_at": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id_cash_session": {
+                    "type": "string"
+                },
+                "saldo_begin": {
+                    "type": "number"
+                },
+                "staff": {
+                    "$ref": "#/definitions/dto.CashSessionStaff"
+                },
+                "status": {
+                    "$ref": "#/definitions/dto.StatusCloseCash"
+                },
+                "store": {
+                    "$ref": "#/definitions/dto.CashSessionStore"
+                },
+                "total_income_cash": {
+                    "type": "number"
+                },
+                "total_income_cashless": {
+                    "type": "number"
+                },
+                "total_outcome": {
+                    "type": "number"
+                }
+            }
+        },
         "dto.LockBookingRequest": {
             "type": "object",
             "required": [
@@ -4032,13 +4211,13 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "balance",
-                "positive",
-                "minus"
+                "over",
+                "short"
             ],
             "x-enum-varnames": [
                 "StatusBalance",
-                "StatusPositive",
-                "StatusMinus"
+                "StatusOver",
+                "StatusShort"
             ]
         },
         "dto.StatusCustomer": {

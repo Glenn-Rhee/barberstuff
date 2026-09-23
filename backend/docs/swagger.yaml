@@ -86,6 +86,24 @@ definitions:
       status:
         $ref: '#/definitions/entity.CapsterStatusEnum'
     type: object
+  dto.CashSessionStaff:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.CashSessionStore:
+    properties:
+      close_hour:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      open_hour:
+        type: string
+    type: object
   dto.CloseCashSessionRequest:
     properties:
       amount_actual:
@@ -564,6 +582,33 @@ definitions:
       type:
         $ref: '#/definitions/entity.ProductTypeEnum'
     type: object
+  dto.HistoryCashSessionRes:
+    properties:
+      amount_actual:
+        type: number
+      amount_difference:
+        type: number
+      closed_at:
+        type: string
+      created_at:
+        type: string
+      id_cash_session:
+        type: string
+      saldo_begin:
+        type: number
+      staff:
+        $ref: '#/definitions/dto.CashSessionStaff'
+      status:
+        $ref: '#/definitions/dto.StatusCloseCash'
+      store:
+        $ref: '#/definitions/dto.CashSessionStore'
+      total_income_cash:
+        type: number
+      total_income_cashless:
+        type: number
+      total_outcome:
+        type: number
+    type: object
   dto.LockBookingRequest:
     properties:
       booking_date:
@@ -829,13 +874,13 @@ definitions:
   dto.StatusCloseCash:
     enum:
     - balance
-    - positive
-    - minus
+    - over
+    - short
     type: string
     x-enum-varnames:
     - StatusBalance
-    - StatusPositive
-    - StatusMinus
+    - StatusOver
+    - StatusShort
   dto.StatusCustomer:
     enum:
     - MEMBER
@@ -2030,6 +2075,79 @@ paths:
       security:
       - BearerAuth: []
       summary: Membuka cash session
+      tags:
+      - Cash Session
+  /cash-sessions/history:
+    get:
+      description: Mengambil riwayat cash session berdasarkan tanggal, pencarian,
+        toko, dan pagination. Endpoint ini hanya dapat diakses oleh admin dan staff.
+        Jika request dilakukan oleh admin, parameter id_store wajib dikirimkan.
+      parameters:
+      - description: Tanggal cash session
+        format: date-time
+        in: query
+        name: date
+        type: string
+      - description: Pencarian
+        in: query
+        name: q
+        type: string
+      - description: ID toko (wajib untuk admin)
+        in: query
+        name: id_store
+        type: string
+      - default: 1
+        description: Page
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 6
+        description: Limit
+        in: query
+        maximum: 50
+        minimum: 1
+        name: limit
+        type: integer
+      - default: desc
+        description: Urutan
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success get history
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.HistoryCashSessionRes'
+                  type: array
+                meta:
+                  $ref: '#/definitions/dto.ResponsePagination'
+              type: object
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengambil riwayat cash session
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Riwayat cash session
       tags:
       - Cash Session
   /customer:
