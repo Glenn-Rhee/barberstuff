@@ -8,6 +8,7 @@ import (
 	"barberstuff_backend/internal/repository"
 	"errors"
 	"runtime"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
@@ -38,7 +39,7 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 		return dto.CreateCashSessionResponse{}, errors.New("Data anda tidak valid.")
 	}
 
-	dataStore, err := s.staffRepo.FindOne("id = ?", idStaff)
+	dataStaff, err := s.staffRepo.FindOne("id = ?", idStaff)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return dto.CreateCashSessionResponse{}, errors.New("Akun tidak ditemukan.")
@@ -47,11 +48,12 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 		helper.Logger("find one staff account.", filePath, err)
 		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
 	}
-	if dataStore.IdStore == nil {
+	if dataStaff.IdStore == nil {
 		return dto.CreateCashSessionResponse{}, errors.New("Anda tidak memiliki akses.")
 	}
-	idStore := *dataStore.IdStore
-	_, err = s.storeRepo.FindOne("id = ?", idStore)
+
+	idStore := *dataStaff.IdStore
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return dto.CreateCashSessionResponse{}, errors.New("Toko tidak ditemukan.")
@@ -72,6 +74,25 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
 	}
 
+	loc, _ := time.LoadLocation(string(dataStore.Timezone))
+	now := time.Now().In(loc)
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
+	tomorrow := today.Add(24 * time.Hour)
+
+	_, err = s.cashSessionRepo.FindOne(
+		"id_store = ? AND created_at >= ? AND created_at < ?",
+		idStore, today, tomorrow,
+	)
+
+	if err == nil {
+		return dto.CreateCashSessionResponse{}, errors.New("Kas untuk hari ini sudah pernah dibuka.")
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		helper.Logger("find cash session today", filePath, err)
+		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
+	}
+
 	dataCashSession := entity.CashSession{
 		ID:         uuid.New(),
 		IDStore:    idStore,
@@ -81,6 +102,9 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 
 	err = s.cashSessionRepo.Create(&dataCashSession)
 	if err != nil {
+		if helper.IsUniqueViolation(err) { 
+			return dto.CreateCashSessionResponse{}, errors.New("Kas untuk hari ini sudah pernah dibuka.")
+		}
 		helper.Logger("create cash session", filePath, err)
 		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
 	}
