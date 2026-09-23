@@ -269,9 +269,26 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 			Where("status = ?", entity.SessionOpen)
 	})
 
+	dataStore, err := s.storeRepo.FindOne("id = ?", dataStaff.IdStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.CloseCashSessionResponse{}, errors.New("Toko tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find one store", filePath, err)
+		return dto.CloseCashSessionResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load location", filePath, err)
+		return dto.CloseCashSessionResponse{}, errors.New(BASE_MESSAGE)
+	}
+
 	var updates = map[string]interface{}{
 		"amount_actual": &amountActual,
 		"status":        entity.SessionClosed,
+		"closed_at":     time.Now().In(loc),
 	}
 
 	rowsAffected, err := s.cashSessionRepo.Updates(updates, scopes...)
