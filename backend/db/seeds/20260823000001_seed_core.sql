@@ -108,6 +108,21 @@ VALUES (
   'premium',
   'open'
 );
+
+-- 8. Barberstuff Wibawa Mukti
+INSERT INTO store (name, phone_number, coordinate, open_hour, close_hour, banner_url, address, description, store_type, status)
+VALUES (
+  'Barberstuff Wibawa Mukti',
+  '08972314505',
+  NULL, -- koordinat tidak tersedia di sumber data
+  '2026-09-09T10:00:00Z',
+  '2026-09-09T21:00:00Z',
+  NULL,
+  NULL,
+  NULL,
+  'lite',
+  'open'
+);
 -- +goose StatementEnd
 
 -- +goose Down

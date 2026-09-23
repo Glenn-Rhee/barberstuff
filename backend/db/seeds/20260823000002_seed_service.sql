@@ -1,4 +1,4 @@
--- =====================================================================
+  -- =====================================================================
 -- Insert data Service dari sheet "Data Service" ke table service
 -- id_store diambil otomatis dari table store berdasarkan nama toko
 -- (JOIN), jadi kalau nama toko tidak ditemukan di table store,
@@ -104,7 +104,25 @@ FROM (VALUES
   ('Classic Ayah dan Anak', 85000.00, '(Classic Hair Cut + Kids Hair Cut)', 'BARBERSTUFF MARTAPURA'),
   ('Cuci Blow', 30000.00, '(Cuci keramas Dengan Shampo Dan Blow)', 'BARBERSTUFF MARTAPURA'),
   ('Shaving', 20000.00, NULL, 'BARBERSTUFF MARTAPURA'),
-  ('Relax', 35000.00, NULL, 'BARBERSTUFF MARTAPURA')
+  ('Relax', 35000.00, NULL, 'BARBERSTUFF MARTAPURA'),
+  ('Gentlement Hair Cut', 50000.00, 'Cukur Rambut + Cuci', 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Gentlement Grooming and Relax', 70000.00, 'Cukur Rambut + Cuci dan Pijat 15 Menit', 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Gentlement Grooming Max', 95000.00, 'Cukur Rambut + Cuci menggunakan Masker Rambut dan Masker Wajah', 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Gentlement Classic Cut (Longtrim)', 90000.00, 'Cukuran untuk rambut panjang dan menggunakan Masker Rambut', 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Kids Hair Cut', 40000.00, 'Cukur untuk anak umur 6 tahun kebawah', 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Kids Grooming', 50000.00, 'Cukur + Cuci untuk anak umur 6 tahun kebawah', 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Botak Licin', 60000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Black Hair Color', 120000.00, 'Cukur rambut + cuci, warna rambut hitam', 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Down Perm', 250000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Curly Perm', 350000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Korean Perm', 400000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Hair Coloring Full', 475000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Coloring Highlight', 350000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Bleaching', 250000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Jasa Coloring', 70000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Cuci Blow', 30000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Relax', 35000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI'),
+  ('Shaving', 20000.00, NULL, 'BARBERSTUFF WIBAWA MUKTI')
 ) AS v(name, price, description, store_name)
 JOIN store s
     ON LOWER(TRIM(s.name)) = LOWER(TRIM(v.store_name))
@@ -124,7 +142,8 @@ FROM (VALUES
   ('Paket Ayah & Anak', 70000.00, 'Classic Hair Cut + Kids Hair Cut', 'Barberstuff Tenjo'),
   ('Paket Ayah & Anak', 85000.00, 'Classic haircut + Kids haircut', 'Barberstuff Karawang'),
   ('Paket Ayah & Anak', 85000.00, 'Classic Hair Cut + Kids Hair Cut', 'Barberstuff Pangkalpinang'),
-  ('Paket Ayah & Anak', 85000.00, 'Classic Hair Cut + Kids Hair Cut', 'Barberstuff Martapura')
+  ('Paket Ayah & Anak', 85000.00, 'Classic Hair Cut + Kids Hair Cut', 'Barberstuff Martapura'),
+  ('Paket Ayah & Anak', 85000.00, 'Classic Hair Cut + Kids Hair Cut', 'Barberstuff Wibawa Mukti')
 ) AS v(name, price, description, store_name)
 JOIN store s
     ON LOWER(TRIM(s.name)) = LOWER(TRIM(v.store_name))
