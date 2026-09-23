@@ -9,6 +9,7 @@ import (
 type CashSessionRepository interface {
 	Create(c *entity.CashSession) error
 	FindOne(query interface{}, args ...interface{}) (entity.CashSession, error)
+	Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
 
 type cashSessionRepository struct {
@@ -32,4 +33,13 @@ func (r *cashSessionRepository) FindOne(query interface{}, args ...interface{}) 
 		First(&data)
 
 	return data, result.Error
+}
+
+func (r *cashSessionRepository) Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+	result := r.db.
+		Model(&entity.CashSession{}).
+		Scopes(scopes...).
+		Updates(value)
+
+	return result.RowsAffected, result.Error
 }

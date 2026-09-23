@@ -35,3 +35,21 @@ type TransactionResponse struct {
 	Description     *string                `json:"description"`
 	CreatedAt       time.Time              `json:"created_at"`
 }
+
+type CloseCashSessionRequest struct {
+	IdCashSession string  `json:"id_cash_session" binding:"required"`
+	AmountActual  float64 `json:"amount_actual" binding:"required,min=1000"`
+}
+
+type StatusCloseCash string
+
+const (
+	StatusBalance  StatusCloseCash = "balance"
+	StatusPositive StatusCloseCash = "positive"
+	StatusMinus    StatusCloseCash = "minus"
+)
+
+type CloseCashSessionResponse struct {
+	AmountDifference decimal.Decimal `json:"amount_difference"`
+	Status           StatusCloseCash `json:"status"`
+}

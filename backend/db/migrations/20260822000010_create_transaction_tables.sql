@@ -26,7 +26,7 @@ CREATE TABLE transactions (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
-CREATE UNIQUE INDEX idx_cash_session_store_date ON cash_sessions (id_store, session_date);
+CREATE UNIQUE INDEX idx_cash_session_store_date ON cash_session (id_store, created_at);
 -- +goose StatementEnd
 
 -- +goose Down

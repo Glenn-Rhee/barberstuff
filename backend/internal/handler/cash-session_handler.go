@@ -136,6 +136,58 @@ func (h *CashSessionHandler) GetToday(ctx *gin.Context) {
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.GetCashSessionResponse]{
 		Data:       result,
 		Message:    "Berhasil mengambil data.",
-		StatusCode: http.StatusCreated,
+		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *CashSessionHandler) CloseCashSession(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleCashier {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	var dataBody dto.CloseCashSessionRequest
+	if err := ctx.ShouldBindJSON(&dataBody); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, err := h.service.CloseCashSession(dataBody, claimsResult)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.CloseCashSessionResponse]{
+		Data:       result,
+		Message:    "Berhasil Menutup pemmbukuan.",
+		StatusCode: http.StatusOK,
 	})
 }
