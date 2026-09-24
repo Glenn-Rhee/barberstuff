@@ -27,10 +27,11 @@ type cashSessionService struct {
 	cashSessionRepo repository.CashSessionRepository
 	storeRepo       repository.StoreRepository
 	staffRepo       repository.StaffRepository
+	db              *gorm.DB
 }
 
-func NewCashSessionService(csr repository.CashSessionRepository, sr repository.StoreRepository, str repository.StaffRepository) CashSessionService {
-	return &cashSessionService{cashSessionRepo: csr, storeRepo: sr, staffRepo: str}
+func NewCashSessionService(csr repository.CashSessionRepository, sr repository.StoreRepository, str repository.StaffRepository, db *gorm.DB) CashSessionService {
+	return &cashSessionService{cashSessionRepo: csr, storeRepo: sr, staffRepo: str, db: db}
 }
 
 func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims *lib.CustomClaims) (dto.CreateCashSessionResponse, error) {
@@ -104,13 +105,37 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 		Status:     entity.SessionOpen,
 	}
 
-	
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		err = s.cashSessionRepo.Create(tx, &dataCashSession)
+		if err != nil {
+			return err
+		}
 
-	err = s.cashSessionRepo.Create(&dataCashSession)
+		storeUpdates := map[string]interface{}{
+			"status": entity.StoreStatusOpen,
+		}
+
+		rowsAffected, err := s.storeRepo.Updates(tx, storeUpdates, idStore)
+		if err != nil {
+			return err
+		}
+
+		if rowsAffected == 0 {
+			return errors.New("Toko tidak ditemukan.")
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		if helper.IsUniqueViolation(err) {
 			return dto.CreateCashSessionResponse{}, errors.New("Kas untuk hari ini sudah pernah dibuka.")
 		}
+
+		if errors.Is(err, errors.New("Toko tidak ditemukan.")) {
+			return dto.CreateCashSessionResponse{}, err
+		}
+
 		helper.Logger("create cash session", filePath, err)
 		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
 	}
@@ -328,13 +353,43 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 		"closed_at":     time.Now().In(loc),
 	}
 
-	rowsAffected, err := s.cashSessionRepo.Updates(updates, scopes...)
-	if err != nil {
-		return dto.CloseCashSessionResponse{}, errors.New(BASE_MESSAGE)
-	}
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		rowsAffected, err := s.cashSessionRepo.Updates(updates, scopes...)
+		if err != nil {
+			return err
+		}
 
-	if rowsAffected == 0 {
-		return dto.CloseCashSessionResponse{}, errors.New("Pembukuan tidak ditemukan, atau telah ditutup.")
+		if rowsAffected == 0 {
+			return errors.New("Pembukuan tidak ditemukan, atau telah ditutup.")
+		}
+
+		storeUpdates := map[string]interface{}{
+			"status": entity.StoreStatusClose,
+		}
+
+		rowsAffected, err = s.storeRepo.Updates(tx, storeUpdates, dataStore.ID)
+		if err != nil {
+			return err
+		}
+
+		if rowsAffected == 0 {
+			return errors.New("Toko tidak ditemukan.")
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		if errors.Is(err, errors.New("Pembukuan tidak ditemukan, atau telah ditutup.")) {
+			return dto.CloseCashSessionResponse{}, err
+		}
+
+		if errors.Is(err, errors.New("Toko tidak ditemukan.")) {
+			return dto.CloseCashSessionResponse{}, err
+		}
+
+		helper.Logger("close cash session and store", filePath, err)
+		return dto.CloseCashSessionResponse{}, errors.New(BASE_MESSAGE)
 	}
 
 	return dto.CloseCashSessionResponse{
