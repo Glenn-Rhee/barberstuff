@@ -12,7 +12,7 @@ type StoreRepository interface {
 	Create(s *entity.Store) error
 	FindOne(where string, args ...interface{}) (entity.StoreWithTotal, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.StoreWithTotal, error)
-	Updates(value interface{}, id uuid.UUID) (int64, error)
+	Updates(tx *gorm.DB, value interface{}, id uuid.UUID) (int64, error)
 	SoftDelete(storeId uuid.UUID) error
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
@@ -70,8 +70,8 @@ func (r *storeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.S
 	return stores, result.Error
 }
 
-func (r *storeRepository) Updates(value interface{}, id uuid.UUID) (int64, error) {
-	result := r.db.
+func (r *storeRepository) Updates(tx *gorm.DB, value interface{}, id uuid.UUID) (int64, error) {
+	result := tx.
 		Model(&entity.Store{}).
 		Where("id = ?", id).
 		Updates(value)
