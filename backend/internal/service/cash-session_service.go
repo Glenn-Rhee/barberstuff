@@ -104,6 +104,8 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 		Status:     entity.SessionOpen,
 	}
 
+	
+
 	err = s.cashSessionRepo.Create(&dataCashSession)
 	if err != nil {
 		if helper.IsUniqueViolation(err) {

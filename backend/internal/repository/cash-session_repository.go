@@ -7,7 +7,7 @@ import (
 )
 
 type CashSessionRepository interface {
-	Create(c *entity.CashSession) error
+	Create(tx *gorm.DB, c *entity.CashSession) error
 	FindOne(query interface{}, args ...interface{}) (entity.CashSession, error)
 	Updates(value interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.CashSession, error)
@@ -22,8 +22,8 @@ func NewCashSessionRepository(db *gorm.DB) CashSessionRepository {
 	return &cashSessionRepository{db: db}
 }
 
-func (r *cashSessionRepository) Create(c *entity.CashSession) error {
-	result := r.db.Model(&c).Create(c)
+func (r *cashSessionRepository) Create(tx *gorm.DB, c *entity.CashSession) error {
+	result := tx.Model(&c).Create(c)
 	return result.Error
 }
 
