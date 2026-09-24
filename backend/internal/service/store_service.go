@@ -30,6 +30,7 @@ type storeService struct {
 	ratingRepo  repository.RatingRepository
 	capsterRepo repository.CapsterRepository
 	staffRepo   repository.StaffRepository
+	db          *gorm.DB
 }
 
 func NewStoreService(
@@ -38,6 +39,8 @@ func NewStoreService(
 	rr repository.RatingRepository,
 	cr repository.CapsterRepository,
 	str repository.StaffRepository,
+	db *gorm.DB,
+
 ) StoreService {
 	return &storeService{
 		storeRepo:   storeRepo,
@@ -45,6 +48,7 @@ func NewStoreService(
 		ratingRepo:  rr,
 		capsterRepo: cr,
 		staffRepo:   str,
+		db: db,
 	}
 }
 
@@ -110,7 +114,7 @@ func (s *storeService) GetStores(query dto.QueryParamsStores, claims *lib.Custom
 			return d.Where("name ILIKE ?", q)
 		})
 	}
-	
+
 	var page = 1
 	var limit = 20
 	var sortBy = dto.SortByName
@@ -334,14 +338,26 @@ func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) e
 		updates["status"] = req.Status
 	}
 
-	rowsAffected, err := s.storeRepo.Updates(updates, id)
-	if err != nil {
-		helper.Logger("Find data store", filePath, err)
-		return errors.New(BASE_MESSAGE)
-	}
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		rowsAffected, err := s.storeRepo.Updates(tx, updates, id)
+		if err != nil {
+			helper.Logger("Find data store", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+	
+		if rowsAffected == 0 {
+			return errors.New("Toko tidak ditemukan")
+		}
 
-	if rowsAffected == 0 {
-		return errors.New("Data toko tidak ditemukan atau telah dihapus.")
+		return nil
+	})
+
+	if err != nil {
+		if errors.Is(err, errors.New("Toko tidak ditemukan")) {
+			return err
+		}
+
+		return errors.New(BASE_MESSAGE)
 	}
 
 	return nil
