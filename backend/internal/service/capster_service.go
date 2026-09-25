@@ -203,7 +203,7 @@ func (s *capsterService) UpdateCapster(req dto.UpdateCapsterRequest, id string) 
 		return errors.New("Data capster tidak valid!")
 	}
 
-	if req.ImageUrl == nil && req.Name == nil && req.Status == nil {
+	if helper.IsAllFieldsNil(req) {
 		return errors.New("Minimal update salah satu data!")
 	}
 
@@ -219,6 +219,25 @@ func (s *capsterService) UpdateCapster(req dto.UpdateCapsterRequest, id string) 
 
 	if req.Status != nil {
 		updates["status"] = req.Status
+	}
+
+	if req.IdStore != nil {
+		IdStore, err := uuid.Parse(*req.IdStore)
+		if err != nil {
+			return errors.New("Id toko tidak valid.")
+		}
+
+		_, err = s.storeRepo.FindOne("id = ?", IdStore)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("Toko tidak ditemukan.")
+			}
+
+			helper.Logger("Find one store", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+
+		updates["id_store"] = IdStore
 	}
 
 	rowsAffected, err := s.capsterRepo.Updates(updates, idCapster)

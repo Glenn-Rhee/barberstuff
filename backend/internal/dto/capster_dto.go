@@ -41,4 +41,5 @@ type UpdateCapsterRequest struct {
 	Name     *string                   `json:"name" binding:"omitempty"`
 	Status   *entity.CapsterStatusEnum `json:"status" binding:"omitempty,oneof=active inactive"`
 	ImageUrl *string                   `json:"image_url" binding:"omitempty,url"`
+	IdStore  *string                   `json:"id_store" binding:"omitempty"`
 }
