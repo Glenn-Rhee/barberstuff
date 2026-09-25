@@ -1166,7 +1166,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim.",
+                "description": "Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Untuk field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim",
                 "consumes": [
                     "application/json"
                 ],
@@ -4363,6 +4363,9 @@ const docTemplate = `{
         "dto.UpdateCapsterRequest": {
             "type": "object",
             "properties": {
+                "id_store": {
+                    "type": "string"
+                },
                 "image_url": {
                     "type": "string"
                 },

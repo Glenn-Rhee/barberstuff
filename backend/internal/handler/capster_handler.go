@@ -146,7 +146,7 @@ func (h *CapsterHandler) GetCapsters(ctx *gin.Context) {
 
 // UpdateCapster godoc
 // @Summary      Update data capster
-// @Description  Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim.
+// @Description  Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Untuk field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim
 // @Tags         Capster
 // @Accept       json
 // @Produce      json
