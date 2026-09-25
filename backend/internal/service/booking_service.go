@@ -637,6 +637,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 
 func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.CustomClaims, req dto.GetBookingStoreRequest) (dto.GetBookingStoreResponse, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil booking toko. Coba lagi nanti!"
+	const CAPSTER_BUSY_WINDOW = 45 * time.Minute // FIX: window busy per capster
 	_, filePath, _, _ := runtime.Caller(0)
 
 	idStore, err := uuid.Parse(req.IdStore)
@@ -654,16 +655,15 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
 	}
 
-	// FIX: load lokasi toko dari dataStore.Timezone (bukan hardcode Asia/Jakarta lagi)
 	loc, err := time.LoadLocation(string(dataStore.Timezone))
 	if err != nil {
 		helper.Logger("load timezone", filePath, err)
 		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
 	}
 
-	reqDateLocal := req.Date.In(loc) // FIX: convert tanggal request ke lokasi toko
+	reqDateLocal := req.Date.In(loc)
 
-	slots := helper.GenerateAvailableSlots(req.Date, dataStore.OpenHour, dataStore.CloseHour, loc) // FIX: tambah parameter loc
+	slots := helper.GenerateAvailableSlots(req.Date, dataStore.OpenHour, dataStore.CloseHour, loc)
 	slotStrings := make([]string, len(slots))
 	for i, slot := range slots {
 		slotStrings[i] = slot.Format("15:04")
@@ -681,35 +681,40 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
 	}
 
+	// FIX: ambil semua booking aktif (booked/progress) di hari itu, tanpa filter exact jam,
+	// karena sekarang butuh dicek overlap ±45 menit per capster untuk tiap slot.
+	var scopesBooked []func(d *gorm.DB) *gorm.DB
+	scopesBooked = append(scopesBooked, func(d *gorm.DB) *gorm.DB {
+		startDay := time.Date(reqDateLocal.Year(), reqDateLocal.Month(), reqDateLocal.Day(), 0, 0, 0, 0, loc)
+		endOfDay := startDay.Add(24 * time.Hour)
+
+		return d.Where("id_store = ?", idStore).
+			Where("scheduled_at >= ? AND scheduled_at < ?", startDay, endOfDay).
+			Where("status_booking IN ?", []entity.BookingStatusEnum{ // FIX: filter status aktif
+				entity.BookingStatusBooked,
+				entity.BookingStatusProgress,
+			})
+	})
+
+	dataBooked, err := s.bookingRepo.FindAll(scopesBooked...)
+	if err != nil {
+		helper.Logger("Find all data booked", filePath, err)
+		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	// FIX: dbBookedMap lama (exact match jam) dihapus, diganti pendekatan overlap per slot di bawah
+
+	pipe := s.client.Pipeline()
+	cmdMap := make(map[string]*redis.StringCmd)
+
 	capsterIds := make([]string, len(dataCapsters))
 	for i, c := range dataCapsters {
 		capsterIds[i] = c.ID.String()
 	}
 
-	var scopesBooked []func(d *gorm.DB) *gorm.DB
-	scopesBooked = append(scopesBooked, func(d *gorm.DB) *gorm.DB {
-		startDay := time.Date(reqDateLocal.Year(), reqDateLocal.Month(), reqDateLocal.Day(), 0, 0, 0, 0, loc) // FIX: pakai reqDateLocal & loc
-		endOfDay := startDay.Add(24 * time.Hour)
-
-		return d.Where("id_store = ?", idStore).
-			Where("scheduled_at >= ? AND scheduled_at < ?", startDay, endOfDay)
-	})
-
-	dataBooked, err := s.bookingRepo.FindAll(scopesBooked...)
-
-	// FIX: loc dihapus dari sini, pakai loc yang sudah di-load dari dataStore.Timezone di atas
-	dbBookedMap := make(map[string]bool)
-	for _, b := range dataBooked {
-		key := fmt.Sprintf("%s|%s", b.ScheduledAt.In(loc).Format("15:04"), b.IDCapster.String())
-		dbBookedMap[key] = true
-	}
-
-	pipe := s.client.Pipeline()
-	cmdMap := make(map[string]*redis.StringCmd)
-
 	for _, timeStr := range slotStrings {
 		for _, capsterId := range capsterIds {
-			key := fmt.Sprintf("lock:%s:%s:%s:%s", idStore, reqDateLocal.Format("2006-01-02"), timeStr, capsterId) // FIX: pakai reqDateLocal
+			key := fmt.Sprintf("lock:%s:%s:%s:%s", idStore, reqDateLocal.Format("2006-01-02"), timeStr, capsterId)
 			cmdMap[fmt.Sprintf("%s|%s", timeStr, capsterId)] = pipe.Get(ctx, key)
 		}
 	}
@@ -748,22 +753,33 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 		isPastSlot := slotDateTime.Before(now.Add(30 * time.Minute))
 		isNoStaff := len(dataStaff) <= 0
 
-		// FIX: langkah 1 — hitung dulu capster mana saja yang kosong di slot ini,
-		// sebelum decide available/tidaknya masing-masing
-		var freeCapsterIndexes []int // index c di dataCapsters yang statusnya kosong
+		// FIX: hitung capster mana yang "busy" di slot waktu ini — overlap ±45 menit
+		// dengan booking manapun (dari DB), independen dari exact match jam.
+		busyCapsterSet := make(map[uuid.UUID]bool)
+		for _, b := range dataBooked {
+			existingTime := b.ScheduledAt.In(loc)
+			diff := existingTime.Sub(slotDateTime)
+			if diff < 0 {
+				diff = -diff
+			}
+			if diff < CAPSTER_BUSY_WINDOW {
+				busyCapsterSet[b.IDCapster] = true
+			}
+		}
+
+		var freeCapsterIndexes []int
 
 		for idx, c := range dataCapsters {
 			compositeKey := fmt.Sprintf("%s|%s", timeStr, c.ID.String())
-			isBookedDb := dbBookedMap[compositeKey]
 			isLockedRedis := lockedMap[compositeKey]
+			isBusyDb := busyCapsterSet[c.ID] // FIX: pakai busyCapsterSet, bukan dbBookedMap exact match
 
-			isFree := !isBookedDb && !isLockedRedis && !isPastSlot && !isNoStaff
+			isFree := !isBusyDb && !isLockedRedis && !isPastSlot && !isNoStaff
 			if isFree {
 				freeCapsterIndexes = append(freeCapsterIndexes, idx)
 			}
 		}
 
-		// FIX: langkah 2 — kalau capster kosong cuma sisa 1, itu direserved (tidak available)
 		reservedIdx := -1
 		if len(freeCapsterIndexes) == 1 {
 			reservedIdx = freeCapsterIndexes[0]
@@ -774,12 +790,11 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 
 		for idx, c := range dataCapsters {
 			compositeKey := fmt.Sprintf("%s|%s", timeStr, c.ID.String())
-			isBookedDb := dbBookedMap[compositeKey]
 			isLockedRedis := lockedMap[compositeKey]
+			isBusyDb := busyCapsterSet[c.ID] // FIX: pakai busyCapsterSet
 
-			available := !isBookedDb && !isLockedRedis && !isPastSlot && !isNoStaff
+			available := !isBusyDb && !isLockedRedis && !isPastSlot && !isNoStaff
 
-			// FIX: langkah 3 — kalau capster ini adalah satu-satunya yang tersisa, paksa jadi false
 			if idx == reservedIdx {
 				available = false
 			}
@@ -814,7 +829,7 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 
 		resultSlots = append(resultSlots, dto.SlotAvailable{
 			Time:      timeStr,
-			Available: !isPastSlot && availableCount > 0 && !isNoStaff, // FIX: >0, karena availableCount sudah otomatis exclude reserved
+			Available: !isPastSlot && availableCount > 0 && !isNoStaff,
 			Capsters:  capstterResults,
 		})
 	}
