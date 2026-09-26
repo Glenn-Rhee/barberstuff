@@ -30,6 +30,7 @@ func main() {
 	log.Println("Server is starting...")
 	db := db.Connect()
 	lib.RedisInit()
+	lib.StorageInit()
 	h := bootstrap.InitHandlers(db)
 	r := gin.Default()
 	c := cron.New()
@@ -149,6 +150,12 @@ func main() {
 	{
 		transactions.Use(h.AuthMiddleware)
 		transactions.POST("/", h.TransactionsHandler.CreateTransaction)
+	}
+
+	upload := r.Group("/upload")
+	{
+		upload.Use(h.AuthMiddleware)
+		upload.POST("/presign", h.UploadHandler.GetPresignedURL)
 	}
 
 	c.AddFunc("*/5 * * * *", func() {

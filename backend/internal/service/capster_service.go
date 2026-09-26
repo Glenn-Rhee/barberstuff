@@ -62,7 +62,7 @@ func (s *capsterService) Create(req dto.CreateCapsterRequest) error {
 		ID:       uuid.New(),
 		Name:     req.Name,
 		Status:   entity.CapsterStatusActive,
-		ImageUrl: &req.ImageUrl,
+		ImageUrl: req.ImageUrl,
 		IDStore:  idStore,
 	}
 
