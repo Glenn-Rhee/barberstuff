@@ -12,6 +12,7 @@ import (
 	"log"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -27,7 +28,7 @@ type CustomerService interface {
 	ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) (dto.ForgotPassswordResponse, error)
 	GetProfile(claims *lib.CustomClaims) (dto.ProfileCustomerResponse, error)
 	FindCustomers(params dto.FindCustomerRequest) (dto.FindCustomerResponse, dto.ResponsePagination, error)
-	UpdateProfile(claims *lib.CustomClaims, req dto.UpdateProfileRequest) error
+	UpdateProfile(ctx context.Context, claims *lib.CustomClaims, req dto.UpdateProfileRequest) error
 }
 
 type customerService struct {
@@ -106,6 +107,17 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		helper.Logger("Find premium type", BASE_PATH, err)
 		return dto.AuthenticationResponse{}, errors.New("Terjadi kesalahan saat mencari data premium")
 	}
+
+	var imgUrl *string
+	if dataNewCustomer.ImageUrl != nil {
+		permanentKey, err := lib.MoveObjectToPermanent(ctx, *dataNewCustomer.ImageUrl)
+		if err != nil {
+			return dto.AuthenticationResponse{}, err
+		}
+
+		imgUrl = &permanentKey
+	}
+
 	custId := uuid.New()
 	customer := &entity.Customer{
 		ID:            custId,
@@ -114,7 +126,7 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		DateOfBirth:   &dataNewCustomer.DateOfBirth,
 		Gender:        dataNewCustomer.Gender,
 		IdPremiumType: &dataPremium.ID,
-		ImageCustomer: dataNewCustomer.ImageUrl,
+		ImageCustomer: imgUrl,
 	}
 
 	auth := &entity.Authentication{
@@ -161,6 +173,7 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 	expiresIn := 30 * 24 * time.Hour
 	token, err := lib.GenerateToken(custId.String(), auth.Email, auth.Role, expiresIn)
 	if err != nil {
+		tx.Rollback()
 		helper.Logger("Generate Token", "service/auth_service.go", err)
 		return dto.AuthenticationResponse{}, errors.New("Terjadi kesalahan saat login! Coba lagi nanti.")
 	}
@@ -248,6 +261,16 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		return c.failRegister(tx, "GENERATE HASH PASSWORD", err)
 	}
 
+	var imgUrl *string
+	if dataNewCustomer.ImageUrl != nil {
+		permanentKey, err := lib.MoveObjectToPermanent(ctx, *dataNewCustomer.ImageUrl)
+		if err != nil {
+			return &dto.CredentialCustomerResponse{}, err
+		}
+
+		imgUrl = &permanentKey
+	}
+
 	custId := uuid.New()
 	customer := &entity.Customer{
 		ID:            custId,
@@ -257,7 +280,7 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		Gender:        dataNewCustomer.Gender,
 		IdPremiumType: &dataPremium.ID,
 		MemberPoints:  100,
-		ImageCustomer: dataNewCustomer.ImageUrl,
+		ImageCustomer: imgUrl,
 	}
 
 	auth := &entity.Authentication{
@@ -506,6 +529,17 @@ func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCusto
 		return dto.ProfileCustomerResponse{}, errors.New("Terjadi kesalahan saat mencari data premium")
 	}
 
+	var imgUrl *string
+	if dataCustomers.ImageCustomer != nil {
+		pressignedURL, err := lib.GeneratePressignedGetURL(*dataCustomers.ImageCustomer)
+		if err != nil {
+			helper.Logger("generate pressignedURL", "get presigned", err)
+			imgUrl = nil
+		}
+
+		imgUrl = &pressignedURL
+	}
+
 	dataResult := dto.ProfileCustomerResponse{
 		Id:            dataCustomers.ID,
 		Name:          dataCustomers.Name,
@@ -514,7 +548,7 @@ func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCusto
 		Gender:        dataCustomers.Gender,
 		MemberPoints:  dataCustomers.MemberPoints,
 		PremiumType:   dataPremium.Name,
-		ImageUrl:      dataCustomers.ImageCustomer,
+		ImageUrl:      imgUrl,
 		CreatedAt:     dataCustomers.CreatedAt,
 		Role:          dataCustomers.Authentication.Role,
 		Email:         dataCustomers.Authentication.Email,
@@ -526,7 +560,7 @@ func (c *customerService) GetProfile(claims *lib.CustomClaims) (dto.ProfileCusto
 	return dataResult, nil
 }
 
-func (c *customerService) UpdateProfile(claims *lib.CustomClaims, req dto.UpdateProfileRequest) error {
+func (c *customerService) UpdateProfile(ctx context.Context, claims *lib.CustomClaims, req dto.UpdateProfileRequest) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data profile user!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -546,7 +580,29 @@ func (c *customerService) UpdateProfile(claims *lib.CustomClaims, req dto.Update
 	}
 
 	if req.ImageUrl != nil {
-		updates["image_url"] = req.ImageUrl
+		dataCustomer, err := c.customerRepo.FindOne("id = ?", idUser)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("Data tidak ditemukan.")
+			}
+			helper.Logger("Find one customer", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+
+		if dataCustomer.ImageCustomer != nil && strings.Split(*dataCustomer.ImageCustomer, "/")[0] == "uploads" {
+			err = lib.DeleteObject(ctx, *dataCustomer.ImageCustomer)
+			if err != nil {
+				helper.Logger("Delete image capster", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+		}
+
+		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImageUrl)
+		if err != nil {
+			return err
+		}
+
+		updates["image_url"] = permanentKey
 	}
 
 	if req.PhoneNumber != nil {
@@ -739,6 +795,16 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 		favoriteCapsterName := findMostFrequent(capsterCount, capsterNameMap)
 		favoriteServiceName := findMostFrequent(serviceCount, serviceNameMap)
 
+		var imgUrl *string
+		if c.ImageCustomer != nil {
+			pressignedURL, err := lib.GeneratePressignedGetURL(*c.ImageCustomer)
+			if err != nil {
+				helper.Logger("generate pressignedURL", filePath, err)
+				imgUrl = nil
+			}
+
+			imgUrl = &pressignedURL
+		}
 		dataCustomers = append(dataCustomers, dto.DataUserFindCustomer{
 			Id:              c.ID,
 			Name:            c.Name,
@@ -749,7 +815,7 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 			LastVisitedAt:   lastVisitedAt,
 			ServiceFavorite: favoriteServiceName,
 			CapsterFavorite: favoriteCapsterName,
-			ImageUrl:        c.ImageCustomer,
+			ImageUrl:        imgUrl,
 			Email:           c.Authentication.Email,
 		})
 	}

@@ -251,7 +251,7 @@ func (s *capsterService) UpdateCapster(ctx context.Context, req dto.UpdateCapste
 			return err
 		}
 
-		updates["image_url"] = &permanentKey
+		updates["image_url"] = permanentKey
 	}
 
 	if req.Name != nil {

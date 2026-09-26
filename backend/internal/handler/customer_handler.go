@@ -319,7 +319,7 @@ func (h *CustomerHandler) UpdateProfile(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.UpdateProfile(claimsResult, dataRequest)
+	err := h.service.UpdateProfile(ctx.Request.Context(), claimsResult, dataRequest)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
