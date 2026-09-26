@@ -136,9 +136,15 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 }
 
 func DeleteObject(ctx context.Context, key string) error {
+	if _, err := os.Stat(".env"); err == nil {
+		if err := godotenv.Load(); err != nil {
+			log.Println("Error load dotenv file:", err.Error())
+		}
+	}
 	if key == "" {
 		return nil // tidak ada yang perlu dihapus
 	}
+
 	bucket := os.Getenv("WASABI_BUCKET")
 
 	_, err := S3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
@@ -146,4 +152,28 @@ func DeleteObject(ctx context.Context, key string) error {
 		Key:    aws.String(key),
 	})
 	return err
+}
+
+func GeneratePressignedGetURL(objectKey string) (string, error) {
+	if _, err := os.Stat(".env"); err == nil {
+		if err := godotenv.Load(); err != nil {
+			log.Println("Error load dotenv file:", err.Error())
+		}
+	}
+	bucket := os.Getenv("WASABI_BUCKET")
+
+	if strings.Split(objectKey, "/")[0] != "uploads" {
+		return objectKey, nil
+	}
+
+	req, err := s3PressignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(objectKey),
+	}, s3.WithPresignExpires(30*time.Minute))
+
+	if err != nil {
+		return "", err
+	}
+
+	return req.URL, nil
 }
