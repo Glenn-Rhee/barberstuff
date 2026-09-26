@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"barberstuff_backend/internal/helper"
 	"context"
 	"errors"
 	"log"
@@ -87,13 +88,18 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 	}
 	bucket := os.Getenv("WASABI_BUCKET")
 
+	if strings.Split(tempKey, "/")[0] != "temp" {
+		return "", errors.New("Image url harus berupa object key.")
+	}
+
 	// Cek ukuran file yang SEBENARNYA ter-upload
 	head, err := S3Client.HeadObject(ctx, &s3.HeadObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(tempKey),
 	})
 	if err != nil {
-		return "", err
+		helper.Logger("failed move object", "move to object permanent", err)
+		return "", errors.New("Gagal membuat data, periksa image url.")
 	}
 
 	size := *head.ContentLength
@@ -103,7 +109,8 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 			Bucket: aws.String(bucket),
 			Key:    aws.String(tempKey),
 		})
-		return "", WasabiErrMaxSize
+		helper.Logger("failed move object", "move to object permanent", err)
+		return "", errors.New("Gagal membuat data, periksa image url.")
 	}
 
 	permanentKey := strings.Replace(tempKey, "temp/", "uploads/", 1)
@@ -115,13 +122,28 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 		Key:        aws.String(permanentKey),
 	})
 	if err != nil {
-		return "", err
+		helper.Logger("failed move object", "move to object permanent", err)
+		return "", errors.New("Gagal membuat data, periksa image url.")
 	}
 
-	S3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(tempKey),
-	})
+	err = DeleteObject(ctx, tempKey)
+	if err != nil {
+		helper.Logger("failed move object", "move to object permanent", err)
+		return "", errors.New("Gagal membuat data, periksa image url.")
+	}
 
 	return permanentKey, nil
+}
+
+func DeleteObject(ctx context.Context, key string) error {
+	if key == "" {
+		return nil // tidak ada yang perlu dihapus
+	}
+	bucket := os.Getenv("WASABI_BUCKET")
+
+	_, err := S3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	})
+	return err
 }

@@ -21,7 +21,7 @@ func NewCapsterHandler(s service.CapsterService) *CapsterHandler {
 
 // Create godoc
 // @Summary      Tambah capster baru
-// @Description  Membuat data capster baru pada toko tertentu. Hanya dapat diakses oleh admin
+// @Description  Membuat data capster baru pada toko tertentu. Hanya dapat diakses oleh admin. Image url dapat diisi dengan object key yang didapatkan ketiika presigned URL
 // @Tags         Capster
 // @Accept       json
 // @Produce      json
@@ -146,7 +146,7 @@ func (h *CapsterHandler) GetCapsters(ctx *gin.Context) {
 
 // UpdateCapster godoc
 // @Summary      Update data capster
-// @Description  Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Untuk field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim
+// @Description  Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Untuk field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim. Image url dapat diisi dengan object key yang didapatkan ketiika presigned URL
 // @Tags         Capster
 // @Accept       json
 // @Produce      json
@@ -196,7 +196,7 @@ func (h *CapsterHandler) UpdateCapster(ctx *gin.Context) {
 	}
 
 	idCapster := ctx.Param("id")
-	err := h.service.UpdateCapster(dataBody, idCapster)
+	err := h.service.UpdateCapster(ctx.Request.Context(), dataBody, idCapster)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),

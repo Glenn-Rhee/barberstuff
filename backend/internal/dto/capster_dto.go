@@ -40,6 +40,6 @@ type QueryParamsCapsters struct {
 type UpdateCapsterRequest struct {
 	Name     *string                   `json:"name" binding:"omitempty"`
 	Status   *entity.CapsterStatusEnum `json:"status" binding:"omitempty,oneof=active inactive"`
-	ImageUrl *string                   `json:"image_url" binding:"omitempty,url"`
+	ImageUrl *string                   `json:"image_url" binding:"omitempty"`
 	IdStore  *string                   `json:"id_store" binding:"omitempty"`
 }

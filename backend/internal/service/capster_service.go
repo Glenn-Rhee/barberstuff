@@ -19,7 +19,7 @@ import (
 type CapsterService interface {
 	Create(ctx context.Context, req dto.CreateCapsterRequest) error
 	GetCapsters(query dto.QueryParamsCapsters, claims *lib.CustomClaims) ([]dto.CapsterDataResponse, dto.ResponsePagination, error)
-	UpdateCapster(req dto.UpdateCapsterRequest, id string) error
+	UpdateCapster(ctx context.Context, req dto.UpdateCapsterRequest, id string) error
 	DeleteCapster(id string) error
 }
 
@@ -63,18 +63,9 @@ func (s *capsterService) Create(ctx context.Context, req dto.CreateCapsterReques
 	var imageUrl *string
 
 	if req.ImageUrl != nil {
-		if strings.Split(*req.ImageUrl, "/")[0] != "temp" {
-			return errors.New("Image url harus berupa object key.")
-		}
-
 		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImageUrl)
 		if err != nil {
-			if errors.Is(err, lib.WasabiErrMaxSize) {
-				return errors.New("Maximum ukuran file adalah 5 mb.")
-			}
-			
-			helper.Logger("failed move object", filePath, err)
-			return errors.New("Gagal membuat data, periksa image url.")
+			return err
 		}
 
 		imageUrl = &permanentKey
@@ -216,7 +207,7 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.
 	return dataCapsters, paginationData, nil
 }
 
-func (s *capsterService) UpdateCapster(req dto.UpdateCapsterRequest, id string) error {
+func (s *capsterService) UpdateCapster(ctx context.Context, req dto.UpdateCapsterRequest, id string) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data capster!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -232,7 +223,29 @@ func (s *capsterService) UpdateCapster(req dto.UpdateCapsterRequest, id string) 
 	updates := make(map[string]interface{})
 
 	if req.ImageUrl != nil {
-		updates["image_url"] = req.ImageUrl
+		dataCapster, err := s.capsterRepo.FindOne("id = ?", idCapster)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("Data capster tidak ditemukan.")
+			}
+			helper.Logger("Find one capster", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+
+		if dataCapster.ImageUrl != nil && strings.Split(*dataCapster.ImageUrl, "/")[0] == "uploads" {
+			err = lib.DeleteObject(ctx, *dataCapster.ImageUrl)
+			if err != nil {
+				helper.Logger("Delete image capster", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+		}
+
+		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImageUrl)
+		if err != nil {
+			return err
+		}
+
+		updates["image_url"] = &permanentKey
 	}
 
 	if req.Name != nil {
