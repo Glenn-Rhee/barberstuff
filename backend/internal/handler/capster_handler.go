@@ -67,7 +67,7 @@ func (h *CapsterHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.Create(dataBody)
+	err := h.service.Create(ctx.Request.Context(), dataBody)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),

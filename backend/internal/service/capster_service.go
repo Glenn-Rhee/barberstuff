@@ -6,8 +6,10 @@ import (
 	"barberstuff_backend/internal/helper"
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
+	"context"
 	"errors"
 	"runtime"
+	"strings"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -15,7 +17,7 @@ import (
 )
 
 type CapsterService interface {
-	Create(req dto.CreateCapsterRequest) error
+	Create(ctx context.Context, req dto.CreateCapsterRequest) error
 	GetCapsters(query dto.QueryParamsCapsters, claims *lib.CustomClaims) ([]dto.CapsterDataResponse, dto.ResponsePagination, error)
 	UpdateCapster(req dto.UpdateCapsterRequest, id string) error
 	DeleteCapster(id string) error
@@ -30,7 +32,7 @@ func NewCapsterService(cr repository.CapsterRepository, sr repository.StoreRepos
 	return &capsterService{capsterRepo: cr, storeRepo: sr}
 }
 
-func (s *capsterService) Create(req dto.CreateCapsterRequest) error {
+func (s *capsterService) Create(ctx context.Context, req dto.CreateCapsterRequest) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data capster!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -58,11 +60,31 @@ func (s *capsterService) Create(req dto.CreateCapsterRequest) error {
 		return errors.New(BASE_MESSAGE)
 	}
 
+	var imageUrl *string
+
+	if req.ImageUrl != nil {
+		if strings.Split(*req.ImageUrl, "/")[0] != "temp" {
+			return errors.New("Image url harus berupa object key.")
+		}
+
+		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImageUrl)
+		if err != nil {
+			if errors.Is(err, lib.WasabiErrMaxSize) {
+				return errors.New("Maximum ukuran file adalah 5 mb.")
+			}
+			
+			helper.Logger("failed move object", filePath, err)
+			return errors.New("Gagal membuat data, periksa image url.")
+		}
+
+		imageUrl = &permanentKey
+	}
+
 	capster := entity.Capster{
 		ID:       uuid.New(),
 		Name:     req.Name,
 		Status:   entity.CapsterStatusActive,
-		ImageUrl: req.ImageUrl,
+		ImageUrl: imageUrl,
 		IDStore:  idStore,
 	}
 

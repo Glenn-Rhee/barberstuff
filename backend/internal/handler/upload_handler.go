@@ -56,7 +56,26 @@ func (h *UploadHandler) GetPresignedURL(ctx *gin.Context) {
 
 		return
 	}
-	
+
+	const MaxFileSize = 5 * 1024 * 1024
+	if req.FileSize < 1 {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "minimum upload file adalah 1 byte",
+			StatusCode: http.StatusBadRequest,
+		})
+
+		return
+	}
+
+	if req.FileSize > MaxFileSize {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "maximum upload file adalah 5 mb",
+			StatusCode: http.StatusBadRequest,
+		})
+
+		return
+	}
+
 	objectKey := "temp/" + time.Now().Format("2006/01") + "/" + uuid.New().String() + ext
 
 	uploadURL, err := lib.GenereatePresignedUploadURL(objectKey, req.ContentType)
