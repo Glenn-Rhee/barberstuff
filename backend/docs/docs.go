@@ -1070,7 +1070,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Membuat data capster baru pada toko tertentu. Hanya dapat diakses oleh admin",
+                "description": "Membuat data capster baru pada toko tertentu. Hanya dapat diakses oleh admin. Image url dapat diisi dengan object key yang didapatkan ketiika presigned URL",
                 "consumes": [
                     "application/json"
                 ],
@@ -1166,7 +1166,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Untuk field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim",
+                "description": "Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Untuk field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim. Image url dapat diisi dengan object key yang didapatkan ketiika presigned URL",
                 "consumes": [
                     "application/json"
                 ],
@@ -2888,6 +2888,58 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/upload/presign": {
+            "post": {
+                "description": "Menghasilkan presigned URL untuk mengunggah gambar secara langsung ke object storage. File yang diperbolehkan adalah JPG, JPEG, PNG, WEBP, dan GIF dengan ukuran maksimal 5 MB. Extension file harus sesuai dengan content type yang dikirimkan. Field file_size satuannya adalah byte.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Upload"
+                ],
+                "summary": "Generate presigned URL untuk upload gambar",
+                "parameters": [
+                    {
+                        "description": "Data file yang akan diupload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PresignRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success create presign URL",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.PresignResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal generate presigned URL",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -3944,6 +3996,42 @@ const docTemplate = `{
                     "minLength": 9
                 },
                 "temp_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PresignRequest": {
+            "type": "object",
+            "required": [
+                "content_type",
+                "file_name",
+                "file_size"
+            ],
+            "properties": {
+                "content_type": {
+                    "type": "string",
+                    "enum": [
+                        "image/png",
+                        "image/jpeg",
+                        "image/webp",
+                        "image/gif"
+                    ]
+                },
+                "file_name": {
+                    "type": "string"
+                },
+                "file_size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.PresignResponse": {
+            "type": "object",
+            "properties": {
+                "object_key": {
+                    "type": "string"
+                },
+                "upload_url": {
                     "type": "string"
                 }
             }

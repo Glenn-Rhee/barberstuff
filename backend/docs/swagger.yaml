@@ -697,6 +697,31 @@ definitions:
     - phoneNumber
     - temp_token
     type: object
+  dto.PresignRequest:
+    properties:
+      content_type:
+        enum:
+        - image/png
+        - image/jpeg
+        - image/webp
+        - image/gif
+        type: string
+      file_name:
+        type: string
+      file_size:
+        type: integer
+    required:
+    - content_type
+    - file_name
+    - file_size
+    type: object
+  dto.PresignResponse:
+    properties:
+      object_key:
+        type: string
+      upload_url:
+        type: string
+    type: object
   dto.ProfileCustomerResponse:
     properties:
       created_at:
@@ -1876,7 +1901,8 @@ paths:
       consumes:
       - application/json
       description: Membuat data capster baru pada toko tertentu. Hanya dapat diakses
-        oleh admin
+        oleh admin. Image url dapat diisi dengan object key yang didapatkan ketiika
+        presigned URL
       parameters:
       - description: Data capster baru
         in: body
@@ -1939,7 +1965,9 @@ paths:
       - application/json
       description: Mengupdate data capster berdasarkan ID. Field yang ingin diubah
         dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Untuk
-        field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim
+        field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim.
+        Image url dapat diisi dengan object key yang didapatkan ketiika presigned
+        URL
       parameters:
       - description: ID capster
         format: uuid
@@ -3046,6 +3074,40 @@ paths:
       summary: Membuat transaksi
       tags:
       - Transactions
+  /upload/presign:
+    post:
+      consumes:
+      - application/json
+      description: Menghasilkan presigned URL untuk mengunggah gambar secara langsung
+        ke object storage. File yang diperbolehkan adalah JPG, JPEG, PNG, WEBP, dan
+        GIF dengan ukuran maksimal 5 MB. Extension file harus sesuai dengan content
+        type yang dikirimkan. Field file_size satuannya adalah byte.
+      parameters:
+      - description: Data file yang akan diupload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PresignRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success create presign URL
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PresignResponse'
+              type: object
+        "400":
+          description: Parameter tidak valid atau gagal generate presigned URL
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      summary: Generate presigned URL untuk upload gambar
+      tags:
+      - Upload
 securityDefinitions:
   BearerAuth:
     description: 'Masukkan token dengan format: Bearer {token}'

@@ -19,6 +19,18 @@ func NewUploadHandler() *UploadHandler {
 	return &UploadHandler{}
 }
 
+// GetPresignedURL godoc
+// @Summary      Generate presigned URL untuk upload gambar
+// @Description  Menghasilkan presigned URL untuk mengunggah gambar secara langsung ke object storage. File yang diperbolehkan adalah JPG, JPEG, PNG, WEBP, dan GIF dengan ukuran maksimal 5 MB. Extension file harus sesuai dengan content type yang dikirimkan. Field file_size satuannya adalah byte.
+// @Tags         Upload
+// @Accept       json
+// @Produce      json
+//
+// @Param        body body dto.PresignRequest true "Data file yang akan diupload"
+//
+// @Success      201 {object} dto.SwaggerResponse{data=dto.PresignResponse} "Success create presign URL"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal generate presigned URL"
+// @Router       /upload/presign [post]
 func (h *UploadHandler) GetPresignedURL(ctx *gin.Context) {
 	var req dto.PresignRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
