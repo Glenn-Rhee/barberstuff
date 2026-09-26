@@ -75,7 +75,7 @@ func (h *StoreHandler) CreateNewStore(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.CreateNewStore(dataBody)
+	err := h.service.CreateNewStore(ctx.Request.Context(), dataBody)
 
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
@@ -277,7 +277,7 @@ func (h *StoreHandler) UpdateStore(ctx *gin.Context) {
 
 	idStore := ctx.Param("id")
 
-	err := h.service.UpdateStore(dataBody, idStore)
+	err := h.service.UpdateStore(ctx.Request.Context(), dataBody, idStore)
 
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{

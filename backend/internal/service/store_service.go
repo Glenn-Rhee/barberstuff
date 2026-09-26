@@ -6,9 +6,11 @@ import (
 	"barberstuff_backend/internal/helper"
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
+	"context"
 	"errors"
 	"fmt"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -17,10 +19,10 @@ import (
 )
 
 type StoreService interface {
-	CreateNewStore(req dto.NewStoreRequest) error
+	CreateNewStore(ctx context.Context, req dto.NewStoreRequest) error
 	GetStores(query dto.QueryParamsStores, claims *lib.CustomClaims) ([]dto.StoreData, dto.ResponsePagination, error)
 	GetStore(claims lib.CustomClaims, idStore string) (dto.StoreData, error)
-	UpdateStore(req dto.UpdateStoreRequest, storeId string) error
+	UpdateStore(ctx context.Context, req dto.UpdateStoreRequest, storeId string) error
 	DeleteStore(storeId string) error
 }
 
@@ -48,7 +50,7 @@ func NewStoreService(
 		ratingRepo:  rr,
 		capsterRepo: cr,
 		staffRepo:   str,
-		db: db,
+		db:          db,
 	}
 }
 
@@ -59,7 +61,7 @@ func derefString(s *string) string {
 	return *s
 }
 
-func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
+func (s *storeService) CreateNewStore(ctx context.Context, req dto.NewStoreRequest) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data toko!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -78,6 +80,13 @@ func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
 		return errors.New("Timezone tidak valid!")
 	}
 
+	permanentKey, err := lib.MoveObjectToPermanent(ctx, req.BannerUrl)
+	if err != nil {
+		return err
+	}
+
+	bannerUrl := &permanentKey
+
 	coordinate := fmt.Sprintf("%f,%f", req.Lat, req.Long)
 	store := entity.Store{
 		ID:          uuid.New(),
@@ -86,7 +95,7 @@ func (s *storeService) CreateNewStore(req dto.NewStoreRequest) error {
 		Coordinate:  &coordinate,
 		OpenHour:    req.OpenHour,
 		CloseHour:   req.CloseHour,
-		BannerUrl:   &req.BannerUrl,
+		BannerUrl:   bannerUrl,
 		Address:     &req.Address,
 		Description: req.Description,
 		Status:      entity.StoreStatusOpen,
@@ -184,6 +193,17 @@ func (s *storeService) GetStores(query dto.QueryParamsStores, claims *lib.Custom
 			avgRating = float64(totalRating) / float64(len(s.Ratings))
 		}
 
+		var bannerUrl *string
+		if s.BannerUrl != nil {
+			presssignedURL, err := lib.GeneratePressignedGetURL(*s.BannerUrl)
+			if err != nil {
+				helper.Logger("generatet presssigned URL", filePath, err)
+				bannerUrl = nil
+			} else {
+				bannerUrl = &presssignedURL
+			}
+		}
+
 		dataStores = append(dataStores, dto.StoreData{
 			Id:           s.ID,
 			Name:         s.Name,
@@ -191,7 +211,7 @@ func (s *storeService) GetStores(query dto.QueryParamsStores, claims *lib.Custom
 			Coordinate:   (s.Coordinate),
 			OpenHour:     s.OpenHour,
 			CloseHour:    s.CloseHour,
-			BannerUrl:    (s.BannerUrl),
+			BannerUrl:    bannerUrl,
 			Address:      (s.Address),
 			Status:       s.Status,
 			Description:  (s.Description),
@@ -234,6 +254,16 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		var totalRatings int16
 		for _, v := range dataRatings {
 			totalRatings += v.Score
+			var imgUrl *string
+			if v.Customer.ImageCustomer != nil {
+				pressignedURL, err := lib.GeneratePressignedGetURL(*v.Customer.ImageCustomer)
+				if err != nil {
+					helper.Logger("generate pressignedURL", filePath, err)
+					imgUrl = nil
+				} else {
+					imgUrl = &pressignedURL
+				}
+			}
 			reviews = append(reviews, dto.Review{
 				Id:      v.ID,
 				Message: v.Message,
@@ -241,7 +271,7 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 				User: dto.CustomerResponseRating{
 					Id:          v.Customer.ID,
 					Name:        v.Customer.Name,
-					ImageUrl:    v.Customer.ImageCustomer,
+					ImageUrl:    imgUrl,
 					PremiumType: v.Customer.PremiumType.Name,
 				},
 			})
@@ -252,6 +282,17 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		}
 	}
 
+	var bannerURL *string
+	if dataStore.BannerUrl != nil {
+		pressignedURL, err := lib.GeneratePressignedGetURL(*dataStore.BannerUrl)
+		if err != nil {
+			helper.Logger("generate pressignedURL", filePath, err)
+			bannerURL = nil
+		} else {
+			bannerURL = &pressignedURL
+		}
+	}
+
 	store := dto.StoreData{
 		Id:           dataStore.ID,
 		Name:         dataStore.Name,
@@ -259,7 +300,7 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		Coordinate:   dataStore.Coordinate,
 		OpenHour:     dataStore.OpenHour,
 		CloseHour:    dataStore.CloseHour,
-		BannerUrl:    dataStore.BannerUrl,
+		BannerUrl:    bannerURL,
 		Address:      dataStore.Address,
 		Description:  dataStore.Description,
 		Status:       dataStore.Status,
@@ -275,7 +316,7 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 	return store, nil
 }
 
-func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) error {
+func (s *storeService) UpdateStore(ctx context.Context, req dto.UpdateStoreRequest, storeId string) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data toko!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -302,7 +343,29 @@ func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) e
 	}
 
 	if req.BannerUrl != nil {
-		updates["banner_url"] = req.BannerUrl
+		dataStore, err := s.storeRepo.FindOne("id = ?", id)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("Data toko tidak ditemukan.")
+			}
+			helper.Logger("Find one toko", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+
+		if dataStore.BannerUrl != nil && strings.Split(*dataStore.BannerUrl, "/")[0] == "uploads" {
+			err = lib.DeleteObject(ctx, *dataStore.BannerUrl)
+			if err != nil {
+				helper.Logger("Delete image store", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+		}
+
+		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.BannerUrl)
+		if err != nil {
+			return err
+		}
+
+		updates["banner_url"] = permanentKey
 	}
 
 	if req.OpenHour != nil {
@@ -344,7 +407,7 @@ func (s *storeService) UpdateStore(req dto.UpdateStoreRequest, storeId string) e
 			helper.Logger("Find data store", filePath, err)
 			return errors.New(BASE_MESSAGE)
 		}
-	
+
 		if rowsAffected == 0 {
 			return errors.New("Toko tidak ditemukan")
 		}

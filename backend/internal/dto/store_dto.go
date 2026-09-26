@@ -11,7 +11,7 @@ type NewStoreRequest struct {
 	Name        string                   `json:"name" binding:"required"`
 	Description *string                  `json:"description"`
 	Address     string                   `json:"address" binding:"required"`
-	BannerUrl   string                   `json:"banner_url" binding:"required,url"`
+	BannerUrl   string                   `json:"banner_url" binding:"required"`
 	OpenHour    time.Time                `json:"open_hour" binding:"required"`
 	CloseHour   time.Time                `json:"close_hour" binding:"required"`
 	Lat         float64                  `json:"lat" binding:"required"`
@@ -25,7 +25,7 @@ type UpdateStoreRequest struct {
 	Name        *string                   `json:"name" binding:"omitempty"`
 	Description *string                   `json:"description"`
 	Address     *string                   `json:"address" binding:"omitempty"`
-	BannerUrl   *string                   `json:"banner_url" binding:"omitempty,url"`
+	BannerUrl   *string                   `json:"banner_url" binding:"omitempty"`
 	OpenHour    *time.Time                `json:"open_hour" binding:"omitempty"`
 	CloseHour   *time.Time                `json:"close_hour" binding:"omitempty"`
 	Lat         *float64                  `json:"lat" binding:"omitempty"`

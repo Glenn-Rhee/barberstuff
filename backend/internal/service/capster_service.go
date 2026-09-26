@@ -194,9 +194,10 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.
 			if err != nil {
 				helper.Logger("generate pressignedURL", filePath, err)
 				imgUrl = ""
+			} else {
+				imgUrl = pressignedURL
 			}
 
-			imgUrl = pressignedURL
 		}
 
 		dataCapsters = append(dataCapsters, dto.CapsterDataResponse{
