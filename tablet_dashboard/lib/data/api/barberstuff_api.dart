@@ -5,7 +5,11 @@ import '../../shared/models/person.dart';
 import '../../shared/models/service_item.dart';
 
 class Paged<T> {
-  const Paged({required this.items, required this.totalPages, required this.totalData});
+  const Paged({
+    required this.items,
+    required this.totalPages,
+    required this.totalData,
+  });
 
   final List<T> items;
   final int totalPages;
@@ -13,7 +17,11 @@ class Paged<T> {
 }
 
 class LoginResult {
-  const LoginResult({required this.token, required this.role, required this.email});
+  const LoginResult({
+    required this.token,
+    required this.role,
+    required this.email,
+  });
 
   final String token;
   final String role;
@@ -27,9 +35,16 @@ class BarberstuffApi {
   final ApiClient client;
 
   // ---- auth -------------------------------------------------------------
-  Future<LoginResult> login({required String email, required String password}) async {
-    final result = await client.post('/auth/login/credential', body: {'email': email, 'password': password});
-    final user = (result.map['user'] as Map? ?? const {}).cast<String, dynamic>();
+  Future<LoginResult> login({
+    required String email,
+    required String password,
+  }) async {
+    final result = await client.post(
+      '/auth/login/credential',
+      body: {'email': email, 'password': password},
+    );
+    final user = (result.map['user'] as Map? ?? const {})
+        .cast<String, dynamic>();
     return LoginResult(
       token: result.map['access_token'] as String? ?? '',
       role: user['role'] as String? ?? '',
@@ -37,7 +52,8 @@ class BarberstuffApi {
     );
   }
 
-  Future<StaffProfile> profile() async => StaffProfile.fromJson((await client.get('/profile/staff')).map);
+  Future<StaffProfile> profile() async =>
+      StaffProfile.fromJson((await client.get('/profile/staff')).map);
 
   // ---- catalog ----------------------------------------------------------
   Future<Paged<ServiceItem>> services({
@@ -49,7 +65,13 @@ class BarberstuffApi {
   }) async {
     final result = await client.get(
       '/service/',
-      query: {'id_store': storeId, 'type': type.api, 'name': name, 'page': page, 'limit': limit},
+      query: {
+        'id_store': storeId,
+        'type': type.api,
+        'name': name,
+        'page': page,
+        'limit': limit,
+      },
     );
     return Paged(
       items: [for (final json in result.list) ServiceItem.fromJson(json)],
@@ -59,15 +81,28 @@ class BarberstuffApi {
   }
 
   Future<List<Capster>> capsters(String storeId) async {
-    final result = await client.get('/capster/', query: {'id_store': storeId, 'limit': 50});
+    final result = await client.get(
+      '/capster/',
+      query: {'id_store': storeId, 'limit': 50},
+    );
     return [for (final json in result.list) Capster.fromJson(json)];
   }
 
   // ---- bookings ---------------------------------------------------------
-  Future<Paged<Booking>> bookings({BookingStatus? status, String? query, int page = 1, int limit = 5}) async {
+  Future<Paged<Booking>> bookings({
+    BookingStatus? status,
+    String? query,
+    int page = 1,
+    int limit = 5,
+  }) async {
     final result = await client.get(
       '/booking/',
-      query: {'status_booking': status?.api, 'q': query, 'page': page, 'limit': limit},
+      query: {
+        'status_booking': status?.api,
+        'q': query,
+        'page': page,
+        'limit': limit,
+      },
     );
     return Paged(
       items: [for (final json in result.list) Booking.fromJson(json)],
@@ -88,7 +123,7 @@ class BarberstuffApi {
     bool scheduled = false,
   }) async {
     final result = await client.post(
-      '/staff/booking',
+      '/staff/booking/',
       body: {
         'id_store': storeId,
         'id_capster': capsterId,
@@ -96,16 +131,21 @@ class BarberstuffApi {
         'booking_date': bookingDate.toUtc().toIso8601String(),
         'customer': {
           'id': ?customerId,
-          if (customerName != null && customerName.isNotEmpty) 'name': customerName,
-          if (customerPhone != null && customerPhone.isNotEmpty) 'phoneNumber': customerPhone,
+          if (customerName != null && customerName.isNotEmpty)
+            'name': customerName,
+          if (customerPhone != null && customerPhone.isNotEmpty)
+            'phoneNumber': customerPhone,
         },
         'is_booking': scheduled ? 'booking' : 'order',
       },
     );
-    return result.map['id_booking'] as String? ?? result.map['id'] as String? ?? '';
+    return result.map['id_booking'] as String? ??
+        result.map['id'] as String? ??
+        '';
   }
 
-  Future<void> checkIn(String qrCode) => client.patch('/staff/booking/checkin/$qrCode');
+  Future<void> checkIn(String qrCode) =>
+      client.patch('/staff/booking/checkin/$qrCode');
 
   // ---- cash session (shift) --------------------------------------------
   /// Today's open session, or `null` when no shift is open yet.
@@ -113,13 +153,17 @@ class BarberstuffApi {
     try {
       return CashSession.fromJson((await client.get('/cash-sessions/')).map);
     } on ApiException catch (e) {
-      if (e.statusCode == 400 || e.statusCode == 404) return null; // "Transaksi pembukuan telah ditutup."
+      if (e.statusCode == 400 || e.statusCode == 404)
+        return null; // "Transaksi pembukuan telah ditutup."
       rethrow;
     }
   }
 
   Future<String> openCashSession(int saldoBegin) async {
-    final result = await client.post('/cash-sessions/', body: {'saldo_begin': saldoBegin});
+    final result = await client.post(
+      '/cash-sessions/',
+      body: {'saldo_begin': saldoBegin},
+    );
     return result.map['id'] as String? ?? '';
   }
 
@@ -149,14 +193,15 @@ class BarberstuffApi {
     String? bookingId,
   }) {
     return client.post(
-      '/transactions',
+      '/transactions/',
       body: {
         'id_cash_session': sessionId,
         'transaction_type': type.name,
         'amount': amount,
         'payment_type': ?paymentType?.api,
         'title': ?title,
-        if (description != null && description.isNotEmpty) 'description': description,
+        if (description != null && description.isNotEmpty)
+          'description': description,
         'id_booking': ?bookingId,
       },
     );

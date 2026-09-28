@@ -19,6 +19,7 @@ class BookingFlowProvider extends ChangeNotifier {
     LocationService? location,
     BookingJournal? journal,
     Duration? lockDuration,
+    StoreSummary? store,
   }) : _location = location,
        _journal = journal,
        _lockDuration = lockDuration ?? defaultLockDuration {
@@ -26,6 +27,13 @@ class BookingFlowProvider extends ChangeNotifier {
     _selectedDay = DateUtils.dateOnly(DateTime.now());
     _agreed = _cache.readBool(AppCache.keyBookingTermsAgreed);
     _restoreLock();
+
+    // Masuk dari detail cabang: cabangnya sudah pasti, jadi langkah pilih
+    // cabang dilewati. Slot yang masih terkunci tetap didahulukan.
+    if (store != null && !hasLock) {
+      _store = store;
+      _storeFixed = true;
+    }
   }
 
   static const Duration defaultLockDuration = Duration(minutes: 5);
@@ -42,6 +50,7 @@ class BookingFlowProvider extends ChangeNotifier {
 
   BookingStep _step = BookingStep.terms;
   bool _agreed = false;
+  bool _storeFixed = false;
   String _query = '';
 
   List<StoreSummary> _stores = const <StoreSummary>[];
@@ -79,6 +88,13 @@ class BookingFlowProvider extends ChangeNotifier {
 
   BookingStep get step => _step;
   bool get agreed => _agreed;
+
+  /// Label "Langkah x dari y". Pilih cabang tidak ikut dihitung kalau
+  /// cabangnya sudah dipilih dari detail cabang.
+  int get stepCount => _storeFixed ? 4 : 5;
+  int get stepNumber => _storeFixed && _step.index > BookingStep.branch.index
+      ? _step.index - 1
+      : _step.index;
 
   List<StoreSummary> get stores => _stores;
 
@@ -556,6 +572,10 @@ class BookingFlowProvider extends ChangeNotifier {
     if (!canContinue || isLastStep) return;
 
     switch (_step) {
+      case BookingStep.terms when _storeFixed:
+        _step = BookingStep.schedule;
+        notifyListeners();
+        await loadSlots();
       case BookingStep.terms:
         _step = BookingStep.branch;
         notifyListeners();
@@ -601,6 +621,9 @@ class BookingFlowProvider extends ChangeNotifier {
         _services.clear();
         _serviceTab = ProductType.service;
         _step = BookingStep.capster;
+
+      case BookingStep.schedule when _storeFixed:
+        _step = BookingStep.terms;
 
       case BookingStep.branch:
       case BookingStep.schedule:

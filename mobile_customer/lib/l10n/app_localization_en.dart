@@ -515,6 +515,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get storeShareCopied => 'Store info copied to clipboard';
 
   @override
+  String storeShareMessage(String name, String address, String link) {
+    return '$name\n$address\n\nSee details & book on BarberStuff:\n$link';
+  }
+
+  @override
+  String get storeBookCta => 'Book Now';
+
+  @override
+  String get storeBookClosed => 'Branch Is Closed';
+
+  @override
   String get storeNoBarber => 'No barber at this branch yet.';
 
   @override

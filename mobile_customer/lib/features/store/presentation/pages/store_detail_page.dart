@@ -14,9 +14,11 @@ import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart'
 import 'package:mobile_barberstuff/features/store/data/repositories/store_repository.dart';
 import 'package:mobile_barberstuff/features/store/presentation/provider/store_detail_provider.dart';
 import 'package:mobile_barberstuff/features/store/presentation/widgets/store_detail_parts.dart';
+import 'package:mobile_barberstuff/features/store/presentation/widgets/store_see_all_sheet.dart';
 import 'package:mobile_barberstuff/features/store/presentation/widgets/store_tab_content.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
+import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
 import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:provider/provider.dart';
@@ -93,8 +95,11 @@ class _StoreDetailView extends StatelessWidget {
   /// tautan https yang bisa diklik dan langsung membuka cabang ini.
   Future<void> _share(BuildContext context, StoreDetail detail) async {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    final String text =
-        '${detail.name}\n${detail.address}\n\n${StoreLink.forStore(detail.id)}';
+    final String text = l10n.storeShareMessage(
+      detail.name,
+      detail.address,
+      StoreLink.forStore(detail.id).toString(),
+    );
 
     try {
       await SharePlus.instance.share(
@@ -106,6 +111,19 @@ class _StoreDetailView extends StatelessWidget {
       if (!context.mounted) return;
       AppToast.show(context, message: l10n.storeShareCopied);
     }
+  }
+
+  void _showBarbers(BuildContext context, List<CapsterItem> capsters) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
+    showStoreSeeAllSheet(
+      context,
+      title: l10n.storeBarbers,
+      emptyMessage: l10n.storeNoBarber,
+      itemCount: capsters.length,
+      itemBuilder: (BuildContext _, int index) =>
+          BarberTile(capster: capsters[index]),
+    );
   }
 
   @override
@@ -138,6 +156,7 @@ class _StoreDetailView extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: detail == null ? null : _BookBar(detail: detail),
       body: SafeArea(
         top: false,
         child: p.isLoading && detail == null
@@ -148,84 +167,85 @@ class _StoreDetailView extends StatelessWidget {
                 onRefresh: p.load,
                 color: AppColor.goldDeep,
                 child: ListView(
-                padding: const EdgeInsets.only(bottom: 28),
-                children: <Widget>[
-                  _Banner(url: detail.bannerUrl),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      sidePadding,
-                      16,
-                      sidePadding,
-                      0,
+                  padding: const EdgeInsets.only(bottom: 28),
+                  children: <Widget>[
+                    _Banner(url: detail.bannerUrl),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        sidePadding,
+                        16,
+                        sidePadding,
+                        0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          _TitleRow(detail: detail),
+                          const SizedBox(height: 8),
+                          _AddressRow(address: detail.address),
+                          const SizedBox(height: 8),
+                          _RatingRow(detail: detail),
+                          const SizedBox(height: 18),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              StoreActionButton(
+                                iconPath: AppAssets.phoneIcon,
+                                label: l10n.storeActionCall,
+                                onTap: () => _call(detail),
+                              ),
+                              StoreActionButton(
+                                iconPath: AppAssets.routeDetailStore,
+                                label: l10n.storeActionRoute,
+                                onTap: () => _route(detail),
+                              ),
+                              StoreActionButton(
+                                iconPath: AppAssets.shareDetailStore,
+                                label: l10n.storeActionShare,
+                                onTap: () => _share(context, detail),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 22),
+                          SectionTitle(
+                            title: l10n.storeBarbers,
+                            actionLabel: l10n.storeSeeAll,
+                            onAction: () => _showBarbers(context, p.capsters),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        _TitleRow(detail: detail),
-                        const SizedBox(height: 8),
-                        _AddressRow(address: detail.address),
-                        const SizedBox(height: 8),
-                        _RatingRow(detail: detail),
-                        const SizedBox(height: 18),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            StoreActionButton(
-                              iconPath: AppAssets.phoneIcon,
-                              label: l10n.storeActionCall,
-                              onTap: () => _call(detail),
+                    const SizedBox(height: 10),
+                    _Barbers(provider: p),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 40 * _scaleOf(context),
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: sidePadding,
+                        ),
+                        children: <Widget>[
+                          for (final StoreTab tab
+                              in StoreTab.values) ...<Widget>[
+                            StoreTabChip(
+                              label: _tabLabel(tab, l10n),
+                              active: p.tab == tab,
+                              onTap: () => p.setTab(tab),
                             ),
-                            StoreActionButton(
-                              iconPath: AppAssets.routeDetailStore,
-                              label: l10n.storeActionRoute,
-                              onTap: () => _route(detail),
-                            ),
-                            StoreActionButton(
-                              iconPath: AppAssets.shareDetailStore,
-                              label: l10n.storeActionShare,
-                              onTap: () => _share(context, detail),
-                            ),
+                            const SizedBox(width: 8),
                           ],
-                        ),
-                        const SizedBox(height: 22),
-                        SectionTitle(
-                          title: l10n.storeBarbers,
-                          actionLabel: l10n.storeSeeAll,
-                          onAction: () {},
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  _Barbers(provider: p),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 40 * _scaleOf(context),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
+                    const SizedBox(height: 18),
+                    Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: sidePadding,
                       ),
-                      children: <Widget>[
-                        for (final StoreTab tab in StoreTab.values) ...<Widget>[
-                          StoreTabChip(
-                            label: _tabLabel(tab, l10n),
-                            active: p.tab == tab,
-                            onTap: () => p.setTab(tab),
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                      ],
+                      child: _TabBody(provider: p, detail: detail),
                     ),
-                  ),
-                  const SizedBox(height: 18),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: sidePadding,
-                    ),
-                    child: _TabBody(provider: p, detail: detail),
-                  ),
-                ],
+                  ],
                 ),
               ),
       ),
@@ -274,6 +294,22 @@ Uri directionsUri(StoreDetail detail) {
   );
 }
 
+/// Booking langsung di cabang ini, langkah pilih cabang dilewati. Cabang
+/// yang tutup juga tidak bisa dipilih di daftar cabang, jadi ditolak di sini.
+void _book(BuildContext context, StoreDetail detail) {
+  if (!detail.isOpen) {
+    AppToast.show(
+      context,
+      message: AppLocalizations.of(context).storeBookClosed,
+    );
+    return;
+  }
+
+  Navigator.of(
+    context,
+  ).pushNamed(AppRoute.booking, arguments: detail.toSummary());
+}
+
 class _TabBody extends StatelessWidget {
   const _TabBody({required this.provider, required this.detail});
 
@@ -301,7 +337,7 @@ class _TabBody extends StatelessWidget {
       );
     }
 
-    void openBooking() => Navigator.of(context).pushNamed(AppRoute.booking);
+    void openBooking() => _book(context, detail);
 
     switch (provider.tab) {
       case StoreTab.about:
@@ -336,6 +372,34 @@ class _TabBody extends StatelessWidget {
     } on Object catch (_) {
       return;
     }
+  }
+}
+
+class _BookBar extends StatelessWidget {
+  const _BookBar({required this.detail});
+
+  final StoreDetail detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: AppColor.surface,
+        border: Border(top: BorderSide(color: AppColor.border)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          child: BoxButton(
+            label: detail.isOpen ? l10n.storeBookCta : l10n.storeBookClosed,
+            onPressed: detail.isOpen ? () => _book(context, detail) : null,
+          ),
+        ),
+      ),
+    );
   }
 }
 

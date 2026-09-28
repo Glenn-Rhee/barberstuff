@@ -1016,6 +1016,24 @@ abstract class AppLocalizations {
   /// **'Info toko disalin ke clipboard'**
   String get storeShareCopied;
 
+  /// No description provided for @storeShareMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'{name}\n{address}\n\nLihat detail & booking di BarberStuff:\n{link}'**
+  String storeShareMessage(String name, String address, String link);
+
+  /// No description provided for @storeBookCta.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking Sekarang'**
+  String get storeBookCta;
+
+  /// No description provided for @storeBookClosed.
+  ///
+  /// In id, this message translates to:
+  /// **'Cabang Sedang Tutup'**
+  String get storeBookClosed;
+
   /// No description provided for @storeNoBarber.
   ///
   /// In id, this message translates to:

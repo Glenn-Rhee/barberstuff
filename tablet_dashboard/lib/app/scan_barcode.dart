@@ -12,9 +12,9 @@ import 'navigation_controller.dart';
 /// Checks a booking in with its QR code (`PATCH /staff/booking/checkin/{qr}`).
 ///
 /// USB/Bluetooth barcode scanners type like a keyboard, so a focused text field
-/// is all the hardware needs.
-Future<void> scanBarcode(BuildContext context) async {
-  final code = await showDialog<String>(context: context, builder: (_) => const _ScanDialog());
+/// is all the hardware needs. [initialCode] pre-fills the field.
+Future<void> scanBarcode(BuildContext context, {String? initialCode}) async {
+  final code = await showDialog<String>(context: context, builder: (_) => _ScanDialog(initialCode: initialCode));
   if (code == null || code.trim().isEmpty || !context.mounted) return;
 
   final api = context.read<BarberstuffApi>();
@@ -32,14 +32,16 @@ Future<void> scanBarcode(BuildContext context) async {
 }
 
 class _ScanDialog extends StatefulWidget {
-  const _ScanDialog();
+  const _ScanDialog({this.initialCode});
+
+  final String? initialCode;
 
   @override
   State<_ScanDialog> createState() => _ScanDialogState();
 }
 
 class _ScanDialogState extends State<_ScanDialog> {
-  final _controller = TextEditingController();
+  late final _controller = TextEditingController(text: widget.initialCode);
 
   @override
   void dispose() {

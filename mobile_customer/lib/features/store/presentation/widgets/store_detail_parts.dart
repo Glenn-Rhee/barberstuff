@@ -181,6 +181,53 @@ class BarberChip extends StatelessWidget {
   }
 }
 
+/// Baris barber di daftar "Lihat Semua". Nama boleh dua baris, tidak
+/// dipotong seperti di BarberChip yang lebarnya tetap.
+class BarberTile extends StatelessWidget {
+  const BarberTile({super.key, required this.capster});
+
+  final CapsterItem capster;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColor.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColor.border),
+      ),
+      child: Row(
+        children: <Widget>[
+          NetworkAvatar(url: capster.imageUrl, size: 44),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              capster.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyle.titleSmall.copyWith(fontSize: 14),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Image.asset(
+            AppAssets.starHistoryFilled,
+            width: 13,
+            height: 13,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.medium,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            capster.avgRating.toStringAsFixed(1),
+            style: AppTextStyle.titleSmall.copyWith(fontSize: 12.5),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class StoreTabChip extends StatelessWidget {
   const StoreTabChip({
     super.key,

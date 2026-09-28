@@ -515,6 +515,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get storeShareCopied => 'Info toko disalin ke clipboard';
 
   @override
+  String storeShareMessage(String name, String address, String link) {
+    return '$name\n$address\n\nLihat detail & booking di BarberStuff:\n$link';
+  }
+
+  @override
+  String get storeBookCta => 'Booking Sekarang';
+
+  @override
+  String get storeBookClosed => 'Cabang Sedang Tutup';
+
+  @override
   String get storeNoBarber => 'Belum ada barber di cabang ini.';
 
   @override

@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +11,7 @@ import 'package:mobile_barberstuff/features/store/data/datasources/store_remote_
 import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart';
 import 'package:mobile_barberstuff/features/store/data/repositories/store_repository.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
+import 'package:mobile_barberstuff/features/store/presentation/widgets/store_detail_parts.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -178,6 +177,44 @@ void main() {
     expect(find.text('Ulasan Pelanggan'), findsOneWidget);
     expect(find.text('Danielle Weygeles'), findsOneWidget);
     expect(find.text('4.8 / 5.0'), findsOneWidget);
+  });
+
+  testWidgets('lihat semua membuka daftar lengkap', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await pump(tester, 390, const Locale('id'));
+
+    await tester.tap(find.text('Lihat Semua').first);
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.byType(BarberTile),
+      ),
+      findsNWidgets(4),
+    );
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+    expect(find.byType(BottomSheet), findsNothing);
+
+    await tester.tap(find.text('Layanan'));
+    await tester.pumpAndSettle();
+    // Tab cuma menampilkan pratinjau, daftar lengkapnya di sheet.
+    expect(find.text('Potongan Rambut'), findsNWidgets(3));
+
+    await tester.tap(find.text('Lihat Semua').last);
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.text('Potongan Rambut'),
+      ),
+      findsNWidgets(5),
+    );
   });
 
   for (final Locale locale in <Locale>[Locale('id'), Locale('en')]) {

@@ -9,6 +9,7 @@ import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking
 import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart';
 import 'package:mobile_barberstuff/features/store/presentation/widgets/store_detail_parts.dart';
 import 'package:mobile_barberstuff/features/store/presentation/widgets/store_map_preview.dart';
+import 'package:mobile_barberstuff/features/store/presentation/widgets/store_see_all_sheet.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:provider/provider.dart';
 
@@ -164,6 +165,27 @@ class StoreProductTab extends StatelessWidget {
   final bool isPackage;
   final VoidCallback onBook;
 
+  /// Tab cukup menampilkan beberapa teratas, sisanya lewat "Lihat Semua".
+  static const int previewCount = 3;
+
+  void _showAll(BuildContext context) {
+    showStoreSeeAllSheet(
+      context,
+      title: title,
+      emptyMessage: emptyMessage,
+      itemCount: items.length,
+      itemBuilder: (BuildContext sheetContext, int index) => _ProductCard(
+        item: items[index],
+        isPackage: isPackage,
+        onBook: () {
+          // Tutup daftarnya dulu supaya booking tidak terbuka di bawah sheet.
+          Navigator.of(sheetContext).pop();
+          onBook();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
@@ -174,7 +196,7 @@ class StoreProductTab extends StatelessWidget {
         SectionTitle(
           title: title,
           actionLabel: l10n.storeSeeAll,
-          onAction: () {},
+          onAction: () => _showAll(context),
         ),
         const SizedBox(height: 12),
         if (items.isEmpty)
@@ -190,7 +212,7 @@ class StoreProductTab extends StatelessWidget {
             ),
           )
         else
-          for (final ServiceItem item in items) ...<Widget>[
+          for (final ServiceItem item in items.take(previewCount)) ...<Widget>[
             _ProductCard(item: item, isPackage: isPackage, onBook: onBook),
             const SizedBox(height: 10),
           ],

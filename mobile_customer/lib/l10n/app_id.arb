@@ -268,6 +268,22 @@
     }
   },
   "storeShareCopied": "Info toko disalin ke clipboard",
+  "storeShareMessage": "{name}\n{address}\n\nLihat detail & booking di BarberStuff:\n{link}",
+  "@storeShareMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "address": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "storeBookCta": "Booking Sekarang",
+  "storeBookClosed": "Cabang Sedang Tutup",
   "storeNoBarber": "Belum ada barber di cabang ini.",
   "storeNoService": "Belum ada layanan.",
   "storeNoPackage": "Belum ada paket.",

@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../app/scan_barcode.dart';
 import '../../../../core/theme/app_color.dart';
 import '../../../../core/theme/app_text_style.dart';
 import '../../../../core/utils/price_format.dart';
@@ -140,7 +142,23 @@ class _BookingPanelState extends State<BookingPanel> {
               background: AppColor.dangerSoft,
             ),
           ],
-          _ => [
+          // The server only takes payment once the booking is checked in (status progress).
+          BookingStatus.booked => [
+            _Note(
+              icon: Icons.info_outline,
+              text: 'Pelanggan belum check-in. Scan QR booking dulu sebelum bayar.',
+              color: AppColor.info,
+              background: AppColor.infoSoft,
+            ),
+            const SizedBox(height: 8),
+            FilledButton.icon(
+              // Debug builds pre-fill the booking's QR (`bk{id}`, as the server makes it) for testing.
+              onPressed: () => scanBarcode(context, initialCode: kDebugMode ? 'bk${booking.id}' : null),
+              icon: const Icon(Icons.qr_code_scanner, size: 18),
+              label: const Text('Scan QR Check-in'),
+            ),
+          ],
+          BookingStatus.progress => [
             Text('METODE PEMBAYARAN', style: AppTextStyle.overline),
             const SizedBox(height: 8),
             Row(

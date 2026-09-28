@@ -7,6 +7,7 @@ import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/provider/booking_flow_provider.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_branch_step.dart';
@@ -23,7 +24,10 @@ import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class BookingFlowPage extends StatelessWidget {
-  const BookingFlowPage({super.key});
+  const BookingFlowPage({super.key, this.store});
+
+  /// Cabang yang sudah dipilih dari detail cabang. null = pilih dari daftar.
+  final StoreSummary? store;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +38,7 @@ class BookingFlowPage extends StatelessWidget {
         location: ctx.read<LocationService>(),
         journal: ctx.read<BookingJournal>(),
         lockDuration: ctx.read<DebugOverrides>().lockDuration,
+        store: store,
       ),
       child: const _BookingFlowView(),
     );
@@ -42,10 +47,6 @@ class BookingFlowPage extends StatelessWidget {
 
 class _BookingFlowView extends StatelessWidget {
   const _BookingFlowView();
-
-  static const int totalSteps = 5;
-
-  static int _stepNumber(BookingStep step) => step.index;
 
   static String _heading(BookingStep step, AppLocalizations l10n) {
     switch (step) {
@@ -250,10 +251,7 @@ class _BookingFlowView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          l10n.bookingStepLabel(
-                            _stepNumber(p.step),
-                            totalSteps,
-                          ),
+                          l10n.bookingStepLabel(p.stepNumber, p.stepCount),
                           style: AppTextStyle.labelSmall.copyWith(
                             fontSize: 11,
                             color: AppColor.inkFaint,

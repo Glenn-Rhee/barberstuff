@@ -7,6 +7,7 @@ import 'package:mobile_barberstuff/features/auth/presentation/pages/login_page.d
 import 'package:mobile_barberstuff/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_success_page.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
 import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_flow_page.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_receipt_page.dart';
@@ -123,7 +124,8 @@ class AppRoute {
       case booking:
         return MaterialPageRoute<void>(
           settings: settings,
-          builder: (BuildContext context) => const BookingFlowPage(),
+          builder: (BuildContext context) =>
+              BookingFlowPage(store: settings.arguments as StoreSummary?),
         );
       case notification:
         return MaterialPageRoute<void>(

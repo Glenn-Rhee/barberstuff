@@ -276,7 +276,7 @@ class _Row extends StatelessWidget {
           Flexible(
             child: Text(
               value,
-              textAlign: TextAlign.right,
+              textAlign: TextAlign.left,
               style: AppTextStyle.titleSmall.copyWith(fontSize: 13),
             ),
           ),

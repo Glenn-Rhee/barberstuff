@@ -127,6 +127,24 @@ class StoreDetail {
   bool get isLite => storeType.toLowerCase().trim() == 'lite';
   int get reviewCount => reviews.length;
 
+  /// Bentuk ringkas yang dipakai alur booking, supaya booking dari detail
+  /// cabang bisa langsung mulai tanpa memilih cabang lagi.
+  StoreSummary toSummary() => StoreSummary(
+    id: id,
+    name: name,
+    address: address,
+    phoneNumber: phoneNumber,
+    bannerUrl: bannerUrl,
+    storeType: storeType,
+    status: status,
+    avgRating: avgRating,
+    totalCapster: totalCapster,
+    totalService: totalService,
+    totalPackage: totalPackage,
+    description: description,
+    coordinate: coordinate,
+  );
+
   factory StoreDetail.fromJson(Map<String, dynamic> json) {
     final Object? rawReviews = json['review'];
 
