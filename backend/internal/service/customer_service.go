@@ -602,7 +602,7 @@ func (c *customerService) UpdateProfile(ctx context.Context, claims *lib.CustomC
 			return err
 		}
 
-		updates["image_url"] = permanentKey
+		updates["image_customer"] = permanentKey
 	}
 
 	if req.PhoneNumber != nil {
