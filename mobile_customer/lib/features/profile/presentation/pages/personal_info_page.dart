@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
+import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_picker.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_source_sheet.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/personal_info_provider.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/labeled_field.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
 import 'package:provider/provider.dart';
 
 class PersonalInfoArgs {
@@ -28,7 +31,8 @@ class PersonalInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<PersonalInfoProvider>(
-      create: (_) => PersonalInfoProvider(args.profile),
+      create: (BuildContext ctx) =>
+          PersonalInfoProvider(args.profile, ctx.read<ProfileRepository>()),
       child: const _PersonalInfoView(),
     );
   }
@@ -39,10 +43,32 @@ class _PersonalInfoView extends StatelessWidget {
 
   static const double _gap = 18;
 
-  void _save(BuildContext context, PersonalInfoProvider p) {
+  Future<void> _save(BuildContext context, PersonalInfoProvider p) async {
     FocusScope.of(context).unfocus();
-    if (!p.validate()) return;
-    showComingSoonDialog(context);
+
+    final CustomerProfile? updated = await p.save();
+    if (!context.mounted) return;
+
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
+    if (updated == null) {
+      if (p.error != null) {
+        AppToast.show(context, message: p.error!.message(l10n));
+      }
+      return;
+    }
+
+    await context.read<ProfileProvider>().load();
+    if (!context.mounted) return;
+
+    AppToast.show(
+      context,
+      message: p.hasUnsavedPhoto
+          ? l10n.personalInfoPhotoPending
+          : l10n.personalInfoSaved,
+      type: p.hasUnsavedPhoto ? AppToastType.info : AppToastType.success,
+    );
+    Navigator.of(context).pop();
   }
 
   @override
@@ -116,7 +142,10 @@ class _PersonalInfoView extends StatelessWidget {
 
               BoxButton(
                 label: l10n.personalInfoSave,
-                onPressed: p.isDirty ? () => _save(context, p) : null,
+                isLoading: p.isSaving,
+                onPressed: p.isDirty && !p.isSaving
+                    ? () => _save(context, p)
+                    : null,
               ),
             ],
           ),

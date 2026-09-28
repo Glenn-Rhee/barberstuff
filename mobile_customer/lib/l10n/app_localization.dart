@@ -1472,6 +1472,18 @@ abstract class AppLocalizations {
   /// **'Simpan Perubahan'**
   String get personalInfoSave;
 
+  /// No description provided for @personalInfoSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Perubahan tersimpan'**
+  String get personalInfoSaved;
+
+  /// No description provided for @personalInfoPhotoPending.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama dan nomor tersimpan. Foto belum ikut tersimpan.'**
+  String get personalInfoPhotoPending;
+
   /// No description provided for @helpTitle.
   ///
   /// In id, this message translates to:

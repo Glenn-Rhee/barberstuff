@@ -365,6 +365,8 @@
   "personalInfoPasswordSubtitle": "Ganti Password Saya",
   "personalInfoPasswordAction": "Ganti Sekarang",
   "personalInfoSave": "Simpan Perubahan",
+  "personalInfoSaved": "Perubahan tersimpan",
+  "personalInfoPhotoPending": "Nama dan nomor tersimpan. Foto belum ikut tersimpan.",
   "helpTitle": "Pusat Bantuan",
   "helpHeadline": "Butuh Bantuan? Ceritakan Masalah Anda",
   "helpSubtitle": "Isi formulir di bawah ini dan tim kami akan menghubungi Anda secepatnya.",

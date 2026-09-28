@@ -31,4 +31,28 @@ class ProfileRemoteDataSource {
 
     return parsed.data!;
   }
+
+  Future<void> updateCustomerProfile(Map<String, dynamic> body) async {
+    final Response<dynamic> res = await _dio.patch<dynamic>(
+      ApiEndpoint.profileCustomer,
+      data: body,
+    );
+
+    final ApiResponse<Object?> parsed = ApiResponse<Object?>.fromJson(
+      res.data as Map<String, dynamic>,
+      null,
+    );
+
+    final int status = parsed.statusCode != 0
+        ? parsed.statusCode
+        : res.statusCode ?? 0;
+
+    if (!parsed.isSuccess || status < 200 || status >= 300) {
+      throw ApiException(
+        ApiErrorType.server,
+        statusCode: status,
+        rawMessage: parsed.message,
+      );
+    }
+  }
 }

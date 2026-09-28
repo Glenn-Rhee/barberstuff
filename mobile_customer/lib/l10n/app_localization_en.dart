@@ -758,6 +758,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get personalInfoSave => 'Save Changes';
 
   @override
+  String get personalInfoSaved => 'Changes saved';
+
+  @override
+  String get personalInfoPhotoPending =>
+      'Name and phone saved. The photo was not saved yet.';
+
+  @override
   String get helpTitle => 'Help Center';
 
   @override

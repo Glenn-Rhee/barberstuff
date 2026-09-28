@@ -37,4 +37,27 @@ class ProfileRepository {
       throw failure;
     }
   }
+
+  Future<CustomerProfile> updateCustomerProfile({
+    String? name,
+    String? phoneNumber,
+    String? imageUrl,
+  }) async {
+    final Map<String, dynamic> body = <String, dynamic>{
+      if (name != null) 'name': name,
+      if (phoneNumber != null) 'phoneNumber': phoneNumber,
+      if (imageUrl != null) 'image_url': imageUrl,
+    };
+
+    try {
+      await _remote.updateCustomerProfile(body);
+    } catch (e) {
+      throw DioClient.mapError(e);
+    }
+
+    await _cache.remove(AppCache.keyCustomerProfile);
+
+    final CachedResult<CustomerProfile> fresh = await getCustomerProfile();
+    return fresh.data;
+  }
 }
