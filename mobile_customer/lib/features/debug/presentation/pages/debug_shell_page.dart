@@ -5,9 +5,9 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/deeplink/store_link.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/widgets/debug_panel.dart';
+import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
 import 'package:mobile_barberstuff/features/history/presentation/pages/history_page.dart';
 import 'package:mobile_barberstuff/features/home/presentation/pages/home_page.dart';
 import 'package:mobile_barberstuff/features/home/presentation/provider/dashboard_provider.dart';
@@ -28,7 +28,7 @@ class DebugShellPage extends StatelessWidget {
         ChangeNotifierProvider<DashboardProvider>(
           create: (BuildContext ctx) => DashboardProvider(
             ctx.read<BookingRepository>(),
-            ctx.read<BookingJournal>(),
+            ctx.read<HistoryRepository>(),
             ctx.read<LocationService>(),
           ),
         ),

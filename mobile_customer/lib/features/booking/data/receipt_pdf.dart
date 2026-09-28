@@ -133,7 +133,7 @@ Future<List<int>> buildReceiptPdf({
             if (record.appServiceFee > 0)
               row(labels.appFee, _rupiah(record.appServiceFee)),
             pw.Divider(color: PdfColors.grey300),
-            row(labels.total, _rupiah(record.grandTotal), strong: true),
+            row(labels.total, _rupiah(record.totalPrice), strong: true),
           ]),
         ],
       ),

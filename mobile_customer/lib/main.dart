@@ -8,6 +8,7 @@ import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/services/dio_client.dart';
 import 'package:mobile_barberstuff/core/services/google_auth_service.dart';
 import 'package:mobile_barberstuff/core/services/image_picker_service.dart';
+import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
 import 'package:mobile_barberstuff/core/services/local_notification_service.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_datasource.dart';
@@ -17,6 +18,7 @@ import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
 import 'package:mobile_barberstuff/features/booking/data/datasources/booking_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
+import 'package:mobile_barberstuff/features/history/data/history_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
@@ -61,12 +63,6 @@ Future<void> main() async {
         ChangeNotifierProvider<BookingJournal>(
           create: (_) => BookingJournal(cache),
         ),
-        ChangeNotifierProxyProvider<BookingJournal, HistoryRepository>(
-          create: (BuildContext ctx) =>
-              HistoryRepository(ctx.read<BookingJournal>()),
-          update: (_, BookingJournal journal, HistoryRepository? previous) =>
-              previous ?? HistoryRepository(journal),
-        ),
         ChangeNotifierProvider<NotificationProvider>(
           create: (_) => NotificationProvider(),
         ),
@@ -84,6 +80,10 @@ Future<void> main() async {
         ),
         Provider<GoogleAuthService>(create: (_) => GoogleAuthService()),
         Provider<ImagePickerService>(create: (_) => ImagePickerService()),
+        Provider<ImageUploadService>(
+          create: (BuildContext ctx) =>
+              ImageUploadService(ctx.read<DioClient>().dio),
+        ),
         Provider<AuthRepository>(
           create: (BuildContext ctx) =>
               AuthRepository(AuthRemoteDataSource(ctx.read<DioClient>().dio)),
@@ -92,6 +92,12 @@ Future<void> main() async {
           create: (BuildContext ctx) => BookingRepository(
             BookingRemoteDataSource(ctx.read<DioClient>().dio),
             ctx.read<AppCache>(),
+          ),
+        ),
+        ChangeNotifierProvider<HistoryRepository>(
+          create: (BuildContext ctx) => HistoryRepository(
+            HistoryRemoteDataSource(ctx.read<DioClient>().dio),
+            ctx.read<BookingJournal>(),
           ),
         ),
         Provider<StoreRepository>(

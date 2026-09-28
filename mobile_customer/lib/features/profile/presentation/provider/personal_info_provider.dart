@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
 
 class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
-  PersonalInfoProvider(this.profile, this._repository) {
+  PersonalInfoProvider(this.profile, this._repository, this._uploader) {
     nameController.text = profile.name;
     emailController.text = profile.email;
     phoneController.text = profile.phoneNumber;
@@ -27,6 +28,7 @@ class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
   final ProfileRepository _repository;
+  final ImageUploadService _uploader;
 
   DateTime? _dateOfBirth;
   bool _isDirty = false;
@@ -37,7 +39,6 @@ class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
   bool get isDirty => _isDirty;
   bool get isSaving => _isSaving;
   ApiException? get error => _error;
-  bool get hasUnsavedPhoto => imageFile != null;
 
   void setDateOfBirth(DateTime value) {
     _dateOfBirth = value;
@@ -81,21 +82,29 @@ class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
     final String name = nameController.text.trim();
     final String phone = phoneController.text.trim();
 
+    final File? photo = imageFile;
+
     final Map<String, String> changes = <String, String>{
       if (name != profile.name) 'name': name,
       if (phone != profile.phoneNumber) 'phoneNumber': phone,
     };
 
-    if (changes.isEmpty) return profile;
+    if (changes.isEmpty && photo == null) return profile;
 
     _isSaving = true;
     _error = null;
     notifyListeners();
 
     try {
+      // Foto diunggah dulu, lalu object key-nya ikut dalam satu PATCH.
+      final String? imageKey = photo == null
+          ? null
+          : await _uploader.uploadFile(photo);
+
       return await _repository.updateCustomerProfile(
         name: changes['name'],
         phoneNumber: changes['phoneNumber'],
+        imageKey: imageKey,
       );
     } on ApiException catch (e) {
       _error = e;

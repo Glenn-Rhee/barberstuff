@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
 import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
 import 'package:mobile_barberstuff/features/history/domain/booking_history.dart';
 
 class HistoryProvider extends ChangeNotifier {
   HistoryProvider(this._repository) {
     searchController.addListener(_onSearchChanged);
-    _repository.addListener(load);
+    _repository.addListener(_sync);
+    _sync();
     load();
   }
 
@@ -18,10 +21,15 @@ class HistoryProvider extends ChangeNotifier {
   String _query = '';
   bool _isLoading = false;
   bool _isSubmitting = false;
+  bool _disposed = false;
+  ApiException? _error;
+  ApiException? _submitError;
 
   HistoryTab get tab => _tab;
   bool get isLoading => _isLoading;
   bool get isSubmitting => _isSubmitting;
+  ApiException? get error => _error;
+  ApiException? get submitError => _submitError;
 
   List<BookingHistory> get items {
     final String needle = _query.toLowerCase();
@@ -38,12 +46,17 @@ class HistoryProvider extends ChangeNotifier {
 
   Future<void> load() async {
     _isLoading = true;
-    notifyListeners();
+    _error = null;
+    _notify();
 
-    _all = await _repository.getHistory();
+    try {
+      await _repository.refresh();
+    } on ApiException catch (e) {
+      _error = e;
+    }
 
     _isLoading = false;
-    notifyListeners();
+    _notify();
   }
 
   void setTab(HistoryTab value) {
@@ -56,14 +69,27 @@ class HistoryProvider extends ChangeNotifier {
     if (!draft.isComplete || _isSubmitting) return false;
 
     _isSubmitting = true;
-    notifyListeners();
+    _submitError = null;
+    _notify();
 
-    await _repository.submitReview(bookingId, draft);
-    _all = await _repository.getHistory();
+    try {
+      await _repository.submitReview(bookingId, draft);
+      return true;
+    } on ApiException catch (e) {
+      _submitError = e;
+      return false;
+    } finally {
+      _isSubmitting = false;
+      _notify();
+    }
+  }
 
-    _isSubmitting = false;
-    notifyListeners();
-    return true;
+  void _sync() {
+    final DateTime now = DateTime.now();
+    _all = _repository.records
+        .map((BookingRecord r) => r.toHistory(now))
+        .toList(growable: false);
+    _notify();
   }
 
   void _onSearchChanged() {
@@ -73,9 +99,15 @@ class HistoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Muatan jaringan bisa selesai sesudah halaman ditutup.
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
   @override
   void dispose() {
-    _repository.removeListener(load);
+    _disposed = true;
+    _repository.removeListener(_sync);
     searchController.dispose();
     super.dispose();
   }

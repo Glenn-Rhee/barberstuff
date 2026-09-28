@@ -94,16 +94,29 @@ class ReviewDraft {
 
   double get average => (capster + cashier + store) / 3;
 
-  List<Map<String, dynamic>> toRatingPayload() {
-    return <Map<String, dynamic>>[
-          <String, dynamic>{'type': 'capster', 'score': capster},
-          <String, dynamic>{'type': 'staff', 'score': cashier},
-          <String, dynamic>{'type': 'store', 'score': store},
-        ]
-        .map((Map<String, dynamic> item) {
-          if (message.trim().isNotEmpty) item['message'] = message.trim();
-          return item;
-        })
-        .toList(growable: false);
+  /// Body `POST /rating/`. Pesan hanya diterima backend di rating toko.
+  Map<String, dynamic> toRatingBody({
+    required String bookingId,
+    required String capsterId,
+    required String staffId,
+    required String storeId,
+  }) {
+    final String note = message.trim();
+
+    return <String, dynamic>{
+      'id_booking': bookingId,
+      'rating': <String, dynamic>{
+        if (capsterId.isNotEmpty)
+          'capster': <String, dynamic>{'id': capsterId, 'score': capster},
+        if (staffId.isNotEmpty)
+          'staff': <String, dynamic>{'id': staffId, 'score': cashier},
+        if (storeId.isNotEmpty)
+          'store': <String, dynamic>{
+            'id': storeId,
+            'score': store,
+            if (note.isNotEmpty) 'message': note,
+          },
+      },
+    };
   }
 }

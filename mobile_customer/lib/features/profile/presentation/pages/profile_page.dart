@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/core/utils/phone_formatter.dart';
+import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
@@ -61,8 +63,13 @@ class ProfilePage extends StatelessWidget {
     if (confirmed != true || !context.mounted) return;
 
     final NavigatorState navigator = Navigator.of(context);
+    final AppCache cache = context.read<AppCache>();
+    final AppSession session = context.read<AppSession>();
     context.read<ProfileProvider>().reset();
-    await context.read<AppSession>().clearSession();
+    context.read<HistoryRepository>().reset();
+    // Cadangan offline milik akun ini, jangan sampai tampil di akun berikutnya.
+    await cache.remove(AppCache.keyCustomerProfile);
+    await session.clearSession();
 
     navigator.pushNamedAndRemoveUntil(
       AppRoute.chooseLogin,

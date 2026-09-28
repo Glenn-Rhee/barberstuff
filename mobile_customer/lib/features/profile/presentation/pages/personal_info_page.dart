@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
@@ -31,8 +32,11 @@ class PersonalInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<PersonalInfoProvider>(
-      create: (BuildContext ctx) =>
-          PersonalInfoProvider(args.profile, ctx.read<ProfileRepository>()),
+      create: (BuildContext ctx) => PersonalInfoProvider(
+        args.profile,
+        ctx.read<ProfileRepository>(),
+        ctx.read<ImageUploadService>(),
+      ),
       child: const _PersonalInfoView(),
     );
   }
@@ -63,10 +67,8 @@ class _PersonalInfoView extends StatelessWidget {
 
     AppToast.show(
       context,
-      message: p.hasUnsavedPhoto
-          ? l10n.personalInfoPhotoPending
-          : l10n.personalInfoSaved,
-      type: p.hasUnsavedPhoto ? AppToastType.info : AppToastType.success,
+      message: l10n.personalInfoSaved,
+      type: AppToastType.success,
     );
     Navigator.of(context).pop();
   }
@@ -182,7 +184,9 @@ class _PhotoRow extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 borderRadius: BorderRadius.circular(10),
                 child: InkWell(
-                  onTap: () => editAvatar(context, provider),
+                  // Backend belum bisa menghapus foto, cuma menggantinya.
+                  onTap: () =>
+                      editAvatar(context, provider, allowRemove: false),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,

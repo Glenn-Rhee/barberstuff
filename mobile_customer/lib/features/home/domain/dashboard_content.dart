@@ -82,7 +82,7 @@ class HaircutHistory {
     capsterName: record.capsterName,
     date: record.scheduledAt,
     storeName: record.storeName,
-    price: record.grandTotal.round(),
+    price: record.totalPrice.round(),
   );
 }
 

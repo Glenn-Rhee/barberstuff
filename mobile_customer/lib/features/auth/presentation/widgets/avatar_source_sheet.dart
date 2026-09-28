@@ -11,11 +11,15 @@ import 'package:provider/provider.dart';
 
 enum _SheetAction { camera, gallery, remove }
 
-Future<void> editAvatar(BuildContext context, AvatarFormMixin state) async {
+Future<void> editAvatar(
+  BuildContext context,
+  AvatarFormMixin state, {
+  bool allowRemove = true,
+}) async {
   final ImagePickerService picker = context.read<ImagePickerService>();
   final _SheetAction? action = await _showSourceSheet(
     context,
-    canRemove: state.hasAvatar,
+    canRemove: allowRemove && state.hasAvatar,
   );
 
   if (action == null || !context.mounted) return;

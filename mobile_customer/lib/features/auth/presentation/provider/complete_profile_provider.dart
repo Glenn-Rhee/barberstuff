@@ -1,16 +1,22 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/login_result.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/oauth_register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
+import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
 
 class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
   CompleteProfileProvider(
     this._repository,
-    this._session, {
+    this._session,
+    this._uploader,
+    this._profile, {
     required this.name,
     required this.email,
     required this.tempToken,
@@ -25,6 +31,8 @@ class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
 
   final AuthRepository _repository;
   final AppSession _session;
+  final ImageUploadService _uploader;
+  final ProfileRepository _profile;
   final String name;
   final String email;
   final String tempToken;
@@ -92,10 +100,10 @@ class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
           phoneNumber: phoneController.text.trim(),
           dateOfBirth: _dateOfBirth!,
           gender: _gender!,
-          imageUrl: imageUrl,
         ),
       );
       await _session.saveSession(_result!.accessToken);
+      await _saveAvatar();
       _isLoading = false;
       notifyListeners();
       return true;
@@ -104,6 +112,27 @@ class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
       _error = e;
       notifyListeners();
       return false;
+    }
+  }
+
+  /// `image_url` tidak ikut saat daftar: backend hanya menerima object key,
+  /// sedangkan presign butuh token yang baru ada sesudah akun jadi. Jadi foto
+  /// (pilihan sendiri atau foto akun Google) diunggah lalu dipasang di sini.
+  ///
+  /// Akun sudah jadi, jadi gagal unggah foto tidak boleh menggagalkan
+  /// pendaftaran. Fotonya masih bisa diganti dari halaman profil.
+  Future<void> _saveAvatar() async {
+    final File? file = imageFile;
+    final String? url = imageUrl;
+    if (file == null && url == null) return;
+
+    try {
+      final String key = file != null
+          ? await _uploader.uploadFile(file)
+          : await _uploader.uploadFromUrl(url!);
+      await _profile.updateCustomerProfile(imageKey: key);
+    } on ApiException catch (e) {
+      debugPrint('Simpan foto profil gagal: $e');
     }
   }
 

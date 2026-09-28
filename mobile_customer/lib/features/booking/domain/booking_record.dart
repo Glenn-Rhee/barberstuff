@@ -56,8 +56,21 @@ class BookingReview {
   );
 }
 
-/// Booking yang tersimpan di perangkat. Backend belum punya endpoint daftar
-/// booking, jadi struk hasil `POST /booking/` disimpan lokal sebagai riwayat.
+double _toDouble(Object? value) {
+  if (value is num) return value.toDouble();
+  return double.tryParse('${value ?? ''}') ?? 0;
+}
+
+int _toInt(Object? value) {
+  if (value is num) return value.toInt();
+  return int.tryParse('${value ?? ''}') ?? 0;
+}
+
+String _toText(Object? value) => value is String ? value : '';
+
+/// Satu booking untuk struk, beranda, dan riwayat. Sumbernya bisa hasil
+/// `POST /booking/` ([BookingRecord.fromResult], disimpan di jurnal perangkat)
+/// atau daftar `GET /booking/customer` ([BookingRecord.fromServer]).
 class BookingRecord {
   const BookingRecord({
     required this.id,
@@ -73,6 +86,8 @@ class BookingRecord {
     required this.lines,
     required this.appServiceFee,
     required this.totalPrice,
+    this.staffId = '',
+    this.status,
     this.canceled = false,
     this.review,
   });
@@ -88,8 +103,20 @@ class BookingRecord {
   final String capsterId;
   final String capsterName;
   final List<BookingLine> lines;
+
+  /// 0 berarti tidak diketahui: daftar dari server tidak mengirim biaya ini.
   final int appServiceFee;
+
+  /// `total_price` dari backend, sudah termasuk [appServiceFee] dan potongan
+  /// promo. Tampilkan apa adanya, jangan ditambah atau dikurangi lagi.
   final double totalPrice;
+
+  /// Kasir yang menangani, dibutuhkan untuk rating. Kosong untuk booking lokal.
+  final String staffId;
+
+  /// Status dari server. null untuk booking yang baru dibuat di perangkat.
+  final BookingStatus? status;
+
   final bool canceled;
   final BookingReview? review;
 
@@ -97,14 +124,11 @@ class BookingRecord {
 
   String get serviceName => lines.map((BookingLine l) => l.name).join(' - ');
 
-  double get subTotal =>
-      lines.fold<double>(0, (double sum, BookingLine l) => sum + l.price);
-
-  double get grandTotal => totalPrice + appServiceFee;
-
   bool get isReviewed => reviewScore != null;
 
   BookingStatus statusAt(DateTime now) {
+    final BookingStatus? known = status;
+    if (known != null) return known;
     if (canceled) return BookingStatus.canceled;
     return scheduledAt.isAfter(now)
         ? BookingStatus.booked
@@ -116,7 +140,7 @@ class BookingRecord {
     serviceName: serviceName,
     storeName: storeName,
     date: scheduledAt,
-    price: grandTotal.round(),
+    price: totalPrice.round(),
     status: statusAt(now),
     reviewScore: reviewScore,
   );
@@ -136,6 +160,8 @@ class BookingRecord {
       lines: lines,
       appServiceFee: appServiceFee,
       totalPrice: totalPrice,
+      staffId: staffId,
+      status: status,
       canceled: canceled ?? this.canceled,
       review: review ?? this.review,
     );
@@ -186,6 +212,75 @@ class BookingRecord {
       canceled: json['canceled'] == true,
       review: json['review'] is Map<String, dynamic>
           ? BookingReview.fromJson(json['review'] as Map<String, dynamic>)
+          : null,
+    );
+  }
+
+  /// Satu item `GET /booking/customer`. Endpoint itu tidak mengirim status,
+  /// kode QR, maupun biaya layanan, jadi:
+  /// - [status] diambil dari filter `status_booking` yang dipakai saat fetch;
+  /// - kode QR dan biaya diambil dari [local] (jurnal perangkat) kalau booking
+  ///   ini dibuat dari perangkat ini.
+  factory BookingRecord.fromServer(
+    Map<String, dynamic> json, {
+    required BookingStatus status,
+    BookingRecord? local,
+  }) {
+    final String id = _toText(json['id']);
+    final Object? rawServices = json['service'];
+    final Map<String, dynamic> store = json['store'] is Map<String, dynamic>
+        ? json['store'] as Map<String, dynamic>
+        : const <String, dynamic>{};
+    final Map<String, dynamic> capster =
+        json['capster'] is Map<String, dynamic>
+        ? json['capster'] as Map<String, dynamic>
+        : const <String, dynamic>{};
+    final Map<String, dynamic> staff = json['staff'] is Map<String, dynamic>
+        ? json['staff'] as Map<String, dynamic>
+        : const <String, dynamic>{};
+    final Object? rawRating = json['rating'];
+    final DateTime scheduledAt =
+        DateTime.tryParse(_toText(json['booking_date']))?.toLocal() ??
+        local?.scheduledAt ??
+        DateTime.now();
+
+    return BookingRecord(
+      id: id,
+      // Backend membuat QR sebagai "bk" + id booking (booking_service.go).
+      // Ikuti format itu selama endpoint daftar belum mengirim `qr_code`.
+      qrCode: local?.qrCode ?? 'bk$id',
+      scheduledAt: scheduledAt,
+      createdAt: local?.createdAt ?? scheduledAt,
+      storeId: _toText(store['id']),
+      storeName: _toText(store['name']),
+      storeAddress: _toText(store['address']),
+      storePhone: _toText(store['phone_number']),
+      capsterId: _toText(capster['id']),
+      capsterName: _toText(capster['name']),
+      staffId: _toText(staff['id']),
+      lines: rawServices is List
+          ? rawServices
+                .whereType<Map<String, dynamic>>()
+                .map(
+                  (Map<String, dynamic> s) => BookingLine(
+                    id: _toText(s['id']),
+                    name: _toText(s['name']),
+                    price: _toDouble(s['price']),
+                  ),
+                )
+                .toList(growable: false)
+          : const <BookingLine>[],
+      appServiceFee: local?.appServiceFee ?? 0,
+      totalPrice: _toDouble(json['total_price']),
+      status: status,
+      canceled: status == BookingStatus.canceled,
+      review: rawRating is Map<String, dynamic>
+          ? BookingReview(
+              capster: _toInt(rawRating['capster_rating']),
+              cashier: _toInt(rawRating['staff_rating']),
+              store: _toInt(rawRating['store_rating']),
+              message: _toText(rawRating['message']),
+            )
           : null,
     );
   }

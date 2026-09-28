@@ -5,7 +5,6 @@ class OauthRegisterRequestApi {
     required this.phoneNumber,
     required this.dateOfBirth,
     required this.gender,
-    this.imageUrl,
   });
 
   final String name;
@@ -13,7 +12,6 @@ class OauthRegisterRequestApi {
   final String phoneNumber;
   final DateTime dateOfBirth;
   final String gender;
-  final String? imageUrl;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'name': name,
@@ -21,7 +19,6 @@ class OauthRegisterRequestApi {
     'phoneNumber': phoneNumber,
     'date_of_birth': _iso(dateOfBirth),
     'gender': gender,
-    if (imageUrl != null && imageUrl!.isNotEmpty) 'image_url': imageUrl,
   };
 
   static String _iso(DateTime date) {

@@ -7,8 +7,6 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
 import 'package:mobile_barberstuff/features/home/presentation/provider/dashboard_provider.dart';
 import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
@@ -23,7 +21,6 @@ Future<void> showDebugPanel(BuildContext context) {
   final NotificationProvider notifications = context
       .read<NotificationProvider>();
   final AppCache cache = context.read<AppCache>();
-  final BookingJournal journal = context.read<BookingJournal>();
   // Sheet ini digantung di navigator paling atas, jadi provider dari
   // halaman pemanggil tidak ikut kebawa. Dioper ulang satu per satu.
   final DashboardProvider dashboard = context.read<DashboardProvider>();
@@ -45,64 +42,12 @@ Future<void> showDebugPanel(BuildContext context) {
           value: notifications,
         ),
         Provider<AppCache>.value(value: cache),
-        ChangeNotifierProvider<BookingJournal>.value(value: journal),
         ChangeNotifierProvider<DashboardProvider>.value(value: dashboard),
         Provider<LocalNotificationService>.value(value: notifService),
       ],
       child: const _DebugPanel(),
     ),
   );
-}
-
-/// Contoh isi jurnal supaya layar riwayat bisa diuji tanpa booking sungguhan.
-Future<void> _seedJournal(BookingJournal journal) async {
-  final DateTime now = DateTime.now();
-
-  const List<({String service, String store, double price})> samples =
-      <({String service, String store, double price})>[
-        (service: 'Potong Rambut', store: 'Kemang Raya', price: 95000),
-        (service: 'Cukur Jenggot', store: 'Pondok Indah', price: 100000),
-        (service: 'Hair Styling', store: 'Ciracas', price: 95000),
-      ];
-
-  for (int i = 0; i < samples.length; i++) {
-    final sample = samples[i];
-    final DateTime at = i == 0
-        ? now.add(const Duration(days: 2))
-        : now.subtract(Duration(days: 6 * i));
-
-    await journal.add(
-      BookingRecord(
-        id: 'seed-$i',
-        qrCode: 'SEED-$i',
-        scheduledAt: at,
-        createdAt: now,
-        storeId: 'seed-store-$i',
-        storeName: sample.store,
-        storeAddress: 'Jl. Contoh No. ${i + 1}',
-        storePhone: '08123456789',
-        capsterId: 'seed-capster-$i',
-        capsterName: 'Joni Akbar',
-        lines: <BookingLine>[
-          BookingLine(
-            id: 'seed-svc-$i',
-            name: sample.service,
-            price: sample.price,
-          ),
-        ],
-        appServiceFee: 0,
-        totalPrice: sample.price,
-        review: i == 2
-            ? const BookingReview(
-                capster: 5,
-                cashier: 5,
-                store: 4,
-                message: 'Rapi dan cepat.',
-              )
-            : null,
-      ),
-    );
-  }
 }
 
 class _DebugPanel extends StatelessWidget {
@@ -124,7 +69,6 @@ class _DebugPanel extends StatelessWidget {
     final BookingCatalog catalog = context.watch<BookingCatalog>();
     final NotificationProvider notif = context.watch<NotificationProvider>();
     final AppCache appCache = context.read<AppCache>();
-    final BookingJournal journal = context.read<BookingJournal>();
     final int unread = notif.items
         .where((AppNotification n) => !n.isRead)
         .length;
@@ -344,33 +288,6 @@ class _DebugPanel extends StatelessWidget {
 
             const Divider(height: 32, color: AppColor.border),
             const _PermissionSection(),
-
-            const Divider(height: 32, color: AppColor.border),
-            Text('Riwayat booking', style: AppTextStyle.titleSmall),
-            const SizedBox(height: 4),
-            Text(
-              'Terisi dari booking yang berhasil dan tersimpan di perangkat. '
-              'Backend belum punya endpoint riwayat maupun ulasan.',
-              style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: <Widget>[
-                _TierChip(
-                  label: 'Isi contoh',
-                  selected: false,
-                  onTap: () => _seedJournal(journal),
-                ),
-                _TierChip(
-                  label: 'Kosongkan',
-                  color: AppColor.danger,
-                  selected: false,
-                  onTap: journal.clear,
-                ),
-              ],
-            ),
 
             const Divider(height: 32, color: AppColor.border),
             Text('Booking & cache', style: AppTextStyle.titleSmall),

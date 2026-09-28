@@ -3,6 +3,7 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
@@ -13,6 +14,7 @@ import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_picker.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_source_sheet.dart';
+import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
@@ -44,6 +46,8 @@ class CompleteProfilePage extends StatelessWidget {
       create: (BuildContext ctx) => CompleteProfileProvider(
         ctx.read<AuthRepository>(),
         ctx.read<AppSession>(),
+        ctx.read<ImageUploadService>(),
+        ctx.read<ProfileRepository>(),
         name: args.name,
         email: args.email,
         tempToken: args.tempToken,

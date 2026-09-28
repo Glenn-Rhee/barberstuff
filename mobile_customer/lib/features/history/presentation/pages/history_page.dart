@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
@@ -58,7 +59,14 @@ class HistoryView extends StatelessWidget {
     if (draft == null || !context.mounted) return;
 
     final bool ok = await p.submitReview(item.id, draft);
-    if (!ok || !context.mounted) return;
+    if (!context.mounted) return;
+
+    if (!ok) {
+      if (p.submitError != null) {
+        AppToast.show(context, message: p.submitError!.message(l10n));
+      }
+      return;
+    }
 
     AppToast.show(context, message: l10n.reviewThanks);
   }
@@ -137,7 +145,10 @@ class HistoryView extends StatelessWidget {
                               constraints: BoxConstraints(
                                 minHeight: c.maxHeight,
                               ),
-                              child: _Empty(message: l10n.historyEmpty),
+                              child: _Empty(
+                                message:
+                                    p.error?.message(l10n) ?? l10n.historyEmpty,
+                              ),
                             ),
                           );
                         },

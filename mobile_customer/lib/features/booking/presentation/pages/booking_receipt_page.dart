@@ -183,7 +183,7 @@ class _BookingReceiptPageState extends State<BookingReceiptPage> {
                       ),
                       _Row(
                         label: l10n.receiptTotal,
-                        value: formatRupiah(record.grandTotal),
+                        value: formatRupiah(record.totalPrice),
                         strong: true,
                       ),
                     ],

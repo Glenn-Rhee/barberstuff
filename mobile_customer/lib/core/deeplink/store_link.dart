@@ -1,12 +1,3 @@
-/// Tautan bagikan cabang: https://api.barberstuff.my.id/s/<id-cabang>
-///
-/// Di WhatsApp tautan https bisa diklik. Kalau aplikasi terpasang dan
-/// domainnya sudah terverifikasi, Android langsung membuka aplikasi ke
-/// detail cabang. Kalau tidak terpasang, tautan terbuka di browser dan
-/// memang tidak ada halaman untuknya.
-///
-/// Host dan awalan path di sini WAJIB sama persis dengan intent-filter
-/// di android/app/src/main/AndroidManifest.xml.
 class StoreLink {
   const StoreLink._();
 

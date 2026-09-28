@@ -314,17 +314,12 @@ class BookingResult {
   final String qrCode;
   final DateTime bookingDate;
   final int appServiceFee;
+
+  /// Sudah termasuk [appServiceFee] dan potongan promo. Tampilkan apa adanya.
   final double totalPrice;
   final BookingStoreInfo store;
   final BookingCapsterInfo capster;
   final List<BookingServiceInfo> services;
-
-  double get subTotal => services.fold<double>(
-    0,
-    (double sum, BookingServiceInfo s) => sum + s.price,
-  );
-
-  double get grandTotal => totalPrice + appServiceFee;
 
   factory BookingResult.fromJson(Map<String, dynamic> json) {
     final Object? rawServices = json['service'];

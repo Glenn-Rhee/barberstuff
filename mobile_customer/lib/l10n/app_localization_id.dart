@@ -761,10 +761,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get personalInfoSaved => 'Perubahan tersimpan';
 
   @override
-  String get personalInfoPhotoPending =>
-      'Nama dan nomor tersimpan. Foto belum ikut tersimpan.';
-
-  @override
   String get helpTitle => 'Pusat Bantuan';
 
   @override

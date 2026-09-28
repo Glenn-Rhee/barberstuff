@@ -38,15 +38,17 @@ class ProfileRepository {
     }
   }
 
+  /// [imageKey] adalah `object_key` hasil `ImageUploadService`, bukan URL.
+  /// Backend menolak URL biasa di `image_url`.
   Future<CustomerProfile> updateCustomerProfile({
     String? name,
     String? phoneNumber,
-    String? imageUrl,
+    String? imageKey,
   }) async {
     final Map<String, dynamic> body = <String, dynamic>{
       if (name != null) 'name': name,
       if (phoneNumber != null) 'phoneNumber': phoneNumber,
-      if (imageUrl != null) 'image_url': imageUrl,
+      if (imageKey != null) 'image_url': imageKey,
     };
 
     try {
