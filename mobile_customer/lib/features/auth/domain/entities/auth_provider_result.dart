@@ -1,5 +1,7 @@
 enum AuthProviderStatus { success, needCompleteProfile, unknown }
 
+/// Hasil masuk dengan Google. [needCompleteProfile] berarti akun baru dan
+/// harus melengkapi profil memakai [tempToken] sebelum dapat [accessToken].
 class AuthProviderResult {
   const AuthProviderResult({
     required this.email,
@@ -14,25 +16,4 @@ class AuthProviderResult {
   final AuthProviderStatus status;
   final String? accessToken;
   final String? tempToken;
-
-  factory AuthProviderResult.fromJson(Map<String, dynamic> json) {
-    return AuthProviderResult(
-      email: (json['email'] as String?) ?? '',
-      name: (json['name'] as String?) ?? '',
-      status: _statusOf(json['status'] as String?),
-      accessToken: json['access_token'] as String?,
-      tempToken: json['temp_token'] as String?,
-    );
-  }
-
-  static AuthProviderStatus _statusOf(String? raw) {
-    switch (raw) {
-      case 'SUCCESS':
-        return AuthProviderStatus.success;
-      case 'NEED_COMPLETE_PROFILE':
-        return AuthProviderStatus.needCompleteProfile;
-      default:
-        return AuthProviderStatus.unknown;
-    }
-  }
 }

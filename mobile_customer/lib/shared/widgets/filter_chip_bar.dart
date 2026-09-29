@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 
-
 class FilterChipBar extends StatelessWidget {
   const FilterChipBar({
     super.key,
@@ -46,11 +45,7 @@ class FilterChipBar extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({
-    required this.label,
-    required this.active,
-    required this.onTap,
-  });
+  const _Chip({required this.label, required this.active, required this.onTap});
 
   final String label;
   final bool active;

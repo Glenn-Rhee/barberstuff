@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_detail.dart';
 
 class StarRow extends StatelessWidget {
   const StarRow({super.key, required this.rating, this.size = 13});

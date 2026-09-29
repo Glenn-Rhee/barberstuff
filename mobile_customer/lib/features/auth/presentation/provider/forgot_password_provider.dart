@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/forgot_password_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/request_password_reset.dart';
 
 class ForgotPasswordProvider extends ChangeNotifier {
-  ForgotPasswordProvider(this._repository, {String? initialEmail}) {
+  ForgotPasswordProvider(this._requestReset, {String? initialEmail}) {
     if (initialEmail != null) emailController.text = initialEmail;
     emailController.addListener(_syncComplete);
     _syncComplete();
   }
 
-  final AuthRepository _repository;
+  final RequestPasswordReset _requestReset;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
@@ -45,9 +44,7 @@ class ForgotPasswordProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _result = await _repository.forgotPassword(
-        ForgotPasswordRequestApi(email: email),
-      );
+      _result = await _requestReset(email);
       _isLoading = false;
       notifyListeners();
       return true;

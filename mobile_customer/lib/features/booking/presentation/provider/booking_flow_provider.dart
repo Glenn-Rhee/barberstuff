@@ -4,29 +4,56 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
-import 'package:mobile_barberstuff/features/booking/domain/store_distance.dart';
+import 'package:mobile_barberstuff/core/usecase/usecase.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_draft.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_slot.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/booking_slot_params.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/create_booking.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/get_booking_draft.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/get_store_slots.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/lock_booking_slot.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/release_booking_slot.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/save_booking_lock.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/save_booking_terms.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/service_item.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_store_services.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_stores.dart';
 
 enum BookingStep { terms, branch, schedule, capster, service, confirm }
 
 class BookingFlowProvider extends ChangeNotifier {
-  BookingFlowProvider(
-    this._repo,
-    this._cache, {
+  BookingFlowProvider({
+    required GetStores getStores,
+    required GetStoreServices getServices,
+    required GetStoreSlots getSlots,
+    required LockBookingSlot lockSlot,
+    required ReleaseBookingSlot releaseSlot,
+    required CreateBooking createBooking,
+    required GetBookingDraft getDraft,
+    required SaveBookingTerms saveTerms,
+    required SaveBookingLock saveLock,
     LocationService? location,
-    BookingJournal? journal,
     Duration? lockDuration,
     StoreSummary? store,
-  }) : _location = location,
-       _journal = journal,
+  }) : _getStores = getStores,
+       _getServices = getServices,
+       _getSlots = getSlots,
+       _lockSlot = lockSlot,
+       _releaseSlot = releaseSlot,
+       _createBooking = createBooking,
+       _saveTerms = saveTerms,
+       _saveLock = saveLock,
+       _location = location,
        _lockDuration = lockDuration ?? defaultLockDuration {
     searchController.addListener(_onSearchChanged);
     _selectedDay = DateUtils.dateOnly(DateTime.now());
-    _agreed = _cache.readBool(AppCache.keyBookingTermsAgreed);
-    _restoreLock();
+
+    final BookingDraft draft = getDraft(const NoParams());
+    _agreed = draft.termsAgreed;
+    final BookingLock? lock = draft.lock;
+    if (lock != null) _restoreLock(lock);
 
     // Masuk dari detail cabang: cabangnya sudah pasti, jadi langkah pilih
     // cabang dilewati. Slot yang masih terkunci tetap didahulukan.
@@ -40,10 +67,15 @@ class BookingFlowProvider extends ChangeNotifier {
   static const int dayCount = 14;
   static const int minimumLeadMinutes = 30;
 
-  final BookingRepository _repo;
-  final AppCache _cache;
+  final GetStores _getStores;
+  final GetStoreServices _getServices;
+  final GetStoreSlots _getSlots;
+  final LockBookingSlot _lockSlot;
+  final ReleaseBookingSlot _releaseSlot;
+  final CreateBooking _createBooking;
+  final SaveBookingTerms _saveTerms;
+  final SaveBookingLock _saveLock;
   final LocationService? _location;
-  final BookingJournal? _journal;
   final Duration _lockDuration;
 
   final TextEditingController searchController = TextEditingController();
@@ -83,7 +115,6 @@ class BookingFlowProvider extends ChangeNotifier {
 
   bool _submitting = false;
   ApiException? _submitError;
-  BookingResult? _result;
   BookingRecord? _record;
 
   BookingStep get step => _step;
@@ -171,7 +202,6 @@ class BookingFlowProvider extends ChangeNotifier {
 
   bool get submitting => _submitting;
   ApiException? get submitError => _submitError;
-  BookingResult? get result => _result;
   BookingRecord? get record => _record;
 
   List<DateTime> get days {
@@ -238,7 +268,7 @@ class BookingFlowProvider extends ChangeNotifier {
     if (_agreed == value) return;
     _agreed = value;
     notifyListeners();
-    _cache.writeJson(AppCache.keyBookingTermsAgreed, value);
+    _saveTerms(value);
   }
 
   Future<void> loadStores() async {
@@ -247,8 +277,8 @@ class BookingFlowProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final CachedResult<List<StoreSummary>> result = await _repo.getStores(
-        name: _query.isEmpty ? null : _query,
+      final CachedResult<List<StoreSummary>> result = await _getStores(
+        GetStoresParams(name: _query.isEmpty ? null : _query),
       );
       _stores = result.data;
       _storesFromCache = result.fromCache;
@@ -292,9 +322,8 @@ class BookingFlowProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _storeSlots = await _repo.getStoreSlots(
-        idStore: picked.id,
-        date: _selectedDay,
+      _storeSlots = await _getSlots(
+        GetStoreSlotsParams(storeId: picked.id, date: _selectedDay),
       );
     } on ApiException catch (e) {
       _slotsError = e;
@@ -332,10 +361,12 @@ class BookingFlowProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _repo.lockBooking(
-        idStore: pickedStore.id,
-        idCapster: pickedCapster.id,
-        bookingDate: at,
+      await _lockSlot(
+        BookingSlotParams(
+          storeId: pickedStore.id,
+          capsterId: pickedCapster.id,
+          bookingDate: at,
+        ),
       );
 
       _startCountdown();
@@ -369,7 +400,7 @@ class BookingFlowProvider extends ChangeNotifier {
     _ticker?.cancel();
     _ticker = null;
     _lockExpiresAt = null;
-    _cache.remove(AppCache.keyBookingLock);
+    _saveLock(null);
   }
 
   void _persistLock() {
@@ -385,46 +416,29 @@ class BookingFlowProvider extends ChangeNotifier {
       return;
     }
 
-    _cache.writeJson(AppCache.keyBookingLock, <String, dynamic>{
-      'store': pickedStore.toJson(),
-      'capster': pickedCapster.toJson(),
-      'slot_time': pickedSlot.time,
-      'day': _selectedDay.toIso8601String(),
-      'expires_at': until.millisecondsSinceEpoch,
-    });
+    _saveLock(
+      BookingLock(
+        store: pickedStore,
+        capster: pickedCapster,
+        slotTime: pickedSlot.time,
+        day: _selectedDay,
+        expiresAt: until,
+      ),
+    );
   }
 
-  void _restoreLock() {
-    final Map<String, dynamic>? raw = _cache
-        .readJson(AppCache.keyBookingLock)
-        ?.asMap;
-    if (raw == null) return;
-
-    final int millis = (raw['expires_at'] as num?)?.toInt() ?? 0;
-    final DateTime until = DateTime.fromMillisecondsSinceEpoch(millis);
-    if (!until.isAfter(DateTime.now())) {
-      _cache.remove(AppCache.keyBookingLock);
-      return;
-    }
-
-    final Object? store = raw['store'];
-    final Object? capster = raw['capster'];
-    if (store is! Map<String, dynamic> || capster is! Map<String, dynamic>) {
-      return;
-    }
-
-    _store = StoreSummary.fromJson(store);
-    _capster = SlotCapster.fromJson(capster);
-    _selectedDay = DateUtils.dateOnly(
-      DateTime.tryParse('${raw['day']}') ?? DateTime.now(),
-    );
+  /// Slot yang masih terkunci dari sesi sebelumnya: lanjut di pilih layanan.
+  void _restoreLock(BookingLock lock) {
+    _store = lock.store;
+    _capster = lock.capster;
+    _selectedDay = DateUtils.dateOnly(lock.day);
     _slot = BookingSlot(
-      time: '${raw['slot_time']}',
+      time: lock.slotTime,
       available: true,
-      capsters: <SlotCapster>[_capster!],
+      capsters: <SlotCapster>[lock.capster],
     );
 
-    _lockExpiresAt = until;
+    _lockExpiresAt = lock.expiresAt;
     _ticker = Timer.periodic(const Duration(seconds: 1), (Timer _) {
       if (lockRemaining == Duration.zero) {
         _onLockExpired();
@@ -464,10 +478,12 @@ class BookingFlowProvider extends ChangeNotifier {
     }
 
     try {
-      await _repo.releaseLock(
-        idStore: pickedStore.id,
-        idCapster: pickedCapster.id,
-        bookingDate: at,
+      await _releaseSlot(
+        BookingSlotParams(
+          storeId: pickedStore.id,
+          capsterId: pickedCapster.id,
+          bookingDate: at,
+        ),
       );
       return true;
     } on ApiException catch (_) {
@@ -491,9 +507,8 @@ class BookingFlowProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _services[_serviceTab] = await _repo.getServices(
-        idStore: picked.id,
-        type: _serviceTab,
+      _services[_serviceTab] = await _getServices(
+        GetStoreServicesParams(storeId: picked.id, type: _serviceTab),
       );
     } on ApiException catch (e) {
       _servicesError = e;
@@ -543,21 +558,15 @@ class BookingFlowProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final BookingResult created = await _repo.createBooking(
-        idStore: pickedStore.id,
-        idCapster: pickedCapster.id,
-        idService: pickedServices.first.id,
-        bookingDate: at,
+      _record = await _createBooking(
+        CreateBookingParams(
+          storeId: pickedStore.id,
+          capster: pickedCapster,
+          serviceId: pickedServices.first.id,
+          bookingDate: at,
+        ),
       );
-      _result = created;
       _stopCountdown();
-
-      _record = BookingRecord.fromResult(
-        created,
-        capsterId: pickedCapster.id,
-        capsterName: pickedCapster.name,
-      );
-      await _journal?.add(_record!);
       return true;
     } on ApiException catch (e) {
       _submitError = e;

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/register_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/register_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/registration.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/register_account.dart';
+import 'package:mobile_barberstuff/shared/mixins/avatar_form_mixin.dart';
 
 class RegisterProvider extends ChangeNotifier with AvatarFormMixin {
-  RegisterProvider(this._repository) {
+  RegisterProvider(this._register) {
     for (final TextEditingController c in _textFields) {
       c.addListener(_syncComplete);
     }
   }
 
-  final AuthRepository _repository;
+  final RegisterAccount _register;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -37,9 +37,9 @@ class RegisterProvider extends ChangeNotifier with AvatarFormMixin {
   bool _isComplete = false;
   ApiException? _error;
   RegisterResult? _result;
-  RegisterRequestApi? _lastRequest;
+  Registration? _lastRequest;
 
-  RegisterRequestApi? get lastRequest => _lastRequest;
+  Registration? get lastRequest => _lastRequest;
   DateTime? get dateOfBirth => _dateOfBirth;
   String? get gender => _gender;
   bool get obscurePassword => _obscurePassword;
@@ -89,7 +89,7 @@ class RegisterProvider extends ChangeNotifier with AvatarFormMixin {
     _error = null;
     notifyListeners();
 
-    final RegisterRequestApi request = RegisterRequestApi(
+    final Registration request = Registration(
       name: nameController.text.trim(),
       phoneNumber: phoneController.text.trim(),
       dateOfBirth: _dateOfBirth!,
@@ -100,7 +100,7 @@ class RegisterProvider extends ChangeNotifier with AvatarFormMixin {
     );
 
     try {
-      _result = await _repository.register(request);
+      _result = await _register(request);
       _lastRequest = request;
       _isLoading = false;
       notifyListeners();

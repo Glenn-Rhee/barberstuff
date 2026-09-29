@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/core/usecase/usecase.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
-import 'package:mobile_barberstuff/features/promo/data/promo_catalog.dart';
-import 'package:mobile_barberstuff/features/promo/domain/promo_content.dart';
+import 'package:mobile_barberstuff/features/promo/domain/entities/promo_content.dart';
+import 'package:mobile_barberstuff/features/promo/domain/usecases/get_promo_content.dart';
 import 'package:mobile_barberstuff/features/promo/presentation/widgets/promo_parts.dart';
 import 'package:mobile_barberstuff/features/promo/presentation/widgets/reward_detail_sheet.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
@@ -53,6 +54,9 @@ class PromoPage extends StatelessWidget {
     // poin dan tier di layar; args cuma dipakai sebagai nilai awal.
     final ProfileProvider? profileProvider = _liveProfile(context);
     final CustomerProfile profile = profileProvider?.profile ?? args.profile;
+    final PromoContent promo = context.read<GetPromoContent>()(
+      const NoParams(),
+    );
 
     return Scaffold(
       backgroundColor: AppColor.surface,
@@ -84,58 +88,65 @@ class PromoPage extends StatelessWidget {
           onRefresh: profileProvider?.load ?? () async {},
           color: AppColor.goldDeep,
           child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(_sidePadding, 4, _sidePadding, 28),
-          children: <Widget>[
-            PromoHeaderCard(profile: profile),
-
-            const SizedBox(height: 22),
-            _SectionHead(title: l10n.promoGradeTitle, action: l10n.promoTerms),
-            const SizedBox(height: 12),
-            GradeStepRow(grades: PromoCatalog.grades, current: profile.tier),
-
-            const SizedBox(height: 20),
-            for (final GradeBenefit benefit
-                in PromoCatalog.benefits) ...<Widget>[
-              GradeBenefitTile(benefit: benefit),
-              const SizedBox(height: 10),
-            ],
-
-            const SizedBox(height: 12),
-            _SectionHead(
-              title: l10n.promoSectionTitle,
-              subtitle: l10n.promoSectionSubtitle,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(
+              _sidePadding,
+              4,
+              _sidePadding,
+              28,
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 132,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                clipBehavior: Clip.none,
-                itemCount: PromoCatalog.banners.length,
-                separatorBuilder: (BuildContext _, int _) =>
-                    const SizedBox(width: 12),
-                itemBuilder: (BuildContext context, int index) =>
-                    PromoBannerCard(banner: PromoCatalog.banners[index]),
+            children: <Widget>[
+              PromoHeaderCard(profile: profile),
+
+              const SizedBox(height: 22),
+              _SectionHead(
+                title: l10n.promoGradeTitle,
+                action: l10n.promoTerms,
               ),
-            ),
+              const SizedBox(height: 12),
+              GradeStepRow(grades: promo.grades, current: profile.tier),
 
-            const SizedBox(height: 26),
-            _SectionHead(
-              title: l10n.promoRedeemTitle,
-              subtitle: l10n.promoRedeemSubtitle,
-            ),
-            const SizedBox(height: 12),
-            for (final RewardVoucher reward
-                in PromoCatalog.rewards) ...<Widget>[
-              RewardCard(
-                reward: reward,
-                affordable: reward.affordableBy(profile.memberPoints),
-                onTap: () => _openReward(context, reward, profile.memberPoints),
+              const SizedBox(height: 20),
+              for (final GradeBenefit benefit in promo.benefits) ...<Widget>[
+                GradeBenefitTile(benefit: benefit),
+                const SizedBox(height: 10),
+              ],
+
+              const SizedBox(height: 12),
+              _SectionHead(
+                title: l10n.promoSectionTitle,
+                subtitle: l10n.promoSectionSubtitle,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 132,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  clipBehavior: Clip.none,
+                  itemCount: promo.banners.length,
+                  separatorBuilder: (BuildContext _, int _) =>
+                      const SizedBox(width: 12),
+                  itemBuilder: (BuildContext context, int index) =>
+                      PromoBannerCard(banner: promo.banners[index]),
+                ),
+              ),
+
+              const SizedBox(height: 26),
+              _SectionHead(
+                title: l10n.promoRedeemTitle,
+                subtitle: l10n.promoRedeemSubtitle,
+              ),
+              const SizedBox(height: 12),
+              for (final RewardVoucher reward in promo.rewards) ...<Widget>[
+                RewardCard(
+                  reward: reward,
+                  affordable: reward.affordableBy(profile.memberPoints),
+                  onTap: () =>
+                      _openReward(context, reward, profile.memberPoints),
+                ),
+                const SizedBox(height: 14),
+              ],
             ],
-          ],
           ),
         ),
       ),

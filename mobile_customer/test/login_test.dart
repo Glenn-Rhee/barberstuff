@@ -7,8 +7,11 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/services/dio_client.dart';
 import 'package:mobile_barberstuff/core/services/google_auth_service.dart';
+import 'package:mobile_barberstuff/features/auth/auth_injection.dart';
 import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:mobile_barberstuff/features/auth/domain/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/login_with_email.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/login_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/login_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
@@ -70,7 +73,7 @@ Future<AppSession> _session([Map<String, Object> initial = const {}]) async {
 AuthRepository _repository(_FakeAdapter adapter) {
   final DioClient client = DioClient();
   client.dio.httpClientAdapter = adapter;
-  return AuthRepository(AuthRemoteDataSource(client.dio));
+  return AuthRepositoryImpl(AuthRemoteDataSource(client.dio));
 }
 
 Future<_FakeAdapter> _pumpLogin(
@@ -85,6 +88,7 @@ Future<_FakeAdapter> _pumpLogin(
       providers: <SingleChildWidget>[
         Provider<AppSession>.value(value: session),
         Provider<AuthRepository>.value(value: _repository(adapter)),
+        ...authUseCases(),
         Provider<GoogleAuthService>(create: (_) => GoogleAuthService()),
       ],
       child: MaterialApp(
@@ -184,7 +188,7 @@ void main() {
     expect(session.rememberedEmail, 'damassdev@gmail.com');
 
     final LoginProvider next = LoginProvider(
-      _repository(_FakeAdapter(_ok)),
+      LoginWithEmail(_repository(_FakeAdapter(_ok))),
       session,
     );
     expect(next.emailController.text, 'damassdev@gmail.com');

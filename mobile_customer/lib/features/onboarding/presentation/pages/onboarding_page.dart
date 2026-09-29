@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_duration.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/features/onboarding/domain/onboarding_content.dart';
+import 'package:mobile_barberstuff/features/onboarding/presentation/models/onboarding_content.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/widgets/onboarding_action.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/widgets/onboarding_indicator.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/widgets/onboarding_slide.dart';

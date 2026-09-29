@@ -3,7 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:mobile_barberstuff/core/config/api_endpoint.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/api_response.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_result_model.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_slot_model.dart';
 
 class BookingRemoteDataSource {
   BookingRemoteDataSource(this._dio);
@@ -23,34 +24,7 @@ class BookingRemoteDataSource {
     );
   }
 
-  Future<List<StoreSummary>> getStores({
-    String? name,
-    int page = 1,
-    int limit = 20,
-  }) async {
-    final Response<dynamic> res = await _dio.get<dynamic>(
-      ApiEndpoint.stores,
-      queryParameters: <String, dynamic>{
-        if (name != null && name.trim().isNotEmpty) 'name': name.trim(),
-        'page': page,
-        'limit': limit,
-      },
-    );
-
-    final ApiResponse<List<StoreSummary>> parsed =
-        ApiResponse.listFromJson<StoreSummary>(
-          res.data as Map<String, dynamic>,
-          StoreSummary.fromJson,
-        );
-
-    if (!parsed.isSuccess || parsed.data == null) {
-      _fail(parsed, res.statusCode);
-    }
-
-    return parsed.data!;
-  }
-
-  Future<StoreSlots> getStoreSlots({
+  Future<StoreSlotsModel> getStoreSlots({
     required String idStore,
     required DateTime date,
   }) async {
@@ -62,38 +36,10 @@ class BookingRemoteDataSource {
       },
     );
 
-    final ApiResponse<StoreSlots> parsed = ApiResponse<StoreSlots>.fromJson(
-      res.data as Map<String, dynamic>,
-      StoreSlots.fromJson,
-    );
-
-    if (!parsed.isSuccess || parsed.data == null) {
-      _fail(parsed, res.statusCode);
-    }
-
-    return parsed.data!;
-  }
-
-  Future<List<ServiceItem>> getServices({
-    required String idStore,
-    required ProductType type,
-    int page = 1,
-    int limit = 50,
-  }) async {
-    final Response<dynamic> res = await _dio.get<dynamic>(
-      ApiEndpoint.services,
-      queryParameters: <String, dynamic>{
-        'id_store': idStore,
-        'type': type.name,
-        'page': page,
-        'limit': limit,
-      },
-    );
-
-    final ApiResponse<List<ServiceItem>> parsed =
-        ApiResponse.listFromJson<ServiceItem>(
+    final ApiResponse<StoreSlotsModel> parsed =
+        ApiResponse<StoreSlotsModel>.fromJson(
           res.data as Map<String, dynamic>,
-          ServiceItem.fromJson,
+          StoreSlotsModel.fromJson,
         );
 
     if (!parsed.isSuccess || parsed.data == null) {
@@ -147,7 +93,7 @@ class BookingRemoteDataSource {
     if (!parsed.isSuccess) _fail(parsed, res.statusCode);
   }
 
-  Future<BookingResult> createBooking({
+  Future<BookingResultModel> createBooking({
     required String idStore,
     required String idCapster,
     required String idService,
@@ -165,10 +111,10 @@ class BookingRemoteDataSource {
       },
     );
 
-    final ApiResponse<BookingResult> parsed =
-        ApiResponse<BookingResult>.fromJson(
+    final ApiResponse<BookingResultModel> parsed =
+        ApiResponse<BookingResultModel>.fromJson(
           res.data as Map<String, dynamic>,
-          BookingResult.fromJson,
+          BookingResultModel.fromJson,
         );
 
     if (!parsed.isSuccess || parsed.data == null) {

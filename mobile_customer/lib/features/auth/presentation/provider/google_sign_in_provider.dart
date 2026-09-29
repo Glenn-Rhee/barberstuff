@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/services/google_auth_service.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/auth_provider_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/auth_provider_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/sign_in_with_google.dart';
 
 class GoogleSignInProvider extends ChangeNotifier {
-  GoogleSignInProvider(this._repository, this._google, this._session);
+  GoogleSignInProvider(this._signIn, this._google, this._session);
 
-  final AuthRepository _repository;
+  final SignInWithGoogle _signIn;
   final GoogleAuthService _google;
   final AppSession _session;
 
@@ -42,9 +42,7 @@ class GoogleSignInProvider extends ChangeNotifier {
       final GoogleCredential? credential = await _google.signIn();
       if (credential == null) return _stop();
 
-      final AuthProviderResult result = await _repository.authProvider(
-        credential.idToken,
-      );
+      final AuthProviderResult result = await _signIn(credential.idToken);
 
       final String token = result.accessToken ?? '';
       final String tempToken = result.tempToken ?? '';

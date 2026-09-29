@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:mobile_barberstuff/core/config/api_endpoint.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/api_response.dart';
-import 'package:mobile_barberstuff/features/history/domain/booking_history.dart';
+import 'package:mobile_barberstuff/features/history/domain/entities/booking_history.dart';
 
 class HistoryRemoteDataSource {
   HistoryRemoteDataSource(this._dio);

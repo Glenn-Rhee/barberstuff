@@ -3,8 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_step_shell.dart';
-import 'package:mobile_barberstuff/features/history/domain/booking_history.dart';
+import 'package:mobile_barberstuff/core/utils/price_format.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/history/domain/entities/booking_history.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 class HistoryCard extends StatelessWidget {

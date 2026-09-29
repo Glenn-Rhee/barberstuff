@@ -111,7 +111,6 @@ class AppAssets {
   static const String routeDetailStore = '$_iconDetailStore/rute.png';
   static const String shareDetailStore = '$_iconDetailStore/share.png';
 
-
   static const String bookNotify = '$_iconNotify/book.png';
   static const String fileNotify = '$_iconNotify/file.png';
   static const String megaphoneNotify = '$_iconNotify/megaphone.png';

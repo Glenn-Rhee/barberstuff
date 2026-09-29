@@ -4,11 +4,13 @@ import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/registration.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/register_account.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/request_password_reset.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/verify_otp.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/verify_otp_provider.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/otp_field.dart';
-import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_password_page.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
@@ -29,7 +31,7 @@ class VerifyOtpArgs {
 
   /// Hanya dipakai alur registrasi, untuk mengulang POST /auth/register saat
   /// pengguna menekan "kirim ulang kode".
-  final RegisterRequestApi? registerRequest;
+  final Registration? registerRequest;
 }
 
 class VerifyOtpPage extends StatelessWidget {
@@ -41,7 +43,9 @@ class VerifyOtpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<VerifyOtpProvider>(
       create: (BuildContext ctx) => VerifyOtpProvider(
-        ctx.read<AuthRepository>(),
+        ctx.read<VerifyOtp>(),
+        ctx.read<RegisterAccount>(),
+        ctx.read<RequestPasswordReset>(),
         userId: args.userId,
         email: args.email,
         purpose: args.purpose,

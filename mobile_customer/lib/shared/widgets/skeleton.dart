@@ -57,12 +57,7 @@ class _SkeletonGroupState extends State<SkeletonGroup>
 
 /// Satu kotak abu-abu pengganti teks, gambar, atau tombol yang belum datang.
 class SkeletonBox extends StatelessWidget {
-  const SkeletonBox({
-    super.key,
-    this.width,
-    this.height = 14,
-    this.radius = 8,
-  });
+  const SkeletonBox({super.key, this.width, this.height = 14, this.radius = 8});
 
   /// Bentuk bulat untuk foto profil atau ikon.
   /// Radius sebesar sisi sudah cukup membuat kotak jadi lingkaran.
@@ -116,11 +111,7 @@ class SkeletonListTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SkeletonBox(
-            width: thumbSize,
-            height: thumbSize,
-            radius: thumbRadius,
-          ),
+          SkeletonBox(width: thumbSize, height: thumbSize, radius: thumbRadius),
           const SizedBox(width: 12),
           Expanded(
             child: LayoutBuilder(

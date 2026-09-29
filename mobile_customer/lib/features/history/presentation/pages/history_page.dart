@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
-import 'package:mobile_barberstuff/features/history/domain/booking_history.dart';
+import 'package:mobile_barberstuff/features/history/domain/entities/booking_history.dart';
+import 'package:mobile_barberstuff/features/history/presentation/provider/customer_bookings_provider.dart';
 import 'package:mobile_barberstuff/features/history/presentation/provider/history_provider.dart';
 import 'package:mobile_barberstuff/features/history/presentation/widgets/history_card.dart';
 import 'package:mobile_barberstuff/features/history/presentation/widgets/review_sheet.dart';
-import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
-import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
+import 'package:mobile_barberstuff/shared/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/shared/widgets/filter_chip_bar.dart';
+import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:provider/provider.dart';
 
 class HistoryPage extends StatelessWidget {
@@ -22,7 +22,7 @@ class HistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<HistoryProvider>(
       create: (BuildContext ctx) =>
-          HistoryProvider(ctx.read<HistoryRepository>()),
+          HistoryProvider(ctx.read<CustomerBookingsProvider>()),
       child: const HistoryView(),
     );
   }
@@ -54,7 +54,7 @@ class HistoryView extends StatelessWidget {
     final ReviewDraft? draft = await showReviewSheet(
       context,
       readOnly: item.isReviewed,
-      initial: context.read<HistoryRepository>().reviewOf(item.id),
+      initial: context.read<CustomerBookingsProvider>().reviewOf(item.id),
     );
     if (draft == null || !context.mounted) return;
 
@@ -158,22 +158,22 @@ class HistoryView extends StatelessWidget {
                       onRefresh: p.load,
                       color: AppColor.goldDeep,
                       child: ListView.separated(
-                      padding: EdgeInsets.fromLTRB(
-                        sidePadding,
-                        0,
-                        sidePadding,
-                        20 + DashboardBottomNav.spaceOf(context),
-                      ),
-                      itemCount: p.items.length,
-                      separatorBuilder: (BuildContext _, int _) =>
-                          const SizedBox(height: 10),
-                      itemBuilder: (BuildContext context, int index) {
-                        final BookingHistory item = p.items[index];
-                        return HistoryCard(
-                          item: item,
-                          onReview: () => _openReview(context, p, item),
-                        );
-                      },
+                        padding: EdgeInsets.fromLTRB(
+                          sidePadding,
+                          0,
+                          sidePadding,
+                          20 + DashboardBottomNav.spaceOf(context),
+                        ),
+                        itemCount: p.items.length,
+                        separatorBuilder: (BuildContext _, int _) =>
+                            const SizedBox(height: 10),
+                        itemBuilder: (BuildContext context, int index) {
+                          final BookingHistory item = p.items[index];
+                          return HistoryCard(
+                            item: item,
+                            onReview: () => _openReview(context, p, item),
+                          );
+                        },
                       ),
                     ),
             ),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_barberstuff/core/localization/local_controller.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/about_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/help_center_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/language_page.dart';

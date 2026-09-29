@@ -2,19 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/register_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/forgot_password_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/register_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/registration.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/verify_otp_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/register_account.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/request_password_reset.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/verify_otp.dart';
 
 enum OtpPurpose { register, forgotPassword }
 
 class VerifyOtpProvider extends ChangeNotifier {
   VerifyOtpProvider(
-    this._repository, {
+    this._verifyOtp,
+    this._register,
+    this._requestReset, {
     required String userId,
     required this.email,
     required this.purpose,
@@ -28,8 +30,10 @@ class VerifyOtpProvider extends ChangeNotifier {
   static const int otpLength = 6;
   static const int resendCooldown = 180;
 
-  final AuthRepository _repository;
-  final RegisterRequestApi? registerRequest;
+  final VerifyOtp _verifyOtp;
+  final RegisterAccount _register;
+  final RequestPasswordReset _requestReset;
+  final Registration? registerRequest;
   final String email;
   final OtpPurpose purpose;
 
@@ -117,8 +121,8 @@ class VerifyOtpProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final VerifyOtpResult result = await _repository.verifyOtp(
-        VerifyOtpRequestApi(userId: _userId, otp: otp),
+      final VerifyOtpResult result = await _verifyOtp(
+        VerifyOtpParams(userId: _userId, otp: otp),
       );
       _resetToken = result.resetToken;
       _isLoading = false;
@@ -143,14 +147,10 @@ class VerifyOtpProvider extends ChangeNotifier {
 
     try {
       if (purpose == OtpPurpose.register) {
-        final RegisterResult result = await _repository.register(
-          registerRequest!,
-        );
+        final RegisterResult result = await _register(registerRequest!);
         _userId = result.id;
       } else {
-        final ForgotPasswordResult result = await _repository.forgotPassword(
-          ForgotPasswordRequestApi(email: email),
-        );
+        final ForgotPasswordResult result = await _requestReset(email);
         _userId = result.userId;
       }
 

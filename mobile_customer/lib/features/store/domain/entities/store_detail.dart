@@ -1,28 +1,4 @@
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-
-String _text(Object? value) => value is String ? value : '';
-
-/// Jam operasional adalah jam dinding toko, bukan titik waktu: backend memakai
-/// Hour()/Minute() apa adanya lalu menanamkannya ke zona toko. Penanda zona pada
-/// string dibuang, bukan dikonversi, supaya 10:00 tetap terbaca 10:00.
-DateTime? _wallClock(Object? value) {
-  final String text = _text(value).trim();
-  if (text.isEmpty) return null;
-
-  return DateTime.tryParse(
-    text.replaceFirst(RegExp(r'(?:Z|[+-]\d{2}:?\d{2})$'), ''),
-  );
-}
-
-double _toDouble(Object? value) {
-  if (value is num) return value.toDouble();
-  return double.tryParse('${value ?? ''}') ?? 0;
-}
-
-int _toInt(Object? value) {
-  if (value is num) return value.toInt();
-  return int.tryParse('${value ?? ''}') ?? 0;
-}
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
 
 class StoreReview {
   const StoreReview({
@@ -40,22 +16,6 @@ class StoreReview {
   final String userName;
   final String userImageUrl;
   final String userTier;
-
-  factory StoreReview.fromJson(Map<String, dynamic> json) {
-    final Object? user = json['user'];
-    final Map<String, dynamic> raw = user is Map<String, dynamic>
-        ? user
-        : const <String, dynamic>{};
-
-    return StoreReview(
-      id: _text(json['id']),
-      message: _text(json['message']),
-      rating: _toInt(json['rating']),
-      userName: _text(raw['name']),
-      userImageUrl: _text(raw['image_url']),
-      userTier: _text(raw['premium_type']),
-    );
-  }
 }
 
 class CapsterItem {
@@ -74,16 +34,6 @@ class CapsterItem {
   final String status;
 
   bool get isActive => status.toLowerCase().trim() == 'active';
-
-  factory CapsterItem.fromJson(Map<String, dynamic> json) {
-    return CapsterItem(
-      id: _text(json['id']),
-      name: _text(json['name']),
-      imageUrl: _text(json['image_url']),
-      avgRating: _toDouble(json['avg_rating']),
-      status: _text(json['status']),
-    );
-  }
 }
 
 class StoreDetail {
@@ -120,6 +70,8 @@ class StoreDetail {
   final int totalPackage;
   final List<StoreReview> reviews;
   final StoreCoordinate? coordinate;
+
+  /// Jam dinding toko, bukan titik waktu: 10:00 berarti 10:00 di cabang.
   final DateTime? openHour;
   final DateTime? closeHour;
 
@@ -144,32 +96,4 @@ class StoreDetail {
     description: description,
     coordinate: coordinate,
   );
-
-  factory StoreDetail.fromJson(Map<String, dynamic> json) {
-    final Object? rawReviews = json['review'];
-
-    return StoreDetail(
-      id: _text(json['id']),
-      name: _text(json['name']),
-      phoneNumber: _text(json['phone_number']),
-      address: _text(json['address']),
-      bannerUrl: _text(json['banner_url']),
-      description: _text(json['description']),
-      storeType: _text(json['store_type']),
-      status: _text(json['status']),
-      avgRating: _toDouble(json['avg_rating']),
-      totalService: _toInt(json['total_service']),
-      totalCapster: _toInt(json['total_capster']),
-      totalPackage: _toInt(json['total_package']),
-      coordinate: StoreCoordinate.parse(json['coordinate']),
-      openHour: _wallClock(json['open_hour']),
-      closeHour: _wallClock(json['close_hour']),
-      reviews: rawReviews is List
-          ? rawReviews
-                .whereType<Map<String, dynamic>>()
-                .map(StoreReview.fromJson)
-                .toList(growable: false)
-          : const <StoreReview>[],
-    );
-  }
 }

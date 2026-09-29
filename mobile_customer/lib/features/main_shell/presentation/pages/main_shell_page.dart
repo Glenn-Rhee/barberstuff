@@ -5,21 +5,21 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/deeplink/store_link.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/widgets/debug_panel.dart';
-import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
 import 'package:mobile_barberstuff/features/history/presentation/pages/history_page.dart';
+import 'package:mobile_barberstuff/features/history/presentation/provider/customer_bookings_provider.dart';
 import 'package:mobile_barberstuff/features/home/presentation/pages/home_page.dart';
 import 'package:mobile_barberstuff/features/home/presentation/provider/dashboard_provider.dart';
-import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/profile_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_stores.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
+import 'package:mobile_barberstuff/shared/widgets/dashboard_bottom_nav.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-class DebugShellPage extends StatelessWidget {
-  const DebugShellPage({super.key});
+class MainShellPage extends StatelessWidget {
+  const MainShellPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +27,8 @@ class DebugShellPage extends StatelessWidget {
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<DashboardProvider>(
           create: (BuildContext ctx) => DashboardProvider(
-            ctx.read<BookingRepository>(),
-            ctx.read<HistoryRepository>(),
+            ctx.read<GetStores>(),
+            ctx.read<CustomerBookingsProvider>(),
             ctx.read<LocationService>(),
           ),
         ),

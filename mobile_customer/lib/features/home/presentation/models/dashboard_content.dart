@@ -1,5 +1,5 @@
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
 
 class ActiveBooking {
   const ActiveBooking({

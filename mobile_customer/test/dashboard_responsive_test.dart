@@ -5,18 +5,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
+import 'package:mobile_barberstuff/features/home/presentation/models/dashboard_content.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/active_booking_card.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/benefit_carousel.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/birthday_promo_card.dart';
-import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/history_tile.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/nearby_store_list.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/points_card.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/quick_action_row.dart';
 import 'package:mobile_barberstuff/features/home/presentation/widgets/section_header.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/dashboard_bottom_nav.dart';
 
 Widget _host(Widget child, {required Locale locale}) {
   return MaterialApp(

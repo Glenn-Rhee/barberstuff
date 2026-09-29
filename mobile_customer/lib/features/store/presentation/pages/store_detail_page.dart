@@ -8,10 +8,11 @@ import 'package:mobile_barberstuff/core/deeplink/store_link.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
-import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart';
-import 'package:mobile_barberstuff/features/store/data/repositories/store_repository.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_detail.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_store_capsters.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_store_detail.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_store_services.dart';
 import 'package:mobile_barberstuff/features/store/presentation/provider/store_detail_provider.dart';
 import 'package:mobile_barberstuff/features/store/presentation/widgets/store_detail_parts.dart';
 import 'package:mobile_barberstuff/features/store/presentation/widgets/store_see_all_sheet.dart';
@@ -43,8 +44,9 @@ class StoreDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<StoreDetailProvider>(
       create: (BuildContext ctx) => StoreDetailProvider(
-        ctx.read<StoreRepository>(),
-        ctx.read<BookingRepository>(),
+        ctx.read<GetStoreDetail>(),
+        ctx.read<GetStoreCapsters>(),
+        ctx.read<GetStoreServices>(),
         args.storeId,
         initialTab: args.initialTab ?? StoreTab.about,
       ),

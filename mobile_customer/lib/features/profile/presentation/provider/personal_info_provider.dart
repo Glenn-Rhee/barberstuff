@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
-import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/usecases/update_customer_profile.dart';
+import 'package:mobile_barberstuff/shared/mixins/avatar_form_mixin.dart';
 
 class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
-  PersonalInfoProvider(this.profile, this._repository, this._uploader) {
+  PersonalInfoProvider(this.profile, this._updateProfile, this._uploader) {
     nameController.text = profile.name;
     emailController.text = profile.email;
     phoneController.text = profile.phoneNumber;
@@ -27,7 +27,7 @@ class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
-  final ProfileRepository _repository;
+  final UpdateCustomerProfile _updateProfile;
   final ImageUploadService _uploader;
 
   DateTime? _dateOfBirth;
@@ -101,10 +101,12 @@ class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
           ? null
           : await _uploader.uploadFile(photo);
 
-      return await _repository.updateCustomerProfile(
-        name: changes['name'],
-        phoneNumber: changes['phoneNumber'],
-        imageKey: imageKey,
+      return await _updateProfile(
+        UpdateCustomerProfileParams(
+          name: changes['name'],
+          phoneNumber: changes['phoneNumber'],
+          imageKey: imageKey,
+        ),
       );
     } on ApiException catch (e) {
       _error = e;

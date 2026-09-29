@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
+import 'package:mobile_barberstuff/core/utils/price_format.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_record_model.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_result_model.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_receipt_page.dart';
-import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_step_shell.dart';
+import 'package:mobile_barberstuff/features/history/domain/entities/booking_history.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 /// Respons `POST /booking/` untuk layanan 60.000. total_price dari backend
 /// sudah termasuk biaya layanan 2.000.
 BookingRecord _created() {
-  return BookingRecord.fromResult(
-    BookingResult.fromJson(<String, dynamic>{
+  return BookingRecordModel.fromResult(
+    BookingResultModel.fromJson(<String, dynamic>{
       'id_booking': '8a1c2f00-0000-4000-8000-000000000001',
       'qr_code': 'bk8a1c2f00-0000-4000-8000-000000000001',
       'booking_date': '2026-09-24T12:30:00Z',
@@ -45,7 +47,10 @@ void main() {
 
     expect(record.totalPrice, 62000);
     expect(record.appServiceFee, 2000);
-    expect(record.toHistory(DateTime(2026, 9, 1)).price, 62000);
+    expect(
+      BookingHistory.fromRecord(record, DateTime(2026, 9, 1)).price,
+      62000,
+    );
   });
 
   testWidgets('e-receipt: layanan + biaya aplikasi = total harga', (

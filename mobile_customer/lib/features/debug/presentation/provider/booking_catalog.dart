@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_content.dart';
+import 'package:mobile_barberstuff/features/debug/presentation/models/mock_booking_content.dart';
 
 class BookingCatalog extends ChangeNotifier {
   static const List<String> _capsterPhotos = <String>[

@@ -1,56 +1,29 @@
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
-import 'package:mobile_barberstuff/core/services/dio_client.dart';
-import 'package:mobile_barberstuff/features/booking/data/datasources/booking_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
+import 'dart:async';
 
-class BookingRepository {
-  BookingRepository(this._remote, this._cache);
+import 'package:mobile_barberstuff/core/services/dio_client.dart';
+import 'package:mobile_barberstuff/features/booking/data/datasources/booking_local_datasource.dart';
+import 'package:mobile_barberstuff/features/booking/data/datasources/booking_remote_datasource.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_lock_model.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_record_model.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_result_model.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_draft.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_slot.dart';
+import 'package:mobile_barberstuff/features/booking/domain/repositories/booking_repository.dart';
+
+class BookingRepositoryImpl implements BookingRepository {
+  BookingRepositoryImpl(this._remote, this._local);
 
   final BookingRemoteDataSource _remote;
-  final AppCache _cache;
+  final BookingLocalDataSource _local;
 
-  AppCache get cache => _cache;
+  final StreamController<BookingRecord> _created =
+      StreamController<BookingRecord>.broadcast();
 
-  Future<CachedResult<List<StoreSummary>>> getStores({String? name}) async {
-    try {
-      final List<StoreSummary> stores = await _remote.getStores(name: name);
-      if (name == null || name.isEmpty) {
-        await _cache.writeJson(
-          AppCache.keyStores,
-          stores.map((StoreSummary s) => s.toJson()).toList(growable: false),
-        );
-      }
-      return CachedResult<List<StoreSummary>>(stores, fromCache: false);
-    } catch (e) {
-      final ApiException failure = DioClient.mapError(e);
-      final CachedPayload? cached = _cache.readJson(AppCache.keyStores);
+  @override
+  Stream<BookingRecord> get createdBookings => _created.stream;
 
-      if (cached != null && cached.asList.isNotEmpty) {
-        final List<StoreSummary> stores = cached.asList
-            .map(StoreSummary.fromJson)
-            .toList(growable: false);
-
-        final String needle = (name ?? '').toLowerCase();
-        return CachedResult<List<StoreSummary>>(
-          needle.isEmpty
-              ? stores
-              : stores
-                    .where(
-                      (StoreSummary s) =>
-                          s.name.toLowerCase().contains(needle) ||
-                          s.address.toLowerCase().contains(needle),
-                    )
-                    .toList(growable: false),
-          fromCache: true,
-          savedAt: cached.savedAt,
-        );
-      }
-
-      throw failure;
-    }
-  }
-
+  @override
   Future<StoreSlots> getStoreSlots({
     required String idStore,
     required DateTime date,
@@ -62,17 +35,7 @@ class BookingRepository {
     }
   }
 
-  Future<List<ServiceItem>> getServices({
-    required String idStore,
-    required ProductType type,
-  }) async {
-    try {
-      return await _remote.getServices(idStore: idStore, type: type);
-    } catch (e) {
-      throw DioClient.mapError(e);
-    }
-  }
-
+  @override
   Future<void> lockBooking({
     required String idStore,
     required String idCapster,
@@ -89,6 +52,7 @@ class BookingRepository {
     }
   }
 
+  @override
   Future<void> releaseLock({
     required String idStore,
     required String idCapster,
@@ -105,15 +69,18 @@ class BookingRepository {
     }
   }
 
-  Future<BookingResult> createBooking({
+  @override
+  Future<BookingRecord> createBooking({
     required String idStore,
     required String idCapster,
+    required String capsterName,
     required String idService,
     required DateTime bookingDate,
     String? idPromoClaimed,
   }) async {
+    final BookingResultModel result;
     try {
-      return await _remote.createBooking(
+      result = await _remote.createBooking(
         idStore: idStore,
         idCapster: idCapster,
         idService: idService,
@@ -123,5 +90,44 @@ class BookingRepository {
     } catch (e) {
       throw DioClient.mapError(e);
     }
+
+    final BookingRecord record = BookingRecordModel.fromResult(
+      result,
+      capsterId: idCapster,
+      capsterName: capsterName,
+    );
+    await _local.add(record);
+    _created.add(record);
+    return record;
+  }
+
+  @override
+  BookingDraft readDraft() {
+    return BookingDraft(
+      termsAgreed: _local.readTermsAgreed(),
+      lock: _readLock(),
+    );
+  }
+
+  /// Kunci yang sudah habis langsung dibuang supaya tidak dipulihkan lagi.
+  BookingLock? _readLock() {
+    final Map<String, dynamic>? raw = _local.readLock();
+    if (raw == null) return null;
+
+    if (!BookingLockModel.expiresAtOf(raw).isAfter(DateTime.now())) {
+      _local.clearLock();
+      return null;
+    }
+
+    return BookingLockModel.fromJson(raw);
+  }
+
+  @override
+  Future<void> saveTermsAgreed(bool value) => _local.writeTermsAgreed(value);
+
+  @override
+  Future<void> saveLock(BookingLock? lock) {
+    if (lock == null) return _local.clearLock();
+    return _local.writeLock(BookingLockModel.fromEntity(lock).toJson());
   }
 }

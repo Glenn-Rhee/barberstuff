@@ -3,17 +3,17 @@ import 'package:dio/dio.dart';
 import 'package:mobile_barberstuff/core/config/api_endpoint.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/api_response.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/auth_provider_result.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/auth_provider_result_model.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_result.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_result_model.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/login_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/login_result.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/login_result_model.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/oauth_register_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/register_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/register_result.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/register_result_model.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/reset_password_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_result.dart';
+import 'package:mobile_barberstuff/features/auth/data/models/verify_otp_result_model.dart';
 
 class AuthRemoteDataSource {
   AuthRemoteDataSource(this._dio);
@@ -25,16 +25,18 @@ class AuthRemoteDataSource {
     rawMessage: res.message,
   );
 
-  Future<RegisterResult> registerCredential(RegisterRequestApi request) async {
+  Future<RegisterResultModel> registerCredential(
+    RegisterRequestApi request,
+  ) async {
     final Response<dynamic> res = await _dio.post<dynamic>(
       ApiEndpoint.registerCredential,
       data: request.toJson(),
     );
 
-    final ApiResponse<RegisterResult> parsed =
-        ApiResponse<RegisterResult>.fromJson(
+    final ApiResponse<RegisterResultModel> parsed =
+        ApiResponse<RegisterResultModel>.fromJson(
           res.data as Map<String, dynamic>,
-          RegisterResult.fromJson,
+          RegisterResultModel.fromJson,
         );
 
     final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;
@@ -44,35 +46,37 @@ class AuthRemoteDataSource {
     return parsed.data!;
   }
 
-  Future<VerifyOtpResult> verifyCredential(VerifyOtpRequestApi request) async {
+  Future<VerifyOtpResultModel> verifyCredential(
+    VerifyOtpRequestApi request,
+  ) async {
     final Response<dynamic> res = await _dio.post<dynamic>(
       ApiEndpoint.verifyCredential,
       data: request.toJson(),
     );
 
-    final ApiResponse<VerifyOtpResult> parsed =
-        ApiResponse<VerifyOtpResult>.fromJson(
+    final ApiResponse<VerifyOtpResultModel> parsed =
+        ApiResponse<VerifyOtpResultModel>.fromJson(
           res.data as Map<String, dynamic>,
-          VerifyOtpResult.fromJson,
+          VerifyOtpResultModel.fromJson,
         );
 
     final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;
     if (!ok) {
       throw _failure(parsed);
     }
-    return parsed.data ?? const VerifyOtpResult();
+    return parsed.data ?? const VerifyOtpResultModel();
   }
 
-  Future<AuthProviderResult> authProvider(String idToken) async {
+  Future<AuthProviderResultModel> authProvider(String idToken) async {
     final Response<dynamic> res = await _dio.post<dynamic>(
       ApiEndpoint.authProvider,
       data: <String, dynamic>{'id_token': idToken, 'provider': 'google'},
     );
 
-    final ApiResponse<AuthProviderResult> parsed =
-        ApiResponse<AuthProviderResult>.fromJson(
+    final ApiResponse<AuthProviderResultModel> parsed =
+        ApiResponse<AuthProviderResultModel>.fromJson(
           res.data as Map<String, dynamic>,
-          AuthProviderResult.fromJson,
+          AuthProviderResultModel.fromJson,
         );
 
     final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;
@@ -82,16 +86,19 @@ class AuthRemoteDataSource {
     return parsed.data!;
   }
 
-  Future<LoginResult> registerOauth(OauthRegisterRequestApi request) async {
+  Future<LoginResultModel> registerOauth(
+    OauthRegisterRequestApi request,
+  ) async {
     final Response<dynamic> res = await _dio.post<dynamic>(
       ApiEndpoint.registerOauth,
       data: request.toJson(),
     );
 
-    final ApiResponse<LoginResult> parsed = ApiResponse<LoginResult>.fromJson(
-      res.data as Map<String, dynamic>,
-      LoginResult.fromJson,
-    );
+    final ApiResponse<LoginResultModel> parsed =
+        ApiResponse<LoginResultModel>.fromJson(
+          res.data as Map<String, dynamic>,
+          LoginResultModel.fromJson,
+        );
 
     final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;
     if (!ok || parsed.data == null) {
@@ -100,16 +107,17 @@ class AuthRemoteDataSource {
     return parsed.data!;
   }
 
-  Future<LoginResult> loginCredential(LoginRequestApi request) async {
+  Future<LoginResultModel> loginCredential(LoginRequestApi request) async {
     final Response<dynamic> res = await _dio.post<dynamic>(
       ApiEndpoint.loginCredential,
       data: request.toJson(),
     );
 
-    final ApiResponse<LoginResult> parsed = ApiResponse<LoginResult>.fromJson(
-      res.data as Map<String, dynamic>,
-      LoginResult.fromJson,
-    );
+    final ApiResponse<LoginResultModel> parsed =
+        ApiResponse<LoginResultModel>.fromJson(
+          res.data as Map<String, dynamic>,
+          LoginResultModel.fromJson,
+        );
 
     final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;
     if (!ok || parsed.data == null) {
@@ -118,7 +126,7 @@ class AuthRemoteDataSource {
     return parsed.data!;
   }
 
-  Future<ForgotPasswordResult> forgotPassword(
+  Future<ForgotPasswordResultModel> forgotPassword(
     ForgotPasswordRequestApi request,
   ) async {
     final Response<dynamic> res = await _dio.post<dynamic>(
@@ -126,10 +134,10 @@ class AuthRemoteDataSource {
       data: request.toJson(),
     );
 
-    final ApiResponse<ForgotPasswordResult> parsed =
-        ApiResponse<ForgotPasswordResult>.fromJson(
+    final ApiResponse<ForgotPasswordResultModel> parsed =
+        ApiResponse<ForgotPasswordResultModel>.fromJson(
           res.data as Map<String, dynamic>,
-          ForgotPasswordResult.fromJson,
+          ForgotPasswordResultModel.fromJson,
         );
 
     final bool ok = parsed.statusCode >= 200 && parsed.statusCode < 300;

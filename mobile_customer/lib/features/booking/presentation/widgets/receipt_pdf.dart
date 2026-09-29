@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
+import 'package:mobile_barberstuff/core/utils/price_format.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -27,18 +28,6 @@ class ReceiptLabels {
   final String specialist;
   final String appFee;
   final String total;
-}
-
-String _rupiah(num value) {
-  final String digits = value.round().toString();
-  final StringBuffer out = StringBuffer();
-
-  for (int i = 0; i < digits.length; i++) {
-    if (i > 0 && (digits.length - i) % 3 == 0) out.write('.');
-    out.write(digits[i]);
-  }
-
-  return 'Rp$out';
 }
 
 /// Struk siap simpan/bagikan. Dipakai tombol "Download E-Receipt".
@@ -129,11 +118,11 @@ Future<List<int>> buildReceiptPdf({
           pw.SizedBox(height: 12),
           card(<pw.Widget>[
             for (final BookingLine line in record.lines)
-              row(line.name, _rupiah(line.price)),
+              row(line.name, formatRupiah(line.price)),
             if (record.appServiceFee > 0)
-              row(labels.appFee, _rupiah(record.appServiceFee)),
+              row(labels.appFee, formatRupiah(record.appServiceFee)),
             pw.Divider(color: PdfColors.grey300),
-            row(labels.total, _rupiah(record.totalPrice), strong: true),
+            row(labels.total, formatRupiah(record.totalPrice), strong: true),
           ]),
         ],
       ),

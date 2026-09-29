@@ -6,16 +6,17 @@ import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/password_toggle.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/login_with_email.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/reset_password.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/provider/reset_password_provider.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/remember_me_checkbox.dart';
-import 'package:mobile_barberstuff/features/forgot_password/presentation/provider/reset_password_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_field_decoration.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_text_field.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
+import 'package:mobile_barberstuff/shared/widgets/password_toggle.dart';
 import 'package:provider/provider.dart';
 
 class ResetPasswordArgs {
@@ -35,7 +36,8 @@ class ResetPasswordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ResetPasswordProvider>(
       create: (BuildContext ctx) => ResetPasswordProvider(
-        ctx.read<AuthRepository>(),
+        ctx.read<ResetPassword>(),
+        ctx.read<LoginWithEmail>(),
         ctx.read<AppSession>(),
         email: args.email,
         resetToken: args.resetToken,

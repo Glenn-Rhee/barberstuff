@@ -7,13 +7,6 @@ enum MemberTier {
 
   final int threshold;
 
-  static MemberTier fromJson(String? value) {
-    return MemberTier.values.firstWhere(
-      (MemberTier tier) => tier.name == value?.toLowerCase().trim(),
-      orElse: () => MemberTier.silver,
-    );
-  }
-
   MemberTier? get next {
     final int index = MemberTier.values.indexOf(this);
     return index + 1 < MemberTier.values.length
@@ -73,22 +66,6 @@ class CustomerProfile {
       tier: tier ?? this.tier,
       imageUrl: imageUrl,
       dateOfBirth: dateOfBirth,
-    );
-  }
-
-  factory CustomerProfile.fromJson(Map<String, dynamic> json) {
-    final String? image = json['image_url'] as String?;
-
-    return CustomerProfile(
-      id: (json['id'] as String?) ?? '',
-      name: (json['name'] as String?) ?? '',
-      email: (json['email'] as String?) ?? '',
-      phoneNumber: (json['phone_number'] as String?) ?? '',
-      gender: (json['gender'] as String?) ?? '',
-      memberPoints: (json['member_points'] as num?)?.toInt() ?? 0,
-      tier: MemberTier.fromJson(json['premium_type'] as String?),
-      imageUrl: image == null || image.isEmpty ? null : image,
-      dateOfBirth: DateTime.tryParse((json['date_of_birth'] as String?) ?? ''),
     );
   }
 }

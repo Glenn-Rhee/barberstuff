@@ -6,15 +6,15 @@ import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_picker.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_source_sheet.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
-import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/usecases/update_customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/personal_info_provider.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/labeled_field.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
+import 'package:mobile_barberstuff/shared/widgets/avatar_picker.dart';
+import 'package:mobile_barberstuff/shared/widgets/avatar_source_sheet.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:provider/provider.dart';
 
@@ -34,7 +34,7 @@ class PersonalInfoPage extends StatelessWidget {
     return ChangeNotifierProvider<PersonalInfoProvider>(
       create: (BuildContext ctx) => PersonalInfoProvider(
         args.profile,
-        ctx.read<ProfileRepository>(),
+        ctx.read<UpdateCustomerProfile>(),
         ctx.read<ImageUploadService>(),
       ),
       child: const _PersonalInfoView(),

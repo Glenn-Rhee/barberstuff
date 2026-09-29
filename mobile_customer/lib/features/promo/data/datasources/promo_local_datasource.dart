@@ -1,15 +1,16 @@
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
-import 'package:mobile_barberstuff/features/promo/domain/promo_content.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
+import 'package:mobile_barberstuff/features/promo/domain/entities/promo_content.dart';
 
 /// Isi promo sementara. Tabel `promo` sudah ada di database tapi belum punya
 /// route, jadi teksnya ditulis di sini sampai endpointnya tersedia.
 ///
 /// TODO(api): ini satu-satunya data yang masih ditulis tangan di aplikasi.
 /// Begitu route promo jadi di backend, ganti `grades`, `benefits`, `banners`,
-/// dan `rewards` dengan panggilan repository, lalu hapus berkas ini.
-class PromoCatalog {
-  const PromoCatalog._();
+/// dan `rewards` dengan datasource remote di PromoRepositoryImpl, lalu hapus
+/// berkas ini.
+class PromoLocalDataSource {
+  const PromoLocalDataSource._();
 
   static const List<GradeStep> grades = <GradeStep>[
     GradeStep(

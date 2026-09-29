@@ -1,4 +1,4 @@
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 String tierLabel(MemberTier tier, AppLocalizations l10n) {

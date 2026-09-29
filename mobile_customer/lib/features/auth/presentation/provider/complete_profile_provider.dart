@@ -1,22 +1,20 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/login_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/oauth_register_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
-import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/login_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/complete_google_registration.dart';
+import 'package:mobile_barberstuff/features/profile/domain/usecases/update_customer_profile.dart';
+import 'package:mobile_barberstuff/shared/mixins/avatar_form_mixin.dart';
 
 class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
   CompleteProfileProvider(
-    this._repository,
+    this._completeRegistration,
     this._session,
     this._uploader,
-    this._profile, {
+    this._updateProfile, {
     required this.name,
     required this.email,
     required this.tempToken,
@@ -29,10 +27,10 @@ class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
     phoneController.addListener(_syncComplete);
   }
 
-  final AuthRepository _repository;
+  final CompleteGoogleRegistration _completeRegistration;
   final AppSession _session;
   final ImageUploadService _uploader;
-  final ProfileRepository _profile;
+  final UpdateCustomerProfile _updateProfile;
   final String name;
   final String email;
   final String tempToken;
@@ -93,8 +91,8 @@ class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
     notifyListeners();
 
     try {
-      _result = await _repository.registerOauth(
-        OauthRegisterRequestApi(
+      _result = await _completeRegistration(
+        CompleteGoogleRegistrationParams(
           name: nameController.text.trim(),
           tempToken: tempToken,
           phoneNumber: phoneController.text.trim(),
@@ -130,7 +128,7 @@ class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
       final String key = file != null
           ? await _uploader.uploadFile(file)
           : await _uploader.uploadFromUrl(url!);
-      await _profile.updateCustomerProfile(imageKey: key);
+      await _updateProfile(UpdateCustomerProfileParams(imageKey: key));
     } on ApiException catch (e) {
       debugPrint('Simpan foto profil gagal: $e');
     }

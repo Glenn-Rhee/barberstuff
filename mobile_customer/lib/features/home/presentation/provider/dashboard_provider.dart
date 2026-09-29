@@ -2,15 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
-import 'package:mobile_barberstuff/features/booking/domain/store_distance.dart';
-import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/history/presentation/provider/customer_bookings_provider.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_stores.dart';
 
 /// Isi dashboard: cabang dan booking milik akun ini, semuanya dari server.
 class DashboardProvider extends ChangeNotifier {
-  DashboardProvider(this._repo, this._history, this._location) {
+  DashboardProvider(this._getStores, this._history, this._location) {
     _history.addListener(notifyListeners);
     load();
   }
@@ -18,8 +17,8 @@ class DashboardProvider extends ChangeNotifier {
   static const int nearbyLimit = 6;
   static const int historyLimit = 3;
 
-  final BookingRepository _repo;
-  final HistoryRepository _history;
+  final GetStores _getStores;
+  final CustomerBookingsProvider _history;
   final LocationService _location;
 
   List<StoreSummary> _stores = const <StoreSummary>[];
@@ -76,7 +75,9 @@ class DashboardProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final CachedResult<List<StoreSummary>> result = await _repo.getStores();
+      final CachedResult<List<StoreSummary>> result = await _getStores(
+        const GetStoresParams(),
+      );
       _position ??= _location.lastKnown;
       _stores = sortStoresByDistance(result.data, _position);
     } on ApiException catch (e) {

@@ -2,12 +2,18 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/features/booking/data/datasources/booking_local_datasource.dart';
 import 'package:mobile_barberstuff/features/booking/data/datasources/booking_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
+import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository_impl.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
-import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/store/data/datasources/store_remote_datasource.dart';
+import 'package:mobile_barberstuff/features/store/data/models/store_summary_model.dart';
+import 'package:mobile_barberstuff/features/store/data/repositories/store_repository_impl.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/repositories/store_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _OfflineProfileSource extends ProfileRemoteDataSource {
@@ -19,11 +25,11 @@ class _OfflineProfileSource extends ProfileRemoteDataSource {
   }
 }
 
-class _OfflineStoreSource extends BookingRemoteDataSource {
+class _OfflineStoreSource extends StoreRemoteDataSource {
   _OfflineStoreSource() : super(Dio());
 
   @override
-  Future<List<StoreSummary>> getStores({
+  Future<List<StoreSummaryModel>> getStores({
     String? name,
     int page = 1,
     int limit = 20,
@@ -75,7 +81,7 @@ void main() {
     final AppCache cache = await _freshCache();
     await cache.writeJson(AppCache.keyCustomerProfile, profileJson);
 
-    final ProfileRepository repo = ProfileRepository(
+    final ProfileRepository repo = ProfileRepositoryImpl(
       _OfflineProfileSource(),
       cache,
     );
@@ -90,7 +96,7 @@ void main() {
 
   test('profil melempar error kalau offline dan cache kosong', () async {
     final AppCache cache = await _freshCache();
-    final ProfileRepository repo = ProfileRepository(
+    final ProfileRepository repo = ProfileRepositoryImpl(
       _OfflineProfileSource(),
       cache,
     );
@@ -101,7 +107,7 @@ void main() {
   test('daftar cabang jatuh ke cache saat koneksi mati', () async {
     final AppCache cache = await _freshCache();
     await cache.writeJson(AppCache.keyStores, <Map<String, dynamic>>[
-      const StoreSummary(
+      const StoreSummaryModel(
         id: 'store-1',
         name: 'Barberstuff Kemang Raya',
         address: 'Jl. Metro Pondok Indah No. 12',
@@ -116,7 +122,7 @@ void main() {
       ).toJson(),
     ]);
 
-    final BookingRepository repo = BookingRepository(
+    final StoreRepository repo = StoreRepositoryImpl(
       _OfflineStoreSource(),
       cache,
     );
@@ -130,7 +136,7 @@ void main() {
   test('pencarian cabang tetap jalan di atas data cache', () async {
     final AppCache cache = await _freshCache();
     await cache.writeJson(AppCache.keyStores, <Map<String, dynamic>>[
-      const StoreSummary(
+      const StoreSummaryModel(
         id: 'store-1',
         name: 'Kemang Raya',
         address: 'Jl. Kemang',
@@ -143,7 +149,7 @@ void main() {
         totalService: 1,
         totalPackage: 0,
       ).toJson(),
-      const StoreSummary(
+      const StoreSummaryModel(
         id: 'store-2',
         name: 'Pondok Indah',
         address: 'Jl. Pondok Indah',
@@ -158,7 +164,7 @@ void main() {
       ).toJson(),
     ]);
 
-    final BookingRepository repo = BookingRepository(
+    final StoreRepository repo = StoreRepositoryImpl(
       _OfflineStoreSource(),
       cache,
     );
@@ -178,14 +184,13 @@ void main() {
           .millisecondsSinceEpoch,
     });
 
-    final Map<String, dynamic>? raw = cache
-        .readJson(AppCache.keyBookingLock)
-        ?.asMap;
-    final int millis = (raw!['expires_at'] as num).toInt();
-
-    expect(
-      DateTime.fromMillisecondsSinceEpoch(millis).isAfter(DateTime.now()),
-      isFalse,
+    final BookingRepositoryImpl repo = BookingRepositoryImpl(
+      BookingRemoteDataSource(Dio()),
+      BookingLocalDataSource(cache),
     );
+
+    expect(repo.readDraft().lock, isNull);
+    await Future<void>.delayed(Duration.zero);
+    expect(cache.readJson(AppCache.keyBookingLock), isNull);
   });
 }

@@ -1,8 +1,6 @@
 class ForgotPasswordResult {
   const ForgotPasswordResult({required this.userId});
 
+  /// Dipakai untuk verifikasi OTP reset kata sandi.
   final String userId;
-
-  factory ForgotPasswordResult.fromJson(Map<String, dynamic> json) =>
-      ForgotPasswordResult(userId: (json['user_id'] as String?) ?? '');
 }

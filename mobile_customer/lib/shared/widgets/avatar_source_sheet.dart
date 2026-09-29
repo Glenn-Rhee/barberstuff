@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/image_picker_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/provider/avatar_form_mixin.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/mixins/avatar_form_mixin.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:provider/provider.dart';
 

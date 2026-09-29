@@ -8,9 +8,8 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
 import 'package:mobile_barberstuff/core/utils/phone_formatter.dart';
-import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
-import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/history/presentation/provider/customer_bookings_provider.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/help_center_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_info_page.dart';
@@ -18,9 +17,10 @@ import 'package:mobile_barberstuff/features/profile/presentation/provider/profil
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/profile_menu_tile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
-import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:mobile_barberstuff/shared/widgets/offline_banner.dart';
+import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -66,7 +66,7 @@ class ProfilePage extends StatelessWidget {
     final AppCache cache = context.read<AppCache>();
     final AppSession session = context.read<AppSession>();
     context.read<ProfileProvider>().reset();
-    context.read<HistoryRepository>().reset();
+    context.read<CustomerBookingsProvider>().reset();
     // Cadangan offline milik akun ini, jangan sampai tampil di akun berikutnya.
     await cache.remove(AppCache.keyCustomerProfile);
     await session.clearSession();

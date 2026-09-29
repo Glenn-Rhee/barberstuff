@@ -3,20 +3,19 @@ import 'package:mobile_barberstuff/core/deeplink/store_link.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/choose_login_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/complete_profile_page.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/login_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/register_page.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/pages/reset_password_page.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/pages/reset_success_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_success_page.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_flow_page.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_receipt_page.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_success_page.dart';
-import 'package:mobile_barberstuff/features/debug/presentation/pages/debug_shell_page.dart';
-import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/forgot_password_page.dart';
-import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_password_page.dart';
-import 'package:mobile_barberstuff/features/forgot_password/presentation/pages/reset_success_page.dart';
 import 'package:mobile_barberstuff/features/history/presentation/pages/history_page.dart';
+import 'package:mobile_barberstuff/features/main_shell/presentation/pages/main_shell_page.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/pages/notification_page.dart';
 import 'package:mobile_barberstuff/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/about_page.dart';
@@ -27,6 +26,7 @@ import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_
 import 'package:mobile_barberstuff/features/promo/presentation/pages/promo_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_brand_page.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/pages/splash_page.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/shared_store_entry.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_list_page.dart';
@@ -209,7 +209,7 @@ class AppRoute {
       case home:
         return MaterialPageRoute<void>(
           settings: settings,
-          builder: (BuildContext context) => const DebugShellPage(),
+          builder: (BuildContext context) => const MainShellPage(),
         );
       case verifySuccess:
         return MaterialPageRoute<void>(

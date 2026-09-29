@@ -1,10 +1,13 @@
-import 'package:flutter/foundation.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
+import 'package:mobile_barberstuff/features/booking/data/models/booking_record_model.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
 
-/// Sumber tunggal riwayat booking selama backend belum menyediakan daftarnya.
-class BookingJournal extends ChangeNotifier {
-  BookingJournal(this._cache) {
+/// Data booking yang hanya ada di perangkat:
+/// - jurnal booking yang dibuat dari perangkat ini, karena daftar booking dari
+///   server tidak mengirim kode QR dan biaya layanan;
+/// - progres booking (persetujuan syarat dan slot yang sedang dikunci).
+class BookingLocalDataSource {
+  BookingLocalDataSource(this._cache) {
     _records = _read();
   }
 
@@ -14,28 +17,6 @@ class BookingJournal extends ChangeNotifier {
 
   /// Terbaru di depan.
   List<BookingRecord> get records => _records;
-
-  BookingRecord? get upcoming {
-    final DateTime now = DateTime.now();
-
-    final Iterable<BookingRecord> next = _records.where(
-      (BookingRecord r) => !r.canceled && r.scheduledAt.isAfter(now),
-    );
-    if (next.isEmpty) return null;
-
-    return next.reduce(
-      (BookingRecord a, BookingRecord b) =>
-          a.scheduledAt.isBefore(b.scheduledAt) ? a : b,
-    );
-  }
-
-  List<BookingRecord> get past {
-    final DateTime now = DateTime.now();
-
-    return _records
-        .where((BookingRecord r) => !r.canceled && !r.scheduledAt.isAfter(now))
-        .toList(growable: false);
-  }
 
   BookingRecord? byId(String id) {
     for (final BookingRecord r in _records) {
@@ -52,24 +33,18 @@ class BookingJournal extends ChangeNotifier {
     await _persist();
   }
 
-  Future<void> setReview(String id, BookingReview review) async {
-    _records = _records
-        .map((BookingRecord r) => r.id == id ? r.copyWith(review: review) : r)
-        .toList(growable: false);
-    await _persist();
-  }
+  bool readTermsAgreed() => _cache.readBool(AppCache.keyBookingTermsAgreed);
 
-  Future<void> cancel(String id) async {
-    _records = _records
-        .map((BookingRecord r) => r.id == id ? r.copyWith(canceled: true) : r)
-        .toList(growable: false);
-    await _persist();
-  }
+  Future<void> writeTermsAgreed(bool value) =>
+      _cache.writeJson(AppCache.keyBookingTermsAgreed, value);
 
-  Future<void> clear() async {
-    _records = const <BookingRecord>[];
-    await _persist();
-  }
+  Map<String, dynamic>? readLock() =>
+      _cache.readJson(AppCache.keyBookingLock)?.asMap;
+
+  Future<void> writeLock(Map<String, dynamic> json) =>
+      _cache.writeJson(AppCache.keyBookingLock, json);
+
+  Future<void> clearLock() => _cache.remove(AppCache.keyBookingLock);
 
   List<BookingRecord> _read() {
     final List<Map<String, dynamic>> raw =
@@ -77,7 +52,7 @@ class BookingJournal extends ChangeNotifier {
         const <Map<String, dynamic>>[];
 
     final List<BookingRecord> parsed = raw
-        .map(BookingRecord.fromJson)
+        .map(BookingRecordModel.fromJson)
         .toList(growable: true);
     parsed.sort(
       (BookingRecord a, BookingRecord b) =>
@@ -95,10 +70,11 @@ class BookingJournal extends ChangeNotifier {
       );
     _records = List<BookingRecord>.unmodifiable(sorted);
 
-    notifyListeners();
     await _cache.writeJson(
       AppCache.keyBookingJournal,
-      _records.map((BookingRecord r) => r.toJson()).toList(growable: false),
+      _records
+          .map((BookingRecord r) => BookingRecordModel.fromEntity(r).toJson())
+          .toList(growable: false),
     );
   }
 }

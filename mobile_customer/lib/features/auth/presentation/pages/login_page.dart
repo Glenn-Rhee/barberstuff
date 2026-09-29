@@ -6,20 +6,19 @@ import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/login_with_email.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/login_provider.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/google_sign_in_scope.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/password_toggle.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/remember_me_checkbox.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_field_decoration.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_text_field.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
-import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/circle_icon_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/divider_or.dart';
 import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
+import 'package:mobile_barberstuff/shared/widgets/password_toggle.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
@@ -29,7 +28,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<LoginProvider>(
       create: (BuildContext ctx) =>
-          LoginProvider(ctx.read<AuthRepository>(), ctx.read<AppSession>()),
+          LoginProvider(ctx.read<LoginWithEmail>(), ctx.read<AppSession>()),
       child: const _LoginView(),
     );
   }

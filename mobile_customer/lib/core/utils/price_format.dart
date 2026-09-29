@@ -11,3 +11,16 @@ class PriceFormat {
   static String full(int value) =>
       'Rp ${NumberFormat.decimalPattern('id').format(value)},-';
 }
+
+/// Rupiah tanpa spasi dan tanpa ",-", misalnya Rp120.000.
+String formatRupiah(num value) {
+  final String digits = value.round().toString();
+  final StringBuffer out = StringBuffer();
+
+  for (int i = 0; i < digits.length; i++) {
+    if (i > 0 && (digits.length - i) % 3 == 0) out.write('.');
+    out.write(digits[i]);
+  }
+
+  return 'Rp$out';
+}

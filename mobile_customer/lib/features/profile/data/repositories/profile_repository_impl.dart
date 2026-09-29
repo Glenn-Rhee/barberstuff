@@ -2,10 +2,12 @@ import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/dio_client.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/data/models/customer_profile_model.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/repositories/profile_repository.dart';
 
-class ProfileRepository {
-  ProfileRepository(this._remote, this._cache);
+class ProfileRepositoryImpl implements ProfileRepository {
+  ProfileRepositoryImpl(this._remote, this._cache);
 
   final ProfileRemoteDataSource _remote;
   final AppCache _cache;
@@ -16,18 +18,19 @@ class ProfileRepository {
     if (cached == null || raw == null) return null;
 
     return CachedResult<CustomerProfile>(
-      CustomerProfile.fromJson(raw),
+      CustomerProfileModel.fromJson(raw),
       fromCache: true,
       savedAt: cached.savedAt,
     );
   }
 
+  @override
   Future<CachedResult<CustomerProfile>> getCustomerProfile() async {
     try {
       final Map<String, dynamic> raw = await _remote.getCustomerProfile();
       await _cache.writeJson(AppCache.keyCustomerProfile, raw);
       return CachedResult<CustomerProfile>(
-        CustomerProfile.fromJson(raw),
+        CustomerProfileModel.fromJson(raw),
         fromCache: false,
       );
     } catch (e) {
@@ -40,6 +43,7 @@ class ProfileRepository {
 
   /// [imageKey] adalah `object_key` hasil `ImageUploadService`, bukan URL.
   /// Backend menolak URL biasa di `image_url`.
+  @override
   Future<CustomerProfile> updateCustomerProfile({
     String? name,
     String? phoneNumber,

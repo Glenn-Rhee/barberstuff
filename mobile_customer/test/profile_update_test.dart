@@ -9,8 +9,11 @@ import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
-import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/profile/data/models/customer_profile_model.dart';
+import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/profile/domain/usecases/update_customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/personal_info_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -126,7 +129,7 @@ Future<AppCache> _cache() async {
 void main() {
   test('update dikirim sebagai PATCH ke /profile/customer', () async {
     final ({Dio dio, _RecordingAdapter adapter}) client = _dio();
-    final ProfileRepository repository = ProfileRepository(
+    final ProfileRepository repository = ProfileRepositoryImpl(
       ProfileRemoteDataSource(client.dio),
       await _cache(),
     );
@@ -141,7 +144,7 @@ void main() {
 
   test('foto dikirim sebagai object key di field image_url', () async {
     final ({Dio dio, _RecordingAdapter adapter}) client = _dio();
-    final ProfileRepository repository = ProfileRepository(
+    final ProfileRepository repository = ProfileRepositoryImpl(
       ProfileRemoteDataSource(client.dio),
       await _cache(),
     );
@@ -247,7 +250,7 @@ void main() {
       _profileJson('Nama Lama', '081234567890'),
     );
 
-    final ProfileRepository repository = ProfileRepository(
+    final ProfileRepository repository = ProfileRepositoryImpl(
       ProfileRemoteDataSource(client.dio),
       cache,
     );
@@ -263,7 +266,7 @@ void main() {
       <String>['PATCH', 'GET'],
     );
     expect(
-      CustomerProfile.fromJson(
+      CustomerProfileModel.fromJson(
         cache.readJson(AppCache.keyCustomerProfile)!.asMap!,
       ).name,
       'Nama Baru',
@@ -276,7 +279,7 @@ void main() {
       ..updateStatus = 400
       ..updateMessage = 'Data tidak valid atau gagal mengupdate customer';
 
-    final ProfileRepository repository = ProfileRepository(
+    final ProfileRepository repository = ProfileRepositoryImpl(
       ProfileRemoteDataSource(client.dio),
       await _cache(),
     );
@@ -312,17 +315,17 @@ void main() {
     WidgetTester tester,
   ) async {
     final ({Dio dio, _RecordingAdapter adapter}) client = _dio();
-    final ProfileRepository repository = ProfileRepository(
+    final ProfileRepository repository = ProfileRepositoryImpl(
       ProfileRemoteDataSource(client.dio),
       await _cache(),
     );
-    final CustomerProfile profile = CustomerProfile.fromJson(
+    final CustomerProfile profile = CustomerProfileModel.fromJson(
       _profileJson('Danar', '081234567890'),
     );
 
     final PersonalInfoProvider provider = PersonalInfoProvider(
       profile,
-      repository,
+      UpdateCustomerProfile(repository),
       ImageUploadService(client.dio, storage: client.dio),
     );
     await mountForm(tester, provider);
@@ -347,17 +350,17 @@ void main() {
     WidgetTester tester,
   ) async {
     final ({Dio dio, _RecordingAdapter adapter}) client = _dio();
-    final ProfileRepository repository = ProfileRepository(
+    final ProfileRepository repository = ProfileRepositoryImpl(
       ProfileRemoteDataSource(client.dio),
       await _cache(),
     );
-    final CustomerProfile profile = CustomerProfile.fromJson(
+    final CustomerProfile profile = CustomerProfileModel.fromJson(
       _profileJson('Danar', '081234567890'),
     );
 
     final PersonalInfoProvider provider = PersonalInfoProvider(
       profile,
-      repository,
+      UpdateCustomerProfile(repository),
       ImageUploadService(client.dio, storage: client.dio),
     );
     await mountForm(tester, provider);
@@ -388,17 +391,17 @@ void main() {
     WidgetTester tester,
   ) async {
     final ({Dio dio, _RecordingAdapter adapter}) client = _dio();
-    final ProfileRepository repository = ProfileRepository(
+    final ProfileRepository repository = ProfileRepositoryImpl(
       ProfileRemoteDataSource(client.dio),
       await _cache(),
     );
-    final CustomerProfile profile = CustomerProfile.fromJson(
+    final CustomerProfile profile = CustomerProfileModel.fromJson(
       _profileJson('Danar', '081234567890'),
     );
 
     final PersonalInfoProvider provider = PersonalInfoProvider(
       profile,
-      repository,
+      UpdateCustomerProfile(repository),
       ImageUploadService(client.dio, storage: client.dio),
     );
     await mountForm(tester, provider);

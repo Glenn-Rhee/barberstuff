@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_field_decoration.dart';
 
 class PasswordToggle extends StatelessWidget {
   const PasswordToggle({

@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/create_booking.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/get_booking_draft.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/get_store_slots.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/lock_booking_slot.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/release_booking_slot.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/save_booking_lock.dart';
+import 'package:mobile_barberstuff/features/booking/domain/usecases/save_booking_terms.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/provider/booking_flow_provider.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_branch_step.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_capster_step.dart';
@@ -17,6 +20,9 @@ import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_service_step.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_terms_step.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_store_services.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_stores.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
@@ -33,10 +39,16 @@ class BookingFlowPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<BookingFlowProvider>(
       create: (BuildContext ctx) => BookingFlowProvider(
-        ctx.read<BookingRepository>(),
-        ctx.read<AppCache>(),
+        getStores: ctx.read<GetStores>(),
+        getServices: ctx.read<GetStoreServices>(),
+        getSlots: ctx.read<GetStoreSlots>(),
+        lockSlot: ctx.read<LockBookingSlot>(),
+        releaseSlot: ctx.read<ReleaseBookingSlot>(),
+        createBooking: ctx.read<CreateBooking>(),
+        getDraft: ctx.read<GetBookingDraft>(),
+        saveTerms: ctx.read<SaveBookingTerms>(),
+        saveLock: ctx.read<SaveBookingLock>(),
         location: ctx.read<LocationService>(),
-        journal: ctx.read<BookingJournal>(),
         lockDuration: ctx.read<DebugOverrides>().lockDuration,
         store: store,
       ),

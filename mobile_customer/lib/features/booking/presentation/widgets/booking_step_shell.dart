@@ -166,15 +166,3 @@ class BookingRadioDot extends StatelessWidget {
     );
   }
 }
-
-String formatRupiah(num value) {
-  final String digits = value.round().toString();
-  final StringBuffer out = StringBuffer();
-
-  for (int i = 0; i < digits.length; i++) {
-    if (i > 0 && (digits.length - i) % 3 == 0) out.write('.');
-    out.write(digits[i]);
-  }
-
-  return 'Rp$out';
-}

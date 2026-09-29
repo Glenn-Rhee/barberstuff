@@ -1,32 +1,22 @@
 import 'package:dio/dio.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/features/booking/data/datasources/booking_local_datasource.dart';
 import 'package:mobile_barberstuff/features/booking/data/datasources/booking_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
+import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository_impl.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_slot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class FakeBookingRepository extends BookingRepository {
+/// Endpoint booking diganti data contoh; progres booking (syarat dan kunci
+/// slot) tetap disimpan sungguhan di [AppCache] tiruan.
+class FakeBookingRepository extends BookingRepositoryImpl {
   FakeBookingRepository(AppCache cache)
-    : super(BookingRemoteDataSource(Dio()), cache);
+    : super(BookingRemoteDataSource(Dio()), BookingLocalDataSource(cache));
 
   static Future<AppCache> emptyCache() async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
     return AppCache.load();
   }
-
-  static const StoreSummary sampleStore = StoreSummary(
-    id: 'store-1',
-    name: 'Barberstuff Kemang Raya',
-    address: 'Jl. Metro Pondok Indah No. 12',
-    phoneNumber: '081234567890',
-    bannerUrl: '',
-    storeType: 'lite',
-    status: 'open',
-    avgRating: 4.8,
-    totalCapster: 3,
-    totalService: 5,
-    totalPackage: 2,
-  );
 
   static const SlotCapster sampleCapster = SlotCapster(
     id: 'capster-1',
@@ -35,22 +25,6 @@ class FakeBookingRepository extends BookingRepository {
     imageUrl: '',
     available: true,
   );
-
-  static const ServiceItem sampleService = ServiceItem(
-    id: 'service-1',
-    name: 'Cukur Rambut',
-    price: 45000,
-    idStore: 'store-1',
-    type: ProductType.service,
-    status: 'active',
-    description: 'Potong rambut standar, cuci rambut, dan pijat ringan.',
-  );
-
-  @override
-  Future<CachedResult<List<StoreSummary>>> getStores({String? name}) async =>
-      const CachedResult<List<StoreSummary>>(<StoreSummary>[
-        sampleStore,
-      ], fromCache: false);
 
   @override
   Future<StoreSlots> getStoreSlots({
@@ -76,12 +50,6 @@ class FakeBookingRepository extends BookingRepository {
   }
 
   @override
-  Future<List<ServiceItem>> getServices({
-    required String idStore,
-    required ProductType type,
-  }) async => <ServiceItem>[sampleService];
-
-  @override
   Future<void> lockBooking({
     required String idStore,
     required String idCapster,
@@ -96,29 +64,30 @@ class FakeBookingRepository extends BookingRepository {
   }) async {}
 
   @override
-  Future<BookingResult> createBooking({
+  Future<BookingRecord> createBooking({
     required String idStore,
     required String idCapster,
+    required String capsterName,
     required String idService,
     required DateTime bookingDate,
     String? idPromoClaimed,
   }) async {
-    return BookingResult(
-      idBooking: 'booking-1',
+    return BookingRecord(
+      id: 'booking-1',
       qrCode: 'bkbooking-1',
-      bookingDate: bookingDate,
+      scheduledAt: bookingDate,
+      createdAt: DateTime.now(),
+      storeId: 'store-1',
+      storeName: 'Barberstuff Kemang Raya',
+      storeAddress: 'Jl. Metro Pondok Indah No. 12',
+      storePhone: '081234567890',
+      capsterId: idCapster,
+      capsterName: capsterName,
+      lines: const <BookingLine>[
+        BookingLine(id: 'service-1', name: 'Cukur Rambut', price: 45000),
+      ],
       appServiceFee: 2000,
       totalPrice: 45000,
-      store: const BookingStoreInfo(
-        id: 'store-1',
-        name: 'Barberstuff Kemang Raya',
-        address: 'Jl. Metro Pondok Indah No. 12',
-        phoneNumber: '081234567890',
-      ),
-      capster: const BookingCapsterInfo(id: 'capster-1', name: 'Joni Akbar'),
-      services: const <BookingServiceInfo>[
-        BookingServiceInfo(id: 'service-1', name: 'Cukur Rambut', price: 45000),
-      ],
     );
   }
 }

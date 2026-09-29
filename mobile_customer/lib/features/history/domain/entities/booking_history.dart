@@ -1,9 +1,10 @@
-enum BookingStatus { booked, progress, completed, canceled }
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
 
 enum HistoryTab { upcoming, done, canceled }
 
 enum ReviewTarget { capster, cashier, store }
 
+/// Satu baris di halaman riwayat.
 class BookingHistory {
   const BookingHistory({
     required this.id,
@@ -14,6 +15,17 @@ class BookingHistory {
     required this.status,
     this.reviewScore,
   });
+
+  factory BookingHistory.fromRecord(BookingRecord record, DateTime now) =>
+      BookingHistory(
+        id: record.id,
+        serviceName: record.serviceName,
+        storeName: record.storeName,
+        date: record.scheduledAt,
+        price: record.totalPrice.round(),
+        status: record.statusAt(now),
+        reviewScore: record.reviewScore,
+      );
 
   final String id;
   final String serviceName;
@@ -48,33 +60,6 @@ class BookingHistory {
       reviewScore: reviewScore ?? this.reviewScore,
     );
   }
-
-  static BookingStatus statusFromJson(String? value) {
-    switch (value?.toLowerCase().trim()) {
-      case 'progress':
-        return BookingStatus.progress;
-      case 'completed':
-        return BookingStatus.completed;
-      case 'canceled':
-        return BookingStatus.canceled;
-      default:
-        return BookingStatus.booked;
-    }
-  }
-
-  factory BookingHistory.fromJson(Map<String, dynamic> json) {
-    return BookingHistory(
-      id: '${json['id'] ?? ''}',
-      serviceName: '${json['service_name'] ?? ''}',
-      storeName: '${json['store_name'] ?? ''}',
-      date:
-          DateTime.tryParse('${json['scheduled_at'] ?? ''}')?.toLocal() ??
-          DateTime.now(),
-      price: (json['total_price'] as num?)?.round() ?? 0,
-      status: statusFromJson(json['status_booking'] as String?),
-      reviewScore: (json['review_score'] as num?)?.toDouble(),
-    );
-  }
 }
 
 class ReviewDraft {
@@ -93,30 +78,4 @@ class ReviewDraft {
   bool get isComplete => capster > 0 && cashier > 0 && store > 0;
 
   double get average => (capster + cashier + store) / 3;
-
-  /// Body `POST /rating/`. Pesan hanya diterima backend di rating toko.
-  Map<String, dynamic> toRatingBody({
-    required String bookingId,
-    required String capsterId,
-    required String staffId,
-    required String storeId,
-  }) {
-    final String note = message.trim();
-
-    return <String, dynamic>{
-      'id_booking': bookingId,
-      'rating': <String, dynamic>{
-        if (capsterId.isNotEmpty)
-          'capster': <String, dynamic>{'id': capsterId, 'score': capster},
-        if (staffId.isNotEmpty)
-          'staff': <String, dynamic>{'id': staffId, 'score': cashier},
-        if (storeId.isNotEmpty)
-          'store': <String, dynamic>{
-            'id': storeId,
-            'score': store,
-            if (note.isNotEmpty) 'message': note,
-          },
-      },
-    };
-  }
 }

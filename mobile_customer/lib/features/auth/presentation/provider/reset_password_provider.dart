@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/login_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/login_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/reset_password_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/login_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/login_with_email.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/reset_password.dart';
 
 /// Hasil akhir tombol simpan pada halaman kata sandi baru.
 ///
@@ -16,7 +15,8 @@ enum ResetOutcome { failed, signedIn, signedOut }
 
 class ResetPasswordProvider extends ChangeNotifier {
   ResetPasswordProvider(
-    this._repository,
+    this._resetPassword,
+    this._login,
     this._session, {
     required this.email,
     required this.resetToken,
@@ -25,7 +25,8 @@ class ResetPasswordProvider extends ChangeNotifier {
     confirmController.addListener(_syncComplete);
   }
 
-  final AuthRepository _repository;
+  final ResetPassword _resetPassword;
+  final LoginWithEmail _login;
   final AppSession _session;
   final String email;
   final String resetToken;
@@ -86,8 +87,8 @@ class ResetPasswordProvider extends ChangeNotifier {
     final String password = passwordController.text;
 
     try {
-      await _repository.resetPassword(
-        ResetPasswordRequestApi(resetToken: resetToken, newPassword: password),
+      await _resetPassword(
+        ResetPasswordParams(resetToken: resetToken, newPassword: password),
       );
     } on ApiException catch (e) {
       _isLoading = false;
@@ -99,8 +100,8 @@ class ResetPasswordProvider extends ChangeNotifier {
     // Kata sandi sudah berganti sejak titik ini. Kegagalan login di bawah tidak
     // membatalkan reset, jadi jangan laporkan sebagai reset yang gagal.
     try {
-      final LoginResult result = await _repository.login(
-        LoginRequestApi(email: email, password: password),
+      final LoginResult result = await _login(
+        LoginParams(email: email, password: password),
       );
       await _session.rememberEmail(_rememberMe ? email : null);
       await _session.saveSession(result.accessToken);

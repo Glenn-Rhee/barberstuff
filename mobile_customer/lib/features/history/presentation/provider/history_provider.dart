@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
-import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
-import 'package:mobile_barberstuff/features/history/domain/booking_history.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/history/domain/entities/booking_history.dart';
+import 'package:mobile_barberstuff/features/history/presentation/provider/customer_bookings_provider.dart';
 
 class HistoryProvider extends ChangeNotifier {
-  HistoryProvider(this._repository) {
+  HistoryProvider(this._bookings) {
     searchController.addListener(_onSearchChanged);
-    _repository.addListener(_sync);
+    _bookings.addListener(_sync);
     _sync();
     load();
   }
 
-  final HistoryRepository _repository;
+  final CustomerBookingsProvider _bookings;
 
   final TextEditingController searchController = TextEditingController();
 
@@ -50,7 +50,7 @@ class HistoryProvider extends ChangeNotifier {
     _notify();
 
     try {
-      await _repository.refresh();
+      await _bookings.refresh();
     } on ApiException catch (e) {
       _error = e;
     }
@@ -73,7 +73,7 @@ class HistoryProvider extends ChangeNotifier {
     _notify();
 
     try {
-      await _repository.submitReview(bookingId, draft);
+      await _bookings.submitReview(bookingId, draft);
       return true;
     } on ApiException catch (e) {
       _submitError = e;
@@ -86,8 +86,8 @@ class HistoryProvider extends ChangeNotifier {
 
   void _sync() {
     final DateTime now = DateTime.now();
-    _all = _repository.records
-        .map((BookingRecord r) => r.toHistory(now))
+    _all = _bookings.records
+        .map((BookingRecord r) => BookingHistory.fromRecord(r, now))
         .toList(growable: false);
     _notify();
   }
@@ -107,7 +107,7 @@ class HistoryProvider extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
-    _repository.removeListener(_sync);
+    _bookings.removeListener(_sync);
     searchController.dispose();
     super.dispose();
   }

@@ -3,8 +3,8 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/services/google_auth_service.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/auth_provider_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/auth_provider_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/sign_in_with_google.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/complete_profile_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/google_sign_in_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
@@ -23,7 +23,7 @@ class GoogleSignInScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<GoogleSignInProvider>(
       create: (BuildContext ctx) => GoogleSignInProvider(
-        ctx.read<AuthRepository>(),
+        ctx.read<SignInWithGoogle>(),
         ctx.read<GoogleAuthService>(),
         ctx.read<AppSession>(),
       ),

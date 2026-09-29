@@ -1,25 +1,25 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
-import 'package:mobile_barberstuff/features/store/data/datasources/store_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart';
-import 'package:mobile_barberstuff/features/store/data/repositories/store_repository.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/service_item.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_detail.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/repositories/store_repository.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/features/store/presentation/widgets/store_detail_parts.dart';
+import 'package:mobile_barberstuff/features/store/store_injection.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+
 import 'support/fake_booking_repository.dart';
+import 'support/fake_store_repository.dart';
 
-class _FakeStoreRepository extends StoreRepository {
-  _FakeStoreRepository() : super(StoreRemoteDataSource(Dio()));
-
+class _FakeStoreRepository extends FakeStoreRepository {
   @override
   Future<StoreDetail> getStoreDetail(String id) async {
     return StoreDetail(
@@ -83,10 +83,6 @@ class _FakeStoreRepository extends StoreRepository {
       ),
     );
   }
-}
-
-class _ServiceBookingRepository extends FakeBookingRepository {
-  _ServiceBookingRepository(super.cache);
 
   @override
   Future<List<ServiceItem>> getServices({
@@ -132,9 +128,7 @@ void main() {
       MultiProvider(
         providers: <SingleChildWidget>[
           Provider<StoreRepository>.value(value: _FakeStoreRepository()),
-          Provider<BookingRepository>.value(
-            value: _ServiceBookingRepository(cache),
-          ),
+          ...storeUseCases(),
           Provider<LocationService>.value(value: LocationService(cache)),
         ],
         child: MaterialApp(

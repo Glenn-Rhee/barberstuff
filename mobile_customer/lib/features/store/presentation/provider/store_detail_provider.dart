@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
-import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart';
-import 'package:mobile_barberstuff/features/store/data/repositories/store_repository.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/service_item.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_detail.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_store_capsters.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_store_detail.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_store_services.dart';
 
 enum StoreTab { about, service, package, review }
 
 class StoreDetailProvider extends ChangeNotifier {
   StoreDetailProvider(
-    this._storeRepo,
-    this._bookingRepo,
+    this._getDetail,
+    this._getCapsters,
+    this._getServices,
     this.storeId, {
     StoreTab initialTab = StoreTab.about,
   }) : _tab = initialTab {
@@ -21,8 +23,9 @@ class StoreDetailProvider extends ChangeNotifier {
     if (initialTab == StoreTab.package) _loadProducts(ProductType.package);
   }
 
-  final StoreRepository _storeRepo;
-  final BookingRepository _bookingRepo;
+  final GetStoreDetail _getDetail;
+  final GetStoreCapsters _getCapsters;
+  final GetStoreServices _getServices;
   final String storeId;
 
   StoreDetail? _detail;
@@ -53,7 +56,7 @@ class StoreDetailProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _detail = await _storeRepo.getStoreDetail(storeId);
+      _detail = await _getDetail(storeId);
     } on ApiException catch (e) {
       _error = e;
       _isLoading = false;
@@ -62,7 +65,7 @@ class StoreDetailProvider extends ChangeNotifier {
     }
 
     try {
-      _capsters = await _storeRepo.getCapsters(storeId);
+      _capsters = await _getCapsters(storeId);
     } on ApiException catch (_) {
       _capsters = const <CapsterItem>[];
     }
@@ -87,9 +90,8 @@ class StoreDetailProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _products[type] = await _bookingRepo.getServices(
-        idStore: storeId,
-        type: type,
+      _products[type] = await _getServices(
+        GetStoreServicesParams(storeId: storeId, type: type),
       );
     } on ApiException catch (_) {
       _products[type] = const <ServiceItem>[];

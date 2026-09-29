@@ -5,12 +5,12 @@ import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/request_password_reset.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
+import 'package:mobile_barberstuff/features/auth/presentation/provider/forgot_password_provider.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/verify_otp_provider.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
-import 'package:mobile_barberstuff/features/forgot_password/presentation/provider/forgot_password_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/app_text_field.dart';
 import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
 import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
 import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
@@ -25,7 +25,7 @@ class ForgotPasswordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ForgotPasswordProvider>(
       create: (BuildContext ctx) => ForgotPasswordProvider(
-        ctx.read<AuthRepository>(),
+        ctx.read<RequestPasswordReset>(),
         initialEmail: initialEmail,
       ),
       child: const _ForgotPasswordView(),

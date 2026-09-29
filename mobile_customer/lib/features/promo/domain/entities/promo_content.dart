@@ -1,4 +1,4 @@
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 
 /// Keuntungan yang berlaku di satu tingkat keanggotaan.
 class GradeBenefit {
@@ -62,4 +62,19 @@ class RewardVoucher {
   final String imageAsset;
 
   bool affordableBy(int owned) => owned >= points;
+}
+
+/// Isi halaman promo dalam satu paket.
+class PromoContent {
+  const PromoContent({
+    required this.grades,
+    required this.benefits,
+    required this.banners,
+    required this.rewards,
+  });
+
+  final List<GradeStep> grades;
+  final List<GradeBenefit> benefits;
+  final List<PromoBanner> banners;
+  final List<RewardVoucher> rewards;
 }

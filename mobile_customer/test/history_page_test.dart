@@ -8,12 +8,18 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
-import 'package:mobile_barberstuff/features/history/data/history_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
-import 'package:mobile_barberstuff/features/history/domain/booking_history.dart';
+import 'package:mobile_barberstuff/features/booking/data/datasources/booking_local_datasource.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/history/data/datasources/history_remote_datasource.dart';
+import 'package:mobile_barberstuff/features/history/data/models/customer_booking_model.dart';
+import 'package:mobile_barberstuff/features/history/data/models/review_draft_model.dart';
+import 'package:mobile_barberstuff/features/history/data/repositories/history_repository_impl.dart';
+import 'package:mobile_barberstuff/features/history/domain/entities/booking_history.dart';
+import 'package:mobile_barberstuff/features/history/domain/repositories/history_repository.dart';
+import 'package:mobile_barberstuff/features/history/domain/usecases/get_booking_history.dart';
+import 'package:mobile_barberstuff/features/history/domain/usecases/submit_booking_review.dart';
 import 'package:mobile_barberstuff/features/history/presentation/pages/history_page.dart';
+import 'package:mobile_barberstuff/features/history/presentation/provider/customer_bookings_provider.dart';
 import 'package:mobile_barberstuff/features/history/presentation/widgets/review_sheet.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:provider/provider.dart';
@@ -119,9 +125,9 @@ _FakeRemote _seededRemote() {
   });
 }
 
-Future<BookingJournal> _journal() async {
+Future<BookingLocalDataSource> _journal() async {
   SharedPreferences.setMockInitialValues(<String, Object>{});
-  return BookingJournal(await AppCache.load());
+  return BookingLocalDataSource(await AppCache.load());
 }
 
 BookingRecord _localRecord(String id, {String qr = 'QR-LOKAL'}) {
@@ -145,12 +151,22 @@ BookingRecord _localRecord(String id, {String qr = 'QR-LOKAL'}) {
   );
 }
 
-Future<HistoryRepository> _repo([_FakeRemote? remote]) async {
-  return HistoryRepository(remote ?? _seededRemote(), await _journal());
+Future<CustomerBookingsProvider> _repo([
+  _FakeRemote? remote,
+  BookingLocalDataSource? journal,
+]) async {
+  final HistoryRepository repo = HistoryRepositoryImpl(
+    remote ?? _seededRemote(),
+    journal ?? await _journal(),
+  );
+  return CustomerBookingsProvider(
+    GetBookingHistory(repo),
+    SubmitBookingReview(repo),
+  );
 }
 
-Widget _host(HistoryRepository repo, Locale locale) {
-  return ChangeNotifierProvider<HistoryRepository>.value(
+Widget _host(CustomerBookingsProvider repo, Locale locale) {
+  return ChangeNotifierProvider<CustomerBookingsProvider>.value(
     value: repo,
     child: MaterialApp(
       locale: locale,
@@ -176,13 +192,22 @@ void main() {
 
   group('model', () {
     test('status backend dipetakan ke tab yang benar', () {
-      expect(BookingHistory.statusFromJson('progress'), BookingStatus.progress);
       expect(
-        BookingHistory.statusFromJson('completed'),
+        CustomerBookingModel.statusFromJson('progress'),
+        BookingStatus.progress,
+      );
+      expect(
+        CustomerBookingModel.statusFromJson('completed'),
         BookingStatus.completed,
       );
-      expect(BookingHistory.statusFromJson('canceled'), BookingStatus.canceled);
-      expect(BookingHistory.statusFromJson('apa pun'), BookingStatus.booked);
+      expect(
+        CustomerBookingModel.statusFromJson('canceled'),
+        BookingStatus.canceled,
+      );
+      expect(
+        CustomerBookingModel.statusFromJson('apa pun'),
+        BookingStatus.booked,
+      );
 
       BookingHistory build(BookingStatus s) => BookingHistory(
         id: 'x',
@@ -233,7 +258,7 @@ void main() {
     });
 
     test('item server: total dipakai apa adanya, rating dan QR terbaca', () {
-      final BookingRecord record = BookingRecord.fromServer(
+      final BookingRecord record = CustomerBookingModel.fromJson(
         _serverBooking(
           id: 'abc',
           service: 'Botak Licin',
@@ -251,14 +276,14 @@ void main() {
 
       expect(record.totalPrice, 62000);
       expect(record.lines.single.price, 60000);
-      expect(record.toHistory(DateTime.now()).price, 62000);
+      expect(BookingHistory.fromRecord(record, DateTime.now()).price, 62000);
       expect(record.staffId, 'staff-abc');
       expect(record.qrCode, 'bkabc');
       expect(record.appServiceFee, 0);
       expect(record.review?.cashier, 4);
       expect(record.statusAt(DateTime.now()), BookingStatus.completed);
 
-      final BookingRecord withLocal = BookingRecord.fromServer(
+      final BookingRecord withLocal = CustomerBookingModel.fromJson(
         _serverBooking(id: 'abc', service: 'x', store: 'y', days: 1),
         status: BookingStatus.booked,
         local: _localRecord('abc', qr: 'QR-ASLI'),
@@ -287,7 +312,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
 
-      final HistoryRepository repo = await _repo();
+      final CustomerBookingsProvider repo = await _repo();
       addTearDown(repo.dispose);
 
       await tester.pumpWidget(_host(repo, const Locale('id')));
@@ -313,7 +338,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
 
-      final HistoryRepository repo = await _repo(_FakeRemote());
+      final CustomerBookingsProvider repo = await _repo(_FakeRemote());
       addTearDown(repo.dispose);
 
       await tester.pumpWidget(_host(repo, const Locale('id')));
@@ -330,11 +355,11 @@ void main() {
       addTearDown(tester.view.reset);
 
       // Jurnal perangkat masih berisi booking akun sebelumnya.
-      final BookingJournal journal = await _journal();
+      final BookingLocalDataSource journal = await _journal();
       await journal.add(_localRecord('bk-akun-lama'));
 
       // Server bilang akun ini belum pernah booking.
-      final HistoryRepository repo = HistoryRepository(_FakeRemote(), journal);
+      final CustomerBookingsProvider repo = await _repo(_FakeRemote(), journal);
       addTearDown(repo.dispose);
 
       await tester.pumpWidget(_host(repo, const Locale('id')));
@@ -356,7 +381,7 @@ void main() {
           ApiErrorType.server,
           rawMessage: 'Gagal mengambil data booking',
         );
-      final HistoryRepository repo = await _repo(remote);
+      final CustomerBookingsProvider repo = await _repo(remote);
       addTearDown(repo.dispose);
 
       await tester.pumpWidget(_host(repo, const Locale('id')));
@@ -380,7 +405,7 @@ void main() {
               tester.platformDispatcher.clearTextScaleFactorTestValue,
             );
 
-            final HistoryRepository repo = await _repo();
+            final CustomerBookingsProvider repo = await _repo();
             addTearDown(repo.dispose);
 
             await tester.pumpWidget(_host(repo, locale));
@@ -399,10 +424,10 @@ void main() {
     }
   });
 
-  group('repository', () {
+  group('booking akun', () {
     test('ulasan dikirim ke server lalu tampil sebagai sudah diulas', () async {
       final _FakeRemote remote = _seededRemote();
-      final HistoryRepository repo = await _repo(remote);
+      final CustomerBookingsProvider repo = await _repo(remote);
       addTearDown(repo.dispose);
       await repo.refresh();
 
@@ -420,7 +445,7 @@ void main() {
     });
 
     test('reset saat logout mengosongkan data akun sebelumnya', () async {
-      final HistoryRepository repo = await _repo();
+      final CustomerBookingsProvider repo = await _repo();
       addTearDown(repo.dispose);
       await repo.refresh();
       expect(repo.records, isNotEmpty);
