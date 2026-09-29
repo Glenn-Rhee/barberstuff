@@ -683,7 +683,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeActionPackage.
   ///
   /// In id, this message translates to:
-  /// **'Paket'**
+  /// **'Toko'**
   String get homeActionPackage;
 
   /// No description provided for @homeActionPromo.

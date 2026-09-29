@@ -333,7 +333,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get homeActionBooking => 'Booking';
 
   @override
-  String get homeActionPackage => 'Paket';
+  String get homeActionPackage => 'Toko';
 
   @override
   String get homeActionPromo => 'Promo';
