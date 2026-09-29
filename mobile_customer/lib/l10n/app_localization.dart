@@ -1730,6 +1730,12 @@ abstract class AppLocalizations {
   /// **'Konfirmasi Booking'**
   String get bookingConfirmTitle;
 
+  /// No description provided for @bookingDetailTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Detail Booking'**
+  String get bookingDetailTitle;
+
   /// No description provided for @bookingConfirmSubtitle.
   ///
   /// In id, this message translates to:

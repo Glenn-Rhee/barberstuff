@@ -272,6 +272,7 @@
   "bookingBarberSubtitle": "Pick your favourite barber or let us choose",
   "bookingServiceSubtitle": "Pick the service you want",
   "bookingConfirmTitle": "Booking Confirmation",
+  "bookingDetailTitle": "Booking Details",
   "bookingConfirmSubtitle": "Please review your order details",
   "bookingNextSchedule": "Next: Pick Schedule",
   "bookingNextBarber": "Next: Pick Barber",

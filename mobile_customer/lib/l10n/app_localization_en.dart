@@ -908,6 +908,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingConfirmTitle => 'Booking Confirmation';
 
   @override
+  String get bookingDetailTitle => 'Booking Details';
+
+  @override
   String get bookingConfirmSubtitle => 'Please review your order details';
 
   @override

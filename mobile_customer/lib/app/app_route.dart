@@ -11,6 +11,7 @@ import 'package:mobile_barberstuff/features/auth/presentation/pages/reset_succes
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_success_page.dart';
 import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_detail_page.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_flow_page.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_receipt_page.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_success_page.dart';
@@ -61,6 +62,7 @@ class AppRoute {
   static const String storeList = '/store-list';
   static const String bookingSuccess = '/booking-success';
   static const String bookingReceipt = '/booking-receipt';
+  static const String bookingDetail = '/booking-detail';
   static const String promo = '/promo';
 
   /// Aplikasi dibuka dari tautan saat masih tertutup. Tanpa ini Flutter
@@ -155,6 +157,13 @@ class AppRoute {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (BuildContext context) => BookingSuccessPage(record: args),
+        );
+      case bookingDetail:
+        final Object? args = settings.arguments;
+        if (args is! BookingRecord) return null;
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => BookingDetailPage(record: args),
         );
       case bookingReceipt:
         final Object? args = settings.arguments;

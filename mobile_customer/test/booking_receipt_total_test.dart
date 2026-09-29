@@ -53,6 +53,45 @@ void main() {
     );
   });
 
+  testWidgets('e-receipt: data yang kosong ditulis "-"', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    final BookingRecord created = _created();
+    final BookingRecord blank = BookingRecord(
+      id: created.id,
+      qrCode: created.qrCode,
+      scheduledAt: created.scheduledAt,
+      createdAt: created.createdAt,
+      storeId: created.storeId,
+      storeName: created.storeName,
+      storeAddress: '',
+      storePhone: '',
+      capsterId: created.capsterId,
+      capsterName: ' ',
+      lines: created.lines,
+      appServiceFee: created.appServiceFee,
+      totalPrice: created.totalPrice,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('id'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BookingReceiptPage(record: blank),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Alamat, spesialis, nama, dan nomor HP (tanpa profil) semuanya "-".
+    expect(find.text('-'), findsNWidgets(4));
+    expect(find.text('Barberstuff Pondok Gede'), findsOneWidget);
+  });
+
   testWidgets('e-receipt: layanan + biaya aplikasi = total harga', (
     WidgetTester tester,
   ) async {

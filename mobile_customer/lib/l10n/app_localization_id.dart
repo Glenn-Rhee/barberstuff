@@ -909,6 +909,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get bookingConfirmTitle => 'Konfirmasi Booking';
 
   @override
+  String get bookingDetailTitle => 'Detail Booking';
+
+  @override
   String get bookingConfirmSubtitle =>
       'Harap periksa kembali detail pesanan Anda';
 

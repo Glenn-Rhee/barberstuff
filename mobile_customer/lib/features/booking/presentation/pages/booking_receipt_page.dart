@@ -275,7 +275,9 @@ class _Row extends StatelessWidget {
           const SizedBox(width: 16),
           Flexible(
             child: Text(
-              value,
+              // Data yang tidak dikirim server (alamat, nomor HP, dll.)
+              // ditampilkan sebagai "-", bukan baris kosong.
+              value.trim().isEmpty ? '-' : value,
               textAlign: TextAlign.left,
               style: AppTextStyle.titleSmall.copyWith(fontSize: 13),
             ),

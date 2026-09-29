@@ -60,7 +60,7 @@ Future<List<int>> buildReceiptPdf({
           ),
           pw.SizedBox(width: 16),
           pw.Text(
-            value,
+            value.trim().isEmpty ? '-' : value,
             textAlign: pw.TextAlign.right,
             style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold),
           ),

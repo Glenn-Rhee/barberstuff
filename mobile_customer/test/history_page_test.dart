@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/features/booking/data/datasources/booking_local_datasource.dart';
 import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/booking/presentation/pages/booking_detail_page.dart';
 import 'package:mobile_barberstuff/features/history/data/datasources/history_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/history/data/models/customer_booking_model.dart';
 import 'package:mobile_barberstuff/features/history/data/models/review_draft_model.dart';
@@ -173,6 +175,7 @@ Widget _host(CustomerBookingsProvider repo, Locale locale) {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: const HistoryPage(),
+      onGenerateRoute: AppRoute.onGenerateRoute,
     ),
   );
 }
@@ -331,6 +334,53 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('CANCEL'), findsWidgets);
       expect(find.text('DONE'), findsNothing);
+    });
+
+    testWidgets('kartu membuka detail booking, tombol ulasan tetap terpisah', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(390, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      final CustomerBookingsProvider repo = await _repo();
+      addTearDown(repo.dispose);
+
+      await tester.pumpWidget(_host(repo, const Locale('id')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Cukur Jenggot'));
+      await tester.pumpAndSettle();
+      expect(find.byType(BookingDetailPage), findsOneWidget);
+      Finder inDetail(String text) => find.descendant(
+        of: find.byType(BookingDetailPage),
+        matching: find.text(text),
+      );
+      expect(inDetail('Kemang Raya'), findsOneWidget);
+      expect(inDetail('Rihad Capster'), findsOneWidget);
+      // Booking akan datang: bukti pesanan (barcode) bisa dibuka.
+      expect(inDetail('Lihat Bukti Pesanan'), findsOneWidget);
+
+      Navigator.of(tester.element(find.byType(BookingDetailPage))).pop();
+      await tester.pumpAndSettle();
+
+      // Booking batal tidak punya tombol bukti pesanan.
+      await tester.tap(find.text('Dibatalkan'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Hair Toner'));
+      await tester.pumpAndSettle();
+      expect(inDetail('Ciracas'), findsOneWidget);
+      expect(inDetail('Lihat Bukti Pesanan'), findsNothing);
+
+      Navigator.of(tester.element(find.byType(BookingDetailPage))).pop();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Selesai'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Beri Ulasan').first);
+      await tester.pumpAndSettle();
+      expect(find.byType(ReviewSheet), findsOneWidget);
+      expect(find.byType(BookingDetailPage), findsNothing);
     });
 
     testWidgets('daftar kosong menampilkan pesan', (WidgetTester tester) async {

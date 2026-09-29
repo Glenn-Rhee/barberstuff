@@ -9,9 +9,17 @@ import 'package:mobile_barberstuff/features/history/domain/entities/booking_hist
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 class HistoryCard extends StatelessWidget {
-  const HistoryCard({super.key, required this.item, required this.onReview});
+  const HistoryCard({
+    super.key,
+    required this.item,
+    required this.onTap,
+    required this.onReview,
+  });
 
   final BookingHistory item;
+
+  /// Membuka detail pesanan. Tombol ulasan di dalam kartu tetap terpisah.
+  final VoidCallback onTap;
   final VoidCallback onReview;
 
   @override
@@ -21,24 +29,34 @@ class HistoryCard extends StatelessWidget {
         '${DateFormat('EEEE, d MMM y', locale).format(item.date)}'
         ' - ${item.storeName}';
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColor.surface,
+    return Material(
+      color: AppColor.surface,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColor.border),
+        side: const BorderSide(color: AppColor.border),
       ),
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-      child: Column(
-        children: <Widget>[
-          _TopRow(item: item, subtitle: subtitle),
-          if (item.status == BookingStatus.completed) ...<Widget>[
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Divider(height: 1, thickness: 1, color: AppColor.border),
-            ),
-            _ReviewRow(item: item, onReview: onReview),
-          ],
-        ],
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: <Widget>[
+              _TopRow(item: item, subtitle: subtitle),
+              if (item.status == BookingStatus.completed) ...<Widget>[
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: AppColor.border,
+                  ),
+                ),
+                _ReviewRow(item: item, onReview: onReview),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
