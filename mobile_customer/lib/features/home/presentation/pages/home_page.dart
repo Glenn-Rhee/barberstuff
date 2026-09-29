@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
@@ -39,14 +38,25 @@ class HomePage extends StatefulWidget {
   final VoidCallback? onProfileTap;
   final VoidCallback? onHistoryTap;
 
+  /// Jarak gulir sebelum header ciut. Terbukanya baru di puncak (offset 0);
+  /// selisih ini mencegah header berkedip saat jari berhenti dekat puncak.
+  static const double collapseThreshold = 12;
+
+  /// Header ciut begitu halaman digulir turun, lalu baru terbuka lagi setelah
+  /// benar-benar kembali ke puncak. Dulu ikut arah gulir, jadi header muncul
+  /// setiap kali jari membalik arah atau berhenti di tengah halaman.
+  static bool headerCollapsed({
+    required bool wasCollapsed,
+    required double offset,
+  }) {
+    return wasCollapsed ? offset > 0 : offset > collapseThreshold;
+  }
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  /// Di bawah ambang ini header selalu penuh, supaya tidak berkedip di puncak.
-  static const double _collapseThreshold = 12;
-
   final ScrollController _scroll = ScrollController();
   bool _collapsed = false;
 
@@ -69,10 +79,10 @@ class _HomePageState extends State<HomePage> {
   void _onScroll() {
     if (!_scroll.hasClients) return;
 
-    final bool next =
-        _scroll.offset > _collapseThreshold &&
-        _scroll.position.userScrollDirection == ScrollDirection.reverse;
-
+    final bool next = HomePage.headerCollapsed(
+      wasCollapsed: _collapsed,
+      offset: _scroll.offset,
+    );
     if (next != _collapsed) setState(() => _collapsed = next);
   }
 
