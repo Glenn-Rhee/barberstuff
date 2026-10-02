@@ -28,4 +28,14 @@ class AuthApi {
   Future<StaffProfile> profile() async {
     return StaffProfile.fromJson((await _client.get('/profile/staff')).map);
   }
+
+  // Ganti nama + password akun sendiri (PATCH /staff/{id}), tanpa OTP
+  Future<void> updateAccount({
+    required String staffId,
+    required String name,
+    required String password,
+  }) => _client.patch(
+    '/staff/$staffId',
+    data: {'name': name, 'password': password},
+  );
 }
