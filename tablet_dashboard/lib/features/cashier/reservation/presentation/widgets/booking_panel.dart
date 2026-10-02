@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
 import 'package:tablet_dashboard/core/theme/app_button_style.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
@@ -10,14 +11,15 @@ import 'package:tablet_dashboard/features/cashier/order/presentation/provider/ch
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/cart_item_tile.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/payment_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/presentation/pages/scan_booking_screen.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_status_badge.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/scan_qr_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/service_picker_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/shared/dialogs/print_with_retry.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/summary_row.dart';
 import 'package:tablet_dashboard/shared/widgets/display/total_row.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
@@ -117,7 +119,8 @@ class _BookingPanelState extends State<BookingPanel> {
   }
 
   Widget _body(Booking booking) {
-    final shiftOpen = context.select<ShiftController, bool>((s) => s.isOpen);
+    final shift = context.watch<ShiftController>();
+    final shiftOpen = shift.isOpen;
     final editable = !booking.status.isFinal;
 
     return Column(
@@ -244,11 +247,11 @@ class _BookingPanelState extends State<BookingPanel> {
             const SizedBox(height: 8),
             FilledButton.icon(
               // Mode debug isi otomatis QR booking (bk{id}) untuk tes
-              onPressed: () => scanQrAndCheckIn(
+              onPressed: () => openScanBooking(
                 context,
                 initialCode: kDebugMode ? 'bk${booking.id}' : null,
               ),
-              icon: const Icon(Icons.qr_code_scanner, size: 18),
+              icon: const AppIcon(AppAsset.scanIcon, size: 18),
               label: const Text('Scan QR Check-in'),
             ),
           ],
@@ -282,7 +285,7 @@ class _BookingPanelState extends State<BookingPanel> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
-                  'Shift kasir belum dibuka.',
+                  shift.closedMessage,
                   style: AppTextStyle.caption.copyWith(color: AppColor.danger),
                 ),
               ),
