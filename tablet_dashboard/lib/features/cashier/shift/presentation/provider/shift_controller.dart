@@ -18,10 +18,25 @@ class ShiftController extends ChangeNotifier {
   // dikembalikan ke pemanggil, jadi dashboard tidak tampil banner basi
   String? error;
 
+  // Backend hanya izinkan role cashier untuk kas & transaksi
+  bool enabled = true;
+
   bool get isOpen => session != null;
   String? get sessionId => session?.id;
 
+  // Alasan pembayaran belum bisa diterima
+  String get closedMessage => enabled
+      ? 'Shift kasir belum dibuka. Buka shift di Dashboard untuk menerima pembayaran.'
+      : 'Shift dan pembayaran hanya bisa dilakukan akun kasir.';
+
+  void setEnabled(bool value) {
+    enabled = value;
+    if (!value) session = null;
+    notifyListeners();
+  }
+
   Future<void> refresh() async {
+    if (!enabled) return;
     loading = true;
     error = null;
     notifyListeners();
