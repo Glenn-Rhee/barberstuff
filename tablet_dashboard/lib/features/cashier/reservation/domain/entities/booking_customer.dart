@@ -31,5 +31,9 @@ class BookingCustomer {
   final int memberPoints;
   final String? favoriteService;
 
-  bool get isMember => premiumType != null;
+  // Backend kirim "reguler" kalau pelanggan belum punya tipe premium
+  bool get isMember =>
+      premiumType != null && premiumType!.toLowerCase() != 'reguler';
+
+  String get membershipLabel => isMember ? 'Member · $premiumType' : 'Reguler';
 }

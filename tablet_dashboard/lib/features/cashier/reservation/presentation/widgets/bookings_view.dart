@@ -1,3 +1,6 @@
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
+import 'package:tablet_dashboard/core/utils/date_format.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
@@ -36,11 +39,7 @@ class BookingsView extends StatelessWidget {
             const SizedBox(width: 12),
             const BookingStatusFilter(),
             const SizedBox(width: 12),
-            IconButton.outlined(
-              tooltip: 'Muat ulang',
-              onPressed: bookings.refresh,
-              icon: const Icon(Icons.refresh, size: 20),
-            ),
+            const _TodayChip(),
           ],
         ),
         const SizedBox(height: 16),
@@ -57,7 +56,7 @@ class BookingsView extends StatelessWidget {
                       'PELANGGAN',
                       'JADWAL',
                       'LAYANAN',
-                      'CAPSTER',
+                      'BARBER',
                       'STATUS',
                     ])
                       Text(
@@ -104,16 +103,51 @@ class BookingsView extends StatelessWidget {
       );
     }
 
-    return ListView(
-      padding: const EdgeInsets.all(8),
-      children: [
-        for (final booking in bookings.bookings)
-          BookingRow(
-            booking: booking,
-            selected: bookings.selectedId == booking.id,
-            onTap: () => bookings.toggle(booking),
-          ),
-      ],
+    return RefreshIndicator(
+      onRefresh: bookings.refresh,
+      child: ListView(
+        padding: const EdgeInsets.all(8),
+        children: [
+          for (final booking in bookings.bookings)
+            BookingRow(
+              booking: booking,
+              selected: bookings.selectedId == booking.id,
+              onTap: () => bookings.toggle(booking),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// Tanggal booking yang tampil. GET /booking hanya kirim booking hari ini,
+// jadi tanggal tidak bisa diganti
+class _TodayChip extends StatelessWidget {
+  const _TodayChip();
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Daftar booking dari server hanya untuk hari ini',
+      child: Container(
+        height: 44,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColor.borderStrong),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const AppIcon(AppAsset.dateIcon, size: 16, color: AppColor.ink),
+            const SizedBox(width: 8),
+            Text(
+              DateFormatId.longDate(DateTime.now()),
+              style: AppTextStyle.body,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
