@@ -10,6 +10,7 @@ import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
 import 'package:tablet_dashboard/features/auth/presentation/pages/login_screen.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/data/catalog_api.dart';
+import 'package:tablet_dashboard/features/cashier/customer/data/customer_api.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.dart';
 import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
@@ -23,6 +24,7 @@ class TabletDashboardApp extends StatelessWidget {
     this.bookingApi,
     this.cashSessionApi,
     this.storeApi,
+    this.customerApi,
     this.printer,
   });
 
@@ -32,6 +34,7 @@ class TabletDashboardApp extends StatelessWidget {
   final BookingApi? bookingApi;
   final CashSessionApi? cashSessionApi;
   final StoreApi? storeApi;
+  final CustomerApi? customerApi;
   final PrinterController? printer;
 
   @override
@@ -45,6 +48,7 @@ class TabletDashboardApp extends StatelessWidget {
         bookingApi: bookingApi ?? BookingApi(client),
         cashSessionApi: cashSessionApi ?? CashSessionApi(client),
         storeApi: storeApi ?? StoreApi(client),
+        customerApi: customerApi ?? CustomerApi(client),
         printer: printer,
       ),
       child: MaterialApp(

@@ -7,6 +7,8 @@ import 'package:tablet_dashboard/features/auth/presentation/provider/session_con
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/data/catalog_api.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
+import 'package:tablet_dashboard/features/cashier/customer/data/customer_api.dart';
+import 'package:tablet_dashboard/features/cashier/customer/presentation/provider/customer_history_controller.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/provider/checkout_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/provider/order_controller.dart';
@@ -27,6 +29,7 @@ List<SingleChildWidget> appProviders({
   required BookingApi bookingApi,
   required CashSessionApi cashSessionApi,
   required StoreApi storeApi,
+  required CustomerApi customerApi,
   PrinterController? printer,
 }) {
   return [
@@ -35,6 +38,7 @@ List<SingleChildWidget> appProviders({
     Provider<BookingApi>.value(value: bookingApi),
     Provider<CashSessionApi>.value(value: cashSessionApi),
     Provider<StoreApi>.value(value: storeApi),
+    Provider<CustomerApi>.value(value: customerApi),
     ChangeNotifierProvider(create: (_) => printer ?? PrinterController()),
     ChangeNotifierProvider(create: (_) => NavigationController()),
     ChangeNotifierProvider(
@@ -47,6 +51,9 @@ List<SingleChildWidget> appProviders({
     ChangeNotifierProvider(create: (_) => StoreController(storeApi)),
     ChangeNotifierProvider(create: (_) => AttendanceController()),
     ChangeNotifierProvider(create: (_) => DashboardController(bookingApi)),
+    ChangeNotifierProvider(
+      create: (_) => CustomerHistoryController(customerApi),
+    ),
     Provider(
       create: (ctx) => CheckoutController(
         bookingApi,
