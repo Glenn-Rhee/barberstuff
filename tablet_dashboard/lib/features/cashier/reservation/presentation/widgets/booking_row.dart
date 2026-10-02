@@ -4,6 +4,7 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/core/utils/name_format.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
+import 'package:tablet_dashboard/features/cashier/order/domain/entities/receipt.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_status_badge.dart';
 
@@ -60,11 +61,23 @@ class BookingRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  booking.customer.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.bodyBold.copyWith(fontSize: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      booking.customer.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyle.bodyBold.copyWith(fontSize: 12),
+                    ),
+                    Text(
+                      Receipt.numberFor(booking.id),
+                      style: AppTextStyle.caption.copyWith(
+                        fontSize: 10,
+                        color: AppColor.inkSoft,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -157,7 +170,7 @@ class BookingRow extends StatelessWidget {
                 detail('TELEPON', customer.phone ?? '-'),
                 detail(
                   'MEMBERSHIP',
-                  customer.premiumType ?? 'Non Member',
+                  customer.membershipLabel,
                   color: customer.isMember ? AppColor.gold : AppColor.inkSoft,
                 ),
                 detail(
