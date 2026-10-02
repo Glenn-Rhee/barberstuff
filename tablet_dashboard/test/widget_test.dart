@@ -73,6 +73,7 @@ void main() {
         bookingApi: api,
         cashSessionApi: api,
         storeApi: api,
+        customerApi: api,
       ),
     );
     await tester.pumpAndSettle();
@@ -353,6 +354,8 @@ void main() {
 
       // Capster yang tidak hadir tidak bisa dipilih di Kasir
       await openOrder(tester);
+      await tester.ensureVisible(find.text('Pilih capster'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Pilih capster'));
       await tester.pumpAndSettle();
       expect(find.text('Wahyu'), findsWidgets);
@@ -381,7 +384,56 @@ void main() {
   });
 
   group('kasir', () {
-    testWidgets('pesanan langsung: katalog dari API, bayar, dan cetak', (
+    // Isi pelanggan baru (nama + no HP) dan pilih capster Wahyu
+    Future<void> fillWalkIn(WidgetTester tester) async {
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Nama Pelanggan'),
+        'Hendra',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Nomor Telepon'),
+        '089912345678',
+      );
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.ensureVisible(find.text('Pilih capster'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pilih capster'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Wahyu').last);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('keranjang: beberapa service atau 1 paket, tanpa jumlah', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+
+      expect(find.text('Classic Hair Cut'), findsOneWidget);
+      expect(find.text('Paket Ayah & Anak'), findsOneWidget); // filter Semua
+
+      await tester.tap(find.text('+ Tambah').at(0));
+      await tester.pump();
+      await tester.tap(find.text('+ Tambah').at(0)); // service kedua
+      await tester.pump();
+      expect(find.text('Dipilih'), findsNWidgets(2));
+      expect(find.text('Rp 110.000'), findsWidgets);
+
+      // Paket menggantikan semua service
+      await tester.tap(find.text('+ Tambah').first);
+      await tester.pump();
+      expect(find.textContaining('Paket tidak bisa digabung'), findsOneWidget);
+      expect(find.text('Dipilih'), findsOneWidget);
+      expect(find.text('Rp 85.000'), findsWidgets);
+
+      // Tap lagi = keluarkan dari keranjang
+      await tester.tap(find.text('Dipilih'));
+      await tester.pump();
+      expect(find.text('Dipilih'), findsNothing);
+    });
+
+    testWidgets('pesanan langsung: buat, check-in, bayar, dan cetak', (
       tester,
     ) async {
       api.session = _openSession;
@@ -389,18 +441,9 @@ void main() {
       await signIn(tester);
       await openOrder(tester);
 
-      expect(find.text('Classic Hair Cut'), findsOneWidget);
       await tester.tap(find.text('+ Tambah').first);
       await tester.pump();
-
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Nama Pelanggan (opsional)'),
-        'Hendra',
-      );
-      await tester.tap(find.text('Pilih capster'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Wahyu').last);
-      await tester.pumpAndSettle();
+      await fillWalkIn(tester);
 
       await tester.tap(find.text('Bayar & Cetak Struk'));
       await tester.pumpAndSettle();
@@ -411,28 +454,126 @@ void main() {
 
       expect(api.createdBookingCapster, 'CAP-1');
       expect(api.createdBookingServices, ['SVC-1']);
-      expect(api.lastSale?.amount, 45000);
+      expect(api.calls, contains('checkIn:bkBK-NEW-1'));
       expect(api.lastSale?.payment, PaymentType.cash);
-      expect(api.lastSale?.bookingId, 'bk-0123456789');
+      expect(api.lastSale?.bookingId, 'BK-NEW-1');
+      expect(api.bookingList.single.status, BookingStatus.completed);
+
+      // Pelanggan tanpa aplikasi masuk histori sebagai reguler
+      expect(api.customerList.first.name, 'Hendra');
+      expect(api.customerList.first.isMember, isFalse);
 
       final text = printed();
       expect(text, contains(row('Pelanggan', 'Hendra')));
       expect(text, contains(row('Capster', 'Wahyu')));
-      expect(text, contains('Classic Hair Cut'));
       expect(text, contains(row('TOTAL', 'Rp 45.000')));
       expect(text, contains(row('Kembali', 'Rp 5.000')));
       expect(find.textContaining('berhasil'), findsOneWidget);
     });
 
-    testWidgets('bayar booking pakai nominal dari server', (tester) async {
+    testWidgets('simpan pesanan: masuk Dari Reservasi status progress', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+
+      await tester.tap(find.text('+ Tambah').first);
+      await tester.pump();
+      await fillWalkIn(tester);
+      await tester.ensureVisible(find.text('Simpan Pesanan'));
+      await tester.tap(find.text('Simpan Pesanan'));
+      await tester.pumpAndSettle();
+
+      expect(api.bookingList.single.status, BookingStatus.progress);
+      expect(api.lastSale, isNull);
+      expect(find.textContaining('Pesanan Hendra tersimpan'), findsOneWidget);
+
+      await tester.tap(find.text('Dari Reservasi'));
+      await tester.pumpAndSettle();
+      expect(find.text('Hendra'), findsOneWidget);
+      expect(find.text('Progress'), findsOneWidget);
+    });
+
+    testWidgets('pesanan langsung wajib nama + no HP pelanggan baru', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+
+      await tester.tap(find.text('+ Tambah').first);
+      await tester.pump();
+      await tester.ensureVisible(find.text('Simpan Pesanan'));
+      await tester.tap(find.text('Simpan Pesanan'));
+      await tester.pump();
+
+      expect(find.text('Isi nama pelanggan dulu'), findsOneWidget);
+      expect(api.calls, isNot(contains('createBooking')));
+    });
+
+    testWidgets('histori: pilih pelanggan lama lalu pesan pakai id-nya', (
+      tester,
+    ) async {
       api.session = _openSession;
-      api.bookingList = [
-        fakeBooking(
-          price: 65000,
-          discount: 15000,
-          status: BookingStatus.progress,
-        ),
-      ];
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+
+      await tester.tap(
+        find.widgetWithText(OutlinedButton, 'Histori Pelanggan'),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Iqbal Apriand'), findsOneWidget);
+      expect(find.text('Member'), findsOneWidget);
+      expect(find.text('Reguler'), findsOneWidget); // Budi
+
+      await tester.tap(find.text('Pilih Pelanggan').first);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Member • 1.250 poin'), findsOneWidget);
+
+      await tester.tap(find.text('+ Tambah').first);
+      await tester.pump();
+      await tester.ensureVisible(find.text('Pilih capster'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pilih capster'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Wahyu').last);
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Simpan Pesanan'));
+      await tester.tap(find.text('Simpan Pesanan'));
+      await tester.pumpAndSettle();
+
+      expect(api.createdBookingCustomer, 'CUS-1');
+      expect(api.customerList, hasLength(2)); // tidak buat pelanggan baru
+    });
+
+    testWidgets('no HP pelanggan lama muncul saran pakai data histori', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Nomor Telepon'),
+        '081300001111',
+      );
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+      expect(find.text('Pelanggan lama: Budi Santoso'), findsOneWidget);
+
+      await tester.tap(find.text('Pakai'));
+      await tester.pumpAndSettle();
+      expect(find.text('Budi Santoso'), findsWidgets);
+      expect(find.byTooltip('Ganti pelanggan'), findsWidgets);
+    });
+
+    testWidgets('reservasi booked: ubah status progress lalu bayar', (
+      tester,
+    ) async {
+      api.session = _openSession;
+      api.bookingList = [fakeBooking(price: 65000, discount: 15000)];
       await pumpApp(tester);
       await signIn(tester);
       await openOrder(tester);
@@ -442,18 +583,22 @@ void main() {
       expect(find.text('Pilih booking'), findsOneWidget);
       await tester.tap(find.text('Iqbal Apriand'));
       await tester.pumpAndSettle();
-      expect(find.text('Premium'), findsOneWidget);
+      expect(find.text('Member · Premium'), findsOneWidget);
       expect(find.text('1.250 poin'), findsOneWidget);
       expect(find.text('-Rp 15.000'), findsOneWidget);
+      expect(find.text('Bayar'), findsNothing);
+
+      await tester.tap(find.text('Ubah Status Progress'));
+      await tester.pumpAndSettle();
+      expect(api.calls, contains('checkIn:bkBK-1'));
 
       await tester.tap(find.text('QRIS'));
       await tester.pump();
-      await tester.tap(find.text('Bayar & Cetak Struk'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Bayar'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Konfirmasi & Cetak'));
       await tester.pumpAndSettle();
 
-      expect(api.lastSale?.amount, 50000);
       expect(api.lastSale?.payment, PaymentType.cashless);
       expect(api.lastSale?.bookingId, 'BK-1');
 
@@ -463,11 +608,10 @@ void main() {
       expect(text, contains(row('TOTAL', 'Rp 50.000')));
     });
 
-    testWidgets('booking yang belum check-in minta scan QR dulu', (
+    testWidgets('reservasi progress: tambah service, paket disembunyikan', (
       tester,
     ) async {
-      api.session = _openSession;
-      api.bookingList = [fakeBooking()];
+      api.bookingList = [fakeBooking(status: BookingStatus.progress)];
       await pumpApp(tester);
       await signIn(tester);
       await openOrder(tester);
@@ -476,11 +620,17 @@ void main() {
       await tester.tap(find.text('Iqbal Apriand'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('belum check-in'), findsOneWidget);
-      expect(find.text('Bayar & Cetak Struk'), findsNothing);
+      await tester.tap(find.text('Tambah Layanan / Paket'));
+      await tester.pumpAndSettle();
+      expect(find.text('Gentlement Grooming'), findsOneWidget);
+      expect(find.text('Paket Ayah & Anak'), findsNothing);
+
+      await tester.tap(find.text('Gentlement Grooming'));
+      await tester.pumpAndSettle();
+      expect(api.calls, contains('addService:SVC-2'));
     });
 
-    testWidgets('booking selesai hanya bisa cetak ulang', (tester) async {
+    testWidgets('booking selesai hanya bisa cetak struk', (tester) async {
       api.bookingList = [fakeBooking(status: BookingStatus.completed)];
       await pumpApp(tester);
       await signIn(tester);
@@ -490,10 +640,8 @@ void main() {
       await tester.tap(find.text('Iqbal Apriand'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Booking selesai'), findsOneWidget);
-      expect(find.text('Bayar & Cetak Struk'), findsNothing);
-
-      await tester.tap(find.text('Cetak Ulang Struk'));
+      expect(find.text('Bayar'), findsNothing);
+      await tester.tap(find.text('Cetak Struk'));
       await tester.pumpAndSettle();
       expect(printed(), contains(row('Pelanggan', 'Iqbal Apriand')));
       expect(api.lastSale, isNull); // cetak ulang tidak boleh buat transaksi
@@ -507,11 +655,10 @@ void main() {
       await tester.tap(find.text('+ Tambah').first);
       await tester.pump();
 
-      expect(find.textContaining('Shift kasir belum dibuka'), findsOneWidget);
       expect(
         tester
             .widget<FilledButton>(
-              find.widgetWithText(FilledButton, 'Bayar & Cetak Struk'),
+              find.widgetWithText(FilledButton, 'Buka shift dulu untuk bayar'),
             )
             .onPressed,
         isNull,

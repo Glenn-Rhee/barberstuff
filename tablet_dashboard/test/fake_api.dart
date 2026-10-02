@@ -5,9 +5,13 @@ import 'package:tablet_dashboard/features/auth/domain/entities/login_response.da
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/data/catalog_api.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/cart_line.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
+import 'package:tablet_dashboard/features/cashier/customer/data/customer_api.dart';
+import 'package:tablet_dashboard/features/cashier/customer/domain/entities/customer_profile.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking_customer.dart';
 import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
@@ -16,7 +20,13 @@ import 'package:tablet_dashboard/features/cashier/store/domain/entities/store_in
 
 // Pengganti backend di tes, sekaligus mencatat apa yang dikirim aplikasi
 class FakeApi
-    implements AuthApi, CatalogApi, BookingApi, CashSessionApi, StoreApi {
+    implements
+        AuthApi,
+        CatalogApi,
+        BookingApi,
+        CashSessionApi,
+        StoreApi,
+        CustomerApi {
   static const defaultPassword = 'rahasia';
 
   // Berubah kalau reset password berhasil
@@ -52,6 +62,32 @@ class FakeApi
   ];
   List<Booking> bookingList = [];
   CashSession? session;
+
+  // Histori pelanggan: Iqbal pakai aplikasi (member), Budi reguler
+  List<CustomerProfile> customerList = [
+    CustomerProfile(
+      id: 'CUS-1',
+      name: 'Iqbal Apriand',
+      phone: '081234567890',
+      email: 'iqbal@mail.com',
+      points: 1250,
+      totalVisited: 4,
+      lastVisitedAt: DateTime(2026, 9, 20, 10),
+      favoriteService: 'Classic Hair Cut',
+      favoriteCapster: 'Wahyu',
+    ),
+    const CustomerProfile(
+      id: 'CUS-2',
+      name: 'Budi Santoso',
+      phone: '081300001111',
+      totalVisited: 1,
+    ),
+  ];
+
+  String? createdBookingCustomer;
+
+  // Isi untuk tiru backend yang menolak membuat booking
+  String? createError;
 
   String? createdBookingCapster;
   List<String> createdBookingServices = const [];
@@ -163,13 +199,14 @@ class FakeApi
     int limit = 5,
   }) async {
     calls.add('bookings:${status?.api ?? 'all'}');
-    return Paged(
-      items: bookingList,
-      totalPages: 1,
-      totalData: bookingList.length,
-    );
+    final items = [
+      for (final booking in bookingList)
+        if (status == null || booking.status == status) booking,
+    ];
+    return Paged(items: items, totalPages: 1, totalData: items.length);
   }
 
+  // Tiru backend: pelanggan dari id, atau dicari / dibuat dari no HP
   @override
   Future<String> createBooking({
     required String storeId,
@@ -184,12 +221,59 @@ class FakeApi
     calls.add('createBooking');
     createdBookingCapster = capsterId;
     createdBookingServices = serviceIds;
-    return 'bk-0123456789';
+    createdBookingCustomer = customerId;
+    if (createError != null) throw ApiException(createError!, statusCode: 406);
+
+    var customer = customerId != null
+        ? customerList.firstWhere((c) => c.id == customerId)
+        : customerList.where((c) => c.phone == customerPhone).firstOrNull;
+    if (customer == null) {
+      customer = CustomerProfile(
+        id: 'CUS-NEW-${customerList.length + 1}',
+        name: customerName!,
+        phone: customerPhone,
+      );
+      customerList = [customer, ...customerList];
+    }
+    final items = [
+      for (final item in [...catalog, ...packages])
+        if (serviceIds.contains(item.id)) item,
+    ];
+    final total = items.fold(0, (sum, item) => sum + item.price);
+    bookingList = [
+      ...bookingList,
+      Booking(
+        id: 'BK-NEW-${bookingList.length + 1}',
+        customer: BookingCustomer(
+          id: customer.id,
+          name: customer.name,
+          phone: customer.phone,
+        ),
+        capster: capsterList.firstWhere((c) => c.id == capsterId),
+        scheduledAt: bookingDate,
+        services: [for (final item in items) CartLine(item)],
+        subtotal: total,
+        discount: 0,
+        total: total,
+        status: scheduled ? BookingStatus.booked : BookingStatus.progress,
+      ),
+    ];
+    return '';
   }
 
   @override
   Future<void> checkIn(String qrCode) async {
     calls.add('checkIn:$qrCode');
+    final booking = bookingList
+        .where((b) => 'bk${b.id}' == qrCode && b.status == BookingStatus.booked)
+        .firstOrNull;
+    if (booking == null) {
+      throw const ApiException(
+        'Booking tidak ditemukan atau telah checkin sebelumnya.',
+        statusCode: 406,
+      );
+    }
+    _replace(booking, status: BookingStatus.progress);
   }
 
   @override
@@ -197,7 +281,50 @@ class FakeApi
     required String bookingId,
     required String serviceId,
   }) async {
-    calls.add('addService');
+    calls.add('addService:$serviceId');
+    final booking = bookingList.firstWhere((b) => b.id == bookingId);
+    final item = [...catalog, ...packages].firstWhere((s) => s.id == serviceId);
+    _replace(booking, services: [...booking.services, CartLine(item)]);
+  }
+
+  @override
+  Future<Paged<CustomerProfile>> customers({
+    String? query,
+    int page = 1,
+    int limit = 12,
+  }) async {
+    calls.add('customers:${query ?? ''}');
+    final q = query?.toLowerCase();
+    final items = [
+      for (final customer in customerList)
+        if (q == null ||
+            customer.phone == query ||
+            customer.name.toLowerCase().contains(q))
+          customer,
+    ];
+    return Paged.fromPage(items, page: page, limit: limit);
+  }
+
+  // Booking tidak bisa diubah, jadi diganti salinan baru
+  void _replace(
+    Booking booking, {
+    BookingStatus? status,
+    List<CartLine>? services,
+  }) {
+    final lines = services ?? booking.services;
+    final total = lines.fold(0, (sum, line) => sum + line.subtotal);
+    final copy = Booking(
+      id: booking.id,
+      customer: booking.customer,
+      capster: booking.capster,
+      scheduledAt: booking.scheduledAt,
+      services: lines,
+      subtotal: total,
+      discount: booking.discount,
+      total: total - booking.discount,
+      status: status ?? booking.status,
+    );
+    bookingList = [for (final b in bookingList) b.id == booking.id ? copy : b];
   }
 
   @override
@@ -250,6 +377,8 @@ class FakeApi
     calls.add('transaction:${type.name}');
     if (type == TransactionType.income) {
       lastSale = (amount: amount, payment: paymentType, bookingId: bookingId);
+      final booking = bookingList.where((b) => b.id == bookingId).firstOrNull;
+      if (booking != null) _replace(booking, status: BookingStatus.completed);
     } else {
       lastOutcome = (amount: amount, title: title);
     }
