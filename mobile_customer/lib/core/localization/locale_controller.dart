@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LocalController extends ChangeNotifier {
+class LocaleController extends ChangeNotifier {
   static const _prefsKey = 'app_locale';
   static const supported = ['id', 'en'];
 

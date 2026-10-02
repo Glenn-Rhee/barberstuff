@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 
 import 'package:mobile_barberstuff/core/config/api_endpoint.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/api_response.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_response.dart';
 import 'package:mobile_barberstuff/features/store/data/models/service_item_model.dart';
 import 'package:mobile_barberstuff/features/store/data/models/store_detail_model.dart';
 import 'package:mobile_barberstuff/features/store/data/models/store_summary_model.dart';

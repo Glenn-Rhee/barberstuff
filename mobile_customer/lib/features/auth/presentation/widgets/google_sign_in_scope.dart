@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
-import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/network/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/services/google_auth_service.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
 import 'package:mobile_barberstuff/features/auth/domain/entities/auth_provider_result.dart';
 import 'package:mobile_barberstuff/features/auth/domain/usecases/sign_in_with_google.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/complete_profile_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/google_sign_in_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/app_toast.dart';
 import 'package:provider/provider.dart';
 
 typedef GoogleSignInBuilder =

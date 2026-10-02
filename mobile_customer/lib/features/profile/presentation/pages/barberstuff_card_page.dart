@@ -8,6 +8,7 @@ import 'package:mobile_barberstuff/features/profile/domain/entities/customer_pro
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/app_back_bar.dart';
 import 'package:provider/provider.dart';
 
 class BarberstuffCardArgs {
@@ -32,28 +33,7 @@ class BarberstuffCardPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColor.surface,
-      appBar: AppBar(
-        backgroundColor: AppColor.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).maybePop(),
-          icon: Image.asset(
-            AppAssets.backArrowIcon,
-            width: 20,
-            height: 16,
-            fit: BoxFit.contain,
-            color: AppColor.ink,
-            filterQuality: FilterQuality.medium,
-          ),
-        ),
-        title: Text(
-          l10n.cardPageTitle,
-          style: AppTextStyle.headlineSmall.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      appBar: AppBackBar(title: l10n.cardPageTitle),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: profileProvider?.load ?? () async {},

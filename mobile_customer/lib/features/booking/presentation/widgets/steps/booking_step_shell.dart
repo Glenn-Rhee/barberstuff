@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
-import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/error_retry_view.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/skeleton.dart';
 
 class BookingStepState extends StatelessWidget {
   const BookingStepState({

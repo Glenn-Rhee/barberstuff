@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/utils/date_format.dart';
 import 'package:mobile_barberstuff/features/auth/domain/entities/register_result.dart';
 import 'package:mobile_barberstuff/features/auth/domain/entities/registration.dart';
 import 'package:mobile_barberstuff/features/auth/domain/usecases/register_account.dart';
@@ -64,8 +64,7 @@ class RegisterProvider extends ChangeNotifier with AvatarFormMixin {
 
   void setDateOfBirth(DateTime v) {
     _dateOfBirth = v;
-    String two(int n) => n.toString().padLeft(2, '0');
-    birthDateController.text = '${two(v.day)}/${two(v.month)}/${v.year}';
+    birthDateController.text = formatDayMonthYear(v);
     _syncComplete();
     notifyListeners();
   }

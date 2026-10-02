@@ -4,8 +4,8 @@ import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/branding/barber_pattern_background.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
 
 class ResetSuccessPage extends StatelessWidget {
   const ResetSuccessPage({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/box_loader.dart';
 
 class LoadingOverlay extends StatelessWidget {
   const LoadingOverlay({

@@ -4,8 +4,8 @@ import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_duration.dart';
 import 'package:mobile_barberstuff/core/services/local_notification_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/shared/widgets/animated_brand_logo.dart';
-import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
+import 'package:mobile_barberstuff/shared/widgets/branding/animated_brand_logo.dart';
+import 'package:mobile_barberstuff/shared/widgets/branding/barber_pattern_background.dart';
 import 'package:provider/provider.dart';
 
 class SplashPage extends StatefulWidget {

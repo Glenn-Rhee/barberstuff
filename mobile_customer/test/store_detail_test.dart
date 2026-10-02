@@ -10,7 +10,7 @@ import 'package:mobile_barberstuff/features/store/domain/entities/store_detail.d
 import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
 import 'package:mobile_barberstuff/features/store/domain/repositories/store_repository.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
-import 'package:mobile_barberstuff/features/store/presentation/widgets/store_detail_parts.dart';
+import 'package:mobile_barberstuff/features/store/presentation/widgets/detail/barber_cards.dart';
 import 'package:mobile_barberstuff/features/store/store_injection.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 import 'package:provider/provider.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String _jwt(DateTime expiresAt) {

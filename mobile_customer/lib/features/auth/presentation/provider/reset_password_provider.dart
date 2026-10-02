@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
 import 'package:mobile_barberstuff/features/auth/domain/entities/login_result.dart';
 import 'package:mobile_barberstuff/features/auth/domain/usecases/login_with_email.dart';
 import 'package:mobile_barberstuff/features/auth/domain/usecases/reset_password.dart';

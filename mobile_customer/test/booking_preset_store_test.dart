@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/provider/booking_flow_provider.dart';
 import 'support/booking_test_providers.dart';
 import 'support/fake_booking_repository.dart';

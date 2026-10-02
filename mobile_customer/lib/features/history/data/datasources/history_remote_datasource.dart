@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 
 import 'package:mobile_barberstuff/core/config/api_endpoint.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/api_response.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_response.dart';
 import 'package:mobile_barberstuff/features/history/domain/entities/booking_history.dart';
 
 class HistoryRemoteDataSource {

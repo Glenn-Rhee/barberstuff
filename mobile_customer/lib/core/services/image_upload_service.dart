@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 
 import 'package:mobile_barberstuff/core/config/api_endpoint.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/api_response.dart';
-import 'package:mobile_barberstuff/core/services/dio_client.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_response.dart';
+import 'package:mobile_barberstuff/core/network/dio_client.dart';
 
 /// Unggah gambar lewat presigned URL object storage:
 /// 1. `POST /upload/presign` → `upload_url` dan `object_key`.

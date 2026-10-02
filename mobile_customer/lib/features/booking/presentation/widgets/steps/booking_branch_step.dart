@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/core/services/permission_prompt.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/provider/booking_flow_provider.dart';
-import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_step_shell.dart';
+import 'package:mobile_barberstuff/features/booking/presentation/widgets/steps/booking_step_shell.dart';
 import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
-import 'package:mobile_barberstuff/shared/widgets/offline_banner.dart';
+import 'package:mobile_barberstuff/shared/dialogs/permission_prompt.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/offline_banner.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/app_search_bar.dart';
 import 'package:provider/provider.dart';
 
 class BookingBranchStep extends StatelessWidget {

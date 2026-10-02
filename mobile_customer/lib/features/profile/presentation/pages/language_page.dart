@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/localization/local_controller.dart';
+import 'package:mobile_barberstuff/core/localization/locale_controller.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/app_back_bar.dart';
 import 'package:provider/provider.dart';
 
 class LanguagePage extends StatefulWidget {
@@ -19,7 +20,7 @@ class _LanguagePageState extends State<LanguagePage> {
   String _labelOf(String code, AppLocalizations l10n) =>
       code == 'id' ? l10n.languageIndonesian : l10n.languageEnglish;
 
-  Future<void> _apply(LocalController controller) async {
+  Future<void> _apply(LocaleController controller) async {
     final NavigatorState navigator = Navigator.of(context);
     await controller.setLocale(_selected!);
     if (mounted) navigator.pop();
@@ -28,22 +29,14 @@ class _LanguagePageState extends State<LanguagePage> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    final LocalController controller = context.watch<LocalController>();
+    final LocaleController controller = context.watch<LocaleController>();
     final String selected = _selected ?? controller.locale.languageCode;
 
     return Scaffold(
       backgroundColor: AppColor.surface,
-      appBar: AppBar(
-        backgroundColor: AppColor.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: const BackButton(color: AppColor.ink),
-        title: Text(
-          l10n.languagePageTitle,
-          style: AppTextStyle.headlineSmall.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+      appBar: AppBackBar(
+        title: l10n.languagePageTitle,
+        useMaterialBackIcon: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -59,7 +52,7 @@ class _LanguagePageState extends State<LanguagePage> {
                 ),
               ),
               const SizedBox(height: 26),
-              for (final String code in LocalController.supported) ...<Widget>[
+              for (final String code in LocaleController.supported) ...<Widget>[
                 _LanguageOption(
                   code: code,
                   label: _labelOf(code, l10n),

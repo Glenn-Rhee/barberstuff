@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/notification/domain/entities/app_notification.dart';
@@ -11,6 +10,7 @@ import 'package:mobile_barberstuff/features/notification/presentation/widgets/no
 import 'package:mobile_barberstuff/features/notification/presentation/widgets/notification_text.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/widgets/notification_tile.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/app_back_bar.dart';
 import 'package:provider/provider.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -77,28 +77,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
     return Scaffold(
       backgroundColor: AppColor.surface,
-      appBar: AppBar(
-        backgroundColor: AppColor.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).maybePop(),
-          icon: Image.asset(
-            AppAssets.backArrowIcon,
-            width: 20,
-            height: 16,
-            fit: BoxFit.contain,
-            color: AppColor.ink,
-            filterQuality: FilterQuality.medium,
-          ),
-        ),
-        title: Text(
-          l10n.notificationTitle,
-          style: AppTextStyle.headlineSmall.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      appBar: AppBackBar(title: l10n.notificationTitle),
       body: SafeArea(
         top: false,
         child: Column(

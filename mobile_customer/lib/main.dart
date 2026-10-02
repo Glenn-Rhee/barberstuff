@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile_barberstuff/app/app.dart';
 import 'package:mobile_barberstuff/app/app_providers.dart';
-import 'package:mobile_barberstuff/core/localization/local_controller.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/localization/locale_controller.dart';
 import 'package:mobile_barberstuff/core/services/local_notification_service.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -23,8 +23,8 @@ Future<void> main() async {
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
 
-  final localController = LocalController();
-  await localController.load();
+  final localeController = LocaleController();
+  await localeController.load();
 
   final session = AppSession();
   await session.load();
@@ -37,7 +37,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: appProviders(
-        localController: localController,
+        localeController: localeController,
         session: session,
         cache: cache,
         notificationService: notificationService,

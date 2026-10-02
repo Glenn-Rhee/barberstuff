@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:mobile_barberstuff/core/services/dio_client.dart';
+import 'package:mobile_barberstuff/core/network/dio_client.dart';
 import 'package:mobile_barberstuff/features/booking/data/datasources/booking_local_datasource.dart';
 import 'package:mobile_barberstuff/features/booking/data/datasources/booking_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_lock_model.dart';

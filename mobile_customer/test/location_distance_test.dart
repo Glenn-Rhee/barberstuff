@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 import 'package:mobile_barberstuff/features/store/data/models/store_summary_model.dart';
 import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
 import 'package:shared_preferences/shared_preferences.dart';

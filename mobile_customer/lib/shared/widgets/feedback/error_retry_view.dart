@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
 
 /// Pesan gagal muat yang tetap bisa ditarik ke bawah untuk coba lagi,
 /// jadi pengguna tidak perlu keluar masuk halaman.

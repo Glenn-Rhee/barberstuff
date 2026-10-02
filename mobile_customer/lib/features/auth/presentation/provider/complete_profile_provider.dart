@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
+import 'package:mobile_barberstuff/core/utils/date_format.dart';
 import 'package:mobile_barberstuff/features/auth/domain/entities/login_result.dart';
 import 'package:mobile_barberstuff/features/auth/domain/usecases/complete_google_registration.dart';
 import 'package:mobile_barberstuff/features/profile/domain/usecases/update_customer_profile.dart';
@@ -70,8 +71,7 @@ class CompleteProfileProvider extends ChangeNotifier with AvatarFormMixin {
 
   void setDateOfBirth(DateTime v) {
     _dateOfBirth = v;
-    String two(int n) => n.toString().padLeft(2, '0');
-    birthDateController.text = '${two(v.day)}/${two(v.month)}/${v.year}';
+    birthDateController.text = formatDayMonthYear(v);
     _syncComplete();
     notifyListeners();
   }

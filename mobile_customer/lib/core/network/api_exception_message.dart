@@ -1,4 +1,4 @@
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 extension ApiExceptionMessage on ApiException {

@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
+import 'package:mobile_barberstuff/core/utils/date_format.dart';
 import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/domain/usecases/update_customer_profile.dart';
 import 'package:mobile_barberstuff/shared/mixins/avatar_form_mixin.dart';
@@ -12,8 +13,11 @@ class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
     nameController.text = profile.name;
     emailController.text = profile.email;
     phoneController.text = profile.phoneNumber;
-    _dateOfBirth = profile.dateOfBirth;
-    if (_dateOfBirth != null) birthDateController.text = _format(_dateOfBirth!);
+    final DateTime? dateOfBirth = profile.dateOfBirth;
+    _dateOfBirth = dateOfBirth;
+    if (dateOfBirth != null) {
+      birthDateController.text = formatDayMonthYear(dateOfBirth);
+    }
     initialImageUrl = profile.imageUrl;
 
     nameController.addListener(_syncDirty);
@@ -42,7 +46,7 @@ class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
 
   void setDateOfBirth(DateTime value) {
     _dateOfBirth = value;
-    birthDateController.text = _format(value);
+    birthDateController.text = formatDayMonthYear(value);
     _syncDirty();
     notifyListeners();
   }
@@ -115,11 +119,6 @@ class PersonalInfoProvider extends ChangeNotifier with AvatarFormMixin {
       _isSaving = false;
       notifyListeners();
     }
-  }
-
-  static String _format(DateTime v) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return '${two(v.day)}/${two(v.month)}/${v.year}';
   }
 
   @override

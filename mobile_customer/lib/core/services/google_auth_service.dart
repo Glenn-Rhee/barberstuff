@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_barberstuff/core/config/env.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
 
 class GoogleCredential {
   const GoogleCredential({required this.idToken, this.photoUrl});

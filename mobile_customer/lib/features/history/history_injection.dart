@@ -1,4 +1,4 @@
-import 'package:mobile_barberstuff/core/services/dio_client.dart';
+import 'package:mobile_barberstuff/core/network/dio_client.dart';
 import 'package:mobile_barberstuff/core/usecase/usecase.dart';
 import 'package:mobile_barberstuff/features/booking/data/datasources/booking_local_datasource.dart';
 import 'package:mobile_barberstuff/features/booking/domain/usecases/watch_created_bookings.dart';

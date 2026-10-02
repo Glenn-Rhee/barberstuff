@@ -1,4 +1,4 @@
-import 'package:mobile_barberstuff/core/services/dio_client.dart';
+import 'package:mobile_barberstuff/core/network/dio_client.dart';
 import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/login_request_api.dart';

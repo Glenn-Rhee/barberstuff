@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 
 import 'package:mobile_barberstuff/core/config/api_endpoint.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/api_response.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_response.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/auth_provider_result_model.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_request_api.dart';
 import 'package:mobile_barberstuff/features/auth/data/models/forgot_password_result_model.dart';

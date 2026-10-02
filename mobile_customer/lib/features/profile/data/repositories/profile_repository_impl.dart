@@ -1,6 +1,6 @@
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
-import 'package:mobile_barberstuff/core/services/dio_client.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/dio_client.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/profile/data/models/customer_profile_model.dart';
 import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';

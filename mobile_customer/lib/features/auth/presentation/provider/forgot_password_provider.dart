@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
 import 'package:mobile_barberstuff/features/auth/domain/entities/forgot_password_result.dart';
 import 'package:mobile_barberstuff/features/auth/domain/usecases/request_password_reset.dart';
 
