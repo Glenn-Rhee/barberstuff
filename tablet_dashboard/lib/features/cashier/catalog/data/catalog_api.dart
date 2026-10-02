@@ -26,10 +26,10 @@ class CatalogApi {
         'limit': limit,
       },
     );
-    return Paged(
-      items: [for (final json in res.list) ServiceItem.fromJson(json)],
-      totalPages: res.totalPages,
-      totalData: res.totalData,
+    return Paged.fromPage(
+      [for (final json in res.list) ServiceItem.fromJson(json)],
+      page: page,
+      limit: limit,
     );
   }
 
