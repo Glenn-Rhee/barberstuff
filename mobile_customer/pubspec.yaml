@@ -1,5 +1,5 @@
 name: mobile_barberstuff
-description: "BarberStuff mobile application."
+description: "Barberstuff mobile application."
 publish_to: "none"
 version: 1.0.0+1
 
@@ -82,5 +82,4 @@ flutter_launcher_icons:
   adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/choose/logo_barberstuff_fg.png"
 
-  ios: true
-  remove_alpha_ios: true
+
