@@ -111,6 +111,16 @@ class BookingsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Setelah scan QR: buang filter, muat ulang, lalu pilih booking itu
+  Future<void> focus(String bookingId) async {
+    status = null;
+    query = '';
+    page = 1;
+    await refresh();
+    if (bookings.any((b) => b.id == bookingId)) selectedId = bookingId;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _debounce?.cancel();
