@@ -84,6 +84,33 @@ class SessionController extends ChangeNotifier {
     }
   }
 
+  // Reset password tanpa verifikasi email: masuk pakai password lama
+  // (atau password awal dari admin), lalu ganti lewat PATCH /staff/{id}.
+  // Balikin pesan error, atau null kalau berhasil
+  Future<String?> resetPassword({
+    required String email,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final login = await _auth.login(email: email, password: oldPassword);
+      _client.token = login.token;
+      final staff = await _auth.profile();
+      if (staff.staffRole == null) return noAccessMessage;
+      await _auth.updateAccount(
+        staffId: staff.id,
+        name: staff.name,
+        password: newPassword,
+      );
+      return null;
+    } on ApiException catch (e) {
+      return e.message;
+    } finally {
+      // Token sementara, staff tetap harus login ulang pakai password baru
+      _client.token = null;
+    }
+  }
+
   // hapus token, profile, role, dan storage saat sign out
   Future<void> signOut() async {
     await _clear();
