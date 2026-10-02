@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
-import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/network/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
@@ -10,11 +10,11 @@ import 'package:mobile_barberstuff/features/history/presentation/provider/histor
 import 'package:mobile_barberstuff/features/history/presentation/widgets/history_card.dart';
 import 'package:mobile_barberstuff/features/history/presentation/widgets/review_sheet.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
-import 'package:mobile_barberstuff/shared/widgets/dashboard_bottom_nav.dart';
-import 'package:mobile_barberstuff/shared/widgets/filter_chip_bar.dart';
-import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/app_toast.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/skeleton.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/app_search_bar.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/filter_chip_bar.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/dashboard_bottom_nav.dart';
 import 'package:provider/provider.dart';
 
 class HistoryPage extends StatelessWidget {

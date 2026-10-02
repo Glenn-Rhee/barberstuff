@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/network/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
@@ -11,14 +11,14 @@ import 'package:mobile_barberstuff/features/auth/presentation/provider/login_pro
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/google_sign_in_scope.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/remember_me_checkbox.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_field_decoration.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_text_field.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/circle_icon_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/divider_or.dart';
-import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
-import 'package:mobile_barberstuff/shared/widgets/password_toggle.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/circle_icon_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/app_toast.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/loading_overlay.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/app_field_decoration.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/app_text_field.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/divider_or.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/password_toggle.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {

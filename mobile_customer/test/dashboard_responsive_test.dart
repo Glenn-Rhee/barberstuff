@@ -16,7 +16,7 @@ import 'package:mobile_barberstuff/features/home/presentation/widgets/quick_acti
 import 'package:mobile_barberstuff/features/home/presentation/widgets/section_header.dart';
 import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/dashboard_bottom_nav.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/dashboard_bottom_nav.dart';
 
 Widget _host(Widget child, {required Locale locale}) {
   return MaterialApp(

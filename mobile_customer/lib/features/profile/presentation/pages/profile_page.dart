@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/network/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
-import 'package:mobile_barberstuff/core/utils/phone_formatter.dart';
 import 'package:mobile_barberstuff/features/history/presentation/provider/customer_bookings_provider.dart';
 import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/barberstuff_card_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/help_center_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/widgets/profile_header.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/profile_menu_tile.dart';
-import 'package:mobile_barberstuff/features/profile/presentation/widgets/tier_label.dart';
+import 'package:mobile_barberstuff/features/profile/presentation/widgets/profile_skeleton.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/dashboard_bottom_nav.dart';
-import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
-import 'package:mobile_barberstuff/shared/widgets/offline_banner.dart';
-import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/error_retry_view.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/offline_banner.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/dashboard_bottom_nav.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -29,6 +27,14 @@ class ProfilePage extends StatelessWidget {
   static const double _sidePadding = 20;
 
   Future<void> _confirmLogout(BuildContext context) async {
+    final bool confirmed = await _askLogout(context);
+    if (!confirmed || !context.mounted) return;
+    await _logout(context);
+  }
+
+  /// Gaya dialog ini sedikit beda dari showConfirmDialog (judul dan tombol
+  /// lebih besar), jadi sengaja dibiarkan sendiri.
+  Future<bool> _askLogout(BuildContext context) async {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     final bool? confirmed = await showDialog<bool>(
@@ -60,8 +66,12 @@ class ProfilePage extends StatelessWidget {
       ),
     );
 
-    if (confirmed != true || !context.mounted) return;
+    return confirmed ?? false;
+  }
 
+  /// Hapus semua data akun ini dari memori dan perangkat, lalu kembali ke
+  /// halaman pilih login.
+  Future<void> _logout(BuildContext context) async {
     final NavigatorState navigator = Navigator.of(context);
     final AppCache cache = context.read<AppCache>();
     final AppSession session = context.read<AppSession>();
@@ -103,35 +113,7 @@ class ProfilePage extends StatelessWidget {
               bottom: 28 + DashboardBottomNav.spaceOf(context),
             ),
             children: <Widget>[
-              Center(child: _ProfileAvatar(photoUrl: profile.imageUrl)),
-              const SizedBox(height: 18),
-              Text(
-                profile.name,
-                textAlign: TextAlign.center,
-                style: AppTextStyle.headlineSmall.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                profile.email,
-                textAlign: TextAlign.center,
-                style: AppTextStyle.bodyMedium.copyWith(
-                  color: AppColor.inkSoft,
-                ),
-              ),
-              if (profile.phoneNumber.isNotEmpty) ...<Widget>[
-                const SizedBox(height: 2),
-                Text(
-                  PhoneFormatter.display(profile.phoneNumber),
-                  textAlign: TextAlign.center,
-                  style: AppTextStyle.bodyMedium.copyWith(
-                    color: AppColor.inkSoft,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 16),
-              Center(child: _TierBadge(tier: profile.tier)),
+              ProfileHeader(profile: profile),
               const SizedBox(height: 24),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: _sidePadding),
@@ -213,76 +195,6 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar({required this.photoUrl});
-
-  static const double _size = 116;
-
-  final String? photoUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final String? url = photoUrl;
-
-    return Container(
-      width: _size,
-      height: _size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColor.ink, width: 3),
-      ),
-      child: ClipOval(
-        child: url == null
-            ? const ColoredBox(
-                color: AppColor.border,
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 58,
-                  color: AppColor.surface,
-                ),
-              )
-            : Image.network(
-                url,
-                fit: BoxFit.cover,
-                errorBuilder: (BuildContext _, Object _, StackTrace? _) =>
-                    const ColoredBox(
-                      color: AppColor.border,
-                      child: Icon(
-                        Icons.person_rounded,
-                        size: 58,
-                        color: AppColor.surface,
-                      ),
-                    ),
-              ),
-      ),
-    );
-  }
-}
-
-class _TierBadge extends StatelessWidget {
-  const _TierBadge({required this.tier});
-
-  final MemberTier tier;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
-      decoration: BoxDecoration(
-        color: TierTheme.of(tier).accent,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        tierLabel(tier, AppLocalizations.of(context)),
-        style: AppTextStyle.titleSmall.copyWith(
-          color: TierTheme.of(tier).onAccent,
-          letterSpacing: 0.6,
-        ),
-      ),
-    );
-  }
-}
-
 class _PlaceholderBody extends StatelessWidget {
   const _PlaceholderBody({required this.provider});
 
@@ -290,54 +202,13 @@ class _PlaceholderBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (provider.isFirstLoad) return const _ProfileSkeleton();
+    if (provider.isFirstLoad) return const ProfileSkeleton();
 
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     return ErrorRetryView(
       message: provider.error?.message(l10n) ?? l10n.exceptionDefault,
       onRetry: provider.load,
-    );
-  }
-}
-
-/// Kerangka halaman profil: foto bulat, nama, tier, lalu daftar menu.
-class _ProfileSkeleton extends StatelessWidget {
-  const _ProfileSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return SkeletonGroup(
-      child: ListView(
-        padding: EdgeInsets.fromLTRB(
-          ProfilePage._sidePadding,
-          24,
-          ProfilePage._sidePadding,
-          28 + DashboardBottomNav.spaceOf(context),
-        ),
-        children: <Widget>[
-          const Center(child: SkeletonBox.circle(size: 96)),
-          const SizedBox(height: 18),
-          const Center(child: SkeletonBox(width: 170, height: 20)),
-          const SizedBox(height: 10),
-          const Center(child: SkeletonBox(width: 210, height: 13)),
-          const SizedBox(height: 8),
-          const Center(child: SkeletonBox(width: 150, height: 13)),
-          const SizedBox(height: 18),
-          const Center(child: SkeletonBox(width: 240, height: 44, radius: 22)),
-          const SizedBox(height: 26),
-          for (int i = 0; i < 7; i++) ...<Widget>[
-            if (i > 0) const SizedBox(height: 10),
-            Row(
-              children: <Widget>[
-                const SkeletonBox(width: 44, height: 44, radius: 12),
-                const SizedBox(width: 14),
-                SkeletonBox(width: 120 + (i % 3) * 40, height: 15),
-              ],
-            ),
-          ],
-        ],
-      ),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:mobile_barberstuff/core/utils/date_format.dart';
+
 class OauthRegisterRequestApi {
   const OauthRegisterRequestApi({
     required this.name,
@@ -17,12 +19,7 @@ class OauthRegisterRequestApi {
     'name': name,
     'temp_token': tempToken,
     'phoneNumber': phoneNumber,
-    'date_of_birth': _iso(dateOfBirth),
+    'date_of_birth': formatApiDate(dateOfBirth),
     'gender': gender,
   };
-
-  static String _iso(DateTime date) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return '${date.year}-${two(date.month)}-${two(date.day)}T00:00:00Z';
-  }
 }

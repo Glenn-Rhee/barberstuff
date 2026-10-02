@@ -6,7 +6,7 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/name_formatter.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/circle_icon_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/circle_icon_button.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({

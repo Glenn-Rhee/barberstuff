@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 import 'package:mobile_barberstuff/core/usecase/usecase.dart';
 import 'package:mobile_barberstuff/features/booking/domain/entities/booking_draft.dart';
 import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
@@ -21,8 +21,14 @@ import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.
 import 'package:mobile_barberstuff/features/store/domain/usecases/get_store_services.dart';
 import 'package:mobile_barberstuff/features/store/domain/usecases/get_stores.dart';
 
+/// Urutan langkah booking. Urutan ini juga dipakai IndexedStack di halaman.
 enum BookingStep { terms, branch, schedule, capster, service, confirm }
 
+/// State seluruh alur booking, dari setuju syarat sampai booking dibuat.
+///
+/// Isi file ini dikelompokkan per langkah, dari atas ke bawah:
+/// navigasi → syarat → cabang → jadwal → barber → kunci slot → layanan →
+/// konfirmasi.
 class BookingFlowProvider extends ChangeNotifier {
   BookingFlowProvider({
     required GetStores getStores,
@@ -78,47 +84,17 @@ class BookingFlowProvider extends ChangeNotifier {
   final LocationService? _location;
   final Duration _lockDuration;
 
-  final TextEditingController searchController = TextEditingController();
+  // ===========================================================================
+  // Navigasi antar langkah
+  // ===========================================================================
 
   BookingStep _step = BookingStep.terms;
-  bool _agreed = false;
+
+  /// true kalau cabang sudah dipilih dari detail cabang.
   bool _storeFixed = false;
-  String _query = '';
-
-  List<StoreSummary> _stores = const <StoreSummary>[];
-  UserPosition? _position;
-  bool _loadingStores = false;
-  bool _storesFromCache = false;
-  ApiException? _storesError;
-  StoreSummary? _store;
-
-  late DateTime _selectedDay;
-  StoreSlots? _storeSlots;
-  bool _loadingSlots = false;
-  ApiException? _slotsError;
-  BookingSlot? _slot;
-
-  SlotCapster? _capster;
-
-  bool _locking = false;
-  ApiException? _lockError;
-  DateTime? _lockExpiresAt;
-  Timer? _ticker;
-
-  ProductType _serviceTab = ProductType.service;
-  final Map<ProductType, List<ServiceItem>> _services =
-      <ProductType, List<ServiceItem>>{};
-  bool _loadingServices = false;
-  ApiException? _servicesError;
-  final Map<ProductType, List<ServiceItem>> _picked =
-      <ProductType, List<ServiceItem>>{};
-
-  bool _submitting = false;
-  ApiException? _submitError;
-  BookingRecord? _record;
 
   BookingStep get step => _step;
-  bool get agreed => _agreed;
+  bool get isLastStep => _step == BookingStep.confirm;
 
   /// Label "Langkah x dari y". Pilih cabang tidak ikut dihitung kalau
   /// cabangnya sudah dipilih dari detail cabang.
@@ -126,124 +102,6 @@ class BookingFlowProvider extends ChangeNotifier {
   int get stepNumber => _storeFixed && _step.index > BookingStep.branch.index
       ? _step.index - 1
       : _step.index;
-
-  List<StoreSummary> get stores => _stores;
-
-  double? distanceOf(StoreSummary store) => storeDistanceKm(store, _position);
-
-  void _sortByDistance() {
-    _stores = sortStoresByDistance(_stores, _position);
-  }
-
-  Future<void> _refreshPosition() async {
-    final LocationService? service = _location;
-    if (service == null) return;
-
-    _position ??= service.lastKnown;
-    final UserPosition? fresh = await service.current();
-    if (fresh == null) return;
-
-    _position = fresh;
-    _sortByDistance();
-    notifyListeners();
-  }
-
-  bool get loadingStores => _loadingStores;
-  bool get storesFromCache => _storesFromCache;
-  ApiException? get storesError => _storesError;
-  StoreSummary? get store => _store;
-
-  DateTime get selectedDay => _selectedDay;
-  List<BookingSlot> get slots => _storeSlots?.slots ?? const <BookingSlot>[];
-  bool get loadingSlots => _loadingSlots;
-  ApiException? get slotsError => _slotsError;
-  BookingSlot? get slot => _slot;
-
-  List<SlotCapster> get capsters => _slot?.capsters ?? const <SlotCapster>[];
-  SlotCapster? get capster => _capster;
-
-  bool get locking => _locking;
-  ApiException? get lockError => _lockError;
-  bool get hasLock => _lockExpiresAt != null;
-  Duration get lockRemaining {
-    final DateTime? until = _lockExpiresAt;
-    if (until == null) return Duration.zero;
-    final Duration left = until.difference(DateTime.now());
-    return left.isNegative ? Duration.zero : left;
-  }
-
-  ProductType get serviceTab => _serviceTab;
-  List<ServiceItem> get visibleServices =>
-      _services[_serviceTab] ?? const <ServiceItem>[];
-  bool get loadingServices => _loadingServices;
-  ApiException? get servicesError => _servicesError;
-
-  /// Semua pilihan dari tab Layanan dan tab Paket digabung. Dulu cuma tab
-  /// yang sedang aktif, jadi paket hilang dari konfirmasi kalau user
-  /// terakhir membuka tab Layanan, begitu juga sebaliknya.
-  List<ServiceItem> get selectedServices => <ServiceItem>[
-    ..._picked[ProductType.service] ?? const <ServiceItem>[],
-    ..._picked[ProductType.package] ?? const <ServiceItem>[],
-  ];
-
-  /// Pilihan di tab yang sedang dibuka saja, dipakai saat menambah/menghapus.
-  List<ServiceItem> get _pickedInTab =>
-      _picked[_serviceTab] ?? const <ServiceItem>[];
-
-  bool isServiceSelected(ServiceItem item) =>
-      selectedServices.any((ServiceItem s) => s.id == item.id);
-
-  /// Server (POST /booking) cuma menerima satu `id_service` per booking.
-  /// Pilihan dari kedua tab tetap ditampilkan supaya user sadar apa saja
-  /// yang dia pilih, tapi Lanjut ditahan kalau lebih dari satu, karena
-  /// kalau diteruskan server hanya mencatat yang pertama dan harganya
-  /// jadi tidak cocok dengan yang tampil di layar.
-  bool get exceedsServerLimit => selectedServices.length > 1;
-
-  bool get submitting => _submitting;
-  ApiException? get submitError => _submitError;
-  BookingRecord? get record => _record;
-
-  List<DateTime> get days {
-    final DateTime today = DateUtils.dateOnly(DateTime.now());
-    return List<DateTime>.generate(
-      dayCount,
-      (int i) => today.add(Duration(days: i)),
-    );
-  }
-
-  DateTime? get bookingDateTime {
-    final BookingSlot? picked = _slot;
-    if (picked == null) return null;
-
-    final List<String> parts = picked.time.split(':');
-    if (parts.length < 2) return null;
-
-    final int? hour = int.tryParse(parts[0]);
-    final int? minute = int.tryParse(parts[1]);
-    if (hour == null || minute == null) return null;
-
-    return DateTime(
-      _selectedDay.year,
-      _selectedDay.month,
-      _selectedDay.day,
-      hour,
-      minute,
-    );
-  }
-
-  bool get isSlotTooSoon {
-    final DateTime? at = bookingDateTime;
-    if (at == null) return false;
-    return at.isBefore(
-      DateTime.now().add(const Duration(minutes: minimumLeadMinutes)),
-    );
-  }
-
-  double get subTotal => selectedServices.fold<double>(
-    0,
-    (double sum, ServiceItem s) => sum + s.price,
-  );
 
   bool get canContinue {
     switch (_step) {
@@ -262,7 +120,82 @@ class BookingFlowProvider extends ChangeNotifier {
     }
   }
 
-  bool get isLastStep => _step == BookingStep.confirm;
+  Future<void> next() async {
+    if (!canContinue || isLastStep) return;
+
+    switch (_step) {
+      case BookingStep.terms when _storeFixed:
+        _step = BookingStep.schedule;
+        notifyListeners();
+        await loadSlots();
+      case BookingStep.terms:
+        _step = BookingStep.branch;
+        notifyListeners();
+        await loadStores();
+      case BookingStep.branch:
+        _step = BookingStep.schedule;
+        notifyListeners();
+        await loadSlots();
+      case BookingStep.schedule:
+        _step = BookingStep.capster;
+        notifyListeners();
+      case BookingStep.capster:
+        await lockAndContinue();
+      case BookingStep.service:
+        _step = BookingStep.confirm;
+        notifyListeners();
+      case BookingStep.confirm:
+        return;
+    }
+  }
+
+  /// Dialog "batalkan booking?" cuma perlu muncul saat mundur dari langkah
+  /// pilih layanan, karena mundur dari situ berarti melepas slot barber.
+  /// Dari langkah konfirmasi, mundur cukup kembali ke pilih layanan dan
+  /// kuncinya tetap dipegang, jadi tidak perlu ditanya.
+  bool get needsCancelConfirm => hasLock && _step == BookingStep.service;
+
+  /// Mundur satu langkah. false kalau sudah di langkah pertama, artinya
+  /// halaman booking boleh ditutup.
+  bool back() {
+    switch (_step) {
+      case BookingStep.terms:
+        return false;
+
+      case BookingStep.confirm:
+        // Masih dalam masa kunci, pilihan layanan tetap dipertahankan.
+        _step = BookingStep.service;
+
+      case BookingStep.service:
+        // Kunci di server sudah dilepas lewat releaseLock() oleh halaman.
+        // Barber sengaja tetap terpilih, jadi tombol Lanjut langsung aktif
+        // dan menekan Lanjut akan mengunci ulang slot yang sama.
+        _stopCountdown();
+        _picked.clear();
+        _services.clear();
+        _serviceTab = ProductType.service;
+        _step = BookingStep.capster;
+
+      case BookingStep.schedule when _storeFixed:
+        _step = BookingStep.terms;
+
+      case BookingStep.branch:
+      case BookingStep.schedule:
+      case BookingStep.capster:
+        _step = BookingStep.values[_step.index - 1];
+    }
+
+    notifyListeners();
+    return true;
+  }
+
+  // ===========================================================================
+  // Langkah 1 — Syarat & ketentuan
+  // ===========================================================================
+
+  bool _agreed = false;
+
+  bool get agreed => _agreed;
 
   void setAgreed(bool value) {
     if (_agreed == value) return;
@@ -270,6 +203,28 @@ class BookingFlowProvider extends ChangeNotifier {
     notifyListeners();
     _saveTerms(value);
   }
+
+  // ===========================================================================
+  // Langkah 2 — Pilih cabang
+  // ===========================================================================
+
+  final TextEditingController searchController = TextEditingController();
+  String _query = '';
+
+  List<StoreSummary> _stores = const <StoreSummary>[];
+  UserPosition? _position;
+  bool _loadingStores = false;
+  bool _storesFromCache = false;
+  ApiException? _storesError;
+  StoreSummary? _store;
+
+  List<StoreSummary> get stores => _stores;
+  bool get loadingStores => _loadingStores;
+  bool get storesFromCache => _storesFromCache;
+  ApiException? get storesError => _storesError;
+  StoreSummary? get store => _store;
+
+  double? distanceOf(StoreSummary store) => storeDistanceKm(store, _position);
 
   Future<void> loadStores() async {
     _loadingStores = true;
@@ -303,6 +258,85 @@ class BookingFlowProvider extends ChangeNotifier {
     _picked.clear();
     _services.clear();
     notifyListeners();
+  }
+
+  void _sortByDistance() {
+    _stores = sortStoresByDistance(_stores, _position);
+  }
+
+  Future<void> _refreshPosition() async {
+    final LocationService? service = _location;
+    if (service == null) return;
+
+    _position ??= service.lastKnown;
+    final UserPosition? fresh = await service.current();
+    if (fresh == null) return;
+
+    _position = fresh;
+    _sortByDistance();
+    notifyListeners();
+  }
+
+  void _onSearchChanged() {
+    final String next = searchController.text.trim();
+    if (_query == next) return;
+    _query = next;
+    notifyListeners();
+  }
+
+  // ===========================================================================
+  // Langkah 3 — Pilih jadwal (hari + jam)
+  // ===========================================================================
+
+  late DateTime _selectedDay;
+  StoreSlots? _storeSlots;
+  bool _loadingSlots = false;
+  ApiException? _slotsError;
+  BookingSlot? _slot;
+
+  DateTime get selectedDay => _selectedDay;
+  List<BookingSlot> get slots => _storeSlots?.slots ?? const <BookingSlot>[];
+  bool get loadingSlots => _loadingSlots;
+  ApiException? get slotsError => _slotsError;
+  BookingSlot? get slot => _slot;
+
+  /// Hari yang bisa dipilih: hari ini sampai [dayCount] hari ke depan.
+  List<DateTime> get days {
+    final DateTime today = DateUtils.dateOnly(DateTime.now());
+    return List<DateTime>.generate(
+      dayCount,
+      (int i) => today.add(Duration(days: i)),
+    );
+  }
+
+  /// Hari terpilih + jam slot ("HH:mm"). null kalau slot belum dipilih.
+  DateTime? get bookingDateTime {
+    final BookingSlot? picked = _slot;
+    if (picked == null) return null;
+
+    final List<String> parts = picked.time.split(':');
+    if (parts.length < 2) return null;
+
+    final int? hour = int.tryParse(parts[0]);
+    final int? minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return null;
+
+    return DateTime(
+      _selectedDay.year,
+      _selectedDay.month,
+      _selectedDay.day,
+      hour,
+      minute,
+    );
+  }
+
+  /// Slot kurang dari [minimumLeadMinutes] menit lagi tidak boleh dipesan.
+  bool get isSlotTooSoon {
+    final DateTime? at = bookingDateTime;
+    if (at == null) return false;
+    return at.isBefore(
+      DateTime.now().add(const Duration(minutes: minimumLeadMinutes)),
+    );
   }
 
   Future<void> selectDay(DateTime day) async {
@@ -341,35 +375,54 @@ class BookingFlowProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ===========================================================================
+  // Langkah 4 — Pilih barber
+  // ===========================================================================
+
+  SlotCapster? _capster;
+
+  List<SlotCapster> get capsters => _slot?.capsters ?? const <SlotCapster>[];
+  SlotCapster? get capster => _capster;
+
   void selectCapster(SlotCapster value) {
     if (!value.available) return;
     _capster = value;
     notifyListeners();
   }
 
-  Future<bool> lockAndContinue() async {
-    final StoreSummary? pickedStore = _store;
-    final SlotCapster? pickedCapster = _capster;
-    final DateTime? at = bookingDateTime;
+  // ===========================================================================
+  // Kunci slot — dipegang sejak barber dipilih sampai booking dibuat
+  // ===========================================================================
 
-    if (pickedStore == null || pickedCapster == null || at == null) {
-      return false;
-    }
+  bool _locking = false;
+  ApiException? _lockError;
+  DateTime? _lockExpiresAt;
+  Timer? _ticker;
+
+  bool get locking => _locking;
+  ApiException? get lockError => _lockError;
+  bool get hasLock => _lockExpiresAt != null;
+
+  Duration get lockRemaining {
+    final DateTime? until = _lockExpiresAt;
+    if (until == null) return Duration.zero;
+    final Duration left = until.difference(DateTime.now());
+    return left.isNegative ? Duration.zero : left;
+  }
+
+  /// Kunci slot di server lalu lanjut ke pilih layanan.
+  Future<bool> lockAndContinue() async {
+    final BookingSlotParams? params = _currentSlotParams();
+    if (params == null) return false;
 
     _locking = true;
     _lockError = null;
     notifyListeners();
 
     try {
-      await _lockSlot(
-        BookingSlotParams(
-          storeId: pickedStore.id,
-          capsterId: pickedCapster.id,
-          bookingDate: at,
-        ),
-      );
+      await _lockSlot(params);
 
-      _startCountdown();
+      _startCountdown(DateTime.now().add(_lockDuration));
       _persistLock();
       _step = BookingStep.service;
       notifyListeners();
@@ -384,9 +437,46 @@ class BookingFlowProvider extends ChangeNotifier {
     }
   }
 
-  void _startCountdown() {
+  /// Melepas kunci slot di server. Mengembalikan false kalau server
+  /// menolak; kunci server tetap habis sendiri setelah masa kuncinya lewat.
+  Future<bool> releaseLock() async {
+    final BookingSlotParams? params = _currentSlotParams();
+
+    _stopCountdown();
+    notifyListeners();
+
+    if (params == null) return true;
+
+    try {
+      await _releaseSlot(params);
+      return true;
+    } on ApiException catch (_) {
+      return false;
+    }
+  }
+
+  /// Cabang + barber + jam yang sedang dipilih, dalam bentuk yang dikirim
+  /// ke server. null kalau salah satunya belum dipilih.
+  BookingSlotParams? _currentSlotParams() {
+    final StoreSummary? pickedStore = _store;
+    final SlotCapster? pickedCapster = _capster;
+    final DateTime? at = bookingDateTime;
+
+    if (pickedStore == null || pickedCapster == null || at == null) {
+      return null;
+    }
+
+    return BookingSlotParams(
+      storeId: pickedStore.id,
+      capsterId: pickedCapster.id,
+      bookingDate: at,
+    );
+  }
+
+  /// Hitung mundur sampai [until]; setiap detik layar diperbarui.
+  void _startCountdown(DateTime until) {
     _ticker?.cancel();
-    _lockExpiresAt = DateTime.now().add(_lockDuration);
+    _lockExpiresAt = until;
     _ticker = Timer.periodic(const Duration(seconds: 1), (Timer _) {
       if (lockRemaining == Duration.zero) {
         _onLockExpired();
@@ -403,6 +493,8 @@ class BookingFlowProvider extends ChangeNotifier {
     _saveLock(null);
   }
 
+  /// Simpan kunci di perangkat supaya bisa dilanjutkan kalau aplikasi
+  /// ditutup di tengah jalan.
   void _persistLock() {
     final StoreSummary? pickedStore = _store;
     final SlotCapster? pickedCapster = _capster;
@@ -438,20 +530,15 @@ class BookingFlowProvider extends ChangeNotifier {
       capsters: <SlotCapster>[lock.capster],
     );
 
-    _lockExpiresAt = lock.expiresAt;
-    _ticker = Timer.periodic(const Duration(seconds: 1), (Timer _) {
-      if (lockRemaining == Duration.zero) {
-        _onLockExpired();
-        return;
-      }
-      notifyListeners();
-    });
+    _startCountdown(lock.expiresAt);
 
     _agreed = true;
     _step = BookingStep.service;
     loadServices();
   }
 
+  /// Waktu kunci habis: pilihan barber dan layanan dibuang, kembali ke
+  /// pilih jadwal dengan daftar slot terbaru.
   void _onLockExpired() {
     _stopCountdown();
     _picked.clear();
@@ -463,33 +550,50 @@ class BookingFlowProvider extends ChangeNotifier {
     loadSlots();
   }
 
-  /// Melepas kunci slot di server. Mengembalikan false kalau server
-  /// menolak; kunci server tetap habis sendiri setelah masa kuncinya lewat.
-  Future<bool> releaseLock() async {
-    final StoreSummary? pickedStore = _store;
-    final SlotCapster? pickedCapster = _capster;
-    final DateTime? at = bookingDateTime;
+  // ===========================================================================
+  // Langkah 5 — Pilih layanan / paket
+  // ===========================================================================
 
-    _stopCountdown();
-    notifyListeners();
+  ProductType _serviceTab = ProductType.service;
+  final Map<ProductType, List<ServiceItem>> _services =
+      <ProductType, List<ServiceItem>>{};
+  bool _loadingServices = false;
+  ApiException? _servicesError;
+  final Map<ProductType, List<ServiceItem>> _picked =
+      <ProductType, List<ServiceItem>>{};
 
-    if (pickedStore == null || pickedCapster == null || at == null) {
-      return true;
-    }
+  ProductType get serviceTab => _serviceTab;
+  List<ServiceItem> get visibleServices =>
+      _services[_serviceTab] ?? const <ServiceItem>[];
+  bool get loadingServices => _loadingServices;
+  ApiException? get servicesError => _servicesError;
 
-    try {
-      await _releaseSlot(
-        BookingSlotParams(
-          storeId: pickedStore.id,
-          capsterId: pickedCapster.id,
-          bookingDate: at,
-        ),
-      );
-      return true;
-    } on ApiException catch (_) {
-      return false;
-    }
-  }
+  /// Semua pilihan dari tab Layanan dan tab Paket digabung. Dulu cuma tab
+  /// yang sedang aktif, jadi paket hilang dari konfirmasi kalau user
+  /// terakhir membuka tab Layanan, begitu juga sebaliknya.
+  List<ServiceItem> get selectedServices => <ServiceItem>[
+    ..._picked[ProductType.service] ?? const <ServiceItem>[],
+    ..._picked[ProductType.package] ?? const <ServiceItem>[],
+  ];
+
+  /// Pilihan di tab yang sedang dibuka saja, dipakai saat menambah/menghapus.
+  List<ServiceItem> get _pickedInTab =>
+      _picked[_serviceTab] ?? const <ServiceItem>[];
+
+  bool isServiceSelected(ServiceItem item) =>
+      selectedServices.any((ServiceItem s) => s.id == item.id);
+
+  /// Server (POST /booking) cuma menerima satu `id_service` per booking.
+  /// Pilihan dari kedua tab tetap ditampilkan supaya user sadar apa saja
+  /// yang dia pilih, tapi Lanjut ditahan kalau lebih dari satu, karena
+  /// kalau diteruskan server hanya mencatat yang pertama dan harganya
+  /// jadi tidak cocok dengan yang tampil di layar.
+  bool get exceedsServerLimit => selectedServices.length > 1;
+
+  double get subTotal => selectedServices.fold<double>(
+    0,
+    (double sum, ServiceItem s) => sum + s.price,
+  );
 
   void setServiceTab(ProductType value) {
     if (_serviceTab == value) return;
@@ -539,6 +643,18 @@ class BookingFlowProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ===========================================================================
+  // Langkah 6 — Konfirmasi & buat booking
+  // ===========================================================================
+
+  bool _submitting = false;
+  ApiException? _submitError;
+  BookingRecord? _record;
+
+  bool get submitting => _submitting;
+  ApiException? get submitError => _submitError;
+  BookingRecord? get record => _record;
+
   Future<bool> submit() async {
     final StoreSummary? pickedStore = _store;
     final SlotCapster? pickedCapster = _capster;
@@ -575,80 +691,6 @@ class BookingFlowProvider extends ChangeNotifier {
       _submitting = false;
       notifyListeners();
     }
-  }
-
-  Future<void> next() async {
-    if (!canContinue || isLastStep) return;
-
-    switch (_step) {
-      case BookingStep.terms when _storeFixed:
-        _step = BookingStep.schedule;
-        notifyListeners();
-        await loadSlots();
-      case BookingStep.terms:
-        _step = BookingStep.branch;
-        notifyListeners();
-        await loadStores();
-      case BookingStep.branch:
-        _step = BookingStep.schedule;
-        notifyListeners();
-        await loadSlots();
-      case BookingStep.schedule:
-        _step = BookingStep.capster;
-        notifyListeners();
-      case BookingStep.capster:
-        await lockAndContinue();
-      case BookingStep.service:
-        _step = BookingStep.confirm;
-        notifyListeners();
-      case BookingStep.confirm:
-        return;
-    }
-  }
-
-  /// Dialog "batalkan booking?" cuma perlu muncul saat mundur dari langkah
-  /// pilih layanan, karena mundur dari situ berarti melepas slot barber.
-  /// Dari langkah konfirmasi, mundur cukup kembali ke pilih layanan dan
-  /// kuncinya tetap dipegang, jadi tidak perlu ditanya.
-  bool get needsCancelConfirm => hasLock && _step == BookingStep.service;
-
-  bool back() {
-    switch (_step) {
-      case BookingStep.terms:
-        return false;
-
-      case BookingStep.confirm:
-        // Masih dalam masa kunci, pilihan layanan tetap dipertahankan.
-        _step = BookingStep.service;
-
-      case BookingStep.service:
-        // Kunci di server sudah dilepas lewat releaseLock() oleh halaman.
-        // Barber sengaja tetap terpilih, jadi tombol Lanjut langsung aktif
-        // dan menekan Lanjut akan mengunci ulang slot yang sama.
-        _stopCountdown();
-        _picked.clear();
-        _services.clear();
-        _serviceTab = ProductType.service;
-        _step = BookingStep.capster;
-
-      case BookingStep.schedule when _storeFixed:
-        _step = BookingStep.terms;
-
-      case BookingStep.branch:
-      case BookingStep.schedule:
-      case BookingStep.capster:
-        _step = BookingStep.values[_step.index - 1];
-    }
-
-    notifyListeners();
-    return true;
-  }
-
-  void _onSearchChanged() {
-    final String next = searchController.text.trim();
-    if (_query == next) return;
-    _query = next;
-    notifyListeners();
   }
 
   @override

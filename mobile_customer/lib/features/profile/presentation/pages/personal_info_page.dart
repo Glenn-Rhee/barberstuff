@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/network/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/services/image_upload_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
@@ -12,10 +12,11 @@ import 'package:mobile_barberstuff/features/profile/presentation/provider/person
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/labeled_field.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
-import 'package:mobile_barberstuff/shared/widgets/avatar_picker.dart';
-import 'package:mobile_barberstuff/shared/widgets/avatar_source_sheet.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/avatar/avatar_picker.dart';
+import 'package:mobile_barberstuff/shared/widgets/avatar/avatar_source_sheet.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/app_toast.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/app_back_bar.dart';
 import 'package:provider/provider.dart';
 
 class PersonalInfoArgs {
@@ -81,17 +82,9 @@ class _PersonalInfoView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColor.surface,
-      appBar: AppBar(
-        backgroundColor: AppColor.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: const BackButton(color: AppColor.ink),
-        title: Text(
-          l10n.personalInfoTitle,
-          style: AppTextStyle.headlineSmall.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+      appBar: AppBackBar(
+        title: l10n.personalInfoTitle,
+        useMaterialBackIcon: true,
       ),
       body: SafeArea(
         child: Form(

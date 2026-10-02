@@ -13,8 +13,14 @@ class PriceFormat {
 }
 
 /// Rupiah tanpa spasi dan tanpa ",-", misalnya Rp120.000.
-String formatRupiah(num value) {
-  final String digits = value.round().toString();
+String formatRupiah(num value) =>
+    'Rp${_groupThousands(value.round().toString())}';
+
+/// Poin member dengan titik ribuan, misalnya 12.500. Tanda minus dibuang.
+String formatPoints(int value) => _groupThousands(value.abs().toString());
+
+/// Sisipkan titik tiap tiga digit dari kanan: "1234567" → "1.234.567".
+String _groupThousands(String digits) {
   final StringBuffer out = StringBuffer();
 
   for (int i = 0; i < digits.length; i++) {
@@ -22,5 +28,5 @@ String formatRupiah(num value) {
     out.write(digits[i]);
   }
 
-  return 'Rp$out';
+  return out.toString();
 }

@@ -1,4 +1,4 @@
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 
 abstract interface class ProfileRepository {

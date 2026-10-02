@@ -14,7 +14,7 @@ import 'package:mobile_barberstuff/features/profile/presentation/pages/profile_p
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/store/domain/usecases/get_stores.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
-import 'package:mobile_barberstuff/shared/widgets/dashboard_bottom_nav.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/dashboard_bottom_nav.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 

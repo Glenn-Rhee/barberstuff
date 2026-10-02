@@ -4,7 +4,7 @@ import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/history/domain/entities/booking_history.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
 
 Future<ReviewDraft?> showReviewSheet(
   BuildContext context, {

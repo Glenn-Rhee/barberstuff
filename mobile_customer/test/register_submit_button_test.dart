@@ -6,7 +6,7 @@ import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_da
 import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:mobile_barberstuff/features/auth/domain/usecases/register_account.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/register_provider.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
 
 Color? _buttonColor(WidgetTester tester) {
   final AnimatedContainer container = tester.widget<AnimatedContainer>(

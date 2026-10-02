@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
 import 'package:mobile_barberstuff/core/services/google_auth_service.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_theme.dart';
 import 'package:mobile_barberstuff/features/auth/auth_injection.dart';
 import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_datasource.dart';
@@ -10,7 +10,7 @@ import 'package:mobile_barberstuff/features/auth/data/repositories/auth_reposito
 import 'package:mobile_barberstuff/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/choose_login_page.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 

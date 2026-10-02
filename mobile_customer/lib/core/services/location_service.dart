@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 
 class UserPosition {
   const UserPosition({required this.latitude, required this.longitude});

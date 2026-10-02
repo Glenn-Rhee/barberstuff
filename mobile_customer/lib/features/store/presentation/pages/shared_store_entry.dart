@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/deeplink/store_link.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:provider/provider.dart';

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
 import 'package:mobile_barberstuff/features/booking/presentation/widgets/booking_summary_cards.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/app_back_bar.dart';
 
 /// Rincian satu booking dari riwayat, tampil sama dengan langkah konfirmasi.
 class BookingDetailPage extends StatelessWidget {
@@ -30,28 +30,7 @@ class BookingDetailPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColor.surface,
-      appBar: AppBar(
-        backgroundColor: AppColor.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).maybePop(),
-          icon: Image.asset(
-            AppAssets.backArrowIcon,
-            width: 20,
-            height: 16,
-            fit: BoxFit.contain,
-            color: AppColor.ink,
-            filterQuality: FilterQuality.medium,
-          ),
-        ),
-        title: Text(
-          l10n.bookingDetailTitle,
-          style: AppTextStyle.headlineSmall.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      appBar: AppBackBar(title: l10n.bookingDetailTitle),
       body: SafeArea(
         child: Column(
           children: <Widget>[

@@ -1,5 +1,5 @@
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
-import 'package:mobile_barberstuff/core/services/dio_client.dart';
+import 'package:mobile_barberstuff/core/network/dio_client.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
 import 'package:mobile_barberstuff/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository_impl.dart';

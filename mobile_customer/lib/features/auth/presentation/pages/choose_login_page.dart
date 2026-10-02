@@ -4,11 +4,11 @@ import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/widgets/google_sign_in_scope.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_text_link.dart';
-import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/divider_or.dart';
-import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
+import 'package:mobile_barberstuff/shared/widgets/branding/barber_pattern_background.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/app_text_link.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/loading_overlay.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/divider_or.dart';
 
 class ChooseLoginPage extends StatelessWidget {
   const ChooseLoginPage({super.key});

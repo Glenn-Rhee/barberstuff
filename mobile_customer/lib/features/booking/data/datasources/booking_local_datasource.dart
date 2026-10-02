@@ -1,4 +1,4 @@
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 import 'package:mobile_barberstuff/features/booking/data/models/booking_record_model.dart';
 import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
 
