@@ -1,28 +1,46 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/data/catalog_api.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 
-// Layanan, paket, dan capster toko langsung dari API.
-// Cari dan halaman diproses di server (GET /service)
+// Filter katalog di halaman Kasir
+enum CatalogFilter {
+  all('Semua'),
+  service('Service'),
+  package('Paket');
+
+  const CatalogFilter(this.label);
+
+  final String label;
+
+  bool accepts(ServiceItem item) => switch (this) {
+    all => true,
+    service => item.type == ServiceType.service,
+    package => item.type == ServiceType.package,
+  };
+}
+
+// Layanan, paket, dan capster toko. Semua layanan dimuat sekali
+// (GET /service wajib pilih type, jadi service & paket diambil terpisah),
+// lalu filter, cari, dan halaman diproses di tablet
 class CatalogController extends ChangeNotifier {
   CatalogController(this._api);
 
   static const pageSize = 8;
 
+  // Batas limit backend, maks 4 halaman per type
+  static const _apiLimit = 50;
+  static const _maxPages = 4;
+
   final CatalogApi _api;
 
   String storeId = '';
-  ServiceType type = ServiceType.service;
+  List<ServiceItem> all = const [];
+  CatalogFilter filter = CatalogFilter.all;
   String query = '';
   int page = 1;
-  int totalPages = 1;
-  int totalData = 0;
 
-  List<ServiceItem> services = const [];
   List<Capster> capsters = const [];
 
   bool loading = false;
@@ -30,15 +48,36 @@ class CatalogController extends ChangeNotifier {
   String? error;
   String? capsterError;
 
-  Timer? _debounce;
-
   List<Capster> get activeCapsters => [
     for (final capster in capsters)
       if (capster.active) capster,
   ];
 
+  // Hasil filter + cari, semua halaman
+  List<ServiceItem> get filtered {
+    final keyword = query.trim().toLowerCase();
+    return [
+      for (final item in all)
+        if (filter.accepts(item) &&
+            (keyword.isEmpty || item.name.toLowerCase().contains(keyword)))
+          item,
+    ];
+  }
+
+  int get totalPages {
+    final count = filtered.length;
+    return count == 0 ? 1 : (count / pageSize).ceil();
+  }
+
+  // Isi halaman yang sedang dibuka
+  List<ServiceItem> get services =>
+      filtered.skip((page - 1) * pageSize).take(pageSize).toList();
+
+  ServiceItem? byId(String id) => all.where((s) => s.id == id).firstOrNull;
+
   Future<void> load(String storeId) async {
     this.storeId = storeId;
+    page = 1;
     await Future.wait([refresh(), loadCapsters()]);
   }
 
@@ -48,23 +87,33 @@ class CatalogController extends ChangeNotifier {
     error = null;
     notifyListeners();
     try {
-      final result = await _api.services(
-        storeId: storeId,
-        type: type,
-        name: query.trim().isEmpty ? null : query.trim(),
-        page: page,
-        limit: pageSize,
-      );
-      services = result.items;
-      totalPages = result.totalPages == 0 ? 1 : result.totalPages;
-      totalData = result.totalData;
+      final results = await Future.wait([
+        for (final type in ServiceType.values) _loadType(type),
+      ]);
+      all = [for (final items in results) ...items];
+      page = page.clamp(1, totalPages);
     } on ApiException catch (e) {
       error = e.message;
-      services = const [];
+      all = const [];
     } finally {
       loading = false;
       notifyListeners();
     }
+  }
+
+  Future<List<ServiceItem>> _loadType(ServiceType type) async {
+    final items = <ServiceItem>[];
+    for (var page = 1; page <= _maxPages; page++) {
+      final result = await _api.services(
+        storeId: storeId,
+        type: type,
+        page: page,
+        limit: _apiLimit,
+      );
+      items.addAll(result.items);
+      if (result.items.length < _apiLimit) break;
+    }
+    return items;
   }
 
   Future<void> loadCapsters() async {
@@ -83,30 +132,20 @@ class CatalogController extends ChangeNotifier {
     }
   }
 
-  void setType(ServiceType value) {
-    if (type == value) return;
-    type = value;
+  void setFilter(CatalogFilter value) {
+    filter = value;
     page = 1;
-    refresh();
+    notifyListeners();
   }
 
-  // Request ke API setelah kasir berhenti mengetik
   void setQuery(String value) {
     query = value;
     page = 1;
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 350), refresh);
     notifyListeners();
   }
 
   void setPage(int value) {
     page = value.clamp(1, totalPages);
-    refresh();
-  }
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    super.dispose();
+    notifyListeners();
   }
 }

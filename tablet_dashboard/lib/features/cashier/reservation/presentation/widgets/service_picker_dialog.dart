@@ -1,30 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/presentation/widgets/service_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/dialog_cancel_button.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 
-// Pilih layanan dari katalog toko untuk ditambah ke booking
-Future<ServiceItem?> showServicePicker(BuildContext context) {
+// Pilih layanan dari katalog untuk ditambah ke booking.
+// [excludeIds] = layanan yang sudah ada, [onlyServices] = paket disembunyikan
+Future<ServiceItem?> showServicePicker(
+  BuildContext context, {
+  Set<String> excludeIds = const {},
+  bool onlyServices = false,
+}) {
   return showDialog<ServiceItem>(
     context: context,
-    builder: (_) => const _ServicePickerDialog(),
+    builder: (_) => _ServicePickerDialog(
+      excludeIds: excludeIds,
+      onlyServices: onlyServices,
+    ),
   );
 }
 
-class _ServicePickerDialog extends StatelessWidget {
-  const _ServicePickerDialog();
+class _ServicePickerDialog extends StatefulWidget {
+  const _ServicePickerDialog({
+    required this.excludeIds,
+    required this.onlyServices,
+  });
+
+  final Set<String> excludeIds;
+  final bool onlyServices;
+
+  @override
+  State<_ServicePickerDialog> createState() => _ServicePickerDialogState();
+}
+
+class _ServicePickerDialogState extends State<_ServicePickerDialog> {
+  String _query = '';
+  late CatalogFilter _filter = widget.onlyServices
+      ? CatalogFilter.service
+      : CatalogFilter.all;
 
   @override
   Widget build(BuildContext context) {
     final catalog = context.watch<CatalogController>();
+    final keyword = _query.trim().toLowerCase();
+    final items = [
+      for (final item in catalog.all)
+        if (_filter.accepts(item) &&
+            !widget.excludeIds.contains(item.id) &&
+            (keyword.isEmpty || item.name.toLowerCase().contains(keyword)))
+          item,
+    ];
+    final filters = widget.onlyServices
+        ? const [CatalogFilter.service]
+        : CatalogFilter.values;
 
     return AlertDialog(
       title: const Text('Tambah Layanan / Paket', style: AppTextStyle.title),
@@ -32,27 +67,35 @@ class _ServicePickerDialog extends StatelessWidget {
         width: 520,
         height: 440,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppSearchField(
               hint: 'Cari service atau paket...',
-              initialValue: catalog.query,
-              onChanged: catalog.setQuery,
+              onChanged: (value) => setState(() => _query = value),
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                for (final type in ServiceType.values)
+                for (final filter in filters)
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
-                      label: Text(type.label, style: AppTextStyle.label),
-                      selected: catalog.type == type,
+                      label: Text(filter.label, style: AppTextStyle.label),
+                      selected: _filter == filter,
                       showCheckmark: false,
-                      onSelected: (_) => catalog.setType(type),
+                      onSelected: (_) => setState(() => _filter = filter),
                     ),
                   ),
               ],
             ),
+            if (widget.onlyServices)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  'Booking ini berisi service, paket tidak bisa digabung.',
+                  style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
+                ),
+              ),
             const SizedBox(height: 8),
             Expanded(
               child: switch ((catalog.loading, catalog.error)) {
@@ -62,40 +105,32 @@ class _ServicePickerDialog extends StatelessWidget {
                   title: 'Gagal memuat layanan',
                   message: error,
                 ),
-                _ when catalog.services.isEmpty => const EmptyState(
+                _ when items.isEmpty => const EmptyState(
                   icon: Icons.search_off,
-                  title: 'Tidak ada hasil',
-                  message: 'Coba kata kunci lain.',
+                  title: 'Tidak ada layanan',
+                  message: 'Semua layanan sudah ada di booking, atau coba kata lain.',
                 ),
                 _ => ListView.separated(
-                  itemCount: catalog.services.length,
+                  itemCount: items.length,
                   separatorBuilder: (_, _) => const Divider(),
                   itemBuilder: (_, index) {
-                    final item = catalog.services[index];
+                    final item = items[index];
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(horizontal: 4),
                       leading: CircleAvatar(
                         backgroundColor: AppColor.surfaceMuted,
-                        child: item.type == ServiceType.package
-                            ? Icon(
-                                Icons.workspace_premium_outlined,
-                                size: 18,
-                                color: AppColor.ink,
-                              )
-                            : AppIcon(
-                                AppAsset.scissorsIcon,
-                                size: 18,
-                                color: AppColor.ink,
-                              ),
+                        child: AppIcon(
+                          ServiceIcon.of(item),
+                          size: 18,
+                          color: AppColor.ink,
+                        ),
                       ),
                       title: Text(item.name, style: AppTextStyle.bodyBold),
-                      subtitle: item.description == null
-                          ? null
-                          : Text(
-                              item.description!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                      subtitle: Text(
+                        item.description ?? item.type.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       trailing: Text(
                         PriceFormat.full(item.price),
                         style: AppTextStyle.bodyBold.copyWith(
@@ -108,14 +143,6 @@ class _ServicePickerDialog extends StatelessWidget {
                 ),
               },
             ),
-            if (catalog.totalPages > 1)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  'Halaman ${catalog.page} dari ${catalog.totalPages}',
-                  style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
-                ),
-              ),
           ],
         ),
       ),
