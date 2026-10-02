@@ -1,9 +1,17 @@
-class ApiResult {
-  const ApiResult({required this.data, this.meta, this.message});
+class ApiResponse {
+  const ApiResponse({
+    required this.data,
+    this.message,
+    this.meta,
+    this.status,
+    this.statusCode,
+  });
 
   final String? message;
   final Map<dynamic, dynamic>? meta;
   final Object? data;
+  final String? status;
+  final int? statusCode;
 
   List<Map<String, dynamic>> get list => [
     for (final item in (data as List? ?? const []))
