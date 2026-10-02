@@ -27,6 +27,10 @@ class AppColor {
   static const Color info = Color(0xFF3B7BF0);
   static const Color infoSoft = Color(0xFFEAF1FE);
 
+  // Oranye
+  static const Color warning = Color(0xFFD97706);
+  static const Color warningSoft = Color(0xFFFEF3C7);
+
   // Ungu
   static const Color purple = Color(0xFF9B51E0);
   static const Color purpleSoft = Color(0xFFF6ECFD);

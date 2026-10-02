@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 
 // Dropdown capster aktif untuk pesanan langsung
@@ -41,11 +43,7 @@ class CapsterSelector extends StatelessWidget {
                 Text(capster.name, style: AppTextStyle.body),
                 if (capster.rating > 0) ...[
                   const SizedBox(width: 12),
-                  const Icon(
-                    Icons.star_rounded,
-                    size: 14,
-                    color: AppColor.gold,
-                  ),
+                  const AppIcon(AppAsset.starIcon, size: 14, tint: false),
                   Text(
                     capster.rating.toStringAsFixed(1),
                     style: AppTextStyle.caption.copyWith(
@@ -69,8 +67,8 @@ class CapsterSelector extends StatelessWidget {
               const CircleAvatar(
                 radius: 18,
                 backgroundColor: AppColor.surfaceMuted,
-                child: Icon(
-                  Icons.content_cut,
+                child: AppIcon(
+                  AppAsset.scissorsIcon,
                   size: 16,
                   color: AppColor.inkFaint,
                 ),
@@ -95,10 +93,10 @@ class CapsterSelector extends StatelessWidget {
                         if (value.rating > 0)
                           Row(
                             children: [
-                              const Icon(
-                                Icons.star_rounded,
+                              const AppIcon(
+                                AppAsset.starIcon,
                                 size: 14,
-                                color: AppColor.gold,
+                                tint: false,
                               ),
                               const SizedBox(width: 2),
                               Text(

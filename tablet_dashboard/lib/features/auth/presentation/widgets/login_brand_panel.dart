@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
 // Panel hitam di kiri layar login dengan logo Barberstuff
 class LoginBrandPanel extends StatelessWidget {
   const LoginBrandPanel({super.key});
 
   static const _points = [
-    (Icons.point_of_sale_outlined, 'Pesanan langsung & dari reservasi'),
-    (Icons.print_outlined, 'Struk otomatis ke printer 58mm'),
-    (Icons.insights_outlined, 'Rekap kas & shift harian'),
+    (AppIcon(AppAsset.cartIcon), 'Pesanan langsung & dari reservasi'),
+    (Icon(Icons.print_outlined), 'Struk otomatis ke printer 58mm'),
+    (AppIcon(AppAsset.graphicIcon), 'Rekap kas & shift harian'),
   ];
 
   @override
@@ -64,7 +65,10 @@ class LoginBrandPanel extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
                   children: [
-                    Icon(icon, size: 18, color: AppColor.gold),
+                    IconTheme(
+                      data: const IconThemeData(color: AppColor.gold, size: 18),
+                      child: icon,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(

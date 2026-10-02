@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
 // Kolom cari dengan ikon kaca pembesar, tinggi 44
 class AppSearchField extends StatelessWidget {
@@ -26,7 +28,10 @@ class AppSearchField extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hint,
           fillColor: AppColor.surface,
-          prefixIcon: const Icon(Icons.search, color: AppColor.inkSoft),
+          prefixIcon: const Padding(
+            padding: EdgeInsets.all(12),
+            child: AppIcon(AppAsset.searchIcon, color: AppColor.inkSoft),
+          ),
         ),
       ),
     );
