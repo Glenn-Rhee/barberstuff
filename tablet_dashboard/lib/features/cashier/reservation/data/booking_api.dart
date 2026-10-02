@@ -23,10 +23,10 @@ class BookingApi {
         'limit': limit,
       },
     );
-    return Paged(
-      items: [for (final json in res.list) Booking.fromJson(json)],
-      totalPages: res.totalPages,
-      totalData: res.totalData,
+    return Paged.fromPage(
+      [for (final json in res.list) Booking.fromJson(json)],
+      page: page,
+      limit: limit,
     );
   }
 
