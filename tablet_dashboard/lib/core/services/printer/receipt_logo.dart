@@ -1,13 +1,14 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/services/printer/esc_pos.dart';
 
 // Logo Barberstuff diubah jadi bitmap 1-bit untuk kepala struk
 class ReceiptLogo {
   const ReceiptLogo._();
 
-  static const asset = 'assets/images/receipt_logo.png';
+  static const asset = AppAsset.logoWordmark;
 
   // Lebar cetak dalam titik (maks 384), kelipatan 8
   static const printWidth = 320;

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tablet_dashboard/app/shell/navigation_controller.dart';
-import 'package:tablet_dashboard/app/shell/widgets/app_sidebar.dart';
+import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/app_sidebar.dart';
 import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
-import 'package:tablet_dashboard/features/admin/dashboard/presentation/screens/admin_dashboard_screen.dart';
+import 'package:tablet_dashboard/features/admin/dashboard/presentation/pages/admin_dashboard_screen.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
-import 'package:tablet_dashboard/features/cashier/dashboard/presentation/screens/cashier_dashboard_screen.dart';
-import 'package:tablet_dashboard/features/cashier/order/presentation/screens/order_screen.dart';
+import 'package:tablet_dashboard/features/cashier/dashboard/presentation/pages/cashier_dashboard_screen.dart';
+import 'package:tablet_dashboard/features/cashier/order/presentation/pages/order_screen.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
-import 'package:tablet_dashboard/features/cashier/settings/presentation/screens/settings_screen.dart';
+import 'package:tablet_dashboard/features/cashier/settings/presentation/pages/settings_screen.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
-import 'package:tablet_dashboard/features/mitra/dashboard/presentation/screens/mitra_dashboard_screen.dart';
+import 'package:tablet_dashboard/features/mitra/dashboard/presentation/pages/mitra_dashboard_screen.dart';
 
 // Layar utama setelah login: sidebar di kiri, isi menu di kanan.
 // Menu Dashboard beda tiap role, Kasir dan Konfigurasi sama

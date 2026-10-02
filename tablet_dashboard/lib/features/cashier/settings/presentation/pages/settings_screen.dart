@@ -94,7 +94,10 @@ class SettingsScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Printer Struk', style: AppTextStyle.title),
+                          const Text(
+                            'Printer Struk',
+                            style: AppTextStyle.title,
+                          ),
                           Text(
                             'Panda PRJ-R58D · kertas 58mm · Bluetooth',
                             style: AppTextStyle.caption.copyWith(

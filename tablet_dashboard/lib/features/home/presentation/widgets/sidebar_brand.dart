@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tablet_dashboard/app/shell/widgets/sidebar_icon_button.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_icon_button.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 
@@ -26,7 +27,7 @@ class SidebarBrand extends StatelessWidget {
         color: AppColor.surface,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Image.asset('assets/images/logo_glyph.png', color: AppColor.ink),
+      child: Image.asset(AppAsset.logoGlyph, color: AppColor.ink),
     );
     final toggle = SidebarIconButton(
       icon: expanded ? Icons.chevron_left : Icons.chevron_right,

@@ -1,6 +1,6 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:tablet_dashboard/app/shell/navigation_controller.dart';
+import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
 import 'package:tablet_dashboard/core/network/api_client.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/features/auth/data/auth_api.dart';

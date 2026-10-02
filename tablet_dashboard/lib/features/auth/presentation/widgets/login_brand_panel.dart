@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 
@@ -31,10 +32,7 @@ class LoginBrandPanel extends StatelessWidget {
                     color: AppColor.surface,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Image.asset(
-                    'assets/images/logo_glyph.png',
-                    color: AppColor.ink,
-                  ),
+                  child: Image.asset(AppAsset.logoGlyph, color: AppColor.ink),
                 ),
                 const SizedBox(width: 14),
                 Text(
@@ -48,7 +46,7 @@ class LoginBrandPanel extends StatelessWidget {
             ),
             const Spacer(),
             Image.asset(
-              'assets/images/receipt_logo.png',
+              AppAsset.logoWordmark,
               color: AppColor.surface,
               width: 300,
             ),
