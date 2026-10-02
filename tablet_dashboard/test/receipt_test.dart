@@ -132,9 +132,9 @@ void main() {
   });
 
   test('cetak ulang tanpa baris pembayaran', () {
-    final text = decodeEscPos(
-      receipt(cash: null).toEscPos(),
-    ).map((l) => l.text).toList();
+    final text = decodeEscPos(receipt(cash: null).toEscPos())
+        .map((l) => l.text)
+        .toList();
     expect(text, contains(row('TOTAL', 'Rp 275.000')));
     expect(
       text.where((l) => l.startsWith('Tunai') || l.startsWith('Kembali')),
