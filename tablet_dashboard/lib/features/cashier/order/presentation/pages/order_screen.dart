@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tablet_dashboard/app/shell/navigation_controller.dart';
+import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/walk_in_view.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/bookings_view.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/scan_qr_dialog.dart';

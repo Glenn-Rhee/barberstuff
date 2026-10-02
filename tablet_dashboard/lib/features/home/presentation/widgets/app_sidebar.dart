@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tablet_dashboard/app/shell/navigation_controller.dart';
-import 'package:tablet_dashboard/app/shell/widgets/sidebar_account_tile.dart';
-import 'package:tablet_dashboard/app/shell/widgets/sidebar_brand.dart';
-import 'package:tablet_dashboard/app/shell/widgets/sidebar_nav_item.dart';
+import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_account_tile.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_brand.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_nav_item.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
