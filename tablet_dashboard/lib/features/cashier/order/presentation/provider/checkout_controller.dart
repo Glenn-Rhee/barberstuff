@@ -7,15 +7,19 @@ import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.d
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
+import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 
 // Catat pembayaran ke server dan buat struknya.
 // Dialog, cetak, dan toast tetap di widget, di sini cuma urusan API
 class CheckoutController {
-  CheckoutController(this._bookingApi, this._shift, this._session);
+  CheckoutController(this._bookingApi, this._shift, this._session, this._store);
 
   final BookingApi _bookingApi;
   final ShiftController _shift;
   final SessionController _session;
+
+  // Toko yang dipakai (admin bisa ganti cabang)
+  final StoreController _store;
 
   // Pembayaran dicatat ke shift, jadi shift harus buka dulu
   bool get canTakePayment => _shift.isOpen;
@@ -35,7 +39,7 @@ class CheckoutController {
     final String bookingId;
     try {
       bookingId = await _bookingApi.createBooking(
-        storeId: _session.storeId,
+        storeId: _store.storeId,
         capsterId: capster.id,
         serviceIds: [
           for (final line in lines)

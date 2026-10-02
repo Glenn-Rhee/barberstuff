@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
-import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_account_tile.dart';
-import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_brand.dart';
-import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_nav_item.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/provider/order_controller.dart';
+import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
+import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_account_tile.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_brand.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_nav_item.dart';
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
 
 // Navigasi kiri, bisa diperkecil jadi ikon saja
@@ -19,9 +21,9 @@ class AppSidebar extends StatelessWidget {
   static const collapsedWidth = 76.0;
 
   static const _items = [
-    (AppSection.dashboard, 'Dashboard', Icons.grid_view_rounded),
-    (AppSection.order, 'Kasir', Icons.point_of_sale_outlined),
-    (AppSection.settings, 'Konfigurasi', Icons.settings),
+    (AppSection.dashboard, 'Dashboard', AppAsset.gridIcon),
+    (AppSection.order, 'Kasir', AppAsset.stackIcon),
+    (AppSection.settings, 'Konfigurasi', AppAsset.settingIcon),
   ];
 
   Future<void> _signOut(BuildContext context) async {
@@ -35,6 +37,7 @@ class AppSidebar extends StatelessWidget {
     if (!confirmed || !context.mounted) return;
     context.read<OrderController>().clearAll();
     context.read<NavigationController>().reset();
+    context.read<StoreController>().clear();
     context.read<SessionController>().signOut();
   }
 
@@ -85,7 +88,7 @@ class AppSidebar extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'Menu $roleLabel',
+                      'Dashboard $roleLabel',
                       style: AppTextStyle.body.copyWith(
                         color: AppColor.sidebarMuted,
                       ),

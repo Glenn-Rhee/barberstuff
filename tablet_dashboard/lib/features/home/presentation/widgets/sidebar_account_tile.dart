@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_icon_button.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_icon_button.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 
 // Akun yang login + tombol keluar di bawah sidebar
@@ -21,7 +23,7 @@ class SidebarAccountTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final signOut = SidebarIconButton(
-      icon: Icons.logout,
+      icon: const AppIcon(AppAsset.logoutIcon),
       tooltip: 'Keluar',
       onTap: onSignOut,
     );

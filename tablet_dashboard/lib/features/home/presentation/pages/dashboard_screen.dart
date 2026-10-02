@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
-import 'package:tablet_dashboard/features/home/presentation/widgets/app_sidebar.dart';
 import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
 import 'package:tablet_dashboard/features/admin/dashboard/presentation/pages/admin_dashboard_screen.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
+import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/pages/cashier_dashboard_screen.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/pages/order_screen.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/cashier/settings/presentation/pages/settings_screen.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
+import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
+import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/app_sidebar.dart';
 import 'package:tablet_dashboard/features/mitra/dashboard/presentation/pages/mitra_dashboard_screen.dart';
 
 // Layar utama setelah login: sidebar di kiri, isi menu di kanan.
@@ -33,15 +35,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
   }
 
-  // Ambil data toko sekali setelah login
+  // Ambil data toko sekali setelah login. Toko dimuat dulu,
+  // karena katalog dan absensi ikut toko yang dipakai
   Future<void> _bootstrap() async {
     if (!mounted) return;
-    final storeId = context.read<SessionController>().storeId;
-    context.read<CatalogController>().load(storeId);
-    context.read<ShiftController>().refresh();
+    final profile = context.read<SessionController>().profile;
+    if (profile == null) return;
+    final store = context.read<StoreController>();
+    final catalog = context.read<CatalogController>();
+    final attendance = context.read<AttendanceController>();
+    final printer = context.read<PrinterController>();
+    context.read<ShiftController>()
+      ..setEnabled(profile.staffRole == StaffRole.cashier)
+      ..refresh();
     context.read<BookingsController>().refresh();
+
+    await store.load(profile);
+    catalog.load(store.storeId);
+    attendance.load(store.storeId);
     try {
-      await context.read<PrinterController>().loadDevices();
+      await printer.loadDevices();
     } on PrinterException {
       // Error printer tampil lagi di Konfigurasi dan saat cetak
     }

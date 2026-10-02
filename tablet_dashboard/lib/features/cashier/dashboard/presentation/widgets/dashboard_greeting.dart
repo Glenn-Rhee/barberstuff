@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
-import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/shift_status_chip.dart';
+import 'package:tablet_dashboard/features/cashier/store/presentation/widgets/store_selector.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// "Selamat Datang, Budi!" + tombol muat ulang + status shift
+// Header dashboard: "Dashboard > Ringkasan", sapaan, lokasi toko, status toko
 class DashboardGreeting extends StatelessWidget {
-  const DashboardGreeting({
-    super.key,
-    required this.title,
-    required this.name,
-    required this.onRefresh,
-  });
+  const DashboardGreeting({super.key, required this.title, required this.name});
 
-  // Judul kecil di atas sapaan, mis. "Dashboard Kasir"
+  // Judul kecil di atas sapaan, mis. "Dashboard"
   final String title;
   final String name;
-  final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +24,7 @@ class DashboardGreeting extends StatelessWidget {
               children: [
                 Text(
                   '$title > Ringkasan',
-                  style: AppTextStyle.caption.copyWith(
-                    color: AppColor.inkSoft,
-                  ),
+                  style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
                 ),
                 Text(
                   'Selamat Datang, ${name.split(' ').first}!',
@@ -41,13 +33,9 @@ class DashboardGreeting extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-            tooltip: 'Muat ulang data',
-            onPressed: onRefresh,
-            icon: const Icon(Icons.refresh, size: 20),
-          ),
-          const SizedBox(width: 8),
-          const ShiftStatusChip(filled: true),
+          const StoreSelector(),
+          const SizedBox(width: 12),
+          const StoreOpenChip(),
         ],
       ),
     );

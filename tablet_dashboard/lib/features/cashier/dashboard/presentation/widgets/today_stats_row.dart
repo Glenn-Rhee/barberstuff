@@ -1,69 +1,86 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
-import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
+import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
+import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
+import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Empat angka shift hari ini, strip (—) sampai shift dibuka
+// Empat angka hari ini: transaksi, penjualan, reservasi, absensi
 class TodayStatsRow extends StatelessWidget {
-  const TodayStatsRow({super.key, required this.session});
-
-  final CashSession? session;
+  const TodayStatsRow({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final session = this.session;
+    final shift = context.watch<ShiftController>();
+    final dashboard = context.watch<DashboardController>();
+    final capsters = context.watch<CatalogController>().activeCapsters;
+    final attendance = context.watch<AttendanceController>().summaryOf(
+      capsters,
+    );
+    final session = shift.session;
+    final noShift = shift.enabled ? 'Shift belum dibuka' : 'Khusus akun kasir';
 
     return Row(
       children: [
         Expanded(
           child: _StatCard(
-            icon: Icons.shopping_basket_outlined,
+            icon: AppAsset.cartIcon,
             color: AppColor.gold,
+            background: AppColor.goldSoft,
             title: 'Transaksi Hari Ini',
             value: session == null ? '—' : '${session.sales.length}',
             caption: session == null
-                ? 'Shift belum dibuka'
+                ? noShift
                 : '${session.cashSales} tunai · ${session.cashlessSales} non-tunai',
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: _StatCard(
-            icon: Icons.show_chart,
+            icon: AppAsset.graphicIcon,
             color: AppColor.success,
+            background: AppColor.successSoft,
             title: 'Penjualan Hari Ini',
             value: session == null ? '—' : PriceFormat.full(session.income),
             caption: session == null
-                ? 'Shift belum dibuka'
-                : 'Tunai ${PriceFormat.plain(session.incomeCash)} · Non tunai ${PriceFormat.plain(session.incomeCashless)}',
+                ? noShift
+                : 'Kas di laci ${PriceFormat.full(session.expectedCash)}',
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: _StatCard(
-            icon: Icons.trending_down,
-            color: AppColor.danger,
-            title: 'Kas Keluar',
-            value: session == null ? '—' : PriceFormat.full(session.outcome),
-            caption: session == null
-                ? 'Shift belum dibuka'
-                : 'Modal awal ${PriceFormat.plain(session.openingBalance)}',
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _StatCard(
-            icon: Icons.account_balance_wallet_outlined,
+            icon: AppAsset.dateIcon,
             color: AppColor.info,
-            title: 'Kas di Laci',
-            value: session == null
-                ? '—'
-                : PriceFormat.full(session.expectedCash),
-            caption: session == null
-                ? 'Shift belum dibuka'
-                : 'Perhitungan sistem',
+            background: AppColor.infoSoft,
+            title: 'Reservasi Hari Ini',
+            value: dashboard.error != null ? '—' : '${dashboard.totalToday}',
+            caption: dashboard.error != null
+                ? 'Gagal memuat reservasi'
+                : '${dashboard.waiting} belum datang',
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: _StatCard(
+            icon: AppAsset.personIcon,
+            color: AppColor.warning,
+            background: AppColor.warningSoft,
+            title: 'Absensi Karyawan',
+            value: capsters.isEmpty ? '—' : '${attendance.present} Hadir',
+            caption: capsters.isEmpty
+                ? 'Belum ada capster aktif'
+                : [
+                    '${attendance.absent} karyawan off',
+                    if (attendance.pending > 0)
+                      '${attendance.pending} belum absen',
+                  ].join(' · '),
           ),
         ),
       ],
@@ -75,13 +92,16 @@ class _StatCard extends StatelessWidget {
   const _StatCard({
     required this.icon,
     required this.color,
+    required this.background,
     required this.title,
     required this.value,
     required this.caption,
   });
 
-  final IconData icon;
+  // Path asset ikon
+  final String icon;
   final Color color;
+  final Color background;
   final String title;
   final String value;
   final String caption;
@@ -92,15 +112,17 @@ class _StatCard extends StatelessWidget {
 
     return AppCard(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: AppColor.surfaceMuted,
+              color: background,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, size: 20, color: color),
+            alignment: Alignment.center,
+            child: AppIcon(icon, size: 20, color: color),
           ),
           const SizedBox(width: 12),
           Expanded(

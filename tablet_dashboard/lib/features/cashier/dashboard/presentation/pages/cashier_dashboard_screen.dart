@@ -3,14 +3,14 @@ import 'package:tablet_dashboard/features/cashier/dashboard/presentation/widgets
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/widgets/dashboard_layout.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/widgets/shift_card.dart';
 
-// Dashboard kasir: fokus ke shift hari ini dan booking yang masuk
+// Dashboard kasir: shift hari ini, reservasi, dan karyawan bertugas
 class CashierDashboardScreen extends StatelessWidget {
   const CashierDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const DashboardLayout(
-      title: 'Dashboard Kasir',
+      title: 'Dashboard',
       side: [ShiftCard(), CapsterListCard()],
     );
   }
