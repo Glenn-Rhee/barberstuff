@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
 // Satu menu sidebar, saat diperkecil cuma ikon (+ tooltip)
 class SidebarNavItem extends StatelessWidget {
@@ -14,7 +15,8 @@ class SidebarNavItem extends StatelessWidget {
   });
 
   final String label;
-  final IconData icon;
+  // Path asset ikon
+  final String icon;
   final bool selected;
   final bool expanded;
   final VoidCallback onTap;
@@ -41,7 +43,7 @@ class SidebarNavItem extends StatelessWidget {
                     ? MainAxisAlignment.start
                     : MainAxisAlignment.center,
                 children: [
-                  Icon(icon, size: 20, color: foreground),
+                  AppIcon(icon, size: 20, color: foreground),
                   if (expanded) ...[
                     const SizedBox(width: 12),
                     Expanded(

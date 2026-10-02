@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_status_badge.dart';
+import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
+import 'package:tablet_dashboard/features/cashier/dashboard/presentation/widgets/arrival_badge.dart';
+import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Tabel 5 booking terdekat yang belum selesai
+// Tabel "Reservasi Berikutnya": 5 booking hari ini yang belum selesai
 class UpcomingBookingsCard extends StatelessWidget {
   const UpcomingBookingsCard({super.key});
 
-  static const _flex = [2, 4, 4, 3, 3];
+  static const _flex = [2, 4, 4, 3, 4];
 
   @override
   Widget build(BuildContext context) {
-    final bookings = context.watch<BookingsController>();
-    final upcoming = bookings.upcoming.take(5).toList();
+    final dashboard = context.watch<DashboardController>();
+    final upcoming = dashboard.upcoming.take(5).toList();
+    final now = DateTime.now();
 
     Widget cells(List<Widget> children) => Row(
       children: [
@@ -42,9 +45,12 @@ class UpcomingBookingsCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Booking Berikutnya', style: AppTextStyle.title),
+                    const Text(
+                      'Reservasi Berikutnya',
+                      style: AppTextStyle.title,
+                    ),
                     Text(
-                      'Pelanggan yang belum selesai dilayani.',
+                      'Pelanggan yang akan datang hari ini.',
                       style: AppTextStyle.caption.copyWith(
                         color: AppColor.inkSoft,
                       ),
@@ -60,14 +66,12 @@ class UpcomingBookingsCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text('Lihat Semua'),
-                    Icon(Icons.chevron_right, size: 18),
+                    AppIcon(AppAsset.rightArrowIcon, size: 12),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Divider(),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -80,7 +84,7 @@ class UpcomingBookingsCard extends StatelessWidget {
                 'WAKTU',
                 'PELANGGAN',
                 'LAYANAN',
-                'CAPSTER',
+                'BARBER',
                 'STATUS',
               ])
                 Text(
@@ -92,18 +96,24 @@ class UpcomingBookingsCard extends StatelessWidget {
                 ),
             ]),
           ),
-          if (bookings.loading)
+          if (dashboard.loading && upcoming.isEmpty)
             const Padding(
               padding: EdgeInsets.all(28),
               child: Center(child: CircularProgressIndicator()),
             )
-          else if (bookings.error != null)
-            ErrorBar(message: bookings.error!, onRetry: bookings.refresh)
+          else if (dashboard.error != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: ErrorBar(
+                message: dashboard.error!,
+                onRetry: dashboard.refresh,
+              ),
+            )
           else if (upcoming.isEmpty)
             const EmptyState(
               icon: Icons.event_busy_outlined,
-              title: 'Belum ada booking',
-              message: 'Booking yang masuk hari ini akan tampil di sini.',
+              title: 'Belum ada reservasi',
+              message: 'Reservasi hari ini akan tampil di sini.',
             ),
           for (final booking in upcoming)
             Container(
@@ -136,7 +146,7 @@ class UpcomingBookingsCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.body.copyWith(color: AppColor.inkSoft),
                 ),
-                BookingStatusBadge(status: booking.status),
+                ArrivalBadge(booking: booking, now: now),
               ]),
             ),
         ],

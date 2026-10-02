@@ -10,7 +10,8 @@ class SidebarIconButton extends StatelessWidget {
     required this.onTap,
   });
 
-  final IconData icon;
+  // Icon atau AppIcon, warna & ukuran diatur dari sini
+  final Widget icon;
   final String tooltip;
   final VoidCallback onTap;
 
@@ -23,7 +24,10 @@ class SidebarIconButton extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(6),
-          child: Icon(icon, size: 18, color: AppColor.sidebarMuted),
+          child: IconTheme(
+            data: const IconThemeData(color: AppColor.sidebarMuted, size: 18),
+            child: icon,
+          ),
         ),
       ),
     );

@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/app/app_env.dart';
 import 'package:tablet_dashboard/app/app_provider.dart';
-import 'package:tablet_dashboard/features/home/presentation/pages/dashboard_screen.dart';
 import 'package:tablet_dashboard/core/network/api_client.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_theme.dart';
 import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
-import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/auth/presentation/pages/login_screen.dart';
+import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/data/catalog_api.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.dart';
+import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
+import 'package:tablet_dashboard/features/home/presentation/pages/dashboard_screen.dart';
 
 class TabletDashboardApp extends StatelessWidget {
   const TabletDashboardApp({
@@ -21,6 +22,7 @@ class TabletDashboardApp extends StatelessWidget {
     this.catalogApi,
     this.bookingApi,
     this.cashSessionApi,
+    this.storeApi,
     this.printer,
   });
 
@@ -29,6 +31,7 @@ class TabletDashboardApp extends StatelessWidget {
   final CatalogApi? catalogApi;
   final BookingApi? bookingApi;
   final CashSessionApi? cashSessionApi;
+  final StoreApi? storeApi;
   final PrinterController? printer;
 
   @override
@@ -41,6 +44,7 @@ class TabletDashboardApp extends StatelessWidget {
         catalogApi: catalogApi ?? CatalogApi(client),
         bookingApi: bookingApi ?? BookingApi(client),
         cashSessionApi: cashSessionApi ?? CashSessionApi(client),
+        storeApi: storeApi ?? StoreApi(client),
         printer: printer,
       ),
       child: MaterialApp(
