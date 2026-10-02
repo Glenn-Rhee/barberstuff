@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/cart_line.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
 // Satu layanan di keranjang, tombol hapus muncul kalau [onRemove] diisi
 class CartItemTile extends StatelessWidget {
@@ -38,13 +40,13 @@ class CartItemTile extends StatelessWidget {
               color: AppColor.surfaceMuted,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              line.item.type == ServiceType.package
-                  ? Icons.workspace_premium_outlined
-                  : Icons.content_cut,
-              size: 16,
-              color: AppColor.ink,
-            ),
+            child: line.item.type == ServiceType.package
+                ? Icon(
+                    Icons.workspace_premium_outlined,
+                    size: 16,
+                    color: AppColor.ink,
+                  )
+                : AppIcon(AppAsset.scissorsIcon, size: 16, color: AppColor.ink),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -63,9 +65,7 @@ class CartItemTile extends StatelessWidget {
                   subtitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.caption.copyWith(
-                    color: AppColor.inkSoft,
-                  ),
+                  style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
                 ),
               ],
             ),

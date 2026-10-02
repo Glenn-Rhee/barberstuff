@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_button_style.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Kartu layanan dengan harga dan "+ Tambah", angka di pojok = jumlah di keranjang
@@ -35,13 +37,17 @@ class ServiceCard extends StatelessWidget {
                     color: AppColor.surfaceMuted,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    item.type == ServiceType.package
-                        ? Icons.workspace_premium_outlined
-                        : Icons.content_cut,
-                    size: 20,
-                    color: AppColor.ink,
-                  ),
+                  child: item.type == ServiceType.package
+                      ? Icon(
+                          Icons.workspace_premium_outlined,
+                          size: 20,
+                          color: AppColor.ink,
+                        )
+                      : AppIcon(
+                          AppAsset.scissorsIcon,
+                          size: 20,
+                          color: AppColor.ink,
+                        ),
                 ),
                 const SizedBox(height: 8),
                 Expanded(
@@ -50,16 +56,17 @@ class ServiceCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
-                    style: AppTextStyle.bodyBold.copyWith(fontSize: 13),
+                    style: AppTextStyle.bodyBold.copyWith(
+                      fontSize: 13,
+                      height: 1.3,
+                    ),
                   ),
                 ),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
                     PriceFormat.full(item.price),
-                    style: AppTextStyle.bodyBold.copyWith(
-                      color: AppColor.gold,
-                    ),
+                    style: AppTextStyle.bodyBold.copyWith(color: AppColor.gold),
                   ),
                 ),
                 const SizedBox(height: 8),

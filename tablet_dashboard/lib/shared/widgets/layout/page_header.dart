@@ -1,24 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
-// Judul + subjudul halaman di kiri, [actions] di kanan
+// Judul + subjudul halaman di kiri, [actions] di kanan.
+// [onBack] diisi = muncul tombol kembali
 class PageHeader extends StatelessWidget {
   const PageHeader({
     super.key,
     required this.title,
     required this.subtitle,
     this.actions = const [],
+    this.onBack,
   });
 
   final String title;
   final String subtitle;
   final List<Widget> actions;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
+        if (onBack != null) ...[
+          IconButton.outlined(
+            onPressed: onBack,
+            tooltip: 'Kembali',
+            style: IconButton.styleFrom(
+              side: const BorderSide(color: AppColor.borderStrong),
+            ),
+            icon: const AppIcon(AppAsset.backArrowIcon, size: 18),
+          ),
+          const SizedBox(width: 12),
+        ],
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
