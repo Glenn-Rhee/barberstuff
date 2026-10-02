@@ -9,12 +9,12 @@ import '../../app/app_env.dart';
 // bentuk data {data, message, meta, status, statusCode} lanjut get / post bungkus data
 /// kalo gagal [ApiException] akan dilempar ke server
 class ApiClient {
-  ApiClient({Dio? dio, String? baseUrl = AppEnv.baseUrl})
+  ApiClient({Dio? dio, String baseUrl = AppEnv.baseUrl})
     : _dio =
           dio ??
           Dio(
             BaseOptions(
-              baseUrl: AppEnv.baseUrl,
+              baseUrl: baseUrl,
               connectTimeout: const Duration(seconds: 15),
               receiveTimeout: const Duration(seconds: 20),
               headers: {

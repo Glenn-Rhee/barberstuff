@@ -1,0 +1,119 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/theme/app_color.dart';
+import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/order_tab_layout.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_panel.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_row.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_status_filter.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
+import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
+import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
+import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
+
+// Tab "Dari Reservasi": booking toko dari GET /booking
+class BookingsView extends StatelessWidget {
+  const BookingsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bookings = context.watch<BookingsController>();
+
+    return OrderTabLayout(
+      panel: const BookingPanel(),
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: AppSearchField(
+                hint: 'Cari pelanggan atau layanan...',
+                initialValue: bookings.query,
+                onChanged: bookings.setQuery,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const BookingStatusFilter(),
+            const SizedBox(width: 12),
+            IconButton.outlined(
+              tooltip: 'Muat ulang',
+              onPressed: bookings.refresh,
+              icon: const Icon(Icons.refresh, size: 20),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: AppCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
+                  child: BookingRow.cells([
+                    for (final label in const [
+                      'PELANGGAN',
+                      'JADWAL',
+                      'LAYANAN',
+                      'CAPSTER',
+                      'STATUS',
+                    ])
+                      Text(
+                        label,
+                        style: AppTextStyle.label.copyWith(
+                          fontSize: 11,
+                          color: AppColor.inkSoft,
+                        ),
+                      ),
+                  ]),
+                ),
+                const Divider(),
+                Expanded(child: _list(bookings)),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        PaginationBar(
+          page: bookings.page - 1, // halaman API mulai dari 1
+          pageCount: bookings.totalPages,
+          onChanged: (page) => bookings.setPage(page + 1),
+        ),
+      ],
+    );
+  }
+
+  Widget _list(BookingsController bookings) {
+    if (bookings.loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (bookings.error != null) {
+      return ErrorRetryView(
+        title: 'Gagal memuat booking',
+        message: bookings.error!,
+        onRetry: bookings.refresh,
+      );
+    }
+    if (bookings.bookings.isEmpty) {
+      return const EmptyState(
+        icon: Icons.event_busy_outlined,
+        title: 'Belum ada booking',
+        message: 'Booking dari aplikasi pelanggan akan muncul di sini.',
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(8),
+      children: [
+        for (final booking in bookings.bookings)
+          BookingRow(
+            booking: booking,
+            selected: bookings.selectedId == booking.id,
+            onTap: () => bookings.toggle(booking),
+          ),
+      ],
+    );
+  }
+}

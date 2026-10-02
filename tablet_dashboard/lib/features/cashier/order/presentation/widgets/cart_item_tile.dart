@@ -1,0 +1,103 @@
+import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/core/theme/app_color.dart';
+import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/core/utils/price_format.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/cart_line.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
+
+// Satu layanan di keranjang, tombol hapus muncul kalau [onRemove] diisi
+class CartItemTile extends StatelessWidget {
+  const CartItemTile({
+    super.key,
+    required this.line,
+    required this.subtitle,
+    this.onRemove,
+  });
+
+  final CartLine line;
+  final String subtitle;
+  final VoidCallback? onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final onRemove = this.onRemove;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColor.borderStrong),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: AppColor.surfaceMuted,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              line.item.type == ServiceType.package
+                  ? Icons.workspace_premium_outlined
+                  : Icons.content_cut,
+              size: 16,
+              color: AppColor.ink,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  line.qty > 1
+                      ? '${line.item.name} x${line.qty}'
+                      : line.item.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.bodyBold.copyWith(fontSize: 12),
+                ),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.caption.copyWith(
+                    color: AppColor.inkSoft,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(PriceFormat.full(line.subtotal), style: AppTextStyle.label),
+          if (onRemove != null) ...[
+            const SizedBox(width: 8),
+            SizedBox.square(
+              dimension: 30,
+              child: IconButton(
+                tooltip: 'Hapus',
+                onPressed: onRemove,
+                padding: EdgeInsets.zero,
+                style: IconButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                    side: BorderSide(
+                      color: AppColor.danger.withValues(alpha: 0.4),
+                    ),
+                  ),
+                ),
+                icon: const Icon(
+                  Icons.delete_outline,
+                  size: 16,
+                  color: AppColor.danger,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}

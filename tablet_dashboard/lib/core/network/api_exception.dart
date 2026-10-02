@@ -7,7 +7,7 @@ class ApiException implements Exception {
   // Belum ada izin atau belum login
   bool get isUnauthorized => statusCode == 401 || statusCode == 403;
 
-  // Not Valid
+  // Request tidak valid (400)
   bool get isValid => statusCode == 400;
 
   @override

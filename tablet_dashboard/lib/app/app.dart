@@ -2,25 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/app/app_env.dart';
 import 'package:tablet_dashboard/app/app_provider.dart';
+import 'package:tablet_dashboard/app/shell/dashboard_screen.dart';
 import 'package:tablet_dashboard/core/network/api_client.dart';
+import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
+import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_theme.dart';
 import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
-
-import '../core/theme/app_color.dart';
+import 'package:tablet_dashboard/features/auth/presentation/screens/login_screen.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/data/catalog_api.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
+import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.dart';
 
 class TabletDashboardApp extends StatelessWidget {
   const TabletDashboardApp({
     super.key,
     this.authApi,
-    // this.catalogApi,
-    // this.bookingApi,
-    // this.cashSessionApi,
-    // this.printer,
+    this.catalogApi,
+    this.bookingApi,
+    this.cashSessionApi,
+    this.printer,
   });
 
-  // attribut
+  // attribut, bisa diganti fake untuk test. Default ke backend asli
   final AuthApi? authApi;
+  final CatalogApi? catalogApi;
+  final BookingApi? bookingApi;
+  final CashSessionApi? cashSessionApi;
+  final PrinterController? printer;
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +38,10 @@ class TabletDashboardApp extends StatelessWidget {
       providers: appProviders(
         client: client,
         authApi: authApi ?? AuthApi(client),
-        // catalogApi: CatalogApi(),
-        // bookingApi: BookingApi(),
-        // cashSessionApi: CashSessionApi(),
+        catalogApi: catalogApi ?? CatalogApi(client),
+        bookingApi: bookingApi ?? BookingApi(client),
+        cashSessionApi: cashSessionApi ?? CashSessionApi(client),
+        printer: printer,
       ),
       child: MaterialApp(
         title: "Dashboard Barberstuff",

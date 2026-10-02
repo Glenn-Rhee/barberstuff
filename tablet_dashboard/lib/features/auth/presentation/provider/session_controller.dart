@@ -5,7 +5,7 @@ import 'package:tablet_dashboard/core/storage/token_storage.dart';
 import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 
-/// Signed-in cashier: token, profile and the store they work at.
+// Sesi login: token, profil, dan toko tempat staff bekerja
 class SessionController extends ChangeNotifier {
   SessionController(
     this._auth,
@@ -13,33 +13,41 @@ class SessionController extends ChangeNotifier {
     this._storage = const TokenStorage(),
   ]);
 
+  static const noAccessMessage = 'Akun ini tidak punya akses ke tablet';
+
   final AuthApi _auth;
 
-  /// Every API shares this client, so the token set here signs all requests.
+  // Semua API pakai client ini, jadi token di sini dipakai di semua request
   final ApiClient _client;
   final TokenStorage _storage;
 
   StaffProfile? profile;
   String? role;
 
-  /// True while an existing token is being checked at startup.
+  // true selama cek token lama saat aplikasi dibuka
   bool restoring = true;
   bool busy = false;
 
   bool get signedIn => profile != null;
   String get storeId => profile?.storeId ?? '';
+  StaffRole? get staffRole => profile?.staffRole;
 
-  /// Reuses the token from the last session so the till survives a restart.
+  // Pakai token sesi sebelumnya supaya tidak login ulang tiap buka aplikasi
   Future<void> restore() async {
     try {
       final token = await _storage.read();
       if (token != null && token.isNotEmpty) {
         _client.token = token;
-        profile = await _auth.profile();
-        role = profile?.role;
+        final fetched = await _auth.profile();
+        if (fetched.staffRole == null) {
+          await _clear();
+        } else {
+          profile = fetched;
+          role = fetched.role;
+        }
       }
     } on ApiException {
-      // Expired or revoked; ask for the password again.
+      // Token kadaluarsa / dicabut, minta login ulang
       _client.token = null;
     } finally {
       restoring = false;
@@ -47,7 +55,7 @@ class SessionController extends ChangeNotifier {
     }
   }
 
-  /// Returns an error message, or `null` when signed in.
+  // Balikin pesan error, atau null kalau berhasil login
   Future<String?> signIn({
     required String email,
     required String password,
@@ -57,8 +65,13 @@ class SessionController extends ChangeNotifier {
     try {
       final login = await _auth.login(email: email, password: password);
       _client.token = login.token;
-      role = login.role;
-      profile = await _auth.profile();
+      final fetched = await _auth.profile();
+      if (fetched.staffRole == null) {
+        await _clear();
+        return noAccessMessage;
+      }
+      profile = fetched;
+      role = fetched.role;
       await _storage.save(login.token);
       return null;
     } on ApiException catch (e) {
@@ -73,10 +86,14 @@ class SessionController extends ChangeNotifier {
 
   // hapus token, profile, role, dan storage saat sign out
   Future<void> signOut() async {
+    await _clear();
+    notifyListeners();
+  }
+
+  Future<void> _clear() async {
     _client.token = null;
     profile = null;
     role = null;
     await _storage.delete();
-    notifyListeners();
   }
 }

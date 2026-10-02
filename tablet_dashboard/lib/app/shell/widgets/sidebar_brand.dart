@@ -1,0 +1,73 @@
+import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/app/shell/widgets/sidebar_icon_button.dart';
+import 'package:tablet_dashboard/core/theme/app_color.dart';
+import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+
+// Logo, nama aplikasi + role, dan tombol kecil/besarkan sidebar
+class SidebarBrand extends StatelessWidget {
+  const SidebarBrand({
+    super.key,
+    required this.roleLabel,
+    required this.expanded,
+    required this.onToggle,
+  });
+
+  final String roleLabel;
+  final bool expanded;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final logo = Container(
+      width: 36,
+      height: 36,
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: AppColor.surface,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Image.asset('assets/images/logo_glyph.png', color: AppColor.ink),
+    );
+    final toggle = SidebarIconButton(
+      icon: expanded ? Icons.chevron_left : Icons.chevron_right,
+      tooltip: expanded ? 'Perkecil menu' : 'Perbesar menu',
+      onTap: onToggle,
+    );
+
+    if (!expanded) {
+      return Column(children: [logo, const SizedBox(height: 12), toggle]);
+    }
+
+    return Row(
+      children: [
+        logo,
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'BARBERSTUFF',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.bodyBold.copyWith(
+                  color: AppColor.surface,
+                  fontSize: 15,
+                ),
+              ),
+              Text(
+                roleLabel.toUpperCase(),
+                style: AppTextStyle.label.copyWith(
+                  color: AppColor.sidebarMuted,
+                  fontSize: 9,
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+        toggle,
+      ],
+    );
+  }
+}
