@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
 enum PillStyle {
   // Emas penuh saat dipilih (tab, filter)
@@ -25,7 +26,8 @@ class Pill extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback? onTap;
-  final IconData? icon;
+  // Path asset ikon (opsional)
+  final String? icon;
   final PillStyle style;
   final double height;
 
@@ -72,7 +74,7 @@ class Pill extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 16, color: foreground),
+                AppIcon(icon!, size: 16, color: foreground),
                 const SizedBox(width: 6),
               ],
               Flexible(

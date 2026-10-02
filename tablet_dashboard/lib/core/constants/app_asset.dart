@@ -28,6 +28,18 @@ class AppAsset {
   static const String personIcon = '$_cashier/person.png';
   static const String scanIcon = '$_cashier/scan.png';
   static const String rightArrowIcon = '$_cashier/right_arrow.png';
+  static const String trashIcon = '$_cashier/trash.png';
+  static const String cashIcon = '$_cashier/dollar.png';
+  static const String cashlessIcon = '$_cashier/non_tunai.png';
+
+  // Ikon layanan di katalog kasir
+  static const String beardIcon = '$_cashier/smile.png';
+  static const String hairWashIcon = '$_cashier/coffe.png';
+  static const String hairStylingIcon = '$_cashier/hairstyling.png';
+  static const String creambathIcon = '$_cashier/creambath.png';
+  static const String hairColorIcon = '$_cashier/catrambut.png';
+  static const String packageIcon = '$_cashier/star.png';
+  static const String premiumIcon = '$_cashier/bolt.png';
 
   // Ikon umum (sama dengan aplikasi customer)
   static const String locationIcon = '$_general/loc.png';

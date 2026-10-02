@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 // Menu sidebar, sama untuk semua role (yang beda cuma isi Dashboard)
 enum AppSection { dashboard, order, settings }
 
-// Dua tab di halaman Kasir
-enum OrderTab { walkIn, reservation }
+// Tampilan di halaman Kasir: dua tab + histori pelanggan
+enum OrderTab { walkIn, reservation, history }
 
 // Menu dan tab Kasir yang sedang dibuka, plus status sidebar
 class NavigationController extends ChangeNotifier {

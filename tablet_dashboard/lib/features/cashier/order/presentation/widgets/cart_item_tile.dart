@@ -3,20 +3,21 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
-import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/cart_line.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/presentation/widgets/service_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
-// Satu layanan di keranjang, tombol hapus muncul kalau [onRemove] diisi
+// Satu layanan di keranjang (tanpa jumlah, tiap layanan cuma 1x).
+// Tombol hapus muncul kalau [onRemove] diisi
 class CartItemTile extends StatelessWidget {
   const CartItemTile({
     super.key,
-    required this.line,
+    required this.item,
     required this.subtitle,
     this.onRemove,
   });
 
-  final CartLine line;
+  final ServiceItem item;
   final String subtitle;
   final VoidCallback? onRemove;
 
@@ -40,13 +41,7 @@ class CartItemTile extends StatelessWidget {
               color: AppColor.surfaceMuted,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: line.item.type == ServiceType.package
-                ? Icon(
-                    Icons.workspace_premium_outlined,
-                    size: 16,
-                    color: AppColor.ink,
-                  )
-                : AppIcon(AppAsset.scissorsIcon, size: 16, color: AppColor.ink),
+            child: AppIcon(ServiceIcon.of(item), size: 16, color: AppColor.ink),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -54,9 +49,7 @@ class CartItemTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  line.qty > 1
-                      ? '${line.item.name} x${line.qty}'
-                      : line.item.name,
+                  item.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.bodyBold.copyWith(fontSize: 12),
@@ -71,7 +64,7 @@ class CartItemTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(PriceFormat.full(line.subtotal), style: AppTextStyle.label),
+          Text(PriceFormat.full(item.price), style: AppTextStyle.label),
           if (onRemove != null) ...[
             const SizedBox(width: 8),
             SizedBox.square(
@@ -88,9 +81,9 @@ class CartItemTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                icon: const Icon(
-                  Icons.delete_outline,
-                  size: 16,
+                icon: const AppIcon(
+                  AppAsset.trashIcon,
+                  size: 14,
                   color: AppColor.danger,
                 ),
               ),

@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/order_tabs.dart';
 
-// Layout kedua tab Kasir: tab + [children] di kiri,
-// [panel] lebar tetap di kanan (detail pesanan / booking)
+// Layout halaman Kasir: tab + [children] di kiri,
+// [panel] lebar tetap di kanan (detail pesanan / booking).
+// [showTabs] false untuk tampilan histori pelanggan
 class OrderTabLayout extends StatelessWidget {
   const OrderTabLayout({
     super.key,
     required this.children,
     required this.panel,
+    this.showTabs = true,
   });
 
   static const double _panelWidth = 336;
 
   final List<Widget> children;
   final Widget panel;
+  final bool showTabs;
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +27,13 @@ class OrderTabLayout extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Align(alignment: Alignment.centerLeft, child: OrderTabs()),
-              const SizedBox(height: 16),
+              if (showTabs) ...[
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: OrderTabs(),
+                ),
+                const SizedBox(height: 16),
+              ],
               ...children,
             ],
           ),
