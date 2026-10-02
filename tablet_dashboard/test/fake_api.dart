@@ -11,10 +11,16 @@ import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/bo
 import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
+import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
+import 'package:tablet_dashboard/features/cashier/store/domain/entities/store_info.dart';
 
 // Pengganti backend di tes, sekaligus mencatat apa yang dikirim aplikasi
-class FakeApi implements AuthApi, CatalogApi, BookingApi, CashSessionApi {
-  static const password = 'rahasia';
+class FakeApi
+    implements AuthApi, CatalogApi, BookingApi, CashSessionApi, StoreApi {
+  static const defaultPassword = 'rahasia';
+
+  // Berubah kalau reset password berhasil
+  String password = defaultPassword;
 
   final calls = <String>[];
 
@@ -56,13 +62,26 @@ class FakeApi implements AuthApi, CatalogApi, BookingApi, CashSessionApi {
   // Isi untuk tiru backend yang menolak tutup kas di jam operasional
   String? closeError;
 
+  ({int amount, String? title})? lastOutcome;
+
+  StoreInfo storeInfo = const StoreInfo(
+    id: 'STORE-1',
+    name: 'Barberstuff Cikutra',
+    openHour: '09:00',
+    closeHour: '21:00',
+  );
+  List<StoreInfo> branches = const [
+    StoreInfo(id: 'STORE-1', name: 'Barberstuff Cikutra'),
+    StoreInfo(id: 'STORE-2', name: 'Barberstuff Depok'),
+  ];
+
   @override
   Future<LoginResponse> login({
     required String email,
     required String password,
   }) async {
     calls.add('login');
-    if (password != FakeApi.password) {
+    if (password != this.password) {
       throw const ApiException('Password salah', statusCode: 401);
     }
     return LoginResponse(token: 'token-123', email: email, role: staff.role);
@@ -72,6 +91,43 @@ class FakeApi implements AuthApi, CatalogApi, BookingApi, CashSessionApi {
   Future<StaffProfile> profile() async {
     calls.add('profile');
     return staff;
+  }
+
+  @override
+  Future<void> updateAccount({
+    required String staffId,
+    required String name,
+    required String password,
+  }) async {
+    calls.add('updateAccount:$staffId');
+    this.password = password;
+  }
+
+  @override
+  Future<List<StoreInfo>> stores() async {
+    calls.add('stores');
+    return branches;
+  }
+
+  @override
+  Future<StoreInfo> store(String id) async {
+    calls.add('store:$id');
+    return branches.firstWhere((s) => s.id == id, orElse: () => storeInfo);
+  }
+
+  @override
+  Future<StoreInfo?> storeFromCashHistory() async {
+    calls.add('cashHistory');
+    return storeInfo;
+  }
+
+  @override
+  Future<({String open, String close})?> hoursFromSlots(
+    String storeId,
+    DateTime date,
+  ) async {
+    calls.add('slots');
+    return (open: '09:00', close: '21:00');
   }
 
   @override
@@ -194,6 +250,8 @@ class FakeApi implements AuthApi, CatalogApi, BookingApi, CashSessionApi {
     calls.add('transaction:${type.name}');
     if (type == TransactionType.income) {
       lastSale = (amount: amount, payment: paymentType, bookingId: bookingId);
+    } else {
+      lastOutcome = (amount: amount, title: title);
     }
     final current = session!;
     session = CashSession(
