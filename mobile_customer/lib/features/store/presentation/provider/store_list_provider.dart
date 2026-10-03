@@ -66,7 +66,6 @@ class StoreListProvider extends ChangeNotifier {
 
     _position = fresh;
     _all = sortStoresByDistance(_all, _position);
-    notifyListeners();
   }
 
   void _onSearchChanged() {

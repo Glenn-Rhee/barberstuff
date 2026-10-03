@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
           enabled: !busy,
           keyboardType: TextInputType.emailAddress,
           style: AppTextStyle.body,
-          decoration: const InputDecoration(hintText: 'example@barberstuff.id'),
+          decoration: const InputDecoration(hintText: 'example@gmail.com'),
           onChanged: _clearMessage,
         ),
         const SizedBox(height: 14),
