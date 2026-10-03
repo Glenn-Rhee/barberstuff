@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
-import 'package:mobile_barberstuff/features/booking/domain/store_distance.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_stores.dart';
 
 /// Daftar seluruh cabang, diurut dari yang terdekat dan bisa dicari.
 /// Beda dengan DashboardProvider yang cuma ambil 6 teratas.
 class StoreListProvider extends ChangeNotifier {
-  StoreListProvider(this._repo, this._location) {
+  StoreListProvider(this._getStores, this._location) {
     searchController.addListener(_onSearchChanged);
     load();
   }
 
-  final BookingRepository _repo;
+  final GetStores _getStores;
   final LocationService _location;
 
   final TextEditingController searchController = TextEditingController();
@@ -49,7 +48,9 @@ class StoreListProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final CachedResult<List<StoreSummary>> result = await _repo.getStores();
+      final CachedResult<List<StoreSummary>> result = await _getStores(
+        const GetStoresParams(),
+      );
       _position ??= _location.lastKnown;
       _all = sortStoresByDistance(result.data, _position);
     } on ApiException catch (e) {

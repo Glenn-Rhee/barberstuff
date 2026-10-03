@@ -64,7 +64,7 @@ class _ActionItem extends StatelessWidget {
     required this.onTap,
   });
 
-  static const double _maxTile = 68;
+  static const double _maxTile = 80;
   static const double _radius = 18;
 
   final String iconPath;

@@ -1,4 +1,4 @@
-/// A printed line decoded back from ESC/POS bytes.
+// Satu baris hasil cetak, dibaca balik dari byte ESC/POS
 class PrintedLine {
   const PrintedLine(this.text, {required this.large, required this.bold});
 
@@ -6,12 +6,12 @@ class PrintedLine {
   final bool large;
   final bool bold;
 
-  /// Characters per line the printer can fit for this line's font size.
+  // Batas karakter per baris sesuai ukuran font
   int get maxWidth => large ? 16 : 32;
 }
 
-/// Decodes the subset of ESC/POS that `EscPos` emits, so tests can
-/// check what actually lands on paper.
+// Baca balik perintah ESC/POS yang dibuat EscPos,
+// supaya tes bisa cek apa yang benar-benar tercetak
 List<PrintedLine> decodeEscPos(List<int> bytes) {
   final lines = <PrintedLine>[];
   final buffer = StringBuffer();
@@ -48,5 +48,6 @@ List<PrintedLine> decodeEscPos(List<int> bytes) {
   return lines;
 }
 
-/// Expected 32-column row, so tests don't depend on counting spaces by hand.
-String row(String left, String right) => '$left${' ' * (32 - left.length - right.length)}$right';
+// Baris 32 kolom yang diharapkan, biar tidak hitung spasi manual
+String row(String left, String right) =>
+    '$left${' ' * (32 - left.length - right.length)}$right';

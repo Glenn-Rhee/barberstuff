@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/local_notification_service.dart';
-import 'package:mobile_barberstuff/core/services/permission_prompt.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/theme/tier_theme.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_catalog.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
+import 'package:mobile_barberstuff/features/debug/presentation/provider/booking_catalog.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
+import 'package:mobile_barberstuff/features/debug/presentation/widgets/debug_controls.dart';
+import 'package:mobile_barberstuff/features/debug/presentation/widgets/debug_permission_section.dart';
 import 'package:mobile_barberstuff/features/home/presentation/provider/dashboard_provider.dart';
-import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
+import 'package:mobile_barberstuff/features/notification/domain/entities/app_notification.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -23,7 +21,6 @@ Future<void> showDebugPanel(BuildContext context) {
   final NotificationProvider notifications = context
       .read<NotificationProvider>();
   final AppCache cache = context.read<AppCache>();
-  final BookingJournal journal = context.read<BookingJournal>();
   // Sheet ini digantung di navigator paling atas, jadi provider dari
   // halaman pemanggil tidak ikut kebawa. Dioper ulang satu per satu.
   final DashboardProvider dashboard = context.read<DashboardProvider>();
@@ -45,64 +42,12 @@ Future<void> showDebugPanel(BuildContext context) {
           value: notifications,
         ),
         Provider<AppCache>.value(value: cache),
-        ChangeNotifierProvider<BookingJournal>.value(value: journal),
         ChangeNotifierProvider<DashboardProvider>.value(value: dashboard),
         Provider<LocalNotificationService>.value(value: notifService),
       ],
       child: const _DebugPanel(),
     ),
   );
-}
-
-/// Contoh isi jurnal supaya layar riwayat bisa diuji tanpa booking sungguhan.
-Future<void> _seedJournal(BookingJournal journal) async {
-  final DateTime now = DateTime.now();
-
-  const List<({String service, String store, double price})> samples =
-      <({String service, String store, double price})>[
-        (service: 'Potong Rambut', store: 'Kemang Raya', price: 95000),
-        (service: 'Cukur Jenggot', store: 'Pondok Indah', price: 100000),
-        (service: 'Hair Styling', store: 'Ciracas', price: 95000),
-      ];
-
-  for (int i = 0; i < samples.length; i++) {
-    final sample = samples[i];
-    final DateTime at = i == 0
-        ? now.add(const Duration(days: 2))
-        : now.subtract(Duration(days: 6 * i));
-
-    await journal.add(
-      BookingRecord(
-        id: 'seed-$i',
-        qrCode: 'SEED-$i',
-        scheduledAt: at,
-        createdAt: now,
-        storeId: 'seed-store-$i',
-        storeName: sample.store,
-        storeAddress: 'Jl. Contoh No. ${i + 1}',
-        storePhone: '08123456789',
-        capsterId: 'seed-capster-$i',
-        capsterName: 'Joni Akbar',
-        lines: <BookingLine>[
-          BookingLine(
-            id: 'seed-svc-$i',
-            name: sample.service,
-            price: sample.price,
-          ),
-        ],
-        appServiceFee: 0,
-        totalPrice: sample.price,
-        review: i == 2
-            ? const BookingReview(
-                capster: 5,
-                cashier: 5,
-                store: 4,
-                message: 'Rapi dan cepat.',
-              )
-            : null,
-      ),
-    );
-  }
 }
 
 class _DebugPanel extends StatelessWidget {
@@ -124,7 +69,6 @@ class _DebugPanel extends StatelessWidget {
     final BookingCatalog catalog = context.watch<BookingCatalog>();
     final NotificationProvider notif = context.watch<NotificationProvider>();
     final AppCache appCache = context.read<AppCache>();
-    final BookingJournal journal = context.read<BookingJournal>();
     final int unread = notif.items
         .where((AppNotification n) => !n.isRead)
         .length;
@@ -184,13 +128,13 @@ class _DebugPanel extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: <Widget>[
-                _TierChip(
+                DebugChip(
                   label: 'server',
                   selected: d.tier == null,
                   onTap: () => d.setTier(null),
                 ),
                 for (final MemberTier tier in MemberTier.values)
-                  _TierChip(
+                  DebugChip(
                     label: tier.name,
                     color: TierTheme.of(tier).accent,
                     selected: d.tier == tier,
@@ -218,13 +162,13 @@ class _DebugPanel extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: <Widget>[
-                _TierChip(
+                DebugChip(
                   label: 'server',
                   selected: d.points == null,
                   onTap: () => d.setPoints(null),
                 ),
                 for (final int value in _pointPresets)
-                  _TierChip(
+                  DebugChip(
                     label: '$value',
                     selected: d.points == value,
                     onTap: () => d.setPoints(value),
@@ -262,14 +206,14 @@ class _DebugPanel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 4),
-            _CounterRow(
+            DebugCounterRow(
               label: 'Cabang',
               count: catalog.stores.length,
               onAdd: catalog.addStore,
               onRemove: catalog.removeLastStore,
             ),
             const SizedBox(height: 10),
-            _CounterRow(
+            DebugCounterRow(
               label: 'Capster',
               count: catalog.capsters.length,
               onAdd: catalog.addCapster,
@@ -303,20 +247,20 @@ class _DebugPanel extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: <Widget>[
-                _TierChip(label: 'Kirim 1', selected: false, onTap: notif.push),
+                DebugChip(label: 'Kirim 1', selected: false, onTap: notif.push),
                 for (final NotificationCategory c
                     in NotificationCategory.values)
-                  _TierChip(
+                  DebugChip(
                     label: c.name,
                     selected: false,
                     onTap: () => notif.push(c),
                   ),
-                _TierChip(
+                DebugChip(
                   label: 'Tandai dibaca',
                   selected: false,
                   onTap: notif.markAllRead,
                 ),
-                _TierChip(
+                DebugChip(
                   label: 'Kosongkan',
                   color: AppColor.danger,
                   selected: false,
@@ -343,34 +287,7 @@ class _DebugPanel extends StatelessWidget {
             ),
 
             const Divider(height: 32, color: AppColor.border),
-            const _PermissionSection(),
-
-            const Divider(height: 32, color: AppColor.border),
-            Text('Riwayat booking', style: AppTextStyle.titleSmall),
-            const SizedBox(height: 4),
-            Text(
-              'Terisi dari booking yang berhasil dan tersimpan di perangkat. '
-              'Backend belum punya endpoint riwayat maupun ulasan.',
-              style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: <Widget>[
-                _TierChip(
-                  label: 'Isi contoh',
-                  selected: false,
-                  onTap: () => _seedJournal(journal),
-                ),
-                _TierChip(
-                  label: 'Kosongkan',
-                  color: AppColor.danger,
-                  selected: false,
-                  onTap: journal.clear,
-                ),
-              ],
-            ),
+            const DebugPermissionSection(),
 
             const Divider(height: 32, color: AppColor.border),
             Text('Booking & cache', style: AppTextStyle.titleSmall),
@@ -385,13 +302,13 @@ class _DebugPanel extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: <Widget>[
-                _TierChip(
+                DebugChip(
                   label: 'server (5 mnt)',
                   selected: d.lockDuration == null,
                   onTap: () => d.setLockDuration(null),
                 ),
                 for (final int seconds in <int>[15, 30, 60])
-                  _TierChip(
+                  DebugChip(
                     label: '\$seconds dtk',
                     selected: d.lockDuration?.inSeconds == seconds,
                     onTap: () => d.setLockDuration(Duration(seconds: seconds)),
@@ -426,7 +343,7 @@ class _DebugPanel extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: <Widget>[
-                _TierChip(
+                DebugChip(
                   label: 'Kosongkan cache',
                   color: AppColor.danger,
                   selected: false,
@@ -435,268 +352,6 @@ class _DebugPanel extends StatelessWidget {
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CounterRow extends StatelessWidget {
-  const _CounterRow({
-    required this.label,
-    required this.count,
-    required this.onAdd,
-    required this.onRemove,
-  });
-
-  final String label;
-  final int count;
-  final VoidCallback onAdd;
-  final VoidCallback onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(child: Text(label, style: AppTextStyle.bodyMedium)),
-        _StepButton(icon: Icons.remove_rounded, onTap: onRemove),
-        SizedBox(
-          width: 44,
-          child: Text(
-            '$count',
-            textAlign: TextAlign.center,
-            style: AppTextStyle.titleSmall,
-          ),
-        ),
-        _StepButton(icon: Icons.add_rounded, onTap: onAdd),
-      ],
-    );
-  }
-}
-
-class _StepButton extends StatelessWidget {
-  const _StepButton({required this.icon, required this.onTap});
-
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColor.surface,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: const BorderSide(color: AppColor.border),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(6),
-          child: Icon(icon, size: 18, color: AppColor.ink),
-        ),
-      ),
-    );
-  }
-}
-
-/// Status izin perangkat, plus tombol untuk menanyakannya ulang.
-/// Android hanya bertanya sekali; sesudah dijawab, dialog sistem tidak
-/// muncul lagi dan izinnya harus dicabut dari setelan.
-class _PermissionSection extends StatefulWidget {
-  const _PermissionSection();
-
-  @override
-  State<_PermissionSection> createState() => _PermissionSectionState();
-}
-
-class _PermissionSectionState extends State<_PermissionSection> {
-  LocationPermission? _location;
-  bool? _serviceOn;
-  bool? _notification;
-  bool _busy = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // context.read tidak boleh dipanggil di dalam initState,
-    // jadi pengecekan ditunda sampai frame pertama selesai.
-    WidgetsBinding.instance.addPostFrameCallback((Duration _) {
-      if (mounted) _refreshStatus();
-    });
-  }
-
-  Future<void> _refreshStatus() async {
-    // Dibaca sebelum await mana pun, supaya context tidak dipakai
-    // setelah widget berpotensi lepas dari pohon.
-    final LocalNotificationService service = context
-        .read<LocalNotificationService>();
-
-    LocationPermission? permission;
-    bool? serviceOn;
-    bool? notification;
-
-    try {
-      permission = await Geolocator.checkPermission();
-      serviceOn = await Geolocator.isLocationServiceEnabled();
-    } on Object catch (error) {
-      debugPrint('Debug panel cek lokasi gagal: $error');
-    }
-
-    try {
-      notification = await service.isEnabled();
-    } on Object catch (error) {
-      debugPrint('Debug panel cek notifikasi gagal: $error');
-    }
-
-    if (!mounted) return;
-    setState(() {
-      _location = permission;
-      _serviceOn = serviceOn;
-      _notification = notification;
-    });
-  }
-
-  /// Buka lagi kunci dialog internal, tanyakan ulang, lalu hitung ulang jarak.
-  Future<void> _askAgain() async {
-    if (_busy) return;
-    setState(() => _busy = true);
-
-    PermissionPrompt.allowDialogsAgain();
-
-    await PermissionPrompt.askNotification(context);
-    if (!mounted) return;
-    await PermissionPrompt.askLocation(context);
-    if (!mounted) return;
-
-    await context.read<DashboardProvider>().refreshLocation();
-    if (!mounted) return;
-
-    setState(() => _busy = false);
-    await _refreshStatus();
-  }
-
-  Future<void> _openSettings() async {
-    try {
-      await Geolocator.openAppSettings();
-    } on Object catch (error) {
-      debugPrint('Debug panel buka setelan gagal: $error');
-    }
-  }
-
-  String get _locationLabel {
-    switch (_location) {
-      case null:
-        return 'memeriksa...';
-      case LocationPermission.always:
-        return 'diizinkan selalu';
-      case LocationPermission.whileInUse:
-        return 'diizinkan saat dipakai';
-      case LocationPermission.denied:
-        return 'belum dijawab / ditolak sekali';
-      case LocationPermission.deniedForever:
-        return 'ditolak permanen, hanya bisa lewat setelan';
-      case LocationPermission.unableToDetermine:
-        return 'tidak terbaca';
-    }
-  }
-
-  String get _serviceLabel {
-    final bool? on = _serviceOn;
-    if (on == null) return 'tidak terbaca';
-    return on ? 'menyala' : 'mati';
-  }
-
-  String get _notificationLabel {
-    final bool? on = _notification;
-    if (on == null) return 'memeriksa...';
-    return on ? 'diizinkan' : 'ditolak';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bool blocked = _location == LocationPermission.deniedForever;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text('Izin perangkat', style: AppTextStyle.titleSmall),
-        const SizedBox(height: 4),
-        Text(
-          'Lokasi: $_locationLabel\n'
-          'GPS perangkat: $_serviceLabel\n'
-          'Notifikasi: $_notificationLabel',
-          style: AppTextStyle.bodySmall.copyWith(color: AppColor.inkFaint),
-        ),
-        if (blocked) ...<Widget>[
-          const SizedBox(height: 6),
-          Text(
-            'Sudah ditolak permanen. Dialog sistem tidak akan muncul lagi, '
-            'cabut izinnya dari setelan aplikasi dulu.',
-            style: AppTextStyle.bodySmall.copyWith(color: AppColor.danger),
-          ),
-        ],
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: <Widget>[
-            _TierChip(
-              label: _busy ? 'menanya...' : 'Tanya ulang',
-              selected: false,
-              onTap: _askAgain,
-            ),
-            _TierChip(
-              label: 'Buka setelan aplikasi',
-              selected: false,
-              onTap: _openSettings,
-            ),
-            _TierChip(
-              label: 'Muat status',
-              selected: false,
-              onTap: _refreshStatus,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _TierChip extends StatelessWidget {
-  const _TierChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-    this.color,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    final Color tint = color ?? AppColor.inkSoft;
-
-    return Material(
-      color: selected ? tint.withValues(alpha: 0.22) : AppColor.surface,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(999),
-        side: BorderSide(color: selected ? tint : AppColor.border),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          child: Text(
-            label,
-            style: AppTextStyle.bodySmall.copyWith(
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-            ),
-          ),
         ),
       ),
     );

@@ -1,8 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_barberstuff/features/store/data/models/store_detail.dart';
+import 'package:mobile_barberstuff/features/store/data/models/store_detail_model.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_detail.dart';
 
 StoreDetail _detail(String open, String close) {
-  return StoreDetail.fromJson(<String, dynamic>{
+  return StoreDetailModel.fromJson(<String, dynamic>{
     'id': 'store-1',
     'name': 'Kemang Raya',
     'open_hour': open,
@@ -45,7 +46,7 @@ void main() {
   test('jam kosong atau bukan string menghasilkan null, bukan lempar', () {
     expect(_detail('', '').openHour, isNull);
 
-    final StoreDetail missing = StoreDetail.fromJson(<String, dynamic>{
+    final StoreDetail missing = StoreDetailModel.fromJson(<String, dynamic>{
       'id': 'store-1',
       'name': 'Kemang Raya',
       'open_hour': null,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 
 class DebugOverrides extends ChangeNotifier {
   MemberTier? _tier;

@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/api_response.dart';
 
-/// Talks to the Barberstuff backend. Every response is wrapped as
-/// `{data, message, statusCode, status, meta?}`, so [get]/[post] unwrap `data`
-/// and turn a failure into an [ApiException] carrying the server's message.
+import '../../app/app_env.dart';
+
+// bentuk data {data, message, meta, status, statusCode} lanjut get / post bungkus data
+/// kalo gagal [ApiException] akan dilempar ke server
 class ApiClient {
-  ApiClient({Dio? dio, String baseUrl = defaultBaseUrl})
+  ApiClient({Dio? dio, String baseUrl = AppEnv.baseUrl})
     : _dio =
           dio ??
           Dio(
@@ -14,19 +17,18 @@ class ApiClient {
               baseUrl: baseUrl,
               connectTimeout: const Duration(seconds: 15),
               receiveTimeout: const Duration(seconds: 20),
-              headers: {'Content-Type': 'application/json'},
-              // Errors carry a readable message in the body, so read it instead of throwing.
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
               validateStatus: (_) => true,
             ),
           );
 
-  static const defaultBaseUrl = 'https://api.barberstuff.my.id';
-
   final Dio _dio;
-
   String? _token;
 
-  /// Set after login; cleared on sign out.
+  // Mengatur token untuk permintaan API
   set token(String? value) {
     _token = value;
     if (value == null) {
@@ -38,30 +40,49 @@ class ApiClient {
 
   String? get token => _token;
 
-  Future<ApiResult> get(String path, {Map<String, Object?>? query}) =>
-      _send(() => _dio.get(path, queryParameters: _clean(query)));
-
-  Future<ApiResult> post(String path, {Object? body}) => _send(() => _dio.post(path, data: body));
-
-  Future<ApiResult> patch(String path, {Object? body}) => _send(() => _dio.patch(path, data: body));
-
-  Future<ApiResult> _send(Future<Response<dynamic>> Function() request) async {
-    final Response<dynamic> response;
+  // Merequest API
+  Future<ApiResponse> _send(
+    Future<Response<dynamic>> Function() request,
+  ) async {
+    final Response<dynamic> res;
     try {
-      response = await request();
+      res = await request();
     } on DioException catch (e) {
-      throw ApiException(_networkMessage(e));
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        throw ApiException('Jaringan Bermasalah', statusCode: 408);
+      } else if (e.type == DioExceptionType.badResponse) {
+        throw ApiException('Server Bermasalah', statusCode: 500);
+      } else if (e.type == DioExceptionType.unknown &&
+          e.error is SocketException) {
+        throw ApiException('Koneksi Bermasalah', statusCode: 503);
+      } else {
+        throw ApiException('Masalah Yang Tidak Dikenali', statusCode: 520);
+      }
+    }
+    final data = res.data;
+
+    if (data is! Map) {
+      throw ApiException(
+        'Format Data Tidak Dikenali',
+        statusCode: res.statusCode,
+      );
+    }
+    final status = res.statusCode ?? 0;
+    if (status < 200 || status >= 300) {
+      throw ApiException(
+        data['message']?.toString() ?? 'Permintaan Server Gagal',
+        statusCode: status,
+      );
     }
 
-    final body = response.data;
-    if (body is! Map) {
-      throw ApiException('Respons server tidak dikenali (${response.statusCode})');
-    }
-    final status = response.statusCode ?? 0;
-    if (status < 200 || status >= 300) {
-      throw ApiException((body['message'] as String?) ?? 'Permintaan gagal ($status)', statusCode: status);
-    }
-    return ApiResult(data: body['data'], meta: body['meta'] as Map?, message: body['message'] as String?);
+    return ApiResponse(
+      data: data['data'],
+      message: data['message']?.toString(),
+      meta: data['meta'] as Map<dynamic, dynamic>?,
+      status: data['status']?.toString(),
+      statusCode: status,
+    );
   }
 
   static Map<String, Object?>? _clean(Map<String, Object?>? query) {
@@ -72,53 +93,12 @@ class ApiClient {
     };
   }
 
-  /// Keeps the underlying reason visible, so a failure on a real tablet can be
-  /// told apart (no network vs DNS vs certificate) instead of guessing.
-  static String _networkMessage(DioException e) {
-    final cause = e.error;
-    final detail = switch (cause) {
-      SocketException(osError: final os?) => os.message,
-      SocketException() => 'jaringan tidak tersedia',
-      HandshakeException() => 'sertifikat/TLS ditolak — cek tanggal & jam perangkat',
-      _ => e.message ?? e.type.name,
-    };
-
-    return switch (e.type) {
-      DioExceptionType.connectionTimeout ||
-      DioExceptionType.sendTimeout ||
-      DioExceptionType.receiveTimeout => 'Koneksi ke server timeout. Cek jaringan tablet. ($detail)',
-      DioExceptionType.connectionError => 'Tidak bisa terhubung ke server: $detail',
-      _ => 'Gagal menghubungi server: $detail',
-    };
-  }
-}
-
-class ApiResult {
-  const ApiResult({required this.data, this.meta, this.message});
-
-  final Object? data;
-  final Map<dynamic, dynamic>? meta;
-  final String? message;
-
-  List<Map<String, dynamic>> get list => [
-    for (final item in (data as List? ?? const []))
-      if (item is Map) item.cast<String, dynamic>(),
-  ];
-
-  Map<String, dynamic> get map => (data as Map? ?? const {}).cast<String, dynamic>();
-
-  int get totalData => (meta?['total_data'] as num?)?.toInt() ?? list.length;
-  int get totalPages => (meta?['total_pages'] as num?)?.toInt() ?? 1;
-}
-
-class ApiException implements Exception {
-  const ApiException(this.message, {this.statusCode});
-
-  final String message;
-  final int? statusCode;
-
-  bool get isUnauthorized => statusCode == 401 || statusCode == 403;
-
-  @override
-  String toString() => message;
+  Future<ApiResponse> get(String path, {Map<String, Object?>? query}) =>
+      _send(() => _dio.get(path, queryParameters: _clean(query)));
+  Future<ApiResponse> post(String path, {Object? data}) =>
+      _send(() => _dio.post(path, data: data));
+  Future<ApiResponse> patch(String path, {Object? data}) =>
+      _send(() => _dio.patch(path, data: data));
+  Future<ApiResponse> delete(String path, {Object? data}) =>
+      _send(() => _dio.delete(path, data: data));
 }

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_barberstuff/app/app_route.dart';
+import 'package:mobile_barberstuff/core/network/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/history/data/history_repository.dart';
-import 'package:mobile_barberstuff/features/history/domain/booking_history.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/history/domain/entities/booking_history.dart';
+import 'package:mobile_barberstuff/features/history/presentation/provider/customer_bookings_provider.dart';
 import 'package:mobile_barberstuff/features/history/presentation/provider/history_provider.dart';
 import 'package:mobile_barberstuff/features/history/presentation/widgets/history_card.dart';
 import 'package:mobile_barberstuff/features/history/presentation/widgets/review_sheet.dart';
-import 'package:mobile_barberstuff/features/home/presentation/widgets/dashboard_bottom_nav.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
-import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
-import 'package:mobile_barberstuff/shared/widgets/filter_chip_bar.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/app_toast.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/skeleton.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/app_search_bar.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/filter_chip_bar.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/dashboard_bottom_nav.dart';
 import 'package:provider/provider.dart';
 
 class HistoryPage extends StatelessWidget {
@@ -21,7 +24,7 @@ class HistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<HistoryProvider>(
       create: (BuildContext ctx) =>
-          HistoryProvider(ctx.read<HistoryRepository>()),
+          HistoryProvider(ctx.read<CustomerBookingsProvider>()),
       child: const HistoryView(),
     );
   }
@@ -43,6 +46,17 @@ class HistoryView extends StatelessWidget {
     }
   }
 
+  /// Rincian pesanan dengan tampilan yang sama seperti langkah konfirmasi
+  /// booking. Bukti pesanan (barcode) bisa dibuka dari sana.
+  void _openOrder(BuildContext context, BookingHistory item) {
+    final BookingRecord? record = context.read<CustomerBookingsProvider>().byId(
+      item.id,
+    );
+    if (record == null) return;
+
+    Navigator.of(context).pushNamed(AppRoute.bookingDetail, arguments: record);
+  }
+
   Future<void> _openReview(
     BuildContext context,
     HistoryProvider p,
@@ -53,12 +67,19 @@ class HistoryView extends StatelessWidget {
     final ReviewDraft? draft = await showReviewSheet(
       context,
       readOnly: item.isReviewed,
-      initial: context.read<HistoryRepository>().reviewOf(item.id),
+      initial: context.read<CustomerBookingsProvider>().reviewOf(item.id),
     );
     if (draft == null || !context.mounted) return;
 
     final bool ok = await p.submitReview(item.id, draft);
-    if (!ok || !context.mounted) return;
+    if (!context.mounted) return;
+
+    if (!ok) {
+      if (p.submitError != null) {
+        AppToast.show(context, message: p.submitError!.message(l10n));
+      }
+      return;
+    }
 
     AppToast.show(context, message: l10n.reviewThanks);
   }
@@ -137,7 +158,10 @@ class HistoryView extends StatelessWidget {
                               constraints: BoxConstraints(
                                 minHeight: c.maxHeight,
                               ),
-                              child: _Empty(message: l10n.historyEmpty),
+                              child: _Empty(
+                                message:
+                                    p.error?.message(l10n) ?? l10n.historyEmpty,
+                              ),
                             ),
                           );
                         },
@@ -147,22 +171,23 @@ class HistoryView extends StatelessWidget {
                       onRefresh: p.load,
                       color: AppColor.goldDeep,
                       child: ListView.separated(
-                      padding: EdgeInsets.fromLTRB(
-                        sidePadding,
-                        0,
-                        sidePadding,
-                        20 + DashboardBottomNav.spaceOf(context),
-                      ),
-                      itemCount: p.items.length,
-                      separatorBuilder: (BuildContext _, int _) =>
-                          const SizedBox(height: 10),
-                      itemBuilder: (BuildContext context, int index) {
-                        final BookingHistory item = p.items[index];
-                        return HistoryCard(
-                          item: item,
-                          onReview: () => _openReview(context, p, item),
-                        );
-                      },
+                        padding: EdgeInsets.fromLTRB(
+                          sidePadding,
+                          0,
+                          sidePadding,
+                          20 + DashboardBottomNav.spaceOf(context),
+                        ),
+                        itemCount: p.items.length,
+                        separatorBuilder: (BuildContext _, int _) =>
+                            const SizedBox(height: 10),
+                        itemBuilder: (BuildContext context, int index) {
+                          final BookingHistory item = p.items[index];
+                          return HistoryCard(
+                            item: item,
+                            onTap: () => _openOrder(context, item),
+                            onReview: () => _openReview(context, p, item),
+                          );
+                        },
                       ),
                     ),
             ),

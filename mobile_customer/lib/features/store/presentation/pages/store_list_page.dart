@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_stores.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
 import 'package:mobile_barberstuff/features/store/presentation/provider/store_list_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_search_bar.dart';
-import 'package:mobile_barberstuff/shared/widgets/error_retry_view.dart';
-import 'package:mobile_barberstuff/shared/widgets/skeleton.dart';
-import 'package:mobile_barberstuff/shared/widgets/store_image.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/error_retry_view.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/skeleton.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/app_search_bar.dart';
+import 'package:mobile_barberstuff/shared/widgets/media/store_image.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/app_back_bar.dart';
 import 'package:provider/provider.dart';
 
 class StoreListPage extends StatelessWidget {
@@ -24,10 +25,8 @@ class StoreListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<StoreListProvider>(
-      create: (BuildContext ctx) => StoreListProvider(
-        ctx.read<BookingRepository>(),
-        ctx.read<LocationService>(),
-      ),
+      create: (BuildContext ctx) =>
+          StoreListProvider(ctx.read<GetStores>(), ctx.read<LocationService>()),
       child: const _StoreListView(),
     );
   }
@@ -52,18 +51,7 @@ class _StoreListView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColor.surface,
-      appBar: AppBar(
-        backgroundColor: AppColor.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: const BackButton(color: AppColor.ink),
-        title: Text(
-          l10n.storeListTitle,
-          style: AppTextStyle.headlineSmall.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      appBar: AppBackBar(title: l10n.storeListTitle, useMaterialBackIcon: true),
       body: SafeArea(
         top: false,
         child: Column(
@@ -81,7 +69,9 @@ class _StoreListView extends StatelessWidget {
                 hint: l10n.bookingSearchHint,
               ),
             ),
-            Expanded(child: _Body(provider: p, onSelect: _openDetail)),
+            Expanded(
+              child: _Body(provider: p, onSelect: _openDetail),
+            ),
           ],
         ),
       ),
@@ -263,4 +253,3 @@ class _StoreRow extends StatelessWidget {
     );
   }
 }
-

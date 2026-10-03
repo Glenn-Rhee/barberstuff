@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/app_back_bar.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -15,18 +16,7 @@ class AboutPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColor.surface,
-      appBar: AppBar(
-        backgroundColor: AppColor.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: const BackButton(color: AppColor.ink),
-        title: Text(
-          l10n.aboutTitle,
-          style: AppTextStyle.headlineSmall.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      appBar: AppBackBar(title: l10n.aboutTitle, useMaterialBackIcon: true),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 36),

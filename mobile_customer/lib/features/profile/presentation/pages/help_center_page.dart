@@ -3,11 +3,12 @@ import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/widgets/labeled_field.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/coming_soon_dialog.dart';
+import 'package:mobile_barberstuff/shared/dialogs/coming_soon_dialog.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/navigation/app_back_bar.dart';
 
 class HelpCenterArgs {
   const HelpCenterArgs({required this.profile});
@@ -64,18 +65,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
 
     return Scaffold(
       backgroundColor: AppColor.surface,
-      appBar: AppBar(
-        backgroundColor: AppColor.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: const BackButton(color: AppColor.ink),
-        title: Text(
-          l10n.helpTitle,
-          style: AppTextStyle.headlineSmall.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      appBar: AppBackBar(title: l10n.helpTitle, useMaterialBackIcon: true),
       body: SafeArea(
         child: Form(
           key: _formKey,

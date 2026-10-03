@@ -1,21 +1,37 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- The kasir talks to the Barberstuff API; without this a release build has no network. -->
-    <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Bluetooth receipt printer (Panda PRJ-R58D / RPP210A) -->
-    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <!-- Access Permission Internet -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Access Permission Bluetooth for printer (Panda PRJ-R58D / RPP210A) -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
+
+    <!-- Access Permission Camera for scan QR booking -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
     <application
         android:label="Dashboard Barberstuff"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
-        <!-- Android 16 ignores screenOrientation on large screens; keep the cashier landscape-only. -->
         <property
             android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
-            android:value="true" />
+            android:value="true"/>
+
+        <!-- Tetap landscape saat kamera scan QR dibuka. Tanpa ini, camera compat
+             Android di tablet memutar layar ke portrait dan app jadi kotak sempit -->
+        <property
+            android:name="android.window.PROPERTY_CAMERA_COMPAT_ALLOW_FORCE_ROTATION"
+            android:value="false"/>
+        <property
+            android:name="android.window.PROPERTY_CAMERA_COMPAT_ALLOW_REFRESH"
+            android:value="false"/>
+        <property
+            android:name="android.window.PROPERTY_CAMERA_COMPAT_ALLOW_SIMULATE_REQUESTED_ORIENTATION"
+            android:value="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

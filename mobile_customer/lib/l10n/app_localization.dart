@@ -683,7 +683,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeActionPackage.
   ///
   /// In id, this message translates to:
-  /// **'Paket'**
+  /// **'Toko'**
   String get homeActionPackage;
 
   /// No description provided for @homeActionPromo.
@@ -1015,6 +1015,24 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Info toko disalin ke clipboard'**
   String get storeShareCopied;
+
+  /// No description provided for @storeShareMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'{name}\n{address}\n\nLihat detail & booking di BarberStuff:\n{link}'**
+  String storeShareMessage(String name, String address, String link);
+
+  /// No description provided for @storeBookCta.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking Sekarang'**
+  String get storeBookCta;
+
+  /// No description provided for @storeBookClosed.
+  ///
+  /// In id, this message translates to:
+  /// **'Cabang Sedang Tutup'**
+  String get storeBookClosed;
 
   /// No description provided for @storeNoBarber.
   ///
@@ -1472,6 +1490,12 @@ abstract class AppLocalizations {
   /// **'Simpan Perubahan'**
   String get personalInfoSave;
 
+  /// No description provided for @personalInfoSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Perubahan tersimpan'**
+  String get personalInfoSaved;
+
   /// No description provided for @helpTitle.
   ///
   /// In id, this message translates to:
@@ -1705,6 +1729,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Konfirmasi Booking'**
   String get bookingConfirmTitle;
+
+  /// No description provided for @bookingDetailTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Detail Booking'**
+  String get bookingDetailTitle;
 
   /// No description provided for @bookingConfirmSubtitle.
   ///

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
+import 'package:mobile_barberstuff/core/usecase/usecase.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
-import 'package:mobile_barberstuff/features/profile/data/repositories/profile_repository.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/usecases/get_customer_profile.dart';
 
 class ProfileProvider extends ChangeNotifier {
-  ProfileProvider(this._repository, this._overrides) {
+  ProfileProvider(this._getProfile, this._overrides) {
     _overrides.addListener(notifyListeners);
     load();
   }
 
-  final ProfileRepository _repository;
+  final GetCustomerProfile _getProfile;
   final DebugOverrides _overrides;
 
   CustomerProfile? _fetched;
@@ -67,8 +68,9 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final CachedResult<CustomerProfile> result = await _repository
-          .getCustomerProfile();
+      final CachedResult<CustomerProfile> result = await _getProfile(
+        const NoParams(),
+      );
       _fetched = result.data;
       _fromCache = result.fromCache;
       _cachedAt = result.savedAt;

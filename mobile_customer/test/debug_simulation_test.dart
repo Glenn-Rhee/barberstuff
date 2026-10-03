@@ -1,13 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
-import 'package:mobile_barberstuff/core/services/dio_client.dart';
-import 'package:mobile_barberstuff/features/booking/data/datasources/booking_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/network/dio_client.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
 import 'package:mobile_barberstuff/features/debug/presentation/provider/debug_overrides.dart';
-import 'package:mobile_barberstuff/features/profile/data/models/customer_profile.dart';
+import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
+import 'package:mobile_barberstuff/features/store/data/datasources/store_remote_datasource.dart';
+import 'package:mobile_barberstuff/features/store/data/models/store_summary_model.dart';
+import 'package:mobile_barberstuff/features/store/data/repositories/store_repository_impl.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/repositories/store_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<AppCache> _freshCache() async {
@@ -81,7 +83,7 @@ void main() {
     test('repo cabang memakai cache saat offline dipaksa', () async {
       final AppCache cache = await _freshCache();
       await cache.writeJson(AppCache.keyStores, <Map<String, dynamic>>[
-        const StoreSummary(
+        const StoreSummaryModel(
           id: 'store-1',
           name: 'Barberstuff Kemang Raya',
           address: 'Jl. Kemang',
@@ -97,8 +99,8 @@ void main() {
       ]);
 
       final DioClient client = DioClient(isOffline: () => true);
-      final BookingRepository repo = BookingRepository(
-        BookingRemoteDataSource(client.dio),
+      final StoreRepository repo = StoreRepositoryImpl(
+        StoreRemoteDataSource(client.dio),
         cache,
       );
 

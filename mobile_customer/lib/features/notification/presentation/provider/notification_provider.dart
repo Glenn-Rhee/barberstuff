@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
+import 'package:mobile_barberstuff/features/notification/domain/entities/app_notification.dart';
 
 typedef NotificationPresenter = void Function(AppNotification notification);
 
@@ -26,7 +26,6 @@ class NotificationProvider extends ChangeNotifier {
   NotificationFilter get filter => _filter;
   String get query => _query;
   bool get isSimulating => _simulator != null;
-
 
   void attachPresenter(NotificationPresenter? presenter) {
     _presenter = presenter;

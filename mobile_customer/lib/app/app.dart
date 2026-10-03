@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
-import 'package:mobile_barberstuff/core/localization/local_controller.dart';
+import 'package:mobile_barberstuff/core/localization/locale_controller.dart';
 import 'package:mobile_barberstuff/core/services/local_notification_service.dart';
 import 'package:mobile_barberstuff/core/theme/app_theme.dart';
-import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
+import 'package:mobile_barberstuff/features/notification/domain/entities/app_notification.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/provider/notification_provider.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/widgets/notification_text.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
@@ -14,7 +14,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = context.select<LocalController, Locale>((c) => c.locale);
+    final locale = context.select<LocaleController, Locale>((c) => c.locale);
 
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,

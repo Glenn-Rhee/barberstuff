@@ -1,32 +1,37 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
+import 'package:mobile_barberstuff/features/store/data/models/store_summary_model.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('StoreCoordinate.parse', () {
+  group('StoreCoordinateModel.fromJson', () {
     test('membaca format lat,long', () {
-      final StoreCoordinate? c = StoreCoordinate.parse('-6.260278,106.813889');
+      final StoreCoordinate? c = StoreCoordinateModel.fromJson(
+        '-6.260278,106.813889',
+      );
       expect(c, isNotNull);
       expect(c!.latitude, closeTo(-6.260278, 0.000001));
       expect(c.longitude, closeTo(106.813889, 0.000001));
     });
 
     test('membaca format long,lat seperti di seed backend', () {
-      final StoreCoordinate? c = StoreCoordinate.parse('106.821810,-6.193125');
+      final StoreCoordinate? c = StoreCoordinateModel.fromJson(
+        '106.821810,-6.193125',
+      );
       expect(c, isNotNull);
       expect(c!.latitude, closeTo(-6.193125, 0.000001));
       expect(c.longitude, closeTo(106.821810, 0.000001));
     });
 
     test('menolak nilai yang tidak valid', () {
-      expect(StoreCoordinate.parse(null), isNull);
-      expect(StoreCoordinate.parse('bukan koordinat'), isNull);
-      expect(StoreCoordinate.parse('1,2,3'), isNull);
-      expect(StoreCoordinate.parse('abc,def'), isNull);
+      expect(StoreCoordinateModel.fromJson(null), isNull);
+      expect(StoreCoordinateModel.fromJson('bukan koordinat'), isNull);
+      expect(StoreCoordinateModel.fromJson('1,2,3'), isNull);
+      expect(StoreCoordinateModel.fromJson('abc,def'), isNull);
     });
   });
 
