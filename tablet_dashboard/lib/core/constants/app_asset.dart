@@ -31,6 +31,7 @@ class AppAsset {
   static const String trashIcon = '$_cashier/trash.png';
   static const String cashIcon = '$_cashier/dollar.png';
   static const String cashlessIcon = '$_cashier/non_tunai.png';
+  static const String closeSidebarIcon = '$_cashier/close_sidebar.png';
 
   // Ikon layanan di katalog kasir
   static const String beardIcon = '$_cashier/smile.png';

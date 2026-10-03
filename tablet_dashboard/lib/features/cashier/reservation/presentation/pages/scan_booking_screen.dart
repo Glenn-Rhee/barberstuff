@@ -31,7 +31,8 @@ Future<void> openScanBooking(
 }
 
 // Scan QR dari aplikasi pelanggan pakai kamera tablet.
-// Isi QR = "bk{id booking}" (dibuat backend), dikirim ke
+// Isi QR = "bk{id booking}" (booking aplikasi pelanggan cuma 4 karakter
+// pertama id), dikirim ke
 // PATCH /staff/booking/checkin/{qr}. Bisa juga diketik / scanner USB
 class ScanBookingScreen extends StatefulWidget {
   const ScanBookingScreen({super.key, this.initialCode});
@@ -68,7 +69,7 @@ class _ScanBookingScreenState extends State<ScanBookingScreen> {
     final error = await context.read<BookingsController>().checkIn(code);
     if (!mounted) return;
     if (error == null) {
-      // Balikin id booking (tanpa awalan "bk")
+      // Balikin id / awalan id booking (tanpa "bk") untuk dipilih
       Navigator.pop(context, code.startsWith('bk') ? code.substring(2) : code);
       return;
     }

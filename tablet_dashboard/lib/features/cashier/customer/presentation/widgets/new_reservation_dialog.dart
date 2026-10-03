@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/theme/app_button_style.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
@@ -9,9 +10,11 @@ import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/servic
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/customer/domain/entities/customer_profile.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
+import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/cart_item_tile.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking_slot.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/service_picker_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 import 'package:tablet_dashboard/shared/dialogs/app_form_dialog.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
@@ -20,7 +23,8 @@ import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 
 // Buat reservasi untuk pelanggan dari histori: tanggal, jam kosong dari
-// GET /booking/store, capster kosong di jam itu, dan 1 layanan / paket
+// GET /booking/store, capster kosong di jam itu, dan layanan / paket
+// (boleh lebih dari 1, item yang sama cuma 1x)
 Future<void> showNewReservationDialog(
   BuildContext context,
   CustomerProfile customer,
@@ -62,7 +66,7 @@ class _NewReservationDialogState extends State<_NewReservationDialog> {
   String? _error;
   BookingSlot? _slot;
   String? _capsterId;
-  ServiceItem? _service;
+  final List<ServiceItem> _services = [];
 
   DateTime get _today {
     final now = DateTime.now();
@@ -95,6 +99,15 @@ class _NewReservationDialogState extends State<_NewReservationDialog> {
     }
   }
 
+  // Item yang sudah dipilih tidak muncul lagi di pemilih
+  Future<void> _addService() async {
+    final item = await showServicePicker(
+      context,
+      excludeIds: {for (final s in _services) s.id},
+    );
+    if (item != null && mounted) setState(() => _services.add(item));
+  }
+
   void _pickDate(DateTime value) {
     if (value == _date) return;
     _date = value;
@@ -121,7 +134,7 @@ class _NewReservationDialogState extends State<_NewReservationDialog> {
       await context.read<BookingApi>().createBooking(
         storeId: context.read<StoreController>().storeId,
         capsterId: _capsterId!,
-        serviceIds: [_service!.id],
+        serviceIds: [for (final s in _services) s.id],
         bookingDate: at!,
         customerId: widget.customer.id,
         scheduled: true,
@@ -145,7 +158,7 @@ class _NewReservationDialogState extends State<_NewReservationDialog> {
       subtitle:
           'Untuk ${widget.customer.name} (${widget.customer.statusLabel})',
       width: 600,
-      canSubmit: _slot != null && _capsterId != null && _service != null,
+      canSubmit: _slot != null && _capsterId != null && _services.isNotEmpty,
       onSubmit: _submit,
       children: [
         const FieldLabel('Tanggal', required: true),
@@ -224,24 +237,31 @@ class _NewReservationDialogState extends State<_NewReservationDialog> {
           ),
         ],
         const SizedBox(height: 14),
-        const FieldLabel('Layanan / Paket (pilih 1)', required: true),
-        DropdownButtonFormField<ServiceItem>(
-          initialValue: _service,
-          isExpanded: true,
-          hint: const Text('Pilih 1 service atau 1 paket'),
-          style: AppTextStyle.body.copyWith(color: AppColor.ink),
-          items: [
-            for (final item in catalog.all)
-              DropdownMenuItem(
-                value: item,
-                child: Text(
-                  '${item.name} · ${item.type.label} · ${PriceFormat.full(item.price)}',
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-          ],
-          onChanged: (value) => setState(() => _service = value),
+        const FieldLabel('Layanan / Paket', required: true),
+        for (final item in _services)
+          CartItemTile(
+            item: catalog.byId(item.id) ?? item,
+            subtitle: item.type.label,
+            onRemove: () => setState(() => _services.remove(item)),
+          ),
+        SizedBox(
+          height: 38,
+          child: TextButton(
+            style: AppButtonStyle.softGold,
+            onPressed: _addService,
+            child: const Text(
+              'Tambah Layanan / Paket',
+              style: AppTextStyle.label,
+            ),
+          ),
         ),
+        if (_services.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            'Total ${PriceFormat.full(_services.fold(0, (sum, s) => sum + s.price))}',
+            style: AppTextStyle.bodyBold.copyWith(color: AppColor.gold),
+          ),
+        ],
       ],
     );
   }
