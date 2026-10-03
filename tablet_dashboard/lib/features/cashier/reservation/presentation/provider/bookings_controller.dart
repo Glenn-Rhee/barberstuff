@@ -93,12 +93,21 @@ class BookingsController extends ChangeNotifier {
     }
   }
 
-  // Tambah layanan ke [booking] lalu muat ulang list.
-  // Balikin pesan error, atau null kalau berhasil
-  Future<String?> addService(Booking booking, String serviceId) async {
+  // Ganti isi booking dengan satu layanan / paket (1 pelanggan = 1 item).
+  // Tambah yang baru dulu, baru hapus yang lama, karena backend menolak
+  // booking kosong. Balikin pesan error, atau null kalau berhasil
+  Future<String?> replaceService(Booking booking, String serviceId) async {
     try {
       await _api.addService(bookingId: booking.id, serviceId: serviceId);
+      for (final line in booking.services) {
+        if (line.item.id == serviceId) continue;
+        await _api.removeService(
+          bookingId: booking.id,
+          serviceId: line.item.id,
+        );
+      }
     } on ApiException catch (e) {
+      await refresh();
       return e.message;
     }
     await refresh();

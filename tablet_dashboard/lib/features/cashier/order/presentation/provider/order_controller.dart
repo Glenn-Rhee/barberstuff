@@ -9,8 +9,8 @@ import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_tra
 enum CartChange { added, replaced, exists }
 
 // Pesanan langsung yang sedang diinput.
-// Aturan keranjang: beberapa service (masing-masing 1x) ATAU 1 paket,
-// tidak boleh campur service dan paket
+// Aturan keranjang: 1 pelanggan cuma 1 item, 1 service ATAU 1 paket.
+// Pilih item lain = menggantikan yang lama
 class OrderController extends ChangeNotifier {
   // Batas no HP dari backend
   static const minPhone = 9;
@@ -54,15 +54,12 @@ class OrderController extends ChangeNotifier {
 
   CartChange add(ServiceItem item) {
     if (_items.contains(item)) return CartChange.exists;
-    // Paket selalu sendirian, service tidak boleh campur paket
-    final mixed =
-        _items.isNotEmpty &&
-        (item.type == ServiceType.package ||
-            _items.any((i) => i.type == ServiceType.package));
-    if (mixed) _items.clear();
-    _items.add(item);
+    final replaced = _items.isNotEmpty;
+    _items
+      ..clear()
+      ..add(item);
     notifyListeners();
-    return mixed ? CartChange.replaced : CartChange.added;
+    return replaced ? CartChange.replaced : CartChange.added;
   }
 
   void remove(ServiceItem item) {

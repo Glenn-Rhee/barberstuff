@@ -28,9 +28,7 @@ class WalkInView extends StatelessWidget {
     if (order.add(item) == CartChange.replaced) {
       AppToast.show(
         context,
-        item.type == ServiceType.package
-            ? 'Paket tidak bisa digabung, keranjang diganti ${item.name}'
-            : 'Paket dikeluarkan, service tidak bisa digabung dengan paket',
+        '1 pelanggan cuma 1 layanan, keranjang diganti ${item.name}',
       );
     }
   }
