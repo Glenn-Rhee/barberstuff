@@ -22,12 +22,15 @@ class SidebarBrand extends StatelessWidget {
     final logo = Container(
       width: 36,
       height: 36,
-      padding: const EdgeInsets.all(6),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: AppColor.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Image.asset(AppAsset.logoGlyph, color: AppColor.ink),
+      child: Transform.scale(
+        scale: 1,
+        child: Image.asset(AppAsset.logoGlyph, color: AppColor.ink),
+      ),
     );
     final toggle = SidebarIconButton(
       icon: Icon(expanded ? Icons.chevron_left : Icons.chevron_right),
