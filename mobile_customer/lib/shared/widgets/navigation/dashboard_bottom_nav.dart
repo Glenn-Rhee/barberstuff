@@ -34,16 +34,24 @@ class DashboardBottomNav extends StatelessWidget {
   final DashboardTab current;
   final void Function(DashboardTab tab) onSelect;
 
-  static String _iconOf(DashboardTab tab) {
+  static String _iconOf(DashboardTab tab, {required bool active}) {
     switch (tab) {
       case DashboardTab.home:
-        return AppAssets.homeBottom;
+        return active
+            ? AppAssets.homeBottomActive
+            : AppAssets.homeBottomInactive;
       case DashboardTab.booking:
-        return AppAssets.scissorsBottom;
+        return active
+            ? AppAssets.scissorsBottomActive
+            : AppAssets.scissorsBottomInactive;
       case DashboardTab.history:
-        return AppAssets.historyBottom;
+        return active
+            ? AppAssets.historyBottomActive
+            : AppAssets.historyBottomInactive;
       case DashboardTab.profile:
-        return AppAssets.userBottom;
+        return active
+            ? AppAssets.profileBottomActive
+            : AppAssets.profileBottomInactive;
     }
   }
 
@@ -78,7 +86,9 @@ class DashboardBottomNav extends StatelessWidget {
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(_radius),
             ),
+            border: Border.all(color: AppColor.ink, width: 1),
           ),
+
           child: SafeArea(
             top: false,
             child: SizedBox(
@@ -90,7 +100,7 @@ class DashboardBottomNav extends StatelessWidget {
                     for (final DashboardTab tab in DashboardTab.values)
                       Expanded(
                         child: _NavItem(
-                          iconPath: _iconOf(tab),
+                          iconPath: _iconOf(tab, active: tab == current),
                           label: _labelOf(tab, l10n),
                           active: tab == current,
                           onTap: () => onSelect(tab),
@@ -122,8 +132,6 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color tint = active ? AppColor.goldDeep : AppColor.inkSoft;
-
     return InkWell(
       onTap: onTap,
       splashColor: AppColor.goldDeep.withValues(alpha: 0.12),
@@ -137,15 +145,14 @@ class _NavItem extends StatelessWidget {
               width: 24,
               height: 24,
               fit: BoxFit.contain,
-              color: tint,
               filterQuality: FilterQuality.medium,
             ),
             const SizedBox(height: 5),
             Text(
               label,
-              style: AppTextStyle.labelSmall.copyWith(
-                color: tint,
-                fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+              style: AppTextStyle.bodySmall.copyWith(
+                color: AppColor.ink,
+                fontWeight: active ? FontWeight.w900 : FontWeight.w500,
               ),
             ),
           ],
