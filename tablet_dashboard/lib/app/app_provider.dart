@@ -2,6 +2,8 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:tablet_dashboard/core/network/api_client.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
+import 'package:tablet_dashboard/features/admin/branch/data/branch_api.dart';
+import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_list_controller.dart';
 import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
@@ -31,6 +33,7 @@ List<SingleChildWidget> appProviders({
   required CashSessionApi cashSessionApi,
   required StoreApi storeApi,
   required CustomerApi customerApi,
+  required BranchApi branchApi,
   PrinterController? printer,
 }) {
   return [
@@ -40,6 +43,7 @@ List<SingleChildWidget> appProviders({
     Provider<CashSessionApi>.value(value: cashSessionApi),
     Provider<StoreApi>.value(value: storeApi),
     Provider<CustomerApi>.value(value: customerApi),
+    Provider<BranchApi>.value(value: branchApi),
     ChangeNotifierProvider(create: (_) => printer ?? PrinterController()),
     ChangeNotifierProvider(create: (_) => NavigationController()),
     ChangeNotifierProvider(
@@ -58,6 +62,7 @@ List<SingleChildWidget> appProviders({
     ChangeNotifierProvider(
       create: (_) => CustomerHistoryController(customerApi),
     ),
+    ChangeNotifierProvider(create: (_) => BranchListController(branchApi)),
     Provider(
       create: (ctx) => CheckoutController(
         bookingApi,

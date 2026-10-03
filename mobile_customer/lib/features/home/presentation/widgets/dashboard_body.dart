@@ -17,10 +17,8 @@ import 'package:mobile_barberstuff/features/profile/domain/entities/customer_pro
 import 'package:mobile_barberstuff/features/promo/presentation/pages/promo_page.dart';
 import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
 import 'package:mobile_barberstuff/features/store/presentation/pages/store_detail_page.dart';
-import 'package:mobile_barberstuff/features/store/presentation/provider/store_detail_provider.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/dialogs/permission_prompt.dart';
-import 'package:mobile_barberstuff/shared/widgets/feedback/app_toast.dart';
+
 import 'package:mobile_barberstuff/shared/widgets/navigation/dashboard_bottom_nav.dart';
 import 'package:provider/provider.dart';
 
@@ -73,39 +71,12 @@ class DashboardBody extends StatelessWidget {
     ).pushNamed(AppRoute.promo, arguments: PromoArgs(profile: profile));
   }
 
-  void _openReceipt(BuildContext context, BookingRecord record) {
-    Navigator.of(context).pushNamed(AppRoute.bookingReceipt, arguments: record);
+  void _openPackage(BuildContext context) {
+    Navigator.of(context).pushNamed(AppRoute.storeList);
   }
 
-  /// Pintasan Paket: buka detail cabang terdekat, langsung di tab Paket.
-  /// Tanpa lokasi mustahil tahu mana yang terdekat, jadi izinnya diminta
-  /// dulu setiap kali pintasan ini ditekan.
-  Future<void> _openNearestPackage(
-    BuildContext context,
-    DashboardProvider dashboard,
-  ) async {
-    final NavigatorState navigator = Navigator.of(context);
-    final AppLocalizations l10n = AppLocalizations.of(context);
-
-    final bool allowed = await PermissionPrompt.ensureLocation(context);
-    if (!allowed || !context.mounted) return;
-
-    await dashboard.refreshLocation();
-    if (!context.mounted) return;
-
-    final StoreSummary? nearest = dashboard.nearest;
-    if (nearest == null) {
-      AppToast.show(context, message: l10n.bookingStoreEmpty);
-      return;
-    }
-
-    navigator.pushNamed(
-      AppRoute.storeDetail,
-      arguments: StoreDetailArgs(
-        storeId: nearest.id,
-        initialTab: StoreTab.package,
-      ),
-    );
+  void _openReceipt(BuildContext context, BookingRecord record) {
+    Navigator.of(context).pushNamed(AppRoute.bookingReceipt, arguments: record);
   }
 
   @override
@@ -158,7 +129,7 @@ class DashboardBody extends StatelessWidget {
                   case QuickAction.booking:
                     _openBooking(context);
                   case QuickAction.package:
-                    _openNearestPackage(context, dashboard);
+                    _openPackage(context);
                   case QuickAction.promo:
                     _openPromo(context);
                   case QuickAction.history:

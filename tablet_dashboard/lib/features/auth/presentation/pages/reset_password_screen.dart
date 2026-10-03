@@ -143,7 +143,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           enabled: !_busy,
           keyboardType: TextInputType.emailAddress,
           style: AppTextStyle.body,
-          decoration: const InputDecoration(hintText: 'nama@barberstuff.id'),
+          decoration: const InputDecoration(hintText: 'example@gmail.com'),
           onChanged: _clearError,
         ),
         const SizedBox(height: 14),

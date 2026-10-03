@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tablet_dashboard/app/app.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
+import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_card.dart';
+import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_table.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
@@ -14,6 +16,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 
 import 'escpos_decoder.dart';
 import 'fake_api.dart';
+import 'fake_branch_api.dart';
 
 const _channel = MethodChannel('barberstuff/bluetooth_printer');
 
@@ -32,11 +35,13 @@ const _openSession = CashSession(
 
 void main() {
   late FakeApi api;
+  late FakeBranchApi branchApi;
   late List<MethodCall> printerCalls;
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     api = FakeApi();
+    branchApi = FakeBranchApi();
     printerCalls = [];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_channel, (call) async {
@@ -76,6 +81,7 @@ void main() {
         cashSessionApi: api,
         storeApi: api,
         customerApi: api,
+        branchApi: branchApi,
       ),
     );
     await tester.pumpAndSettle();
@@ -85,8 +91,11 @@ void main() {
     WidgetTester tester, {
     String password = FakeApi.defaultPassword,
   }) async {
+    // Cari dari jenis keyboard, teks hint-nya bisa berubah
     await tester.enterText(
-      find.widgetWithText(TextField, 'example@barberstuff.id'),
+      find.byWidgetPredicate(
+        (w) => w is TextField && w.keyboardType == TextInputType.emailAddress,
+      ),
       'staff@barberstuff.id',
     );
     await tester.enterText(
@@ -1018,6 +1027,276 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Masuk ke Dashboard'), findsOneWidget);
+    });
+  });
+
+  group('mengelola cabang', () {
+    // Halaman cabang bisa di-scroll, geser dulu targetnya ke layar
+    Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(finder);
+      await tester.pumpAndSettle();
+      await tester.tap(finder);
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> openBranches(WidgetTester tester) async {
+      api.staff = FakeApi.staffAs('admin');
+      await pumpApp(tester);
+      await signIn(tester);
+      await tapVisible(tester, find.text('Mengelola Cabang'));
+    }
+
+    Future<void> openDetail(WidgetTester tester, String name) async {
+      await openBranches(tester);
+      final card = find.ancestor(
+        of: find.text(name),
+        matching: find.byType(BranchCard),
+      );
+      await tapVisible(
+        tester,
+        find.descendant(of: card, matching: find.text('Lihat Detail')),
+      );
+    }
+
+    testWidgets('menu khusus admin', (tester) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      expect(find.text('Mengelola Cabang'), findsNothing);
+    });
+
+    testWidgets('daftar cabang dari API, cari, lalu buka detail', (
+      tester,
+    ) async {
+      await openBranches(tester);
+      expect(branchApi.calls, contains('branches'));
+      expect(find.byType(BranchCard), findsNWidgets(2));
+      expect(find.text('Jl. Cikutra No. 123, Bandung'), findsOneWidget);
+      expect(find.text('Tutup'), findsOneWidget); // Depok ditutup admin
+
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Cari cabang...'),
+        'depok',
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(BranchCard), findsOneWidget);
+      expect(find.text('Barberstuff Cikutra'), findsNothing);
+
+      await tester.enterText(find.widgetWithText(TextFormField, 'depok'), '');
+      await tester.pumpAndSettle();
+      final card = find.ancestor(
+        of: find.text('Barberstuff Cikutra').first,
+        matching: find.byType(BranchCard),
+      );
+      await tapVisible(
+        tester,
+        find.descendant(of: card, matching: find.text('Lihat Detail')),
+      );
+
+      expect(find.text('Profil Cabang'), findsOneWidget);
+      expect(find.text('Detail Cabang'), findsOneWidget);
+      expect(find.text('081234567890'), findsOneWidget);
+      expect(find.text('2 Service Aktif\n1 Paket Aktif'), findsOneWidget);
+      expect(find.text('4.9 (12 ulasan)'), findsOneWidget);
+      expect(branchApi.calls, contains('branch:STORE-1'));
+      // Tab Capster terbuka duluan
+      expect(find.text('Wahyu'), findsOneWidget);
+      expect(find.text('Tidak Aktif'), findsOneWidget);
+
+      await tapVisible(tester, find.text('Kembali'));
+      expect(find.byType(BranchCard), findsNWidgets(2));
+    });
+
+    testWidgets('capster: tambah, nonaktifkan, dan hapus di tabel', (
+      tester,
+    ) async {
+      await openDetail(tester, 'Barberstuff Cikutra');
+
+      await tapVisible(tester, find.text('Tambah Capster'));
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Nama capster'),
+        'Andi Wijaya',
+      );
+      await tapVisible(tester, find.text('Simpan'));
+      expect(branchApi.calls, contains('createCapster:Andi Wijaya'));
+      expect(find.text('Andi Wijaya'), findsOneWidget);
+
+      // Ubah status Wahyu jadi Tidak Aktif
+      Finder inRow(String name, Finder finder) => find.descendant(
+        of: find.ancestor(
+          of: find.text(name),
+          matching: find.byType(BranchTableRow),
+        ),
+        matching: finder,
+      );
+      await tapVisible(tester, inRow('Wahyu', find.byTooltip('Ubah')));
+      await tapVisible(tester, find.byTooltip('Ubah status'));
+      await tapVisible(tester, find.text('Tidak Aktif').last);
+      await tapVisible(tester, find.text('Simpan'));
+      expect(branchApi.calls, contains('updateCapster:CAP-1::false'));
+
+      await tapVisible(tester, inRow('Rizal', find.byTooltip('Hapus')));
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'Hapus'));
+      expect(branchApi.calls, contains('deleteCapster:CAP-2'));
+      expect(find.text('Rizal'), findsNothing);
+    });
+
+    testWidgets('service: harga minimal, tambah, lalu paket pilih isi', (
+      tester,
+    ) async {
+      await openDetail(tester, 'Barberstuff Cikutra');
+      await tapVisible(tester, find.text('Service').last);
+      expect(find.text('Cukur Rambut'), findsOneWidget);
+      expect(find.text('Rp 50.000'), findsOneWidget);
+
+      await tapVisible(tester, find.text('Tambah Service'));
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Nama service'),
+        'Pijat Kepala',
+      );
+      await tester.enterText(find.widgetWithText(TextField, '0'), '500');
+      await tapVisible(tester, find.text('Simpan'));
+      expect(find.text('Harga minimal Rp 1.000'), findsOneWidget);
+      expect(
+        branchApi.calls.where((c) => c.startsWith('createService')),
+        isEmpty,
+      );
+
+      await tester.enterText(find.widgetWithText(TextField, '500'), '20000');
+      await tapVisible(tester, find.text('Simpan'));
+      expect(
+        branchApi.calls,
+        contains('createService:service:Pijat Kepala:20000:'),
+      );
+
+      // Paket: isi disusun dari service cabang
+      await tapVisible(tester, find.text('Paket').last);
+      expect(find.text('Paket Fresh'), findsOneWidget);
+      await tapVisible(tester, find.text('Tambah Paket'));
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Nama paket'),
+        'Paket Relax',
+      );
+      await tester.enterText(find.widgetWithText(TextField, '0'), '95000');
+      await tapVisible(tester, find.byTooltip('Pilih dari service cabang'));
+      await tester.tap(find.text('Keramas').last);
+      await tapVisible(tester, find.text('Pijat Kepala').last);
+      await tapVisible(tester, find.text('Pakai 2 Service'));
+      await tapVisible(tester, find.text('Simpan'));
+      expect(
+        branchApi.calls,
+        contains(
+          'createService:package:Paket Relax:95000:Keramas + Pijat Kepala',
+        ),
+      );
+    });
+
+    testWidgets('akun cabang: role yang sudah ada tidak bisa dipilih', (
+      tester,
+    ) async {
+      await openDetail(tester, 'Barberstuff Cikutra');
+      await tapVisible(tester, find.text('Role Akun'));
+      expect(find.text('siti@barberstuff.id'), findsOneWidget);
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Masukkan nama lengkap'),
+        'Budi Santoso',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'nama@barberstuff.id'),
+        'budi@barberstuff.id',
+      );
+      await tapVisible(tester, find.text('Pilih role'));
+      expect(find.text('Kasir (sudah ada)'), findsOneWidget);
+      await tapVisible(tester, find.text('Mitra'));
+      await tapVisible(tester, find.text('Simpan Akun'));
+
+      expect(
+        branchApi.calls,
+        contains('createAccount:mitra:budi@barberstuff.id'),
+      );
+      expect(find.text('budi@barberstuff.id'), findsOneWidget);
+      // Sudah 1 kasir + 1 mitra, form dikunci
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.widgetWithText(FilledButton, 'Simpan Akun'),
+            )
+            .onPressed,
+        isNull,
+      );
+    });
+
+    testWidgets('edit cabang: simpan per field lalu detail ikut berubah', (
+      tester,
+    ) async {
+      await openDetail(tester, 'Barberstuff Cikutra');
+      await tapVisible(tester, find.text('Edit Cabang'));
+      expect(find.text('Informasi Cabang'), findsNWidgets(2));
+
+      await tapVisible(tester, find.byTooltip('Ubah Nama Cabang'));
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Barberstuff Cikutra'),
+        'Barberstuff Cikutra Raya',
+      );
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'Simpan'));
+      expect(branchApi.lastBranchUpdate, {'name': 'Barberstuff Cikutra Raya'});
+
+      // Nomor telepon salah format ditolak sebelum ke backend
+      await tapVisible(tester, find.byTooltip('Ubah Nomor Telepon'));
+      await tester.enterText(
+        find.widgetWithText(TextField, '081234567890'),
+        '12345',
+      );
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'Simpan'));
+      expect(
+        find.text('No telepon tidak valid, gunakan format 08xxxx atau +62xxxx'),
+        findsOneWidget,
+      );
+      await tapVisible(tester, find.widgetWithText(OutlinedButton, 'Batal'));
+
+      await tapVisible(tester, find.text('Kembali'));
+      expect(find.text('Barberstuff Cikutra Raya'), findsOneWidget);
+    });
+
+    testWidgets('tambah cabang: field wajib dicek sebelum dikirim', (
+      tester,
+    ) async {
+      await openBranches(tester);
+      await tapVisible(tester, find.text('Tambah Cabang'));
+
+      await tapVisible(tester, find.text('Simpan Cabang Baru'));
+      expect(find.text('Nama cabang wajib diisi'), findsOneWidget);
+
+      await tester.enterText(
+        find.widgetWithText(
+          TextField,
+          'Masukkan nama cabang (contoh: Barberstuff Setiabudi)',
+        ),
+        'Barberstuff Setiabudi',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, '08xxxxxxxxxx'),
+        '081298765432',
+      );
+      await tapVisible(tester, find.text('Simpan Cabang Baru'));
+      expect(find.text('Pilih foto cabang'), findsOneWidget);
+      expect(
+        branchApi.calls.where((c) => c.startsWith('createBranch')),
+        isEmpty,
+      );
+    });
+
+    testWidgets('hapus cabang dari detail', (tester) async {
+      await openDetail(tester, 'Barberstuff Depok');
+      await tapVisible(tester, find.text('Hapus Cabang'));
+      await tapVisible(
+        tester,
+        find.widgetWithText(FilledButton, 'Hapus Cabang'),
+      );
+
+      expect(branchApi.calls, contains('deleteBranch:STORE-2'));
+      expect(find.byType(BranchCard), findsOneWidget);
     });
   });
 }
