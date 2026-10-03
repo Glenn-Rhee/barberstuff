@@ -127,6 +127,7 @@ func (c *customerService) OauthRegister(dataNewCustomer dto.OauthCustomerRequest
 		Gender:        dataNewCustomer.Gender,
 		IdPremiumType: &dataPremium.ID,
 		ImageCustomer: imgUrl,
+		MemberPoints:  5,
 	}
 
 	auth := &entity.Authentication{
@@ -279,7 +280,7 @@ func (c *customerService) CredentialRegister(dataNewCustomer dto.CredentialCusto
 		DateOfBirth:   &dataNewCustomer.DateOfBirth,
 		Gender:        dataNewCustomer.Gender,
 		IdPremiumType: &dataPremium.ID,
-		MemberPoints:  100,
+		MemberPoints:  5,
 		ImageCustomer: imgUrl,
 	}
 

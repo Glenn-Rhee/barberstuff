@@ -54,13 +54,6 @@ func NewStoreService(
 	}
 }
 
-func derefString(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
 func (s *storeService) CreateNewStore(ctx context.Context, req dto.NewStoreRequest) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data toko!"
 	_, filePath, _, _ := runtime.Caller(0)

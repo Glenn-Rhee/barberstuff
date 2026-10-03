@@ -75,7 +75,6 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		dataRating := entity.Rating{
-			ID:        uuid.New(),
 			IDUser:    idUser,
 			IDBooking: idBooking,
 		}
@@ -109,6 +108,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 				}
 			}
 
+			dataRating.ID = uuid.New()
 		}
 
 		if req.Rating.Staff != nil {
@@ -144,6 +144,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 				}
 			}
 
+			dataRating.ID = uuid.New()
 		}
 
 		if req.Rating.Store != nil {
@@ -184,6 +185,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 				}
 			}
 
+			dataRating.ID = uuid.New()
 		}
 		return nil
 	})

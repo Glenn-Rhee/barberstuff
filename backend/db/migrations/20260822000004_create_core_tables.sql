@@ -28,7 +28,7 @@ CREATE TABLE customer (
     phone_number VARCHAR(20),
     date_of_birth DATE,
     gender VARCHAR(10) CHECK (gender IN ('male', 'female', 'other')),
-    member_points INT NOT NULL DEFAULT 100,
+    member_points INT NOT NULL DEFAULT 5,
     id_premium_type UUID REFERENCES premium_type(id),
     image_customer TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
