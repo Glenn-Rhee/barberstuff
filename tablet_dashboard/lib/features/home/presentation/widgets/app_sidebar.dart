@@ -24,6 +24,7 @@ class AppSidebar extends StatelessWidget {
     (AppSection.dashboard, 'Dashboard', AppAsset.gridIcon),
     (AppSection.order, 'Kasir', AppAsset.stackIcon),
     (AppSection.customers, 'Pelanggan', AppAsset.personIcon),
+    (AppSection.bookkeeping, 'Pembukuan', AppAsset.cashIcon),
     (AppSection.settings, 'Konfigurasi', AppAsset.settingIcon),
   ];
 
