@@ -19,7 +19,7 @@ CREATE TABLE cash_session (
 CREATE TABLE transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     id_cash_session UUID NOT NULL REFERENCES cash_session(id),
-    title VARCHAR(50) NOT NULL,
+    title TEXT NOT NULL,
     payment_type payment_type NOT NULL,
     amount NUMERIC(12,2) NOT NULL,
     transaction_type transaction_type NOT NULL,
