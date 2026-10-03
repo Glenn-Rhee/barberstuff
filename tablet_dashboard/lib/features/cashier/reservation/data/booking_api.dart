@@ -1,6 +1,7 @@
 import 'package:tablet_dashboard/core/network/api_client.dart';
 import 'package:tablet_dashboard/core/network/paged.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking_slot.dart';
 
 // Booking toko: list, buat di kasir, check-in, tambah layanan
 class BookingApi {
@@ -61,8 +62,33 @@ class BookingApi {
     return res.map['id_booking'] as String? ?? res.map['id'] as String? ?? '';
   }
 
+  // Jam booking yang tersedia di satu tanggal + capster kosong per jam
+  Future<List<BookingSlot>> slots({
+    required String storeId,
+    required DateTime date,
+  }) async {
+    final res = await _client.get(
+      '/booking/store',
+      query: {'id_store': storeId, 'date': date.toUtc().toIso8601String()},
+    );
+    return [
+      for (final slot in (res.map['slots'] as List? ?? const []))
+        if (slot is Map) BookingSlot.fromJson(slot.cast()),
+    ];
+  }
+
   Future<void> checkIn(String qrCode) =>
       _client.patch('/staff/booking/checkin/$qrCode');
+
+  // Hapus satu layanan dari booking (DELETE /staff/booking/item),
+  // backend menolak kalau booking jadi kosong
+  Future<void> removeService({
+    required String bookingId,
+    required String serviceId,
+  }) => _client.delete(
+    '/staff/booking/item',
+    data: {'id_booking': bookingId, 'id_service': serviceId},
+  );
 
   // Tambah satu layanan ke booking (POST /staff/booking/item)
   Future<void> addService({

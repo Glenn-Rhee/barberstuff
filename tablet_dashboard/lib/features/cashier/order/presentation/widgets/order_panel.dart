@@ -168,7 +168,7 @@ class _OrderPanelState extends State<OrderPanel> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        'Belum ada layanan.\nPilih beberapa service atau 1 paket.',
+                        'Belum ada layanan.\nPilih 1 service atau 1 paket.',
                         textAlign: TextAlign.center,
                         style: AppTextStyle.caption.copyWith(
                           color: AppColor.inkSoft,

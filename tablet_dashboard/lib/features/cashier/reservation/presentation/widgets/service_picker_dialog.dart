@@ -11,30 +11,24 @@ import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 
-// Pilih layanan dari katalog untuk ditambah ke booking.
-// [excludeIds] = layanan yang sudah ada, [onlyServices] = paket disembunyikan
+// Pilih 1 layanan / paket dari katalog (1 pelanggan = 1 item).
+// [excludeIds] = layanan yang sudah dipakai, tidak ditampilkan
 Future<ServiceItem?> showServicePicker(
   BuildContext context, {
   Set<String> excludeIds = const {},
-  bool onlyServices = false,
+  String title = 'Ganti Layanan / Paket',
 }) {
   return showDialog<ServiceItem>(
     context: context,
-    builder: (_) => _ServicePickerDialog(
-      excludeIds: excludeIds,
-      onlyServices: onlyServices,
-    ),
+    builder: (_) => _ServicePickerDialog(excludeIds: excludeIds, title: title),
   );
 }
 
 class _ServicePickerDialog extends StatefulWidget {
-  const _ServicePickerDialog({
-    required this.excludeIds,
-    required this.onlyServices,
-  });
+  const _ServicePickerDialog({required this.excludeIds, required this.title});
 
   final Set<String> excludeIds;
-  final bool onlyServices;
+  final String title;
 
   @override
   State<_ServicePickerDialog> createState() => _ServicePickerDialogState();
@@ -42,9 +36,7 @@ class _ServicePickerDialog extends StatefulWidget {
 
 class _ServicePickerDialogState extends State<_ServicePickerDialog> {
   String _query = '';
-  late CatalogFilter _filter = widget.onlyServices
-      ? CatalogFilter.service
-      : CatalogFilter.all;
+  CatalogFilter _filter = CatalogFilter.all;
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +49,9 @@ class _ServicePickerDialogState extends State<_ServicePickerDialog> {
             (keyword.isEmpty || item.name.toLowerCase().contains(keyword)))
           item,
     ];
-    final filters = widget.onlyServices
-        ? const [CatalogFilter.service]
-        : CatalogFilter.values;
 
     return AlertDialog(
-      title: const Text('Tambah Layanan / Paket', style: AppTextStyle.title),
+      title: Text(widget.title, style: AppTextStyle.title),
       content: SizedBox(
         width: 520,
         height: 440,
@@ -76,7 +65,7 @@ class _ServicePickerDialogState extends State<_ServicePickerDialog> {
             const SizedBox(height: 8),
             Row(
               children: [
-                for (final filter in filters)
+                for (final filter in CatalogFilter.values)
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
@@ -88,14 +77,6 @@ class _ServicePickerDialogState extends State<_ServicePickerDialog> {
                   ),
               ],
             ),
-            if (widget.onlyServices)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  'Booking ini berisi service, paket tidak bisa digabung.',
-                  style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
-                ),
-              ),
             const SizedBox(height: 8),
             Expanded(
               child: switch ((catalog.loading, catalog.error)) {
@@ -108,7 +89,7 @@ class _ServicePickerDialogState extends State<_ServicePickerDialog> {
                 _ when items.isEmpty => const EmptyState(
                   icon: Icons.search_off,
                   title: 'Tidak ada layanan',
-                  message: 'Semua layanan sudah ada di booking, atau coba kata lain.',
+                  message: 'Coba kata kunci atau filter lain.',
                 ),
                 _ => ListView.separated(
                   itemCount: items.length,
