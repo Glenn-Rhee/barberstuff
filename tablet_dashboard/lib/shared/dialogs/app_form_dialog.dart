@@ -15,6 +15,7 @@ class AppFormDialog extends StatefulWidget {
     required this.onSubmit,
     this.submitLabel = 'Simpan',
     this.danger = false,
+    this.width = 440,
   });
 
   final String title;
@@ -24,6 +25,7 @@ class AppFormDialog extends StatefulWidget {
   final Future<String?> Function() onSubmit;
   final String submitLabel;
   final bool danger;
+  final double width;
 
   @override
   State<AppFormDialog> createState() => _AppFormDialogState();
@@ -57,7 +59,7 @@ class _AppFormDialogState extends State<AppFormDialog> {
 
     return Dialog(
       child: SizedBox(
-        width: 440,
+        width: widget.width,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(

@@ -29,6 +29,18 @@ class DateFormatId {
   static String longDate(DateTime value) =>
       '${_days[value.weekday - 1]}, ${value.day} ${_months[value.month - 1]} ${value.year}';
 
+  // 27 Mei 2024
+  static String shortDate(DateTime value) =>
+      '${value.day} ${_months[value.month - 1]} ${value.year}';
+
+  // 27 Sep 2026
+  static String compactDate(DateTime value) =>
+      '${value.day} ${_months[value.month - 1].substring(0, 3)} ${value.year}';
+
+  // September 2026
+  static String monthYear(DateTime value) =>
+      '${_months[value.month - 1]} ${value.year}';
+
   // 14:30
   static String time(DateTime value) =>
       '${_two(value.hour)}:${_two(value.minute)}';

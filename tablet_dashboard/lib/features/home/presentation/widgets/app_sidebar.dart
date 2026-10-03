@@ -23,6 +23,7 @@ class AppSidebar extends StatelessWidget {
   static const _items = [
     (AppSection.dashboard, 'Dashboard', AppAsset.gridIcon),
     (AppSection.order, 'Kasir', AppAsset.stackIcon),
+    (AppSection.customers, 'Pelanggan', AppAsset.personIcon),
     (AppSection.settings, 'Konfigurasi', AppAsset.settingIcon),
   ];
 

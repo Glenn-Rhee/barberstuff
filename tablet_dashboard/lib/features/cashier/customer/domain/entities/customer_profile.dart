@@ -43,11 +43,14 @@ class CustomerProfile {
 
   bool get isMember => email != null;
   String get statusLabel => isMember ? 'Member' : 'Reguler';
+  String get sourceLabel => isMember ? 'Aplikasi' : 'Kasir';
 
-  // Kode pendek dari UUID, mis. USR-9FD21E
+  // Kode pendek dari UUID: USR- pengguna aplikasi, CST- didaftarkan kasir
   String get code {
     final head = id.replaceAll('-', '');
-    return 'USR-${(head.length >= 6 ? head.substring(0, 6) : head).toUpperCase()}';
+    final short = (head.length >= 6 ? head.substring(0, 6) : head)
+        .toUpperCase();
+    return '${isMember ? 'USR' : 'CST'}-$short';
   }
 
   static String? _text(Object? value) {
