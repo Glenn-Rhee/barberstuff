@@ -7,6 +7,7 @@ import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/shift_dialogs.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // "Status Operasional": shift yang berjalan + tombol buka / tutup shift
@@ -37,7 +38,20 @@ class ShiftCard extends StatelessWidget {
         children: [
           const Text('Status Operasional', style: AppTextStyle.title),
           const SizedBox(height: 12),
-          if (!shift.enabled) ...[
+          if (shift.enabled && shift.loading && session == null)
+            const Skeleton(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonBox(width: 140, height: 10),
+                  SizedBox(height: 8),
+                  SkeletonBox(width: 200, height: 14),
+                  SizedBox(height: 20),
+                  SkeletonBox(width: double.infinity, height: 44, radius: 10),
+                ],
+              ),
+            )
+          else if (!shift.enabled) ...[
             Text(
               'Shift dan pembayaran hanya bisa dikelola akun kasir.',
               style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),

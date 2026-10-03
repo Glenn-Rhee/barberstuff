@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
           enabled: !busy,
           keyboardType: TextInputType.emailAddress,
           style: AppTextStyle.body,
-          decoration: const InputDecoration(hintText: 'nama@barberstuff.id'),
+          decoration: const InputDecoration(hintText: 'example@barberstuff.id'),
           onChanged: _clearMessage,
         ),
         const SizedBox(height: 14),
@@ -157,21 +157,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.cloud_outlined,
-              size: 14,
-              color: AppColor.inkFaint,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              Uri.parse(AppEnv.baseUrl).host,
-              style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
-            ),
-          ],
-        ),
       ],
     );
   }

@@ -10,6 +10,7 @@ import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/bo
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 
 import 'escpos_decoder.dart';
 import 'fake_api.dart';
@@ -882,6 +883,110 @@ void main() {
       await tester.tap(find.text('History Harian'));
       await tester.pumpAndSettle();
       expect(find.text('Rina Kasir'), findsOneWidget);
+    });
+  });
+
+  group('muat ulang', () {
+    Future<void> openReservations(WidgetTester tester) async {
+      await tester.tap(find.text('Kasir').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Dari Reservasi'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('booking baru dari aplikasi muncul sendiri tiap 30 detik', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      await openReservations(tester);
+      expect(find.text('Belum ada booking'), findsOneWidget);
+
+      // Pelanggan booking dari aplikasi, kasir tidak menyentuh apa-apa
+      api.bookingList = [fakeBooking()];
+      await tester.pump();
+      expect(find.text('Iqbal Apriand'), findsNothing);
+
+      await tester.pump(const Duration(seconds: 31));
+      await tester.pumpAndSettle();
+      expect(find.text('Iqbal Apriand'), findsOneWidget);
+    });
+
+    testWidgets('app dibuka lagi dari background langsung muat ulang', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      await openReservations(tester);
+
+      api.bookingList = [fakeBooking()];
+      // Urutan state Android: ke background lalu dibuka lagi
+      for (final state in const [
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+        AppLifecycleState.hidden,
+        AppLifecycleState.inactive,
+        AppLifecycleState.resumed,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      await tester.pumpAndSettle();
+      expect(find.text('Iqbal Apriand'), findsOneWidget);
+    });
+
+    testWidgets('tombol muat ulang hit ulang API dengan kerangka loading', (
+      tester,
+    ) async {
+      api.bookingList = [fakeBooking()];
+      await pumpApp(tester);
+      await signIn(tester);
+      await openReservations(tester);
+
+      api.bookingsDelay = const Duration(seconds: 1);
+      final before = api.calls.where((c) => c.startsWith('bookings')).length;
+      await tester.tap(find.byTooltip('Muat ulang'));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byType(SkeletonRows), findsOneWidget);
+      expect(find.text('Iqbal Apriand'), findsNothing);
+
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+      expect(find.byType(SkeletonRows), findsNothing);
+      expect(find.text('Iqbal Apriand'), findsOneWidget);
+      expect(
+        api.calls.where((c) => c.startsWith('bookings')).length,
+        greaterThan(before),
+      );
+    });
+
+    testWidgets('muat ulang otomatis diam-diam, daftar tidak berkedip', (
+      tester,
+    ) async {
+      api.bookingList = [fakeBooking()];
+      await pumpApp(tester);
+      await signIn(tester);
+      await openReservations(tester);
+
+      api.bookingsDelay = const Duration(seconds: 1);
+      await tester.pump(const Duration(seconds: 30));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byType(SkeletonRows), findsNothing);
+      expect(find.text('Iqbal Apriand'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('semua halaman punya tombol muat ulang', (tester) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      expect(find.byTooltip('Muat ulang'), findsOneWidget); // dashboard
+
+      for (final menu in ['Kasir', 'Pelanggan', 'Pembukuan', 'Konfigurasi']) {
+        await tester.tap(find.text(menu).first);
+        await tester.pumpAndSettle();
+        expect(find.byTooltip('Muat ulang'), findsOneWidget, reason: menu);
+      }
     });
   });
 

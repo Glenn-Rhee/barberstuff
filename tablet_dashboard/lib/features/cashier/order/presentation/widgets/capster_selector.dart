@@ -5,6 +5,7 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 
 // Dropdown capster aktif untuk pesanan langsung
 class CapsterSelector extends StatelessWidget {
@@ -13,11 +14,13 @@ class CapsterSelector extends StatelessWidget {
     required this.value,
     required this.options,
     required this.onChanged,
+    this.loading = false,
   });
 
   final Capster? value;
   final List<Capster> options;
   final ValueChanged<Capster> onChanged;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +80,9 @@ class CapsterSelector extends StatelessWidget {
               PersonAvatar(name: value.name, photo: value.photoUrl),
             const SizedBox(width: 10),
             Expanded(
-              child: value == null
+              child: value == null && loading && options.isEmpty
+                  ? const Skeleton(child: SkeletonBox(width: 140))
+                  : value == null
                   ? Text(
                       options.isEmpty
                           ? 'Capster belum tersedia'

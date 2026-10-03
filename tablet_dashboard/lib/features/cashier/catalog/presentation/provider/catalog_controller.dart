@@ -81,18 +81,24 @@ class CatalogController extends ChangeNotifier {
     await Future.wait([refresh(), loadCapsters()]);
   }
 
-  Future<void> refresh() async {
-    if (storeId.isEmpty) return;
-    loading = true;
-    error = null;
-    notifyListeners();
+  // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
+  // kerangka loading, dan kalau gagal data lama tidak dihapus
+  Future<void> refresh({bool silent = false}) async {
+    if (storeId.isEmpty || (silent && loading)) return;
+    if (!silent) {
+      loading = true;
+      error = null;
+      notifyListeners();
+    }
     try {
       final results = await Future.wait([
         for (final type in ServiceType.values) _loadType(type),
       ]);
       all = [for (final items in results) ...items];
       page = page.clamp(1, totalPages);
+      error = null;
     } on ApiException catch (e) {
+      if (silent) return;
       error = e.message;
       all = const [];
     } finally {
@@ -116,14 +122,18 @@ class CatalogController extends ChangeNotifier {
     return items;
   }
 
-  Future<void> loadCapsters() async {
-    if (storeId.isEmpty) return;
-    loadingCapsters = true;
-    capsterError = null;
-    notifyListeners();
+  Future<void> loadCapsters({bool silent = false}) async {
+    if (storeId.isEmpty || (silent && loadingCapsters)) return;
+    if (!silent) {
+      loadingCapsters = true;
+      capsterError = null;
+      notifyListeners();
+    }
     try {
       capsters = await _api.capsters(storeId);
+      capsterError = null;
     } on ApiException catch (e) {
+      if (silent) return;
       capsterError = e.message;
       capsters = const [];
     } finally {

@@ -35,14 +35,22 @@ class ShiftController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refresh() async {
+  // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
+  // kerangka loading, dan kalau gagal data lama tidak dihapus
+  Future<void> refresh({bool silent = false}) async {
     if (!enabled) return;
-    loading = true;
-    error = null;
-    notifyListeners();
+    // Jangan timpa data selagi buka / tutup shift atau catat transaksi
+    if (silent && (busy || loading)) return;
+    if (!silent) {
+      loading = true;
+      error = null;
+      notifyListeners();
+    }
     try {
       session = await _api.cashSession();
+      error = null;
     } on ApiException catch (e) {
+      if (silent) return;
       error = e.message;
       session = null;
     } finally {

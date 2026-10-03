@@ -10,6 +10,7 @@ import 'package:tablet_dashboard/features/home/presentation/provider/navigation_
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Tabel "Reservasi Berikutnya": 5 booking hari ini yang belum selesai
@@ -97,10 +98,7 @@ class UpcomingBookingsCard extends StatelessWidget {
             ]),
           ),
           if (dashboard.loading && upcoming.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(28),
-              child: Center(child: CircularProgressIndicator()),
-            )
+            const SkeletonRows(flex: _flex, count: 4, rowHeight: 48)
           else if (dashboard.error != null)
             Padding(
               padding: const EdgeInsets.only(top: 12),

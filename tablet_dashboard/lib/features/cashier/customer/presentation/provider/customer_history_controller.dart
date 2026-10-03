@@ -108,10 +108,15 @@ class CustomerHistoryController extends ChangeNotifier {
     CustomerFilter.regular => !c.isMember,
   };
 
-  Future<void> refresh() async {
-    loading = true;
-    error = null;
-    notifyListeners();
+  // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
+  // kerangka loading, dan kalau gagal data lama tidak dihapus
+  Future<void> refresh({bool silent = false}) async {
+    if (silent && loading) return;
+    if (!silent) {
+      loading = true;
+      error = null;
+      notifyListeners();
+    }
     try {
       final items = <CustomerProfile>[];
       var more = false;
@@ -125,8 +130,10 @@ class CustomerHistoryController extends ChangeNotifier {
       all = items;
       truncated = more;
       page = page.clamp(1, totalPages);
+      error = null;
       if (selected == null) selectedId = null;
     } on ApiException catch (e) {
+      if (silent) return;
       error = e.message;
       all = const [];
     } finally {

@@ -11,6 +11,7 @@ import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
 
@@ -86,7 +87,7 @@ class WalkInView extends StatelessWidget {
     OrderController order,
   ) {
     if (catalog.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const SkeletonGrid(crossAxisCount: 4, mainAxisExtent: 190);
     }
     if (catalog.error != null) {
       return ErrorRetryView(
@@ -106,22 +107,26 @@ class WalkInView extends StatelessWidget {
       );
     }
 
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        mainAxisExtent: 190,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+    return RefreshIndicator(
+      onRefresh: catalog.refresh,
+      child: GridView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          mainAxisExtent: 190,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+        ),
+        itemCount: services.length,
+        itemBuilder: (_, index) {
+          final item = services[index];
+          return ServiceCard(
+            item: item,
+            selected: order.contains(item),
+            onTap: () => _toggle(context, item),
+          );
+        },
       ),
-      itemCount: services.length,
-      itemBuilder: (_, index) {
-        final item = services[index];
-        return ServiceCard(
-          item: item,
-          selected: order.contains(item),
-          onTap: () => _toggle(context, item),
-        );
-      },
     );
   }
 }

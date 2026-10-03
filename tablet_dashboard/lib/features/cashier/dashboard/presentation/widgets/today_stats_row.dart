@@ -9,6 +9,7 @@ import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Empat angka hari ini: transaksi, penjualan, reservasi, absensi
@@ -24,6 +25,7 @@ class TodayStatsRow extends StatelessWidget {
       capsters,
     );
     final session = shift.session;
+    final loadingShift = shift.loading && session == null;
     final noShift = shift.enabled ? 'Shift belum dibuka' : 'Khusus akun kasir';
 
     return Row(
@@ -34,6 +36,7 @@ class TodayStatsRow extends StatelessWidget {
             color: AppColor.gold,
             background: AppColor.goldSoft,
             title: 'Transaksi Hari Ini',
+            loading: loadingShift,
             value: session == null ? '—' : '${session.sales.length}',
             caption: session == null
                 ? noShift
@@ -47,6 +50,7 @@ class TodayStatsRow extends StatelessWidget {
             color: AppColor.success,
             background: AppColor.successSoft,
             title: 'Penjualan Hari Ini',
+            loading: loadingShift,
             value: session == null ? '—' : PriceFormat.full(session.income),
             caption: session == null
                 ? noShift
@@ -60,6 +64,7 @@ class TodayStatsRow extends StatelessWidget {
             color: AppColor.info,
             background: AppColor.infoSoft,
             title: 'Reservasi Hari Ini',
+            loading: dashboard.loading && dashboard.today.isEmpty,
             value: dashboard.error != null ? '—' : '${dashboard.totalToday}',
             caption: dashboard.error != null
                 ? 'Gagal memuat reservasi'
@@ -73,6 +78,9 @@ class TodayStatsRow extends StatelessWidget {
             color: AppColor.warning,
             background: AppColor.warningSoft,
             title: 'Absensi Karyawan',
+            loading:
+                context.watch<CatalogController>().loadingCapsters &&
+                capsters.isEmpty,
             value: capsters.isEmpty ? '—' : '${attendance.present} Hadir',
             caption: capsters.isEmpty
                 ? 'Belum ada capster aktif'
@@ -96,6 +104,7 @@ class _StatCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.caption,
+    this.loading = false,
   });
 
   // Path asset ikon
@@ -105,6 +114,7 @@ class _StatCard extends StatelessWidget {
   final String title;
   final String value;
   final String caption;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -135,17 +145,31 @@ class _StatCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: muted,
                 ),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(value, style: AppTextStyle.h1),
-                ),
-                Text(
-                  caption,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: muted,
-                ),
+                if (loading)
+                  const Skeleton(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 8),
+                        SkeletonBox(width: 96, height: 24),
+                        SizedBox(height: 8),
+                        SkeletonBox(width: 120, height: 10),
+                      ],
+                    ),
+                  )
+                else ...[
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(value, style: AppTextStyle.h1),
+                  ),
+                  Text(
+                    caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: muted,
+                  ),
+                ],
               ],
             ),
           ),

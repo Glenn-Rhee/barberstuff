@@ -3,6 +3,7 @@ import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 
 // Daftar printer yang sudah di-pair di Bluetooth tablet, balikin yang dipilih
 class PrinterPickerDialog extends StatefulWidget {
@@ -61,10 +62,7 @@ class _PrinterPickerDialogState extends State<PrinterPickerDialog> {
             ),
             const SizedBox(height: 12),
             if (_loading)
-              const Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
-              )
+              const SkeletonTiles(count: 2, trailing: false)
             else if (_error != null)
               _Message(icon: Icons.bluetooth_disabled, text: _error!)
             else if (_printer.devices.isEmpty)

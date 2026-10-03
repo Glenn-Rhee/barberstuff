@@ -7,8 +7,10 @@ import 'package:tablet_dashboard/core/services/printer/test_print.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/settings/presentation/widgets/printer_picker_dialog.dart';
+import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/shift_status_chip.dart';
 import 'package:tablet_dashboard/shared/dialogs/print_with_retry.dart';
+import 'package:tablet_dashboard/shared/widgets/buttons/refresh_button.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/page_header.dart';
@@ -47,6 +49,17 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
+  // Muat ulang daftar printer yang di-pair dan status shift
+  Future<void> _refresh(BuildContext context) async {
+    final shift = context.read<ShiftController>();
+    try {
+      await context.read<PrinterController>().loadDevices();
+    } on PrinterException catch (e) {
+      if (context.mounted) AppToast.show(context, e.message, error: true);
+    }
+    await shift.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     final printer = context.watch<PrinterController>();
@@ -63,10 +76,13 @@ class SettingsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const PageHeader(
+          PageHeader(
             title: 'Konfigurasi',
             subtitle: 'Atur printer struk dan perangkat kasir.',
-            actions: [ShiftStatusChip()],
+            actions: [
+              RefreshButton(onRefresh: () => _refresh(context)),
+              const ShiftStatusChip(),
+            ],
           ),
           const SizedBox(height: 20),
           ConstrainedBox(

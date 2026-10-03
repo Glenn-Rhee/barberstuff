@@ -29,6 +29,9 @@ class CashHistoryController extends ChangeNotifier {
 
   Timer? _debounce;
 
+  // Balasan request lama diabaikan (ganti bulan / cari berturut-turut)
+  int _request = 0;
+
   CashHistoryEntry? get selected =>
       entries.where((e) => e.id == selectedId).firstOrNull;
 
@@ -44,10 +47,13 @@ class CashHistoryController extends ChangeNotifier {
     return refresh();
   }
 
-  Future<void> refresh() async {
-    loading = true;
-    error = null;
-    notifyListeners();
+  Future<void> refresh({bool silent = false}) async {
+    final request = ++_request;
+    if (!silent) {
+      loading = true;
+      error = null;
+      notifyListeners();
+    }
     try {
       final result = await _api.history(
         month: month,
@@ -56,15 +62,20 @@ class CashHistoryController extends ChangeNotifier {
         page: page,
         limit: pageSize,
       );
+      if (request != _request) return;
       entries = result.items;
       totalPages = result.totalPages;
+      error = null;
       if (selected == null) selectedId = entries.firstOrNull?.id;
     } on ApiException catch (e) {
+      if (request != _request || silent) return;
       error = e.message;
       entries = const [];
     } finally {
-      loading = false;
-      notifyListeners();
+      if (request == _request) {
+        loading = false;
+        notifyListeners();
+      }
     }
   }
 

@@ -8,6 +8,7 @@ import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/ord
 import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
 
@@ -26,7 +27,9 @@ class _CustomerHistoryViewState extends State<CustomerHistoryView> {
     super.initState();
     // Data terbaru tiap kali histori dibuka
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) context.read<CustomerHistoryController>().refresh();
+      if (!mounted) return;
+      final history = context.read<CustomerHistoryController>();
+      history.refresh(silent: history.all.isNotEmpty);
     });
   }
 
@@ -64,7 +67,12 @@ class _CustomerHistoryViewState extends State<CustomerHistoryView> {
     String? selectedId,
   ) {
     if (history.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const SkeletonGrid(
+        crossAxisCount: 3,
+        mainAxisExtent: 300,
+        count: 6,
+        avatar: true,
+      );
     }
     if (history.error != null) {
       return ErrorRetryView(
@@ -83,25 +91,29 @@ class _CustomerHistoryViewState extends State<CustomerHistoryView> {
       );
     }
 
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisExtent: 300,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+    return RefreshIndicator(
+      onRefresh: history.refresh,
+      child: GridView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisExtent: 300,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+        ),
+        itemCount: history.customers.length,
+        itemBuilder: (_, index) {
+          final customer = history.customers[index];
+          return CustomerCard(
+            customer: customer,
+            selected: customer.id == selectedId,
+            onSelect: () {
+              context.read<OrderController>().setCustomer(customer);
+              context.read<NavigationController>().openOrder(OrderTab.walkIn);
+            },
+          );
+        },
       ),
-      itemCount: history.customers.length,
-      itemBuilder: (_, index) {
-        final customer = history.customers[index];
-        return CustomerCard(
-          customer: customer,
-          selected: customer.id == selectedId,
-          onSelect: () {
-            context.read<OrderController>().setCustomer(customer);
-            context.read<NavigationController>().openOrder(OrderTab.walkIn);
-          },
-        );
-      },
     );
   }
 }

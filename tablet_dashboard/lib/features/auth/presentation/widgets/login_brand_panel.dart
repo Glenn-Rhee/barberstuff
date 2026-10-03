@@ -8,12 +8,6 @@ import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 class LoginBrandPanel extends StatelessWidget {
   const LoginBrandPanel({super.key});
 
-  static const _points = [
-    (AppIcon(AppAsset.cartIcon), 'Pesanan langsung & dari reservasi'),
-    (Icon(Icons.print_outlined), 'Struk otomatis ke printer 58mm'),
-    (AppIcon(AppAsset.graphicIcon), 'Rekap kas & shift harian'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
@@ -26,18 +20,21 @@ class LoginBrandPanel extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
-                  padding: const EdgeInsets.all(8),
+                  width: 56,
+                  height: 56,
+                  clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     color: AppColor.surface,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Image.asset(AppAsset.logoGlyph, color: AppColor.ink),
+                  child: Transform.scale(
+                    scale: 1,
+                    child: Image.asset(AppAsset.logoGlyph, color: AppColor.ink),
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Text(
-                  'DASHBOARD',
+                  'DASHBOARD BARBERSTUFF',
                   style: AppTextStyle.label.copyWith(
                     color: AppColor.gold,
                     letterSpacing: 3,
@@ -52,42 +49,18 @@ class LoginBrandPanel extends StatelessWidget {
               width: 300,
             ),
             const SizedBox(height: 16),
-            Text(
-              'Kasir, admin, dan mitra dalam satu tablet toko.',
-              style: AppTextStyle.body.copyWith(
-                color: AppColor.surface,
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(height: 28),
-            for (final (icon, label) in _points)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  children: [
-                    IconTheme(
-                      data: const IconThemeData(color: AppColor.gold, size: 18),
-                      child: icon,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        label,
-                        style: AppTextStyle.body.copyWith(
-                          color: AppColor.sidebarMuted,
-                        ),
-                      ),
-                    ),
-                  ],
+            SizedBox(
+              width: 450,
+              child: Text(
+                'Dashboard yang digunakan untuk Kasir Barberstuff, Administrator, dan Mitra Barberstuff',
+                style: AppTextStyle.body.copyWith(
+                  color: AppColor.surface,
+                  fontSize: 15,
                 ),
               ),
-            const Spacer(),
-            Text(
-              'Panda PRJ-R58D · kertas 58mm',
-              style: AppTextStyle.caption.copyWith(
-                color: AppColor.sidebarMuted,
-              ),
             ),
+
+            const Spacer(),
           ],
         ),
       ),

@@ -34,7 +34,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
     });
   }
 
-  // Tarik ke bawah = muat ulang semua data dashboard
+  // Tarik ke bawah / tombol muat ulang = hit ulang semua data dashboard
   Future<void> _refreshAll() async {
     final storeId = context.read<StoreController>().storeId;
     await Future.wait([
@@ -60,7 +60,11 @@ class _DashboardLayoutState extends State<DashboardLayout> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DashboardGreeting(title: widget.title, name: name),
+            DashboardGreeting(
+              title: widget.title,
+              name: name,
+              onRefresh: _refreshAll,
+            ),
             const SizedBox(height: 16),
             if (shiftError != null) ...[
               ErrorBar(message: shiftError, onRetry: _refreshAll),

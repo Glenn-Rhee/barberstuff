@@ -2,15 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/widgets/store_selector.dart';
+import 'package:tablet_dashboard/shared/widgets/buttons/refresh_button.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Header dashboard: "Dashboard > Ringkasan", sapaan, lokasi toko, status toko
 class DashboardGreeting extends StatelessWidget {
-  const DashboardGreeting({super.key, required this.title, required this.name});
+  const DashboardGreeting({
+    super.key,
+    required this.title,
+    required this.name,
+    required this.onRefresh,
+  });
 
   // Judul kecil di atas sapaan, mis. "Dashboard"
   final String title;
   final String name;
+
+  // Muat ulang semua data dashboard
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +42,8 @@ class DashboardGreeting extends StatelessWidget {
               ],
             ),
           ),
+          RefreshButton(onRefresh: onRefresh),
+          const SizedBox(width: 12),
           const StoreSelector(),
           const SizedBox(width: 12),
           const StoreOpenChip(),

@@ -8,6 +8,7 @@ import 'package:tablet_dashboard/features/cashier/customer/presentation/widgets/
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/pages/scan_booking_screen.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/widgets/store_selector.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/header_action_button.dart';
+import 'package:tablet_dashboard/shared/widgets/buttons/refresh_button.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/page_header.dart';
@@ -29,7 +30,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
     super.initState();
     // Data terbaru tiap halaman dibuka
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) context.read<CustomerHistoryController>().refresh();
+      if (!mounted) return;
+      final history = context.read<CustomerHistoryController>();
+      history.refresh(silent: history.all.isNotEmpty);
     });
   }
 
@@ -51,6 +54,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 label: 'Scan Barcode',
                 onTap: () => openScanBooking(context),
               ),
+              RefreshButton(onRefresh: history.refresh),
               const StoreSelector(),
               const StoreOpenChip(),
             ],

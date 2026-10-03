@@ -9,6 +9,7 @@ import 'package:tablet_dashboard/features/cashier/catalog/presentation/widgets/s
 import 'package:tablet_dashboard/shared/widgets/buttons/dialog_cancel_button.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 
 // Pilih 1 layanan / paket dari katalog (1 pelanggan = 1 item).
@@ -80,7 +81,7 @@ class _ServicePickerDialogState extends State<_ServicePickerDialog> {
             const SizedBox(height: 8),
             Expanded(
               child: switch ((catalog.loading, catalog.error)) {
-                (true, _) => const Center(child: CircularProgressIndicator()),
+                (true, _) => const SkeletonTiles(count: 6, avatar: false),
                 (_, final String error) => EmptyState(
                   icon: Icons.cloud_off,
                   title: 'Gagal memuat layanan',
