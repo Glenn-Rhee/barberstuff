@@ -14,11 +14,28 @@ import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Tab "Sesi Kasir": shift yang sedang buka, semua dari GET /cash-sessions
-class SessionTab extends StatelessWidget {
+class SessionTab extends StatefulWidget {
   const SessionTab({super.key});
+
+  @override
+  State<SessionTab> createState() => _SessionTabState();
+}
+
+class _SessionTabState extends State<SessionTab> {
+  @override
+  void initState() {
+    super.initState();
+    // Angka shift terbaru tiap tab dibuka
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final shift = context.read<ShiftController>();
+      shift.refresh(silent: shift.session != null);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +49,7 @@ class SessionTab extends StatelessWidget {
         message: 'Lihat rekap shift yang sudah ditutup di History Harian.',
       );
     }
-    if (shift.loading && session == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    if (shift.loading && session == null) return const _SessionSkeleton();
     if (session == null) {
       return Center(
         child: Column(
@@ -404,6 +419,49 @@ class _SaleTile extends StatelessWidget {
                 color: cash ? AppColor.success : AppColor.info,
                 background: cash ? AppColor.successSoft : AppColor.infoSoft,
               ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Kerangka tab Sesi Kasir: tiga kartu angka, tabel, dan rekonsiliasi
+class _SessionSkeleton extends StatelessWidget {
+  const _SessionSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Skeleton(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(child: SkeletonCard(height: 124, lines: 2)),
+              SizedBox(width: 16),
+              Expanded(child: SkeletonCard(height: 124, lines: 2)),
+              SizedBox(width: 16),
+              Expanded(child: SkeletonCard(height: 124, lines: 2)),
+            ],
+          ),
+          SizedBox(height: 16),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SkeletonCard(height: 220, lines: 5),
+                    SizedBox(height: 16),
+                    SkeletonCard(height: 180, lines: 4),
+                  ],
+                ),
+              ),
+              SizedBox(width: 16),
+              SizedBox(width: 300, child: SkeletonCard(height: 416, lines: 9)),
             ],
           ),
         ],

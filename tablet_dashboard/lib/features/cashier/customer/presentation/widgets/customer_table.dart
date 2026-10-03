@@ -9,6 +9,7 @@ import 'package:tablet_dashboard/features/cashier/customer/presentation/widgets/
 import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Tabel daftar pelanggan, tap baris / Detail = tampil di panel kanan
@@ -65,8 +66,8 @@ class CustomerTable extends StatelessWidget {
   }
 
   Widget _body(CustomerHistoryController history) {
-    if (history.loading && history.all.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+    if (history.loading) {
+      return const SkeletonRows(flex: _flex, count: 8, avatar: true);
     }
     if (history.error != null) {
       return ErrorRetryView(

@@ -8,9 +8,11 @@ import 'package:tablet_dashboard/features/cashier/attendance/presentation/provid
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/widgets/attendance_card.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
+import 'package:tablet_dashboard/shared/widgets/buttons/refresh_button.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/page_header.dart';
 
@@ -65,6 +67,7 @@ class AttendanceScreen extends StatelessWidget {
                     '${DateFormatId.longDate(attendance.day)} · $storeName',
                 onBack: () => Navigator.pop(context),
                 actions: [
+                  RefreshButton(onRefresh: catalog.loadCapsters),
                   OutlinedButton.icon(
                     onPressed: capsters.isEmpty
                         ? null
@@ -126,7 +129,12 @@ class AttendanceScreen extends StatelessWidget {
     AttendanceController attendance,
   ) {
     if (catalog.loadingCapsters) {
-      return const Center(child: CircularProgressIndicator());
+      return const SkeletonGrid(
+        crossAxisCount: 4,
+        mainAxisExtent: 210,
+        spacing: 16,
+        avatar: true,
+      );
     }
     if (catalog.capsterError != null) {
       return ErrorRetryView(
@@ -144,22 +152,26 @@ class AttendanceScreen extends StatelessWidget {
       );
     }
 
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        mainAxisExtent: 210,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
+    return RefreshIndicator(
+      onRefresh: catalog.loadCapsters,
+      child: GridView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          mainAxisExtent: 210,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+        ),
+        itemCount: capsters.length,
+        itemBuilder: (_, index) {
+          final capster = capsters[index];
+          return AttendanceCard(
+            capster: capster,
+            entry: attendance.entryOf(capster.id),
+            onMark: (status) => attendance.mark(capster.id, status),
+          );
+        },
       ),
-      itemCount: capsters.length,
-      itemBuilder: (_, index) {
-        final capster = capsters[index];
-        return AttendanceCard(
-          capster: capster,
-          entry: attendance.entryOf(capster.id),
-          onMark: (status) => attendance.mark(capster.id, status),
-        );
-      },
     );
   }
 }

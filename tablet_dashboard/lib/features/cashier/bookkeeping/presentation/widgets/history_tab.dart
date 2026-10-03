@@ -14,6 +14,7 @@ import 'package:tablet_dashboard/features/cashier/store/presentation/provider/st
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
@@ -190,8 +191,8 @@ class _HistoryTable extends StatelessWidget {
   }
 
   Widget _body(CashHistoryController history) {
-    if (history.loading && history.entries.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+    if (history.loading) {
+      return const SkeletonRows(flex: _flex, count: 8);
     }
     if (history.error != null) {
       return ErrorRetryView(

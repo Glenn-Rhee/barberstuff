@@ -188,6 +188,9 @@ class _OrderPanelState extends State<OrderPanel> {
                     value: order.capster,
                     options: capsters,
                     onChanged: order.setCapster,
+                    loading: context.select<CatalogController, bool>(
+                      (c) => c.loadingCapsters,
+                    ),
                   ),
                 ],
               ),

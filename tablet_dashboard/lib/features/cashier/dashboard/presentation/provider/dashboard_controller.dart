@@ -25,6 +25,9 @@ class DashboardController extends ChangeNotifier {
   bool loading = false;
   String? error;
 
+  // Balasan request lama diabaikan
+  int _request = 0;
+
   // Booking yang belum selesai, urut dari jadwal terdekat
   List<Booking> get upcoming =>
       [
@@ -36,10 +39,15 @@ class DashboardController extends ChangeNotifier {
         ),
       );
 
-  Future<void> refresh() async {
-    loading = true;
-    error = null;
-    notifyListeners();
+  // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
+  // kerangka loading, dan kalau gagal data lama tidak dihapus
+  Future<void> refresh({bool silent = false}) async {
+    final request = ++_request;
+    if (!silent) {
+      loading = true;
+      error = null;
+      notifyListeners();
+    }
     try {
       // GET /booking sudah otomatis booking hari ini di toko akun.
       // Jumlah dihitung dari list, karena meta.total_data backend salah
@@ -49,15 +57,20 @@ class DashboardController extends ChangeNotifier {
         all.addAll(result.items);
         if (result.items.length < _maxLimit) break;
       }
+      if (request != _request) return;
       today = all;
       totalToday = all.length;
       waiting = all.where((b) => b.status == BookingStatus.booked).length;
+      error = null;
     } on ApiException catch (e) {
+      if (request != _request || silent) return;
       error = e.message;
       today = const [];
     } finally {
-      loading = false;
-      notifyListeners();
+      if (request == _request) {
+        loading = false;
+        notifyListeners();
+      }
     }
   }
 }

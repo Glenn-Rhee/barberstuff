@@ -16,6 +16,7 @@ import 'package:tablet_dashboard/features/cashier/store/presentation/provider/st
 import 'package:tablet_dashboard/shared/dialogs/app_form_dialog.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 
 // Buat reservasi untuk pelanggan dari histori: tanggal, jam kosong dari
@@ -165,9 +166,15 @@ class _NewReservationDialogState extends State<_NewReservationDialog> {
         const SizedBox(height: 14),
         const FieldLabel('Jam', required: true),
         if (_loading)
-          const Padding(
-            padding: EdgeInsets.all(12),
-            child: Center(child: CircularProgressIndicator()),
+          Skeleton(
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (var i = 0; i < 8; i++)
+                  const SkeletonBox(width: 64, height: 32, radius: 16),
+              ],
+            ),
           )
         else if (_error != null)
           Text(

@@ -1,24 +1,41 @@
-import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
-import 'package:tablet_dashboard/core/utils/date_format.dart';
-import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/order_tab_layout.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_panel.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_row.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_status_filter.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
 
 // Tab "Dari Reservasi": booking toko dari GET /booking
-class BookingsView extends StatelessWidget {
+class BookingsView extends StatefulWidget {
   const BookingsView({super.key});
+
+  @override
+  State<BookingsView> createState() => _BookingsViewState();
+}
+
+class _BookingsViewState extends State<BookingsView> {
+  @override
+  void initState() {
+    super.initState();
+    // Booking baru dari aplikasi pelanggan langsung kelihatan saat tab dibuka
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final bookings = context.read<BookingsController>();
+      bookings.refresh(silent: bookings.bookings.isNotEmpty);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +103,7 @@ class BookingsView extends StatelessWidget {
 
   Widget _list(BookingsController bookings) {
     if (bookings.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const SkeletonRows(flex: [7, 3, 5, 4, 4], count: 5, avatar: true);
     }
     if (bookings.error != null) {
       return ErrorRetryView(

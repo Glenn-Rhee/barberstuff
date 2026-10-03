@@ -16,6 +16,7 @@ import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/sh
 import 'package:tablet_dashboard/shared/dialogs/app_form_dialog.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 import 'package:tablet_dashboard/shared/widgets/form/money_field.dart';
 
@@ -270,10 +271,7 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
     return [
       const FieldLabel('Booking yang dibayar', required: true),
       if (_loadingBookings)
-        const Padding(
-          padding: EdgeInsets.all(8),
-          child: Center(child: CircularProgressIndicator()),
-        )
+        const Skeleton(child: SkeletonBox(height: 48, radius: 10))
       else if (_bookingError != null)
         Text(
           _bookingError!,

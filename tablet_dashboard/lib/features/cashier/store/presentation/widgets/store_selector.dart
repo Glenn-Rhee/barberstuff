@@ -9,6 +9,7 @@ import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provide
 import 'package:tablet_dashboard/features/cashier/store/domain/entities/store_info.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 
 // Lokasi toko di header. Kasir & mitra terkunci ke toko akunnya,
 // admin bisa ganti cabang lewat dropdown
@@ -39,17 +40,18 @@ class StoreSelector extends StatelessWidget {
         children: [
           const AppIcon(AppAsset.locationIcon, size: 18, color: AppColor.ink),
           const SizedBox(width: 6),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 200),
-            child: Text(
-              stores.loading
-                  ? 'Memuat lokasi…'
-                  : current?.displayName ?? 'Pilih cabang',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyle.label,
+          if (stores.loading && current == null)
+            const Skeleton(child: SkeletonBox(width: 120))
+          else
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 200),
+              child: Text(
+                current?.displayName ?? 'Pilih cabang',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.label,
+              ),
             ),
-          ),
           const SizedBox(width: 6),
           if (stores.canSwitch)
             const Icon(

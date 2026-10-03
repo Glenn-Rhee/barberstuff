@@ -12,6 +12,7 @@ import 'package:tablet_dashboard/features/cashier/order/presentation/provider/or
 import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
 import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Panel kanan halaman Pelanggan: profil, kontak, kunjungan, dan aksi
@@ -26,10 +27,13 @@ class CustomerDetailPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final customer = context.watch<CustomerHistoryController>().selected;
+    final history = context.watch<CustomerHistoryController>();
+    final customer = history.selected;
 
     return AppCard(
-      child: customer == null
+      child: customer == null && history.loading
+          ? const _DetailSkeleton()
+          : customer == null
           ? const EmptyState(
               icon: Icons.person_outline,
               title: 'Pilih pelanggan',
@@ -169,6 +173,37 @@ class _Row extends StatelessWidget {
               style: AppTextStyle.label,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// Kerangka panel detail selama daftar pelanggan dimuat
+class _DetailSkeleton extends StatelessWidget {
+  const _DetailSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Skeleton(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SkeletonBox(width: 140, height: 18),
+          SizedBox(height: 16),
+          SkeletonBox(height: 180, radius: 12),
+          SizedBox(height: 16),
+          SkeletonBox(width: 90, height: 10),
+          SizedBox(height: 6),
+          SkeletonBox(width: 150, height: 16),
+          SizedBox(height: 14),
+          SkeletonBox(width: 90, height: 10),
+          SizedBox(height: 6),
+          SkeletonBox(width: 170, height: 16),
+          Spacer(),
+          SkeletonBox(height: 44, radius: 10),
+          SizedBox(height: 8),
+          SkeletonBox(height: 44, radius: 10),
         ],
       ),
     );

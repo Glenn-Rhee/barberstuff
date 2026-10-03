@@ -26,6 +26,10 @@ class BookingsController extends ChangeNotifier {
 
   Timer? _debounce;
 
+  // Nomor request terakhir. Balasan request lama diabaikan, mis. muat
+  // ulang otomatis yang kalah cepat dengan ganti filter
+  int _request = 0;
+
   Booking? get selected =>
       bookings.where((b) => b.id == selectedId).firstOrNull;
 
@@ -40,10 +44,15 @@ class BookingsController extends ChangeNotifier {
         ),
       );
 
-  Future<void> refresh() async {
-    loading = true;
-    error = null;
-    notifyListeners();
+  // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
+  // kerangka loading, dan kalau gagal data lama tidak dihapus
+  Future<void> refresh({bool silent = false}) async {
+    final request = ++_request;
+    if (!silent) {
+      loading = true;
+      error = null;
+      notifyListeners();
+    }
     try {
       final result = await _api.bookings(
         status: status,
@@ -51,16 +60,21 @@ class BookingsController extends ChangeNotifier {
         page: page,
         limit: pageSize,
       );
+      if (request != _request) return;
       bookings = result.items;
       totalPages = result.totalPages == 0 ? 1 : result.totalPages;
       totalData = result.totalData;
+      error = null;
       if (selected == null) selectedId = null;
     } on ApiException catch (e) {
+      if (request != _request || silent) return;
       error = e.message;
       bookings = const [];
     } finally {
-      loading = false;
-      notifyListeners();
+      if (request == _request) {
+        loading = false;
+        notifyListeners();
+      }
     }
   }
 

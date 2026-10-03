@@ -13,6 +13,7 @@ import 'package:tablet_dashboard/shared/dialogs/print_with_retry.dart';
 import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Panel kanan History Harian: rekap satu shift + cetak / PDF
@@ -46,6 +47,30 @@ class HistoryDetailPanel extends StatelessWidget {
     final history = context.watch<CashHistoryController>();
     final entry = history.selected;
 
+    if (entry == null && history.loading) {
+      return const AppCard(
+        child: Skeleton(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SkeletonBox(width: 160, height: 18),
+              SizedBox(height: 8),
+              SkeletonBox(width: 120, height: 10),
+              SizedBox(height: 20),
+              SkeletonBox(height: 14),
+              SizedBox(height: 10),
+              SkeletonBox(height: 14),
+              SizedBox(height: 20),
+              SkeletonBox(height: 130, radius: 10),
+              SizedBox(height: 16),
+              SkeletonBox(height: 140, radius: 10),
+              Spacer(),
+              SkeletonBox(height: 44, radius: 10),
+            ],
+          ),
+        ),
+      );
+    }
     if (entry == null) {
       return const AppCard(
         child: EmptyState(

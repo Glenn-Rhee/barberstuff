@@ -12,6 +12,7 @@ import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // "Karyawan Bertugas": capster aktif dengan status absen hari ini.
@@ -52,11 +53,8 @@ class CapsterListCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          if (catalog.loadingCapsters)
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: Center(child: CircularProgressIndicator()),
-            )
+          if (catalog.loadingCapsters && capsters.isEmpty)
+            const SkeletonTiles(count: 4)
           else if (catalog.capsterError != null)
             ErrorBar(
               message: catalog.capsterError!,

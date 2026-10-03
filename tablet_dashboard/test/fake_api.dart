@@ -37,6 +37,9 @@ class FakeApi
 
   final calls = <String>[];
 
+  // Isi untuk tiru server lambat di GET /booking (lihat kerangka loading)
+  Duration? bookingsDelay;
+
   StaffProfile staff = staffAs('cashier');
 
   static StaffProfile staffAs(String role) => StaffProfile(
@@ -230,6 +233,7 @@ class FakeApi
     int limit = 5,
   }) async {
     calls.add('bookings:${status?.api ?? 'all'}');
+    if (bookingsDelay != null) await Future<void>.delayed(bookingsDelay!);
     final items = [
       for (final booking in bookingList)
         if (status == null || booking.status == status) booking,
