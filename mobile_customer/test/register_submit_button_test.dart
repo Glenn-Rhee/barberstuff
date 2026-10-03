@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/register_account.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/register_provider.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
 
 Color? _buttonColor(WidgetTester tester) {
   final AnimatedContainer container = tester.widget<AnimatedContainer>(
@@ -25,7 +26,9 @@ void main() {
   late RegisterProvider provider;
 
   setUp(() {
-    provider = RegisterProvider(AuthRepository(AuthRemoteDataSource(Dio())));
+    provider = RegisterProvider(
+      RegisterAccount(AuthRepositoryImpl(AuthRemoteDataSource(Dio()))),
+    );
   });
 
   tearDown(() => provider.dispose());

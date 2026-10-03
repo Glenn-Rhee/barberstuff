@@ -22,4 +22,9 @@ class ApiEndpoint {
   static const String bookingStore = '/booking/store';
   static const String booking = '/booking/';
   static const String bookingLock = '/booking/lock';
+  static const String bookingCustomer = '/booking/customer';
+
+  static const String rating = '/rating/';
+
+  static const String uploadPresign = '/upload/presign';
 }

@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/app/app_route.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/core/services/api_exception_message.dart';
+import 'package:mobile_barberstuff/core/network/api_exception_message.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
 import 'package:mobile_barberstuff/core/utils/validators.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/register_account.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/pages/verify_otp_page.dart';
 import 'package:mobile_barberstuff/features/auth/presentation/provider/register_provider.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_dropdown_field.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_field_decoration.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/app_text_field.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_picker.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/avatar_source_sheet.dart';
-import 'package:mobile_barberstuff/features/auth/presentation/widgets/password_toggle.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/app_toast.dart';
-import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
-import 'package:mobile_barberstuff/shared/widgets/loading_overlay.dart';
+import 'package:mobile_barberstuff/shared/widgets/avatar/avatar_picker.dart';
+import 'package:mobile_barberstuff/shared/widgets/avatar/avatar_source_sheet.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/app_toast.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/loading_overlay.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/app_dropdown_field.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/app_field_decoration.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/app_text_field.dart';
+import 'package:mobile_barberstuff/shared/widgets/form/password_toggle.dart';
 import 'package:provider/provider.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -28,7 +27,7 @@ class RegisterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<RegisterProvider>(
       create: (BuildContext ctx) =>
-          RegisterProvider(ctx.read<AuthRepository>()),
+          RegisterProvider(ctx.read<RegisterAccount>()),
       child: const _RegisterView(),
     );
   }

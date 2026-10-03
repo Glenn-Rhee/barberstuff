@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_session.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/login_request_api.dart';
-import 'package:mobile_barberstuff/features/auth/data/models/login_result.dart';
-import 'package:mobile_barberstuff/features/auth/data/repositories/auth_repository.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
+import 'package:mobile_barberstuff/core/storage/app_session.dart';
+import 'package:mobile_barberstuff/features/auth/domain/entities/login_result.dart';
+import 'package:mobile_barberstuff/features/auth/domain/usecases/login_with_email.dart';
 
 class LoginProvider extends ChangeNotifier {
-  LoginProvider(this._repository, this._session) {
+  LoginProvider(this._login, this._session) {
     final String? saved = _session.rememberedEmail;
     if (saved != null && saved.isNotEmpty) {
       emailController.text = saved;
@@ -17,7 +16,7 @@ class LoginProvider extends ChangeNotifier {
     passwordController.addListener(_syncComplete);
   }
 
-  final AuthRepository _repository;
+  final LoginWithEmail _login;
   final AppSession _session;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -69,8 +68,8 @@ class LoginProvider extends ChangeNotifier {
     final String email = emailController.text.trim();
 
     try {
-      _result = await _repository.login(
-        LoginRequestApi(email: email, password: passwordController.text),
+      _result = await _login(
+        LoginParams(email: email, password: passwordController.text),
       );
       await _session.rememberEmail(_rememberMe ? email : null);
       await _session.saveSession(_result!.accessToken);

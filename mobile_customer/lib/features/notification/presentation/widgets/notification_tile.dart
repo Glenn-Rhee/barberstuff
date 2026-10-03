@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
+import 'package:mobile_barberstuff/features/notification/domain/entities/app_notification.dart';
 import 'package:mobile_barberstuff/features/notification/presentation/widgets/notification_text.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 

@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:mobile_barberstuff/core/constants/app_duration.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/features/splash/presentation/widgets/brand_glow.dart';
-import 'package:mobile_barberstuff/shared/widgets/animated_brand_logo.dart';
-import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
+import 'package:mobile_barberstuff/shared/widgets/branding/animated_brand_logo.dart';
+import 'package:mobile_barberstuff/shared/widgets/branding/barber_pattern_background.dart';
 
 class SplashBrandPage extends StatefulWidget {
   const SplashBrandPage({super.key, this.onFinished});

@@ -1,58 +1,81 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tablet_dashboard/core/network/api_client.dart';
+import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/storage/token_storage.dart';
+import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
+import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 
-import '../../../../core/network/api_client.dart';
-import '../../../../data/api/barberstuff_api.dart';
-import '../../../../shared/models/person.dart';
-
-/// Signed-in cashier: token, profile and the store they work at.
+// Sesi login: token, profil, dan toko tempat staff bekerja
 class SessionController extends ChangeNotifier {
-  SessionController(this._api);
+  SessionController(
+    this._auth,
+    this._client, [
+    this._storage = const TokenStorage(),
+  ]);
 
-  static const _tokenKey = 'access_token';
+  static const noAccessMessage = 'Akun ini tidak punya akses ke tablet';
 
-  final BarberstuffApi _api;
+  final AuthApi _auth;
+
+  // Semua API pakai client ini, jadi token di sini dipakai di semua request
+  final ApiClient _client;
+  final TokenStorage _storage;
 
   StaffProfile? profile;
   String? role;
 
-  /// True while an existing token is being checked at startup.
+  // true selama cek token lama saat aplikasi dibuka
   bool restoring = true;
   bool busy = false;
 
   bool get signedIn => profile != null;
   String get storeId => profile?.storeId ?? '';
+  StaffRole? get staffRole => profile?.staffRole;
 
-  /// Reuses the token from the last session so the till survives a restart.
+  // Pakai token sesi sebelumnya supaya tidak login ulang tiap buka aplikasi
   Future<void> restore() async {
     try {
-      final token = (await SharedPreferences.getInstance()).getString(_tokenKey);
+      final token = await _storage.read();
       if (token != null && token.isNotEmpty) {
-        _api.client.token = token;
-        profile = await _api.profile();
-        role = profile?.role;
+        _client.token = token;
+        final fetched = await _auth.profile();
+        if (fetched.staffRole == null) {
+          await _clear();
+        } else {
+          profile = fetched;
+          role = fetched.role;
+        }
       }
     } on ApiException {
-      _api.client.token = null; // expired or revoked; ask for the password again
+      // Token kadaluarsa / dicabut, minta login ulang
+      _client.token = null;
     } finally {
       restoring = false;
       notifyListeners();
     }
   }
 
-  /// Returns an error message, or `null` when signed in.
-  Future<String?> signIn({required String email, required String password}) async {
+  // Balikin pesan error, atau null kalau berhasil login
+  Future<String?> signIn({
+    required String email,
+    required String password,
+  }) async {
     busy = true;
     notifyListeners();
     try {
-      final login = await _api.login(email: email, password: password);
-      _api.client.token = login.token;
-      role = login.role;
-      profile = await _api.profile();
-      (await SharedPreferences.getInstance()).setString(_tokenKey, login.token);
+      final login = await _auth.login(email: email, password: password);
+      _client.token = login.token;
+      final fetched = await _auth.profile();
+      if (fetched.staffRole == null) {
+        await _clear();
+        return noAccessMessage;
+      }
+      profile = fetched;
+      role = fetched.role;
+      await _storage.save(login.token);
       return null;
     } on ApiException catch (e) {
-      _api.client.token = null;
+      _client.token = null;
       profile = null;
       return e.message;
     } finally {
@@ -61,11 +84,43 @@ class SessionController extends ChangeNotifier {
     }
   }
 
+  // Reset password tanpa verifikasi email: masuk pakai password lama
+  // (atau password awal dari admin), lalu ganti lewat PATCH /staff/{id}.
+  // Balikin pesan error, atau null kalau berhasil
+  Future<String?> resetPassword({
+    required String email,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final login = await _auth.login(email: email, password: oldPassword);
+      _client.token = login.token;
+      final staff = await _auth.profile();
+      if (staff.staffRole == null) return noAccessMessage;
+      await _auth.updateAccount(
+        staffId: staff.id,
+        name: staff.name,
+        password: newPassword,
+      );
+      return null;
+    } on ApiException catch (e) {
+      return e.message;
+    } finally {
+      // Token sementara, staff tetap harus login ulang pakai password baru
+      _client.token = null;
+    }
+  }
+
+  // hapus token, profile, role, dan storage saat sign out
   Future<void> signOut() async {
-    _api.client.token = null;
+    await _clear();
+    notifyListeners();
+  }
+
+  Future<void> _clear() async {
+    _client.token = null;
     profile = null;
     role = null;
-    (await SharedPreferences.getInstance()).remove(_tokenKey);
-    notifyListeners();
+    await _storage.delete();
   }
 }

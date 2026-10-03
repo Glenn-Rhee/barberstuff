@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
-import 'package:mobile_barberstuff/shared/widgets/animated_brand_logo.dart';
-import 'package:mobile_barberstuff/shared/widgets/barber_pattern_background.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_loader.dart';
+import 'package:mobile_barberstuff/shared/widgets/branding/animated_brand_logo.dart';
+import 'package:mobile_barberstuff/shared/widgets/branding/barber_pattern_background.dart';
+import 'package:mobile_barberstuff/shared/widgets/feedback/box_loader.dart';
 
 void main() {
   testWidgets('animated brand logo renders and reports intro completion', (

@@ -3,9 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/home/domain/dashboard_content.dart';
+import 'package:mobile_barberstuff/features/home/presentation/models/dashboard_content.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/store_image.dart';
+import 'package:mobile_barberstuff/shared/widgets/media/store_image.dart';
 
 class NearbyStoreList extends StatelessWidget {
   const NearbyStoreList({

@@ -4,9 +4,7 @@ class AppAssets {
   static const String _iconBook = 'assets/icons/book';
   static const String _iconDetailStore = 'assets/icons/detail_store';
   static const String _iconGeneral = 'assets/icons/general';
-  static const String _iconHistory = 'assets/icons/history';
   static const String _iconHome = 'assets/icons/home';
-  static const String _iconLoading = 'assets/icons/loading';
   static const String _iconNavBottom = 'assets/icons/nav_bottom';
   static const String _iconNotify = 'assets/icons/notify';
   static const String _iconProfile = 'assets/icons/profile';
@@ -110,7 +108,6 @@ class AppAssets {
 
   static const String routeDetailStore = '$_iconDetailStore/rute.png';
   static const String shareDetailStore = '$_iconDetailStore/share.png';
-
 
   static const String bookNotify = '$_iconNotify/book.png';
   static const String fileNotify = '$_iconNotify/file.png';

@@ -1,25 +1,24 @@
 import 'package:flutter/foundation.dart';
-import 'package:mobile_barberstuff/core/services/api_exception.dart';
-import 'package:mobile_barberstuff/core/services/app_cache.dart';
+import 'package:mobile_barberstuff/core/network/api_exception.dart';
 import 'package:mobile_barberstuff/core/services/location_service.dart';
-import 'package:mobile_barberstuff/features/booking/data/booking_journal.dart';
-import 'package:mobile_barberstuff/features/booking/data/models/booking_api_model.dart';
-import 'package:mobile_barberstuff/features/booking/data/repositories/booking_repository.dart';
-import 'package:mobile_barberstuff/features/booking/domain/booking_record.dart';
-import 'package:mobile_barberstuff/features/booking/domain/store_distance.dart';
+import 'package:mobile_barberstuff/core/storage/app_cache.dart';
+import 'package:mobile_barberstuff/features/booking/domain/entities/booking_record.dart';
+import 'package:mobile_barberstuff/features/history/presentation/provider/customer_bookings_provider.dart';
+import 'package:mobile_barberstuff/features/store/domain/entities/store_summary.dart';
+import 'package:mobile_barberstuff/features/store/domain/usecases/get_stores.dart';
 
-/// Isi dashboard: cabang dari server, booking dan riwayat dari jurnal lokal.
+/// Isi dashboard: cabang dan booking milik akun ini, semuanya dari server.
 class DashboardProvider extends ChangeNotifier {
-  DashboardProvider(this._repo, this._journal, this._location) {
-    _journal.addListener(notifyListeners);
+  DashboardProvider(this._getStores, this._history, this._location) {
+    _history.addListener(notifyListeners);
     load();
   }
 
   static const int nearbyLimit = 6;
   static const int historyLimit = 3;
 
-  final BookingRepository _repo;
-  final BookingJournal _journal;
+  final GetStores _getStores;
+  final CustomerBookingsProvider _history;
   final LocationService _location;
 
   List<StoreSummary> _stores = const <StoreSummary>[];
@@ -40,10 +39,10 @@ class DashboardProvider extends ChangeNotifier {
     return _stores.first;
   }
 
-  BookingRecord? get upcoming => _journal.upcoming;
+  BookingRecord? get upcoming => _history.upcoming;
 
   List<BookingRecord> get history =>
-      _journal.past.take(historyLimit).toList(growable: false);
+      _history.completed.take(historyLimit).toList(growable: false);
 
   /// Dipanggil setelah pengguna menjawab dialog izin lokasi.
   /// load() kadang sudah jalan duluan waktu izin belum ada, jadi posisinya
@@ -58,12 +57,27 @@ class DashboardProvider extends ChangeNotifier {
   }
 
   Future<void> load() async {
+    await Future.wait(<Future<void>>[_loadStores(), _loadBookings()]);
+  }
+
+  Future<void> _loadBookings() async {
+    try {
+      await _history.refresh();
+    } on ApiException {
+      // Beranda tetap tampil tanpa kartu booking. Halaman riwayat yang
+      // menampilkan pesan gagalnya.
+    }
+  }
+
+  Future<void> _loadStores() async {
     _loadingStores = true;
     _storesError = null;
     notifyListeners();
 
     try {
-      final CachedResult<List<StoreSummary>> result = await _repo.getStores();
+      final CachedResult<List<StoreSummary>> result = await _getStores(
+        const GetStoresParams(),
+      );
       _position ??= _location.lastKnown;
       _stores = sortStoresByDistance(result.data, _position);
     } on ApiException catch (e) {
@@ -83,7 +97,7 @@ class DashboardProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    _journal.removeListener(notifyListeners);
+    _history.removeListener(notifyListeners);
     super.dispose();
   }
 }

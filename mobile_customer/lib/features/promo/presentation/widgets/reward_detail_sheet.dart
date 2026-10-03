@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/features/promo/domain/promo_content.dart';
-import 'package:mobile_barberstuff/features/promo/presentation/widgets/promo_parts.dart';
+import 'package:mobile_barberstuff/core/utils/price_format.dart';
+import 'package:mobile_barberstuff/features/promo/domain/entities/promo_content.dart';
+import 'package:mobile_barberstuff/features/promo/presentation/widgets/points_tag.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
-import 'package:mobile_barberstuff/shared/widgets/box_button.dart';
+import 'package:mobile_barberstuff/shared/widgets/buttons/box_button.dart';
 
 /// Mengembalikan true kalau pengguna menekan klaim.
 Future<bool?> showRewardDetailSheet(

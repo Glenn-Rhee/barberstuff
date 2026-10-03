@@ -1,5 +1,5 @@
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
-import 'package:mobile_barberstuff/features/notification/domain/app_notification.dart';
+import 'package:mobile_barberstuff/features/notification/domain/entities/app_notification.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 String notificationTitle(NotificationCategory category, AppLocalizations l10n) {

@@ -333,7 +333,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeActionBooking => 'Booking';
 
   @override
-  String get homeActionPackage => 'Packages';
+  String get homeActionPackage => 'Store';
 
   @override
   String get homeActionPromo => 'Promo';
@@ -513,6 +513,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get storeShareCopied => 'Store info copied to clipboard';
+
+  @override
+  String storeShareMessage(String name, String address, String link) {
+    return '$name\n$address\n\nSee details & book on BarberStuff:\n$link';
+  }
+
+  @override
+  String get storeBookCta => 'Book Now';
+
+  @override
+  String get storeBookClosed => 'Branch Is Closed';
 
   @override
   String get storeNoBarber => 'No barber at this branch yet.';
@@ -758,6 +769,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get personalInfoSave => 'Save Changes';
 
   @override
+  String get personalInfoSaved => 'Changes saved';
+
+  @override
   String get helpTitle => 'Help Center';
 
   @override
@@ -892,6 +906,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bookingConfirmTitle => 'Booking Confirmation';
+
+  @override
+  String get bookingDetailTitle => 'Booking Details';
 
   @override
   String get bookingConfirmSubtitle => 'Please review your order details';
