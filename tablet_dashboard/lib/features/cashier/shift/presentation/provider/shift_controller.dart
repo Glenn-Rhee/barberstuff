@@ -83,11 +83,13 @@ class ShiftController extends ChangeNotifier {
     }
   }
 
+  // Pemasukan selalu terhubung ke booking (aturan backend)
   Future<String?> recordSale({
     required int amount,
     required PaymentType paymentType,
     required String title,
     String? bookingId,
+    String? description,
   }) => _run(() async {
     await _api.createTransaction(
       sessionId: sessionId!,
@@ -96,6 +98,7 @@ class ShiftController extends ChangeNotifier {
       paymentType: paymentType,
       title: title,
       bookingId: bookingId,
+      description: description,
     );
     session = await _api.cashSession();
   });

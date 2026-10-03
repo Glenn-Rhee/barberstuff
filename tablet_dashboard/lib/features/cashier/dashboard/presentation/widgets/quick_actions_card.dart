@@ -4,7 +4,7 @@ import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/pages/attendance_screen.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/pages/scan_booking_screen.dart';
-import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/cash_out_dialog.dart';
+import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/cash_entry_dialog.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
@@ -34,7 +34,7 @@ class QuickActionsCard extends StatelessWidget {
                 child: _ActionButton(
                   icon: AppAsset.graphicIcon,
                   label: 'Catat Kas Keluar',
-                  onTap: () => showCashOutDialog(context),
+                  onTap: () => showCashEntryDialog(context),
                 ),
               ),
               const SizedBox(width: 12),

@@ -7,6 +7,7 @@ import 'package:tablet_dashboard/features/admin/dashboard/presentation/pages/adm
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
+import 'package:tablet_dashboard/features/cashier/bookkeeping/presentation/pages/bookkeeping_screen.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/customer/presentation/pages/customers_screen.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/pages/cashier_dashboard_screen.dart';
@@ -84,6 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
               AppSection.order => const OrderScreen(),
               AppSection.customers => const CustomersScreen(),
+              AppSection.bookkeeping => const BookkeepingScreen(),
               AppSection.settings => const SettingsScreen(),
             },
           ),

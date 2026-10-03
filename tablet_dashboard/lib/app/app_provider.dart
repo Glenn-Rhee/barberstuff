@@ -5,6 +5,7 @@ import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
+import 'package:tablet_dashboard/features/cashier/bookkeeping/presentation/provider/cash_history_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/data/catalog_api.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/customer/data/customer_api.dart';
@@ -45,6 +46,9 @@ List<SingleChildWidget> appProviders({
       create: (_) => SessionController(authApi, client)..restore(),
     ),
     ChangeNotifierProvider(create: (_) => ShiftController(cashSessionApi)),
+    ChangeNotifierProvider(
+      create: (_) => CashHistoryController(cashSessionApi),
+    ),
     ChangeNotifierProvider(create: (_) => CatalogController(catalogApi)),
     ChangeNotifierProvider(create: (_) => OrderController()),
     ChangeNotifierProvider(create: (_) => BookingsController(bookingApi)),

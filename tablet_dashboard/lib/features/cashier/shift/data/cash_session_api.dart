@@ -1,6 +1,8 @@
 import 'package:tablet_dashboard/core/network/api_client.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/paged.dart';
 import 'package:tablet_dashboard/core/utils/json_value.dart';
+import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_history_entry.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 
@@ -41,6 +43,32 @@ class CashSessionApi {
     return (
       difference: parseAmount(res.map['amount_difference']),
       status: res.map['status'] as String? ?? '',
+    );
+  }
+
+  // Shift yang sudah ditutup di bulan [month], terbaru dulu.
+  // [storeId] wajib untuk admin, role lain pakai toko akun
+  Future<Paged<CashHistoryEntry>> history({
+    required DateTime month,
+    String? query,
+    String? storeId,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    final res = await _client.get(
+      '/cash-sessions/history',
+      query: {
+        'date': DateTime.utc(month.year, month.month, 15).toIso8601String(),
+        'q': query,
+        'id_store': storeId,
+        'page': page,
+        'limit': limit,
+      },
+    );
+    return Paged.fromPage(
+      [for (final json in res.list) CashHistoryEntry.fromJson(json)],
+      page: page,
+      limit: limit,
     );
   }
 
