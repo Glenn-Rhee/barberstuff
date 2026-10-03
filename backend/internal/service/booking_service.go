@@ -579,7 +579,9 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New("Toko belum siap menerima booking")
 	}
 
-	qrCode := fmt.Sprintf("bk%v", idBooking)
+	idBookingStr := idBooking.String()
+
+	qrCode := fmt.Sprintf("bk%v", idBookingStr[:4])
 	data := entity.Booking{
 		ID:             idBooking,
 		StatusBooking:  entity.BookingStatusBooked,
