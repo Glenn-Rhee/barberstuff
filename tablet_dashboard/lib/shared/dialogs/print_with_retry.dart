@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -6,13 +7,22 @@ import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 
-// Cetak [bytes], kalau gagal kasir bisa coba lagi atau lewati.
+// Hasil satu kali cetak: error null = berhasil, skipped = kasir menekan Lewati
+typedef _PrintResult = ({bool skipped, String? error});
+
+// Cetak [bytes], kalau gagal / kelamaan kasir bisa coba lagi atau lewati.
 // true = berhasil dicetak
 Future<bool> printWithRetry(BuildContext context, Uint8List bytes) async {
+  final printer = context.read<PrinterController>();
   while (true) {
     if (!context.mounted) return false;
-    final error = await _printOnce(context, bytes);
-    if (error == null) return true;
+    final result = await showDialog<_PrintResult>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _PrintingDialog(printer: printer, bytes: bytes),
+    );
+    if (result == null || result.skipped) return false;
+    if (result.error == null) return true;
     if (!context.mounted) return false;
 
     final retry = await showDialog<bool>(
@@ -20,7 +30,7 @@ Future<bool> printWithRetry(BuildContext context, Uint8List bytes) async {
       builder: (context) => AlertDialog(
         title: const Text('Struk gagal dicetak', style: AppTextStyle.title),
         content: Text(
-          '$error\n\nCek printer di menu Konfigurasi.',
+          '${result.error}\n\nCek printer di menu Konfigurasi.',
           style: AppTextStyle.body,
         ),
         actions: [
@@ -39,42 +49,86 @@ Future<bool> printWithRetry(BuildContext context, Uint8List bytes) async {
   }
 }
 
-// Kirim ke printer sambil tampil "Mencetak…", balikin pesan error atau null
-Future<String?> _printOnce(BuildContext context, Uint8List bytes) async {
-  final printer = context.read<PrinterController>();
-  final navigator = Navigator.of(context, rootNavigator: true);
-  showDialog<void>(
-    context: context,
-    barrierDismissible: false,
-    builder: (_) => const _PrintingDialog(),
-  );
-  try {
-    await printer.printBytes(bytes);
-    return null;
-  } on PrinterException catch (e) {
-    return e.message;
-  } finally {
-    navigator.pop();
-  }
+// Kirim ke printer sambil tampil "Mencetak…", tutup sendiri dengan hasilnya
+class _PrintingDialog extends StatefulWidget {
+  const _PrintingDialog({required this.printer, required this.bytes});
+
+  final PrinterController printer;
+  final Uint8List bytes;
+
+  @override
+  State<_PrintingDialog> createState() => _PrintingDialogState();
 }
 
-class _PrintingDialog extends StatelessWidget {
-  const _PrintingDialog();
+class _PrintingDialogState extends State<_PrintingDialog> {
+  // Tombol Lewati baru muncul kalau printer lama merespons
+  static const _skipDelay = Duration(seconds: 3);
+
+  late final Timer _skipTimer;
+  bool _showSkip = false;
+  bool _closed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _skipTimer = Timer(_skipDelay, () => setState(() => _showSkip = true));
+    _print();
+  }
+
+  @override
+  void dispose() {
+    _skipTimer.cancel();
+    super.dispose();
+  }
+
+  Future<void> _print() async {
+    String? error;
+    try {
+      await widget.printer.printBytes(widget.bytes);
+    } on PrinterException catch (e) {
+      error = e.message;
+    }
+    _close((skipped: false, error: error));
+  }
+
+  // Hentikan konek/cetak di native supaya printer tidak tertahan "sibuk"
+  void _skip() {
+    widget.printer.cancel().ignore();
+    _close((skipped: true, error: null));
+  }
+
+  // Cetak bisa selesai pas animasi tutup habis Lewati, jadi pop cukup sekali
+  void _close(_PrintResult result) {
+    if (_closed || !mounted) return;
+    _closed = true;
+    Navigator.pop(context, result);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Dialog(
+    return Dialog(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-        child: Row(
+        padding: const EdgeInsets.fromLTRB(32, 24, 32, 16),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            SizedBox.square(
-              dimension: 24,
-              child: CircularProgressIndicator(strokeWidth: 3),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox.square(
+                    dimension: 24,
+                    child: CircularProgressIndicator(strokeWidth: 3),
+                  ),
+                  SizedBox(width: 16),
+                  Text('Mencetak struk…', style: AppTextStyle.bodyBold),
+                ],
+              ),
             ),
-            SizedBox(width: 16),
-            Text('Mencetak struk…', style: AppTextStyle.bodyBold),
+            if (_showSkip)
+              TextButton(onPressed: _skip, child: const Text('Lewati')),
           ],
         ),
       ),

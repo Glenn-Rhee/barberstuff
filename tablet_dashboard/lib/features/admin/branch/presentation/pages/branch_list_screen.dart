@@ -110,7 +110,7 @@ class _BranchListScreenState extends State<BranchListScreen> {
   Widget _body(BranchListController list) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 880 ? 3 : 2;
+        final columns = constraints.maxWidth >= 800 ? 3 : 2;
         if (list.loading) {
           return SkeletonGrid(
             crossAxisCount: columns,

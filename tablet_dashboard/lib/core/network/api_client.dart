@@ -57,7 +57,7 @@ class ApiClient {
           e.error is SocketException) {
         throw ApiException('Koneksi Bermasalah', statusCode: 503);
       } else {
-        throw ApiException('Masalah Yang Tidak Dikenali', statusCode: 520);
+        throw ApiException('Maaf Periksa Jaringan Anda', statusCode: 520);
       }
     }
     final data = res.data;

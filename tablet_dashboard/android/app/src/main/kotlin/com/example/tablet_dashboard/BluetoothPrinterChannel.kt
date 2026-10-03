@@ -43,6 +43,13 @@ class BluetoothPrinterChannel(private val activity: Activity) : MethodChannel.Me
     @Volatile
     private var socket: BluetoothSocket? = null
 
+    // Socket yang sedang connect(), supaya bisa ditutup saat kasir menekan Lewati
+    @Volatile
+    private var connecting: BluetoothSocket? = null
+
+    @Volatile
+    private var cancelled = false
+
     private var pendingResult: MethodChannel.Result? = null
     private var pendingAction: (() -> Unit)? = null
 
@@ -52,6 +59,11 @@ class BluetoothPrinterChannel(private val activity: Activity) : MethodChannel.Me
             "connect" -> withPermission(result) { connect(call.argument<String>("address")!!, result) }
             "write" -> write(call.argument<ByteArray>("bytes")!!, result)
             "isConnected" -> result.success(socket?.isConnected == true)
+            // Sengaja tidak lewat executor: connect()/write() yang lagi blocking ada di sana
+            "cancel" -> {
+                cancel()
+                result.success(null)
+            }
             "disconnect" -> executor.execute {
                 closeSocket()
                 mainHandler.post { result.success(null) }
@@ -113,6 +125,7 @@ class BluetoothPrinterChannel(private val activity: Activity) : MethodChannel.Me
 
     private fun connect(address: String, result: MethodChannel.Result) {
         val adapter = readyAdapter(result) ?: return
+        cancelled = false
         executor.execute {
             closeSocket()
             try {
@@ -139,6 +152,7 @@ class BluetoothPrinterChannel(private val activity: Activity) : MethodChannel.Me
         )
         var lastError: Exception? = null
         for (create in factories) {
+            if (cancelled) break
             val candidate = try {
                 create()
             } catch (e: Exception) {
@@ -146,11 +160,16 @@ class BluetoothPrinterChannel(private val activity: Activity) : MethodChannel.Me
                 continue
             }
             try {
+                connecting = candidate
+                if (cancelled) throw IOException("dibatalkan")
                 candidate.connect()
+                if (cancelled) throw IOException("dibatalkan")
                 return candidate
             } catch (e: IOException) {
                 lastError = e
                 runCatching { candidate.close() }
+            } finally {
+                connecting = null
             }
         }
         throw IOException(lastError?.message ?: "socket tidak bisa dibuka", lastError)
@@ -180,6 +199,13 @@ class BluetoothPrinterChannel(private val activity: Activity) : MethodChannel.Me
                 }
             }
         }
+    }
+
+    // Menutup socket dari thread lain membuat connect()/write() yang blocking langsung gagal
+    private fun cancel() {
+        cancelled = true
+        runCatching { connecting?.close() }
+        runCatching { socket?.close() }
     }
 
     private fun closeSocket() {

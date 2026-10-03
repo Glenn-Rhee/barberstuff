@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/utils/grid_columns.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/customer/presentation/widgets/selected_customer_banner.dart';
@@ -8,7 +9,6 @@ import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/ord
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/order_tab_layout.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/service_card.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
-import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
@@ -19,18 +19,15 @@ import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
 class WalkInView extends StatelessWidget {
   const WalkInView({super.key});
 
+  static const _spacing = 12.0;
+
   // Tap kartu: tambah ke keranjang, atau keluarkan kalau sudah dipilih
   void _toggle(BuildContext context, ServiceItem item) {
     final order = context.read<OrderController>();
     if (order.contains(item)) {
       order.remove(item);
-      return;
-    }
-    if (order.add(item) == CartChange.replaced) {
-      AppToast.show(
-        context,
-        '1 pelanggan cuma 1 layanan, keranjang diganti ${item.name}',
-      );
+    } else {
+      order.add(item);
     }
   }
 
@@ -70,7 +67,12 @@ class WalkInView extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 16),
-        Expanded(child: _catalogBody(context, catalog, order)),
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) =>
+                _catalogBody(context, catalog, order, constraints.maxWidth),
+          ),
+        ),
         const SizedBox(height: 12),
         PaginationBar(
           page: catalog.page - 1, // halaman mulai dari 1
@@ -85,9 +87,20 @@ class WalkInView extends StatelessWidget {
     BuildContext context,
     CatalogController catalog,
     OrderController order,
+    double width,
   ) {
+    // Kolom ikut lebar area katalog (sidebar buka/tutup, layar cabang
+    // beda-beda), tinggi kartu ikut setelan ukuran font tablet
+    final scaler = MediaQuery.textScalerOf(context);
+    final columns = GridColumns.of(
+      width,
+      minItemWidth: ServiceCard.minWidthFor(scaler),
+      spacing: _spacing,
+    );
+    final cardHeight = ServiceCard.heightFor(scaler);
+
     if (catalog.loading) {
-      return const SkeletonGrid(crossAxisCount: 4, mainAxisExtent: 190);
+      return SkeletonGrid(crossAxisCount: columns, mainAxisExtent: cardHeight);
     }
     if (catalog.error != null) {
       return ErrorRetryView(
@@ -111,11 +124,11 @@ class WalkInView extends StatelessWidget {
       onRefresh: catalog.refresh,
       child: GridView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          mainAxisExtent: 190,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columns,
+          mainAxisExtent: cardHeight,
+          crossAxisSpacing: _spacing,
+          mainAxisSpacing: _spacing,
         ),
         itemCount: services.length,
         itemBuilder: (_, index) {

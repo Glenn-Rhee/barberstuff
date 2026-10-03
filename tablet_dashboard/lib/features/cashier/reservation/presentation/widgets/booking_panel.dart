@@ -6,6 +6,7 @@ import 'package:tablet_dashboard/core/theme/app_button_style.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/provider/checkout_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/cart_item_tile.dart';
@@ -46,10 +47,10 @@ class _BookingPanelState extends State<BookingPanel> {
     }
   }
 
-  // Booked -> Progress lewat check-in, QR booking = "bk{id}"
+  // Booked -> Progress lewat check-in pakai QR booking
   Future<void> _checkIn(Booking booking) => _run(() async {
     final bookings = context.read<BookingsController>();
-    final error = await bookings.checkIn('bk${booking.id}');
+    final error = await bookings.checkInBooking(booking);
     if (!mounted) return;
     if (error == null) await bookings.focus(booking.id);
     if (!mounted) return;
@@ -60,8 +61,9 @@ class _BookingPanelState extends State<BookingPanel> {
     );
   });
 
-  // Aturan: 1 pelanggan cuma 1 layanan / paket, jadi isi booking diganti
-  Future<void> _replaceService(Booking booking) async {
+  // Boleh lebih dari 1 layanan / paket, tapi item yang sudah ada
+  // tidak muncul lagi di pemilih (tidak bisa 2x)
+  Future<void> _addService(Booking booking) async {
     final bookings = context.read<BookingsController>();
     final item = await showServicePicker(
       context,
@@ -70,15 +72,29 @@ class _BookingPanelState extends State<BookingPanel> {
     if (item == null || !mounted) return;
 
     await _run(() async {
-      final error = await bookings.replaceService(booking, item.id);
+      final error = await bookings.addService(booking, item.id);
       if (!mounted) return;
       AppToast.show(
         context,
-        error ?? 'Layanan booking diganti ${item.name}',
+        error ?? '${item.name} ditambahkan ke booking',
         error: error != null,
       );
     });
   }
+
+  Future<void> _removeService(Booking booking, ServiceItem item) =>
+      _run(() async {
+        final error = await context.read<BookingsController>().removeService(
+          booking,
+          item.id,
+        );
+        if (!mounted) return;
+        AppToast.show(
+          context,
+          error ?? '${item.name} dikeluarkan dari booking',
+          error: error != null,
+        );
+      });
 
   // Terima bayar pakai nominal server lalu cetak struk
   Future<void> _pay(Booking booking) async {
@@ -163,6 +179,9 @@ class _BookingPanelState extends State<BookingPanel> {
     final shift = context.watch<ShiftController>();
     final catalog = context.watch<CatalogController>();
     final status = booking.status;
+    // Backend hanya izinkan ubah item saat progress, dan booking tidak boleh kosong
+    final editable = status == BookingStatus.progress && !_busy;
+    final removable = editable && booking.services.length > 1;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -177,6 +196,9 @@ class _BookingPanelState extends State<BookingPanel> {
                 CartItemTile(
                   item: catalog.byId(line.item.id) ?? line.item,
                   subtitle: booking.capster.name,
+                  onRemove: removable
+                      ? () => _removeService(booking, line.item)
+                      : null,
                 ),
               if (booking.services.isEmpty)
                 Container(
@@ -197,12 +219,9 @@ class _BookingPanelState extends State<BookingPanel> {
                   height: 38,
                   child: TextButton(
                     style: AppButtonStyle.softGold,
-                    // Backend hanya izinkan ubah item saat progress
-                    onPressed: status == BookingStatus.progress && !_busy
-                        ? () => _replaceService(booking)
-                        : null,
+                    onPressed: editable ? () => _addService(booking) : null,
                     child: const Text(
-                      'Ganti Layanan / Paket',
+                      'Tambah Layanan / Paket',
                       style: AppTextStyle.label,
                     ),
                   ),
@@ -210,8 +229,9 @@ class _BookingPanelState extends State<BookingPanel> {
                 const SizedBox(height: 6),
                 Text(
                   status == BookingStatus.booked
-                      ? 'Layanan bisa diganti setelah pelanggan check-in.'
-                      : '1 pelanggan cuma 1 layanan atau 1 paket.',
+                      ? 'Layanan bisa ditambah setelah pelanggan check-in.'
+                      : 'Boleh lebih dari 1 layanan / paket, '
+                            'tapi item yang sama cuma 1x.',
                   style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
                 ),
               ],
