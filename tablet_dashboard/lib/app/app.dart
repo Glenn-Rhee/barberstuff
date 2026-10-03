@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 import 'package:tablet_dashboard/app/app_env.dart';
 import 'package:tablet_dashboard/app/app_provider.dart';
 import 'package:tablet_dashboard/core/network/api_client.dart';
@@ -16,7 +17,7 @@ import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.da
 import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
 import 'package:tablet_dashboard/features/home/presentation/pages/dashboard_screen.dart';
 
-class TabletDashboardApp extends StatelessWidget {
+class TabletDashboardApp extends StatefulWidget {
   const TabletDashboardApp({
     super.key,
     this.authApi,
@@ -38,19 +39,29 @@ class TabletDashboardApp extends StatelessWidget {
   final PrinterController? printer;
 
   @override
+  State<TabletDashboardApp> createState() => _TabletDashboardAppState();
+}
+
+class _TabletDashboardAppState extends State<TabletDashboardApp> {
+  // Dibuat sekali saja. Kalau dibuat di build(), tiap rebuild / hot reload
+  // muncul client baru tanpa token, lalu controller yang dibuat belakangan
+  // (mis. CheckoutController) kirim request tanpa header Authorization
+  late final ApiClient _client = ApiClient(baseUrl: AppEnv.baseUrl);
+  late final List<SingleChildWidget> _providers = appProviders(
+    client: _client,
+    authApi: widget.authApi ?? AuthApi(_client),
+    catalogApi: widget.catalogApi ?? CatalogApi(_client),
+    bookingApi: widget.bookingApi ?? BookingApi(_client),
+    cashSessionApi: widget.cashSessionApi ?? CashSessionApi(_client),
+    storeApi: widget.storeApi ?? StoreApi(_client),
+    customerApi: widget.customerApi ?? CustomerApi(_client),
+    printer: widget.printer,
+  );
+
+  @override
   Widget build(BuildContext context) {
-    final client = ApiClient(baseUrl: AppEnv.baseUrl);
     return MultiProvider(
-      providers: appProviders(
-        client: client,
-        authApi: authApi ?? AuthApi(client),
-        catalogApi: catalogApi ?? CatalogApi(client),
-        bookingApi: bookingApi ?? BookingApi(client),
-        cashSessionApi: cashSessionApi ?? CashSessionApi(client),
-        storeApi: storeApi ?? StoreApi(client),
-        customerApi: customerApi ?? CustomerApi(client),
-        printer: printer,
-      ),
+      providers: _providers,
       child: MaterialApp(
         title: "Dashboard Barberstuff",
         debugShowCheckedModeBanner: false,

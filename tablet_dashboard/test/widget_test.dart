@@ -86,7 +86,7 @@ void main() {
     String password = FakeApi.defaultPassword,
   }) async {
     await tester.enterText(
-      find.widgetWithText(TextField, 'nama@barberstuff.id'),
+      find.widgetWithText(TextField, 'example@barberstuff.id'),
       'staff@barberstuff.id',
     );
     await tester.enterText(
@@ -1012,7 +1012,7 @@ void main() {
       await pumpApp(tester);
       await signIn(tester);
 
-      await tester.tap(find.byTooltip('Keluar'));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Keluar'));
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, 'Keluar'));
       await tester.pumpAndSettle();
