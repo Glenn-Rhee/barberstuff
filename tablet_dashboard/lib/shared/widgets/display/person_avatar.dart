@@ -20,24 +20,39 @@ class PersonAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final photo = this.photo;
-    final image = switch (photo) {
-      null => null,
-      final url when url.startsWith('http') => NetworkImage(url),
-      final asset => AssetImage(asset) as ImageProvider,
-    };
-
-    return CircleAvatar(
-      radius: size / 2,
-      backgroundColor: AppColor.surfaceMuted,
-      backgroundImage: image,
-      // Inisial tetap ada di bawah foto, jadi kelihatan saat foto gagal dimuat
+    final initials = Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: AppColor.surfaceMuted,
+        shape: BoxShape.circle,
+      ),
       child: Text(
         initialsOf(name),
         style: AppTextStyle.label.copyWith(
           fontSize: size * 0.3,
-          color: image == null ? AppColor.inkSoft : Colors.transparent,
+          color: AppColor.inkSoft,
         ),
+      ),
+    );
+
+    final photo = this.photo;
+    if (photo == null) return initials;
+
+    return ClipOval(
+      child: Image(
+        image: photo.startsWith('http')
+            ? NetworkImage(photo)
+            : AssetImage(photo) as ImageProvider,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        // Inisial selama foto dimuat, atau kalau gagal
+        // (link presigned dari backend kedaluwarsa 30 menit)
+        frameBuilder: (_, child, frame, loadedSync) =>
+            frame == null && !loadedSync ? initials : child,
+        errorBuilder: (_, _, _) => initials,
       ),
     );
   }
