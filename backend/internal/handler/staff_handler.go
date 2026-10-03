@@ -493,7 +493,7 @@ func (h *StaffHandler) CheckinBooking(ctx *gin.Context) {
 
 	qrCode := ctx.Param("qr_code")
 
-	err := h.service.CheckinBooking(qrCode)
+	err := h.service.CheckinBooking(qrCode, claimsResult)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),

@@ -22,6 +22,7 @@ type transactionsService struct {
 	cashSessionRepo repository.CashSessionRepository
 	transactionRepo repository.TransactionsRepository
 	bookingRepo     repository.BookingRepository
+	customerRepo    repository.CustomerRepository
 	db              *gorm.DB
 }
 
@@ -29,10 +30,10 @@ func NewTransactionsService(
 	csr repository.CashSessionRepository,
 	tr repository.TransactionsRepository,
 	br repository.BookingRepository,
+	cr repository.CustomerRepository,
 	db *gorm.DB,
-
 ) TransactionsService {
-	return &transactionsService{cashSessionRepo: csr, transactionRepo: tr, bookingRepo: br, db: db}
+	return &transactionsService{cashSessionRepo: csr, transactionRepo: tr, bookingRepo: br, db: db, customerRepo: cr}
 }
 
 func (s *transactionsService) CreateTransaction(req dto.CreateTransactionReq) error {
@@ -62,11 +63,11 @@ func (s *transactionsService) CreateTransaction(req dto.CreateTransactionReq) er
 }
 
 func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashSession uuid.UUID) error {
-	const BASE_MESSAGE = "Terjadi kesalahan saat membuat saldo awal!"
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat transaksi!"
 	_, filePath, _, _ := runtime.Caller(0)
 
 	// Handle Income
-	if req.IdBooking == nil || req.PaymentType == nil{
+	if req.IdBooking == nil || req.PaymentType == nil {
 		return errors.New("Id booking dan tipe pembayaran wajib diisi.")
 	}
 
@@ -106,12 +107,22 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 			"status_booking": entity.BookingStatusCompleted,
 		}
 
+		pointCustomer := newTransaction.Amount.
+			Div(decimal.NewFromInt(10000)).
+			Floor().
+			IntPart()
+			
+		rowsAffected, err := s.customerRepo.AddMemberPoints(tx, dataBooking.IDCustomer, int(pointCustomer))
+		if err != nil {
+			return errors.New(BASE_MESSAGE)
+		}
+
 		var scopes []func(*gorm.DB) *gorm.DB
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 			return d.Where("id = ? AND status_booking = ?", idBooking, entity.BookingStatusProgress)
 		})
 
-		rowsAffected, err := s.bookingRepo.Updates(tx, updatesVal, scopes...)
+		rowsAffected, err = s.bookingRepo.Updates(tx, updatesVal, scopes...)
 		if err != nil {
 			helper.Logger("update booking", filePath, err)
 			return errors.New(BASE_MESSAGE)

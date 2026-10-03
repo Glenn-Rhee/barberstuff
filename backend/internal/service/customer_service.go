@@ -726,7 +726,7 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Select("customer.id", "customer.name", "customer.phone_number", "customer.member_points", "customer.id_premium_type")
+		return d.Select("customer.id", "customer.name", "customer.phone_number", "customer.member_points", "customer.id_premium_type", "customer.image_customer")
 	})
 
 	totalData, err := c.customerRepo.Count(scopes...)

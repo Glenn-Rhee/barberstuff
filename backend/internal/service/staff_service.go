@@ -27,7 +27,7 @@ type StaffService interface {
 	UpdateAccount(req dto.UpdateAccountStaffRequest, claims *lib.CustomClaims, idStaff string) error
 	DeleteAccount(idStaff string, claims *lib.CustomClaims) error
 	CreateBooking(claims *lib.CustomClaims, req dto.CreateCashireBookingRequest) error
-	CheckinBooking(qrCode string) error
+	CheckinBooking(qrCode string, claims *lib.CustomClaims) error
 	AddItemBooking(req dto.BookingItemReq) error
 	DeleteItemBooking(req dto.BookingItemReq) error
 }
@@ -736,7 +736,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 	return nil
 }
 
-func (s *staffService) CheckinBooking(qrCode string) error {
+func (s *staffService) CheckinBooking(qrCode string, claims *lib.CustomClaims) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat checkin. Mohon coba lagi nanti"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -757,6 +757,23 @@ func (s *staffService) CheckinBooking(qrCode string) error {
 		}
 		helper.Logger("find one toko", filePath, err)
 		return errors.New(BASE_MESSAGE)
+	}
+
+	dataStaff, err := s.staffRepo.FindOne("id = ?", claims.UserId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Staff tidak ditemukan.")
+		}
+		helper.Logger("find one staff", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if dataStaff.IdStore == nil {
+		return errors.New("Anda tidak memiliki akses.")
+	}
+
+	if *dataStaff.IdStore != dataBooking.IDStore {
+		return errors.New("Anda tidak dapat checkin di toko bukan milik anda.")
 	}
 
 	loc, err := time.LoadLocation(string(dataStore.Timezone))

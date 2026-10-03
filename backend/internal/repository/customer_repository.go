@@ -18,6 +18,7 @@ type CustomerRepository interface {
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Customer, error)
 	CountNewCustomers(startDate, endDate time.Time) (int64, error)
 	UpdateProfile(v interface{}, id uuid.UUID) (int64, error)
+	AddMemberPoints(tx *gorm.DB, id uuid.UUID, points int) (int64, error)
 }
 
 type customerRepository struct {
@@ -106,6 +107,15 @@ func (r *customerRepository) UpdateProfile(v interface{}, id uuid.UUID) (int64, 
 		Model(&entity.Customer{}).
 		Where("id = ?", id).
 		Updates(v)
+
+	return result.RowsAffected, result.Error
+}
+
+func (r *customerRepository) AddMemberPoints(tx *gorm.DB, id uuid.UUID, points int) (int64, error) {
+	result := tx.
+		Model(&entity.Customer{}).
+		Where("id = ? AND id_premium_type IS NOT NULL", id).
+		UpdateColumn("member_points", gorm.Expr("member_points + ?", points))
 
 	return result.RowsAffected, result.Error
 }
