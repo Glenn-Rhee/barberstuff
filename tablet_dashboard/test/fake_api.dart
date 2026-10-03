@@ -8,11 +8,14 @@ import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capste
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/cart_line.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/features/cashier/customer/data/customer_api.dart';
+import 'package:tablet_dashboard/features/cashier/customer/domain/entities/customer_kpi.dart';
 import 'package:tablet_dashboard/features/cashier/customer/domain/entities/customer_profile.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking_customer.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking_slot.dart';
 import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.dart';
+import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_history_entry.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
@@ -99,6 +102,34 @@ class FakeApi
   String? closeError;
 
   ({int amount, String? title})? lastOutcome;
+
+  // Shift yang sudah ditutup (History Harian)
+  List<CashHistoryEntry> historyList = [
+    CashHistoryEntry(
+      id: 'CS-OLD-1',
+      openingBalance: 500000,
+      actualCash: 640000,
+      incomeCash: 150000,
+      incomeCashless: 90000,
+      outcome: 10000,
+      openedAt: _thisMonth(2, 9),
+      closedAt: _thisMonth(2, 21),
+      storeName: 'Barberstuff Cikutra',
+      staffName: 'Dewi Lestari',
+    ),
+    CashHistoryEntry(
+      id: 'CS-OLD-2',
+      openingBalance: 500000,
+      actualCash: 530000,
+      incomeCash: 45000,
+      incomeCashless: 0,
+      outcome: 0,
+      openedAt: _thisMonth(1, 9),
+      closedAt: _thisMonth(1, 21),
+      storeName: 'Barberstuff Cikutra',
+      staffName: 'Rina Kasir',
+    ),
+  ];
 
   StoreInfo storeInfo = const StoreInfo(
     id: 'STORE-1',
@@ -287,22 +318,70 @@ class FakeApi
     _replace(booking, services: [...booking.services, CartLine(item)]);
   }
 
+  // Tiru backend: hapus layanan, booking tidak boleh kosong
   @override
-  Future<Paged<CustomerProfile>> customers({
+  Future<void> removeService({
+    required String bookingId,
+    required String serviceId,
+  }) async {
+    calls.add('removeService:$serviceId');
+    final booking = bookingList.firstWhere((b) => b.id == bookingId);
+    final lines = [
+      for (final line in booking.services)
+        if (line.item.id != serviceId) line,
+    ];
+    if (lines.isEmpty) {
+      throw const ApiException(
+        'Booking minimal punya 1 layanan.',
+        statusCode: 406,
+      );
+    }
+    _replace(booking, services: lines);
+  }
+
+  // Tiga slot, semua capster kosong
+  @override
+  Future<List<BookingSlot>> slots({
+    required String storeId,
+    required DateTime date,
+  }) async {
+    calls.add('bookingSlots');
+    return [
+      for (final time in const ['10:00', '10:30', '11:00'])
+        BookingSlot(
+          time: time,
+          available: true,
+          capsters: [
+            for (final c in capsterList)
+              SlotCapster(id: c.id, name: c.name, available: true),
+          ],
+        ),
+    ];
+  }
+
+  @override
+  Future<CustomerPage> customers({
     String? query,
     int page = 1,
     int limit = 12,
   }) async {
     calls.add('customers:${query ?? ''}');
     final q = query?.toLowerCase();
-    final items = [
+    final matched = [
       for (final customer in customerList)
         if (q == null ||
             customer.phone == query ||
             customer.name.toLowerCase().contains(q))
           customer,
     ];
-    return Paged.fromPage(items, page: page, limit: limit);
+    final items = matched.skip((page - 1) * limit).take(limit).toList();
+    final paged = Paged.fromPage(items, page: page, limit: limit);
+    return CustomerPage(
+      items: paged.items,
+      totalPages: paged.totalPages,
+      totalData: paged.totalData,
+      kpi: CustomerKpi(total: customerList.length, newThisMonth: 1),
+    );
   }
 
   // Booking tidak bisa diubah, jadi diganti salinan baru
@@ -325,6 +404,26 @@ class FakeApi
       status: status ?? booking.status,
     );
     bookingList = [for (final b in bookingList) b.id == booking.id ? copy : b];
+  }
+
+  @override
+  Future<Paged<CashHistoryEntry>> history({
+    required DateTime month,
+    String? query,
+    String? storeId,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    calls.add('history:${month.year}-${month.month}:${query ?? ''}');
+    final q = query?.toLowerCase();
+    final items = [
+      for (final e in historyList)
+        if (e.openedAt.year == month.year &&
+            e.openedAt.month == month.month &&
+            (q == null || (e.staffName ?? '').toLowerCase().contains(q)))
+          e,
+    ].skip((page - 1) * limit).take(limit).toList();
+    return Paged.fromPage(items, page: page, limit: limit);
   }
 
   @override
@@ -405,10 +504,18 @@ class FakeApi
           amount: amount,
           type: type,
           paymentType: paymentType,
+          description: description,
+          createdAt: DateTime.now(),
         ),
       ],
     );
   }
+}
+
+// Tanggal di bulan berjalan, supaya History Harian bulan ini selalu terisi
+DateTime _thisMonth(int day, int hour) {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month, day, hour);
 }
 
 // Booking dengan bentuk yang sama seperti respons GET /booking
