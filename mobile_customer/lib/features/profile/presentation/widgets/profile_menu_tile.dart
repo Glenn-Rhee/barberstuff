@@ -88,7 +88,7 @@ class ProfileMenuTile extends StatelessWidget {
 class ProfileMenuGroup extends StatelessWidget {
   const ProfileMenuGroup({super.key, required this.children});
 
-  static const double _radius = 12;
+  static const double _radius = 10;
 
   final List<Widget> children;
 
@@ -98,7 +98,7 @@ class ProfileMenuGroup extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(_radius),
-        border: Border.all(color: AppColor.border),
+        border: Border.all(color: AppColor.ink, width: 0),
       ),
       child: Column(
         children: <Widget>[

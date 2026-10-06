@@ -221,6 +221,416 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exceptionDefault => 'An unexpected error occurred.';
 
   @override
+  String get exceptionRequestRejected =>
+      'Your request couldn\'t be processed. Please check your data and try again.';
+
+  @override
+  String get serverNoAccess => 'You don\'t have access.';
+
+  @override
+  String get serverReadFailed => 'Failed to read the data.';
+
+  @override
+  String get serverBadFormat => 'Invalid data format.';
+
+  @override
+  String get serverSessionCheckFailed =>
+      'Something went wrong while checking your session.';
+
+  @override
+  String get serverAccountGone => 'Account not found or has been deleted.';
+
+  @override
+  String get serverTokenExpired =>
+      'Your session has expired. Please sign in again.';
+
+  @override
+  String get serverTokenInvalid =>
+      'Your session is invalid. Please sign in again.';
+
+  @override
+  String get serverBadHeader => 'Invalid request header.';
+
+  @override
+  String get serverSystemError => 'A system error occurred.';
+
+  @override
+  String get serverDataNotFound => 'Data not found.';
+
+  @override
+  String get serverDataGone => 'Data not found or has been deleted.';
+
+  @override
+  String get serverDataInvalid => 'Invalid data.';
+
+  @override
+  String get serverDataInvalidRelogin => 'Invalid data. Please sign in again.';
+
+  @override
+  String get serverDataInvalidContact =>
+      'Invalid data. Please contact headquarters.';
+
+  @override
+  String get serverLoadFailed => 'Something went wrong while loading the data.';
+
+  @override
+  String get serverPhoneFormat =>
+      'Invalid phone number, use the format +62xxxx or 08xxxx.';
+
+  @override
+  String get serverMinAge => 'You must be at least 6 months old to register.';
+
+  @override
+  String get serverOtpSent =>
+      'An OTP has been sent to your email. Please check your inbox or spam folder.';
+
+  @override
+  String get serverOtpDigitsOnly => 'The OTP may only contain digits 0-9.';
+
+  @override
+  String get serverRegisterFailed =>
+      'Something went wrong during registration. Please try again later.';
+
+  @override
+  String get serverEmailVerifiedBySystem =>
+      'This email is already registered and verified.';
+
+  @override
+  String get serverEmailVerifiedUsePassword =>
+      'This email is already registered and verified. Please sign in with your password.';
+
+  @override
+  String get serverEmailVerified =>
+      'This email is already registered and verified.';
+
+  @override
+  String get serverRegisterAgain =>
+      'Your data is no longer valid. Please register again.';
+
+  @override
+  String get serverMembershipFailed =>
+      'Something went wrong while loading membership data.';
+
+  @override
+  String get serverPhoneTaken => 'This phone number is already registered.';
+
+  @override
+  String get serverLoginFailed =>
+      'Something went wrong while signing in. Please try again later.';
+
+  @override
+  String get serverOtpWait => 'Please wait before requesting another OTP.';
+
+  @override
+  String get serverOtpExpiredResend =>
+      'The OTP has expired. Please resend the OTP.';
+
+  @override
+  String get serverOtpExpiredRegister =>
+      'The OTP has expired. Please register again or resend the OTP.';
+
+  @override
+  String get serverOtpFiveWrong =>
+      'You entered a wrong OTP 5 times. Please resend the OTP.';
+
+  @override
+  String get serverOtpFiveTries =>
+      'You have tried 5 times. Please try again later.';
+
+  @override
+  String get serverResetFailed =>
+      'Something went wrong while resetting your password.';
+
+  @override
+  String get serverResetFailedLater =>
+      'Something went wrong while resetting your password. Please try again later.';
+
+  @override
+  String get serverEmailNotRegistered => 'This email is not registered.';
+
+  @override
+  String get serverEmailUnverifiedReset =>
+      'This email isn\'t verified yet, so the password can\'t be reset.';
+
+  @override
+  String get serverEmailGoogleReset =>
+      'This email signs in with Google, so the password can\'t be reset.';
+
+  @override
+  String get serverTooManyAttempts =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get serverEmailUnverifiedLogin =>
+      'This email isn\'t verified yet. Please verify it first.';
+
+  @override
+  String get serverWrongPassword => 'The password you entered is incorrect.';
+
+  @override
+  String get serverAuthFailed => 'Something went wrong during sign-in.';
+
+  @override
+  String get serverProviderUnavailable =>
+      'This sign-in method is not available.';
+
+  @override
+  String get serverGoogleUnverified =>
+      'Your email hasn\'t been verified by Google. Please verify it first.';
+
+  @override
+  String get serverResetTokenInvalid =>
+      'The link or code is invalid or has expired.';
+
+  @override
+  String get serverAccountNotFound => 'Your account was not found.';
+
+  @override
+  String get serverProfileLoadFailed =>
+      'Something went wrong while loading your profile.';
+
+  @override
+  String get serverProfileUpdateFailed =>
+      'Something went wrong while updating your profile.';
+
+  @override
+  String get serverRelogin => 'Your data is invalid. Please sign in again.';
+
+  @override
+  String get serverProfileNoChange => 'Change at least one profile field.';
+
+  @override
+  String get serverStoreLoadFailed =>
+      'Something went wrong while loading the stores.';
+
+  @override
+  String get serverBranchNotFound =>
+      'The branch you\'re looking for was not found.';
+
+  @override
+  String get serverStoreNotFound => 'Store not found.';
+
+  @override
+  String get serverStoreGone => 'Store not found or has been deleted.';
+
+  @override
+  String get serverStoreDataGone => 'Store not found or has been deleted.';
+
+  @override
+  String get serverStoreDataInvalid => 'Invalid store data.';
+
+  @override
+  String get serverStoreIdInvalid => 'Invalid store ID.';
+
+  @override
+  String get serverCapsterLoadFailed =>
+      'Something went wrong while loading the capsters.';
+
+  @override
+  String get serverBookingFailed =>
+      'Something went wrong while creating the booking.';
+
+  @override
+  String get serverBookingFailedLater =>
+      'Something went wrong while creating the booking. Please try again later.';
+
+  @override
+  String get serverStoreInvalid => 'Invalid store.';
+
+  @override
+  String get serverCapsterIdInvalid => 'Invalid capster.';
+
+  @override
+  String get serverStoreNotReady => 'This store isn\'t accepting bookings yet.';
+
+  @override
+  String get serverBookingPast =>
+      'The booking date and time can\'t be in the past.';
+
+  @override
+  String get serverBookingMinLead =>
+      'Bookings must be at least 30 minutes from now.';
+
+  @override
+  String get serverUserInvalid => 'Invalid user.';
+
+  @override
+  String get serverUserDataInvalid => 'Invalid user data.';
+
+  @override
+  String get serverCapsterGone => 'Capster not found or has been removed.';
+
+  @override
+  String get serverCapsterOtherStore =>
+      'This capster doesn\'t work at the store you selected.';
+
+  @override
+  String get serverBookingExists =>
+      'You already have a booking, so you can\'t book again.';
+
+  @override
+  String get serverBookingSlotMismatch =>
+      'The booking time doesn\'t match the available slots.';
+
+  @override
+  String get serverBookingInProgress =>
+      'You still have a booking being processed.';
+
+  @override
+  String get serverNoCapsterLeft => 'No capsters are available anymore.';
+
+  @override
+  String get serverCapsterReserved =>
+      'This capster is being reserved for another customer.';
+
+  @override
+  String get serverCapsterBusy => 'This capster isn\'t available at that time.';
+
+  @override
+  String get serverSlotLocked =>
+      'This slot is already being held by someone else.';
+
+  @override
+  String get serverLockFirst =>
+      'Your slot isn\'t held yet. Please hold a slot first.';
+
+  @override
+  String get serverNoLock => 'You haven\'t held a slot yet.';
+
+  @override
+  String get serverLockExpired =>
+      'Booking not found or the hold time has run out.';
+
+  @override
+  String get serverBookingNotYours => 'This booking doesn\'t belong to you.';
+
+  @override
+  String get serverCapsterWalkIn =>
+      'This capster is reserved for a walk-in customer. Please choose another capster.';
+
+  @override
+  String get serverServiceInvalid => 'Invalid service data.';
+
+  @override
+  String get serverServiceGone => 'Service not found or has been removed.';
+
+  @override
+  String get serverServiceNotInStore =>
+      'This store doesn\'t offer that service.';
+
+  @override
+  String get serverServiceUnavailable =>
+      'This service is no longer available. Please choose again.';
+
+  @override
+  String get serverPromoUsed => 'This promo has already been used.';
+
+  @override
+  String get serverPromoInvalidNow => 'This promo is no longer valid.';
+
+  @override
+  String get serverPromoExpired => 'This promo has expired.';
+
+  @override
+  String get serverPromoNotFound => 'Your promo was not found.';
+
+  @override
+  String get serverPromoInvalid => 'Invalid promo.';
+
+  @override
+  String get serverScheduleLoadFailed =>
+      'Something went wrong while loading the store\'s schedule. Please try again later.';
+
+  @override
+  String get serverBookingLoadFailed =>
+      'Something went wrong while loading your bookings.';
+
+  @override
+  String get serverIdentityInvalid => 'Your identity is invalid.';
+
+  @override
+  String get serverRatingFailed =>
+      'Something went wrong while saving your rating.';
+
+  @override
+  String get serverBookingInvalid => 'Invalid booking.';
+
+  @override
+  String get serverRatingNeedOne =>
+      'Please rate at least one of our store, capster, or staff.';
+
+  @override
+  String get serverBookingNotFound => 'Booking not found.';
+
+  @override
+  String get serverRatingCashierOnly => 'Only the cashier can be rated.';
+
+  @override
+  String get serverFileType => 'This file type isn\'t supported.';
+
+  @override
+  String get serverFileMismatch =>
+      'The file extension doesn\'t match its content.';
+
+  @override
+  String get serverFileEmpty => 'The file is empty.';
+
+  @override
+  String get serverFileTooBig => 'The file must be 5 MB or smaller.';
+
+  @override
+  String get serverUploadUrlFailed => 'Failed to prepare the upload.';
+
+  @override
+  String get serverImageTooBig => 'The image is too large.';
+
+  @override
+  String get serverImageKey => 'Invalid image reference.';
+
+  @override
+  String get serverImageSaveFailed => 'Failed to save, please check the image.';
+
+  @override
+  String serverFieldRequired(String field) {
+    return '$field is required.';
+  }
+
+  @override
+  String serverFieldEmail(String field) {
+    return '$field must be a valid email.';
+  }
+
+  @override
+  String serverFieldNumeric(String field) {
+    return '$field must be a number.';
+  }
+
+  @override
+  String serverFieldMin(String field, String count) {
+    return '$field must be at least $count characters.';
+  }
+
+  @override
+  String serverFieldMax(String field, String count) {
+    return '$field must be at most $count characters.';
+  }
+
+  @override
+  String serverFieldGreater(String field, String count) {
+    return '$field must be more than $count characters.';
+  }
+
+  @override
+  String serverFieldInvalid(String field) {
+    return '$field is invalid.';
+  }
+
+  @override
+  String serverOtpAttemptsLeft(String count) {
+    return 'Invalid OTP, please try again. Attempts left: $count.';
+  }
+
+  @override
   String validatorRequired(String label) {
     return '$label is required';
   }
@@ -1194,6 +1604,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get promoNotEnoughPoints => 'Not enough points for this reward yet.';
+
+  @override
+  String get promoBenefitPointsTitle => 'Regular A-Points';
+
+  @override
+  String get promoBenefitPointsDesc =>
+      'Earn regular point cashback of up to 5% on every partner merchant transaction.';
+
+  @override
+  String get promoBenefitMerchantTitle => 'Merchant Deals';
+
+  @override
+  String get promoBenefitMerchantDesc =>
+      'Exclusive discounts of up to 30% at selected restaurants, cafés, and favorite outlets.';
+
+  @override
+  String get promoBenefitVoucherTitle => 'Holiday Special Voucher';
+
+  @override
+  String get promoBenefitVoucherDesc =>
+      'Get a shopping voucher worth Rp100,000 on special occasions.';
+
+  @override
+  String get promoBannerCashbackTitle => '20% Cashback';
+
+  @override
+  String get promoBannerCashbackSubtitle => 'For all services';
+
+  @override
+  String get promoBannerCashbackFootnote => 'Min. transaction Rp150,000';
+
+  @override
+  String get promoBannerBundleTitle => 'Value Bundle';
+
+  @override
+  String get promoBannerBundleSubtitle => '5x Haircut';
+
+  @override
+  String get promoBannerBundleFootnote => 'Save up to 15%';
+
+  @override
+  String get promoRewardHalfOffTitle => '50% Off Haircut';
+
+  @override
+  String get promoRewardHalfOffDesc =>
+      'Get exclusive access to discounts on selected haircut and beard care services. Enjoy the best cuts straight from our professional barbers, with premium service standards.';
+
+  @override
+  String get promoRewardPriorityTitle => 'Priority Haircut Queue';
+
+  @override
+  String get promoRewardPriorityDesc =>
+      'Skip the queue and get served right away at your chosen branch. Valid for one visit during regular opening hours.';
+
+  @override
+  String get promoRewardWashTitle => 'Free Hair Wash & Hair Tonic';
+
+  @override
+  String get promoRewardWashDesc =>
+      'A free hair wash and hair tonic with every haircut. Valid at all Barberstuff branches.';
 
   @override
   String promoPoints(String count) {
