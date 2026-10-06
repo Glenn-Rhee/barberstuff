@@ -1232,18 +1232,37 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Clauses(clause.OrderBy{
-			Columns: []clause.OrderByColumn{
-				{
-					Column: clause.Column{
-						Name: string(sortBy),
+		if reqParams.SortBy == nil {
+			d = d.Clauses(clause.OrderBy{
+				Expression: clause.Expr{
+					SQL: `CASE booking.status_booking
+						WHEN ? THEN 1
+						WHEN ? THEN 2
+						WHEN ? THEN 3
+						ELSE 4
+					END ASC, booking.created_at ASC`,
+					Vars: []interface{}{
+						entity.BookingStatusProgress,
+						entity.BookingStatusBooked,
+						entity.BookingStatusCompleted,
 					},
-					Desc: dto.SortBooking(orderBy) == "desc",
 				},
-			},
-		}).Offset((page - 1) * limit).Limit(limit)
-	})
+			})
+		} else {
+			d = d.Clauses(clause.OrderBy{
+				Columns: []clause.OrderByColumn{
+					{
+						Column: clause.Column{
+							Name: string(sortBy),
+						},
+						Desc: dto.SortBooking(orderBy) == "desc",
+					},
+				},
+			})
+		}
 
+		return d.Offset((page - 1) * limit).Limit(limit)
+	})
 	paginationData := helper.GetPaginationData(page, limit, int(totalData))
 	bookings, err := s.bookingRepo.FindAll(scopes...)
 	if err != nil {
