@@ -13,17 +13,51 @@ class AttendanceCard extends StatelessWidget {
   const AttendanceCard({
     super.key,
     required this.capster,
+    required this.status,
     required this.entry,
     required this.onMark,
+    this.localOnly = false,
+    this.bookableWhilePending = false,
+    this.busy = false,
   });
 
   final Capster capster;
+
+  // Status gabungan server + tablet, null = belum absen
+  final AttendanceStatus? status;
+
+  // Catatan jam absen hari ini di tablet
   final AttendanceEntry? entry;
   final ValueChanged<AttendanceStatus> onMark;
 
+  // Tidak hadir di tablet saja, server belum ikut nonaktif
+  final bool localOnly;
+
+  // Belum absen tapi masih aktif di server
+  final bool bookableWhilePending;
+
+  // Status sedang dikirim ke server
+  final bool busy;
+
   @override
   Widget build(BuildContext context) {
-    final status = entry?.status;
+    final status = this.status;
+    final entry = this.entry;
+    final (note, noteColor) = switch ((entry, status)) {
+      _ when localOnly => (
+        'Belum nonaktif di aplikasi pelanggan',
+        AppColor.warning,
+      ),
+      _ when bookableWhilePending => (
+        'Masih bisa dipilih pelanggan',
+        AppColor.warning,
+      ),
+      (final AttendanceEntry entry?, _) when entry.status == status => (
+        'Dicatat ${DateFormatId.time(entry.at)}',
+        AppColor.inkFaint,
+      ),
+      _ => (null, AppColor.inkFaint),
+    };
 
     return AppCard(
       child: Column(
@@ -37,34 +71,48 @@ class AttendanceCard extends StatelessWidget {
             style: AppTextStyle.bodyBold,
           ),
           const SizedBox(height: 4),
-          AttendanceBadge(entry: entry),
-          if (entry != null)
+          AttendanceBadge(status: status),
+          if (note != null)
             Text(
-              'Dicatat ${DateFormatId.time(entry!.at)}',
-              style: AppTextStyle.caption.copyWith(color: AppColor.inkFaint),
+              note,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyle.caption.copyWith(color: noteColor),
             ),
           const Spacer(),
-          Row(
-            children: [
-              Expanded(
-                child: _MarkButton(
-                  label: 'Hadir',
-                  color: AppColor.success,
-                  selected: status == AttendanceStatus.present,
-                  onTap: () => onMark(AttendanceStatus.present),
+          if (busy)
+            const SizedBox(
+              height: 36,
+              child: Center(
+                child: SizedBox.square(
+                  dimension: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _MarkButton(
-                  label: 'Tidak Hadir',
-                  color: AppColor.danger,
-                  selected: status == AttendanceStatus.absent,
-                  onTap: () => onMark(AttendanceStatus.absent),
+            )
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: _MarkButton(
+                    label: 'Hadir',
+                    color: AppColor.success,
+                    selected: status == AttendanceStatus.present,
+                    onTap: () => onMark(AttendanceStatus.present),
+                  ),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _MarkButton(
+                    label: 'Tidak Hadir',
+                    color: AppColor.danger,
+                    // Tidak hadir di tablet saja boleh dicoba kirim lagi
+                    selected: status == AttendanceStatus.absent && !localOnly,
+                    onTap: () => onMark(AttendanceStatus.absent),
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );

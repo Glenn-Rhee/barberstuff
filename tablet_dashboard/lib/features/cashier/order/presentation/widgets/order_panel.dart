@@ -5,6 +5,7 @@ import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
+import 'package:tablet_dashboard/features/cashier/attendance/domain/entities/attendance_entry.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
@@ -145,11 +146,12 @@ class _OrderPanelState extends State<OrderPanel> {
     final order = context.watch<OrderController>();
     final attendance = context.watch<AttendanceController>();
     // Capster yang absen "Tidak Hadir" tidak bisa dipilih
+    // (termasuk yang tidak hadir di tablet saja)
     final capsters = [
       for (final capster in context.select<CatalogController, List<Capster>>(
         (c) => c.activeCapsters,
       ))
-        if (!attendance.isAbsent(capster.id)) capster,
+        if (attendance.statusOf(capster) != AttendanceStatus.absent) capster,
     ];
     final shift = context.watch<ShiftController>();
     final items = order.items;

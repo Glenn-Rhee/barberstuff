@@ -40,4 +40,8 @@ class CatalogApi {
     );
     return [for (final json in res.list) Capster.fromJson(json)];
   }
+
+  // Aktif / nonaktifkan capster. Backend saat ini hanya izinkan admin
+  Future<void> setCapsterActive(String id, {required bool active}) => _client
+      .patch('/capster/$id', data: {'status': active ? 'active' : 'inactive'});
 }

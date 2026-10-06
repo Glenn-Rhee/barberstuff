@@ -229,6 +229,20 @@ class FakeApi
     return capsterList;
   }
 
+  // Tiru backend: PATCH /capster saat ini hanya untuk admin
+  Set<String> capsterStatusRoles = {'admin'};
+
+  @override
+  Future<void> setCapsterActive(String id, {required bool active}) async {
+    calls.add('capsterStatus:$id:${active ? 'active' : 'inactive'}');
+    if (!capsterStatusRoles.contains(staff.role)) {
+      throw const ApiException('Anda tidak memiliki akses!', statusCode: 401);
+    }
+    capsterList = [
+      for (final c in capsterList) c.id == id ? c.copyWith(active: active) : c,
+    ];
+  }
+
   @override
   Future<Paged<Booking>> bookings({
     BookingStatus? status,
