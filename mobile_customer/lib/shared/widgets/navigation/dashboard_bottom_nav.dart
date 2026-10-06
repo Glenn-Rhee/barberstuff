@@ -28,8 +28,10 @@ class DashboardBottomNav extends StatelessWidget {
 
   /// Ruang yang harus disisakan halaman di bagian bawah biar
   /// isi terakhirnya tidak ketutup navbar.
+  /// Pakai viewPadding, bukan padding: Scaffold `extendBody` sudah memasukkan
+  /// tinggi navbar ke padding.bottom halaman, jadi navbar bakal terhitung 2x.
   static double spaceOf(BuildContext context) =>
-      heightOf(context) + MediaQuery.paddingOf(context).bottom;
+      heightOf(context) + MediaQuery.viewPaddingOf(context).bottom;
 
   final DashboardTab current;
   final void Function(DashboardTab tab) onSelect;
