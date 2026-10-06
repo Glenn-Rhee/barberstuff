@@ -39,6 +39,9 @@ class BluetoothPrinter {
 
   Future<void> disconnect() => _invoke<void>('disconnect');
 
+  // Putus paksa connect/write yang lagi nunggu, dipanggil langsung (tidak antre)
+  Future<void> cancel() => _invoke<void>('cancel');
+
   Future<bool> isConnected() async =>
       await _invoke<bool>('isConnected') ?? false;
 

@@ -29,6 +29,7 @@ class SidebarAccountTile extends StatelessWidget {
           side: const BorderSide(color: AppColor.sidebarDivider),
           minimumSize: const Size(0, 36),
           padding: EdgeInsets.zero,
+          backgroundColor: AppColor.danger,
         ),
         child: const Text('Keluar'),
       ),

@@ -12,12 +12,12 @@ import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 
-// Pilih 1 layanan / paket dari katalog (1 pelanggan = 1 item).
-// [excludeIds] = layanan yang sudah dipakai, tidak ditampilkan
+// Pilih 1 layanan / paket dari katalog untuk ditambahkan.
+// [excludeIds] = layanan yang sudah dipakai, tidak ditampilkan (tidak bisa 2x)
 Future<ServiceItem?> showServicePicker(
   BuildContext context, {
   Set<String> excludeIds = const {},
-  String title = 'Ganti Layanan / Paket',
+  String title = 'Tambah Layanan / Paket',
 }) {
   return showDialog<ServiceItem>(
     context: context,

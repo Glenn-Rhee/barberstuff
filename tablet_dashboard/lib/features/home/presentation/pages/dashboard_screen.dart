@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
+import 'package:tablet_dashboard/features/admin/branch/presentation/pages/branch_section.dart';
 import 'package:tablet_dashboard/features/admin/dashboard/presentation/pages/admin_dashboard_screen.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
@@ -22,7 +23,8 @@ import 'package:tablet_dashboard/features/home/presentation/widgets/live_refresh
 import 'package:tablet_dashboard/features/mitra/dashboard/presentation/pages/mitra_dashboard_screen.dart';
 
 // Layar utama setelah login: sidebar di kiri, isi menu di kanan.
-// Menu Dashboard beda tiap role, Kasir dan Konfigurasi sama
+// Menu Dashboard beda tiap role, Mengelola Cabang khusus admin,
+// Kasir dan Konfigurasi sama
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -85,6 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   StaffRole.mitra => const MitraDashboardScreen(),
                   _ => const CashierDashboardScreen(),
                 },
+                AppSection.branches => const BranchSection(),
                 AppSection.order => const OrderScreen(),
                 AppSection.customers => const CustomersScreen(),
                 AppSection.bookkeeping => const BookkeepingScreen(),
