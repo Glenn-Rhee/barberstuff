@@ -61,7 +61,7 @@ func (r *customerRepository) FindOne(where interface{}, args ...interface{}) (en
 
 func (r *customerRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
 	var total int64
-	result := r.db.Model(&entity.Customer{}).Count(&total).Scopes(scopes...)
+	result := r.db.Model(&entity.Customer{}).Scopes(scopes...).Count(&total)
 	return total, result.Error
 }
 
@@ -98,6 +98,7 @@ func (r *customerRepository) CountNewCustomers(startDate, endDate time.Time) (in
 	var count int64
 	err := r.db.Model(&entity.Customer{}).
 		Where("created_at >= ? AND created_at < ?", startDate, endDate).
+		Where("EXISTS (SELECT 1 FROM booking WHERE booking.id_user = customer.id)").
 		Count(&count).Error
 	return count, err
 }
