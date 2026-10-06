@@ -3362,6 +3362,9 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "discount_amount": {
+                    "type": "number"
+                },
                 "id_booking": {
                     "type": "string"
                 },
