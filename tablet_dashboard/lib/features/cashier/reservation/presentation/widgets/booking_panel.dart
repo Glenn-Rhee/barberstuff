@@ -70,7 +70,9 @@ class _BookingPanelState extends State<BookingPanel> {
     final bookings = context.read<BookingsController>();
     final error = await bookings.checkInBooking(booking);
     if (!mounted) return;
-    if (error == null) await bookings.focus(booking.id);
+    if (error == null) {
+      await bookings.focus(booking.id, day: booking.scheduledAt);
+    }
     if (!mounted) return;
     AppToast.show(
       context,
