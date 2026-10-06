@@ -10,4 +10,5 @@ type CreateTransactionReq struct {
 	PaymentType     *entity.PaymentType    `json:"payment_type" binding:"omitempty,oneof=cash cashless"`
 	Amount          *float64               `json:"amount" binding:"omitempty,min=1000"`
 	Description     *string                `json:"description" binding:"omitempty"`
+	DiscountAmount  *float64               `json:"discount_amount" binding:"omitempty"`
 }

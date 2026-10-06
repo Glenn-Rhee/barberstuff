@@ -79,7 +79,7 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 	dataBooking, err := s.bookingRepo.FindOne("id = ? AND status_booking = ?", idBooking, entity.BookingStatusProgress)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("Booking tidak ditemukan atau telah selesai.")
+			return errors.New("Booking telah selesai atau belum melakukan checkin.")
 		}
 
 		helper.Logger("find one booking", filePath, err)
@@ -92,26 +92,46 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 	}
 	title := strings.Join(names, " + ")
 
+	updatesVal := map[string]interface{}{
+		"status_booking": entity.BookingStatusCompleted,
+	}
+
+	transactionAmount := dataBooking.TotalPrice
+
+	if req.DiscountAmount != nil {
+		if *req.DiscountAmount < 0 {
+			return errors.New("Diskon tidak dapat berupa minus")
+		}
+
+		disCountAmount := decimal.NewFromFloat(*req.DiscountAmount)
+		if disCountAmount.GreaterThan(dataBooking.TotalPrice) {
+			return errors.New("Diskon tidak dapat melebihi sub total transaksi.")
+		}
+
+		
+		updatesVal["discount_amount"] = disCountAmount
+		newTotalPrice := gorm.Expr("total_price - ?", disCountAmount)
+		updatesVal["total_price"] = newTotalPrice
+
+		transactionAmount = dataBooking.TotalPrice.Sub(disCountAmount)
+	}
+
 	newTransaction := entity.Transactions{
 		ID:              uuid.New(),
 		IDCashSession:   idCashSession,
 		Title:           title,
 		PaymentType:     *req.PaymentType,
-		Amount:          dataBooking.TotalPrice,
+		Amount:          transactionAmount,
 		TransactionType: entity.TransactionIncome,
 		Description:     req.Description,
 	}
 
 	err = s.db.Transaction(func(tx *gorm.DB) error {
-		updatesVal := map[string]interface{}{
-			"status_booking": entity.BookingStatusCompleted,
-		}
-
 		pointCustomer := newTransaction.Amount.
 			Div(decimal.NewFromInt(10000)).
 			Floor().
 			IntPart()
-			
+
 		rowsAffected, err := s.customerRepo.AddMemberPoints(tx, dataBooking.IDCustomer, int(pointCustomer))
 		if err != nil {
 			return errors.New(BASE_MESSAGE)
