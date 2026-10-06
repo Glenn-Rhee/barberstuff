@@ -102,7 +102,7 @@ class DashboardBody extends StatelessWidget {
         controller: controller,
         padding: EdgeInsets.only(
           top: 20,
-          bottom: 28 + DashboardBottomNav.spaceOf(context),
+          bottom: DashboardBottomNav.spaceOf(context),
         ),
         children: <Widget>[
           _Inset(
