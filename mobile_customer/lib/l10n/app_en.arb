@@ -66,6 +66,185 @@
   "exceptionConnectionError": "Unable to connect to the server.",
   "exceptionDefaultType": "A server error occurred.",
   "exceptionDefault": "An unexpected error occurred.",
+  "exceptionRequestRejected": "Your request couldn't be processed. Please check your data and try again.",
+  "serverNoAccess": "You don't have access.",
+  "serverReadFailed": "Failed to read the data.",
+  "serverBadFormat": "Invalid data format.",
+  "serverSessionCheckFailed": "Something went wrong while checking your session.",
+  "serverAccountGone": "Account not found or has been deleted.",
+  "serverTokenExpired": "Your session has expired. Please sign in again.",
+  "serverTokenInvalid": "Your session is invalid. Please sign in again.",
+  "serverBadHeader": "Invalid request header.",
+  "serverSystemError": "A system error occurred.",
+  "serverDataNotFound": "Data not found.",
+  "serverDataGone": "Data not found or has been deleted.",
+  "serverDataInvalid": "Invalid data.",
+  "serverDataInvalidRelogin": "Invalid data. Please sign in again.",
+  "serverDataInvalidContact": "Invalid data. Please contact headquarters.",
+  "serverLoadFailed": "Something went wrong while loading the data.",
+  "serverPhoneFormat": "Invalid phone number, use the format +62xxxx or 08xxxx.",
+  "serverMinAge": "You must be at least 6 months old to register.",
+  "serverOtpSent": "An OTP has been sent to your email. Please check your inbox or spam folder.",
+  "serverOtpDigitsOnly": "The OTP may only contain digits 0-9.",
+  "serverRegisterFailed": "Something went wrong during registration. Please try again later.",
+  "serverEmailVerifiedBySystem": "This email is already registered and verified.",
+  "serverEmailVerifiedUsePassword": "This email is already registered and verified. Please sign in with your password.",
+  "serverEmailVerified": "This email is already registered and verified.",
+  "serverRegisterAgain": "Your data is no longer valid. Please register again.",
+  "serverMembershipFailed": "Something went wrong while loading membership data.",
+  "serverPhoneTaken": "This phone number is already registered.",
+  "serverLoginFailed": "Something went wrong while signing in. Please try again later.",
+  "serverOtpWait": "Please wait before requesting another OTP.",
+  "serverOtpExpiredResend": "The OTP has expired. Please resend the OTP.",
+  "serverOtpExpiredRegister": "The OTP has expired. Please register again or resend the OTP.",
+  "serverOtpFiveWrong": "You entered a wrong OTP 5 times. Please resend the OTP.",
+  "serverOtpFiveTries": "You have tried 5 times. Please try again later.",
+  "serverResetFailed": "Something went wrong while resetting your password.",
+  "serverResetFailedLater": "Something went wrong while resetting your password. Please try again later.",
+  "serverEmailNotRegistered": "This email is not registered.",
+  "serverEmailUnverifiedReset": "This email isn't verified yet, so the password can't be reset.",
+  "serverEmailGoogleReset": "This email signs in with Google, so the password can't be reset.",
+  "serverTooManyAttempts": "Too many attempts. Please try again later.",
+  "serverEmailUnverifiedLogin": "This email isn't verified yet. Please verify it first.",
+  "serverWrongPassword": "The password you entered is incorrect.",
+  "serverAuthFailed": "Something went wrong during sign-in.",
+  "serverProviderUnavailable": "This sign-in method is not available.",
+  "serverGoogleUnverified": "Your email hasn't been verified by Google. Please verify it first.",
+  "serverResetTokenInvalid": "The link or code is invalid or has expired.",
+  "serverAccountNotFound": "Your account was not found.",
+  "serverProfileLoadFailed": "Something went wrong while loading your profile.",
+  "serverProfileUpdateFailed": "Something went wrong while updating your profile.",
+  "serverRelogin": "Your data is invalid. Please sign in again.",
+  "serverProfileNoChange": "Change at least one profile field.",
+  "serverStoreLoadFailed": "Something went wrong while loading the stores.",
+  "serverBranchNotFound": "The branch you're looking for was not found.",
+  "serverStoreNotFound": "Store not found.",
+  "serverStoreGone": "Store not found or has been deleted.",
+  "serverStoreDataGone": "Store not found or has been deleted.",
+  "serverStoreDataInvalid": "Invalid store data.",
+  "serverStoreIdInvalid": "Invalid store ID.",
+  "serverCapsterLoadFailed": "Something went wrong while loading the capsters.",
+  "serverBookingFailed": "Something went wrong while creating the booking.",
+  "serverBookingFailedLater": "Something went wrong while creating the booking. Please try again later.",
+  "serverStoreInvalid": "Invalid store.",
+  "serverCapsterIdInvalid": "Invalid capster.",
+  "serverStoreNotReady": "This store isn't accepting bookings yet.",
+  "serverBookingPast": "The booking date and time can't be in the past.",
+  "serverBookingMinLead": "Bookings must be at least 30 minutes from now.",
+  "serverUserInvalid": "Invalid user.",
+  "serverUserDataInvalid": "Invalid user data.",
+  "serverCapsterGone": "Capster not found or has been removed.",
+  "serverCapsterOtherStore": "This capster doesn't work at the store you selected.",
+  "serverBookingExists": "You already have a booking, so you can't book again.",
+  "serverBookingSlotMismatch": "The booking time doesn't match the available slots.",
+  "serverBookingInProgress": "You still have a booking being processed.",
+  "serverNoCapsterLeft": "No capsters are available anymore.",
+  "serverCapsterReserved": "This capster is being reserved for another customer.",
+  "serverCapsterBusy": "This capster isn't available at that time.",
+  "serverSlotLocked": "This slot is already being held by someone else.",
+  "serverLockFirst": "Your slot isn't held yet. Please hold a slot first.",
+  "serverNoLock": "You haven't held a slot yet.",
+  "serverLockExpired": "Booking not found or the hold time has run out.",
+  "serverBookingNotYours": "This booking doesn't belong to you.",
+  "serverCapsterWalkIn": "This capster is reserved for a walk-in customer. Please choose another capster.",
+  "serverServiceInvalid": "Invalid service data.",
+  "serverServiceGone": "Service not found or has been removed.",
+  "serverServiceNotInStore": "This store doesn't offer that service.",
+  "serverServiceUnavailable": "This service is no longer available. Please choose again.",
+  "serverPromoUsed": "This promo has already been used.",
+  "serverPromoInvalidNow": "This promo is no longer valid.",
+  "serverPromoExpired": "This promo has expired.",
+  "serverPromoNotFound": "Your promo was not found.",
+  "serverPromoInvalid": "Invalid promo.",
+  "serverScheduleLoadFailed": "Something went wrong while loading the store's schedule. Please try again later.",
+  "serverBookingLoadFailed": "Something went wrong while loading your bookings.",
+  "serverIdentityInvalid": "Your identity is invalid.",
+  "serverRatingFailed": "Something went wrong while saving your rating.",
+  "serverBookingInvalid": "Invalid booking.",
+  "serverRatingNeedOne": "Please rate at least one of our store, capster, or staff.",
+  "serverBookingNotFound": "Booking not found.",
+  "serverRatingCashierOnly": "Only the cashier can be rated.",
+  "serverFileType": "This file type isn't supported.",
+  "serverFileMismatch": "The file extension doesn't match its content.",
+  "serverFileEmpty": "The file is empty.",
+  "serverFileTooBig": "The file must be 5 MB or smaller.",
+  "serverUploadUrlFailed": "Failed to prepare the upload.",
+  "serverImageTooBig": "The image is too large.",
+  "serverImageKey": "Invalid image reference.",
+  "serverImageSaveFailed": "Failed to save, please check the image.",
+  "serverFieldRequired": "{field} is required.",
+  "@serverFieldRequired": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldEmail": "{field} must be a valid email.",
+  "@serverFieldEmail": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldNumeric": "{field} must be a number.",
+  "@serverFieldNumeric": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldMin": "{field} must be at least {count} characters.",
+  "@serverFieldMin": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldMax": "{field} must be at most {count} characters.",
+  "@serverFieldMax": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldGreater": "{field} must be more than {count} characters.",
+  "@serverFieldGreater": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldInvalid": "{field} is invalid.",
+  "@serverFieldInvalid": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "serverOtpAttemptsLeft": "Invalid OTP, please try again. Attempts left: {count}.",
+  "@serverOtpAttemptsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "validatorRequired": "{label} is required",
   "validatorEmailInvalid": "Invalid email format",
   "validatorPasswordMin": "Password must be at least {min} characters",
@@ -363,6 +542,24 @@
   "promoAboutVoucher": "About This Voucher",
   "promoClaimed": "Reward claimed.",
   "promoNotEnoughPoints": "Not enough points for this reward yet.",
+  "promoBenefitPointsTitle": "Regular A-Points",
+  "promoBenefitPointsDesc": "Earn regular point cashback of up to 5% on every partner merchant transaction.",
+  "promoBenefitMerchantTitle": "Merchant Deals",
+  "promoBenefitMerchantDesc": "Exclusive discounts of up to 30% at selected restaurants, cafés, and favorite outlets.",
+  "promoBenefitVoucherTitle": "Holiday Special Voucher",
+  "promoBenefitVoucherDesc": "Get a shopping voucher worth Rp100,000 on special occasions.",
+  "promoBannerCashbackTitle": "20% Cashback",
+  "promoBannerCashbackSubtitle": "For all services",
+  "promoBannerCashbackFootnote": "Min. transaction Rp150,000",
+  "promoBannerBundleTitle": "Value Bundle",
+  "promoBannerBundleSubtitle": "5x Haircut",
+  "promoBannerBundleFootnote": "Save up to 15%",
+  "promoRewardHalfOffTitle": "50% Off Haircut",
+  "promoRewardHalfOffDesc": "Get exclusive access to discounts on selected haircut and beard care services. Enjoy the best cuts straight from our professional barbers, with premium service standards.",
+  "promoRewardPriorityTitle": "Priority Haircut Queue",
+  "promoRewardPriorityDesc": "Skip the queue and get served right away at your chosen branch. Valid for one visit during regular opening hours.",
+  "promoRewardWashTitle": "Free Hair Wash & Hair Tonic",
+  "promoRewardWashDesc": "A free hair wash and hair tonic with every haircut. Valid at all Barberstuff branches.",
   "promoPoints": "{count} Points",
   "@promoPoints": {
     "placeholders": {

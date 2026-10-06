@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
 import 'package:mobile_barberstuff/core/theme/app_text_style.dart';
-import 'package:mobile_barberstuff/core/usecase/usecase.dart';
 import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/features/profile/presentation/provider/profile_provider.dart';
 import 'package:mobile_barberstuff/features/promo/domain/entities/promo_content.dart';
@@ -58,9 +57,7 @@ class PromoPage extends StatelessWidget {
     // poin dan tier di layar; args cuma dipakai sebagai nilai awal.
     final ProfileProvider? profileProvider = _liveProfile(context);
     final CustomerProfile profile = profileProvider?.profile ?? args.profile;
-    final PromoContent promo = context.read<GetPromoContent>()(
-      const NoParams(),
-    );
+    final PromoContent promo = context.read<GetPromoContent>()(l10n);
 
     return Scaffold(
       backgroundColor: AppColor.surface,

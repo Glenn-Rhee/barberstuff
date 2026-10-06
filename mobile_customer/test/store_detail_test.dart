@@ -153,7 +153,7 @@ void main() {
 
     expect(find.text('Barberstuff Jati Asih'), findsOneWidget);
     expect(find.text('BUKA'), findsOneWidget);
-    expect(find.textContaining('(2 reviews)'), findsOneWidget);
+    expect(find.textContaining('(2 ulasan)'), findsOneWidget);
     expect(find.text('Deskripsi'), findsOneWidget);
 
     await tester.tap(find.text('Layanan'));
