@@ -5,13 +5,14 @@ import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
 
 // Badge Hadir / Tidak Hadir / Belum Absen
 class AttendanceBadge extends StatelessWidget {
-  const AttendanceBadge({super.key, required this.entry});
+  const AttendanceBadge({super.key, required this.status});
 
-  final AttendanceEntry? entry;
+  // null = belum absen
+  final AttendanceStatus? status;
 
   @override
   Widget build(BuildContext context) {
-    final (label, color, background) = switch (entry?.status) {
+    final (label, color, background) = switch (status) {
       AttendanceStatus.present => (
         'Hadir',
         AppColor.success,

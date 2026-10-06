@@ -7,6 +7,7 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_card.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_table.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
@@ -282,6 +283,8 @@ void main() {
 
       expect(api.openedWith, 200000);
       expect(find.text('Shift Sedang Berjalan:'), findsOneWidget);
+      // Kasir belum boleh ubah status capster, absensi tidak bisa direset
+      expect(find.textContaining('Absensi belum direset'), findsOneWidget);
       expect(find.text('Tutup Shift Kasir'), findsOneWidget);
     });
 
@@ -355,11 +358,20 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.textContaining('Absensi Karyawan'), findsWidgets);
 
-      // Wahyu hadir, Rizal tidak hadir
+      // Wahyu hadir (sudah aktif, tidak perlu ke server), Rizal tidak hadir
       await tester.tap(find.widgetWithText(OutlinedButton, 'Hadir').first);
-      await tester.pump();
+      await tester.pumpAndSettle();
+      expect(api.calls, isNot(contains('capsterStatus:CAP-1:active')));
       await tester.tap(find.widgetWithText(OutlinedButton, 'Tidak Hadir').last);
-      await tester.pump();
+      await tester.pumpAndSettle();
+
+      // Kasir belum boleh ubah status capster di server: tetap dicatat di
+      // tablet, tapi diberi tahu pelanggan masih bisa memilih
+      expect(api.calls, contains('capsterStatus:CAP-2:inactive'));
+      expect(api.capsterList.last.active, isTrue);
+      expect(find.textContaining('tablet ini saja'), findsOneWidget);
+      expect(find.text('Belum nonaktif di aplikasi pelanggan'), findsOneWidget);
+
       await tester.tap(find.byTooltip('Kembali'));
       await tester.pumpAndSettle();
 
@@ -374,6 +386,85 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Wahyu'), findsWidgets);
       expect(find.text('Rizal'), findsNothing);
+    });
+
+    testWidgets('absensi admin: tidak hadir menonaktifkan capster di server', (
+      tester,
+    ) async {
+      api.staff = FakeApi.staffAs('admin');
+      await pumpApp(tester);
+      await signIn(tester);
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Absensi Karyawan'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Tidak Hadir').last);
+      await tester.pumpAndSettle();
+      expect(api.calls, contains('capsterStatus:CAP-2:inactive'));
+      expect(api.capsterList.last.active, isFalse);
+      expect(find.textContaining('tablet ini saja'), findsNothing);
+
+      // Hadir lagi = aktif lagi, bisa dipilih pelanggan
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Hadir').last);
+      await tester.pumpAndSettle();
+      expect(api.calls, contains('capsterStatus:CAP-2:active'));
+      expect(api.capsterList.last.active, isTrue);
+    });
+
+    testWidgets('capster nonaktif tanpa absen = belum absen', (tester) async {
+      api.capsterList = const [
+        Capster(id: 'CAP-1', name: 'Wahyu', rating: 5),
+        Capster(id: 'CAP-2', name: 'Rizal', rating: 4.5, active: false),
+      ];
+      await pumpApp(tester);
+      await signIn(tester);
+      expect(find.textContaining('2 belum absen'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Absensi Karyawan'));
+      await tester.pumpAndSettle();
+      // Wahyu belum absen tapi masih aktif di server (reset belum jalan)
+      expect(find.text('Masih bisa dipilih pelanggan'), findsOneWidget);
+
+      // Kasir belum boleh mengaktifkan, Rizal tetap belum absen
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Hadir').last);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Gagal mengaktifkan Rizal'), findsOneWidget);
+      expect(find.text('Belum Absen'), findsNWidgets(3)); // ringkasan + 2
+    });
+
+    testWidgets('buka shift: capster yang belum absen dinonaktifkan', (
+      tester,
+    ) async {
+      // Tiru backend yang sudah izinkan kasir ubah status capster
+      api.capsterStatusRoles = {'admin', 'cashier'};
+      await pumpApp(tester);
+      await signIn(tester);
+
+      // Wahyu diabsen hadir sebelum buka shift, tidak ikut direset
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Absensi Karyawan'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Hadir').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Kembali'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Buka Shift Kasir'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.widgetWithText(TextField, '0'), '200000');
+      await tester.pump();
+      await confirmAndSubmit(tester, 'Simpan');
+
+      expect(api.calls, contains('capsterStatus:CAP-2:inactive'));
+      expect(api.calls, isNot(contains('capsterStatus:CAP-1:inactive')));
+      expect(api.capsterList.map((c) => c.active), [true, false]);
+      expect(find.textContaining('Tandai capster yang hadir'), findsOneWidget);
+
+      // Rizal baru bisa dipilih pelanggan setelah ditandai Hadir
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Absensi Karyawan'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Hadir').last);
+      await tester.pumpAndSettle();
+      expect(api.calls, contains('capsterStatus:CAP-2:active'));
+      expect(api.capsterList.last.active, isTrue);
     });
 
     testWidgets('scan barcode: kode manual check-in lalu buka booking', (

@@ -22,5 +22,16 @@ class Capster {
   final String name;
   final String? photoUrl;
   final double rating;
+
+  // Status di server: inactive = tidak muncul di aplikasi pelanggan
+  // dan tidak bisa dipesan (dipakai untuk "Tidak Hadir")
   final bool active;
+
+  Capster copyWith({bool? active}) => Capster(
+    id: id,
+    name: name,
+    photoUrl: photoUrl,
+    rating: rating,
+    active: active ?? this.active,
+  );
 }
