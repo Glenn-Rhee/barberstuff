@@ -72,26 +72,32 @@ class CashSessionApi {
     );
   }
 
+  // Pemasukan: nominal dihitung server dari total booking - [discountAmount],
+  // jadi amount tidak dikirim (backend tolak amount < 1000, padahal sisa
+  // bayar setelah diskon bisa di bawah itu). Pengeluaran: pakai [amount]
   Future<void> createTransaction({
     required String sessionId,
     required TransactionType type,
     required int amount,
+    int discountAmount = 0,
     PaymentType? paymentType,
     String? title,
     String? description,
     String? bookingId,
   }) {
+    final income = type == TransactionType.income;
     return _client.post(
       '/transactions/',
       data: {
         'id_cash_session': sessionId,
         'transaction_type': type.name,
-        'amount': amount,
+        if (!income) 'amount': amount,
         'payment_type': ?paymentType?.api,
         'title': ?title,
         if (description != null && description.isNotEmpty)
           'description': description,
         'id_booking': ?bookingId,
+        if (income && discountAmount > 0) 'discount_amount': discountAmount,
       },
     );
   }

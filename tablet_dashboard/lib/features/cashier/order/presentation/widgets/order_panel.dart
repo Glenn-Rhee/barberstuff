@@ -14,17 +14,20 @@ import 'package:tablet_dashboard/features/cashier/order/presentation/provider/ch
 import 'package:tablet_dashboard/features/cashier/order/presentation/provider/order_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/capster_selector.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/cart_item_tile.dart';
+import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/discount_section.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/payment_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/shared/dialogs/print_with_retry.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
+import 'package:tablet_dashboard/shared/widgets/display/summary_row.dart';
 import 'package:tablet_dashboard/shared/widgets/display/total_row.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Panel kanan pesanan langsung: pelanggan, keranjang, capster, simpan / bayar
+// Panel kanan pesanan langsung: pelanggan, keranjang, capster, diskon,
+// simpan / bayar
 class OrderPanel extends StatefulWidget {
   const OrderPanel({super.key});
 
@@ -66,12 +69,14 @@ class _OrderPanelState extends State<OrderPanel> {
   }
 
   // Simpan tanpa bayar: pesanan langsung check-in, bayar nanti dari
-  // tab Dari Reservasi
+  // tab Dari Reservasi. Backend tidak bisa simpan diskon tanpa bayar,
+  // jadi diskon diterapkan lagi di sana
   Future<void> _save() async {
     final capster = _validate();
     if (capster == null) return;
     final order = context.read<OrderController>();
     final name = order.customerName;
+    final discount = order.discount;
 
     await _run(() async {
       final result = await context.read<CheckoutController>().startWalkIn(
@@ -83,7 +88,10 @@ class _OrderPanelState extends State<OrderPanel> {
       AppToast.show(
         context,
         result.error ??
-            'Pesanan $name tersimpan. Bayar dari tab Dari Reservasi.',
+            (discount == null
+                ? 'Pesanan $name tersimpan. Bayar dari tab Dari Reservasi.'
+                : 'Pesanan $name tersimpan. Terapkan lagi diskon '
+                      '${discount.label} saat bayar di tab Dari Reservasi.'),
         error: result.error != null,
       );
     });
@@ -192,12 +200,29 @@ class _OrderPanelState extends State<OrderPanel> {
                       (c) => c.loadingCapsters,
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  DiscountSection(
+                    value: order.discount,
+                    base: order.subtotal,
+                    onChanged: ready ? order.setDiscount : null,
+                  ),
                 ],
               ),
             ),
           ),
           const Divider(),
           const SizedBox(height: 8),
+          SummaryRow(
+            label: 'Subtotal',
+            value: PriceFormat.full(order.subtotal),
+          ),
+          if (order.discount case final discount? when order.discountAmount > 0)
+            SummaryRow(
+              label: discount.summaryLabel,
+              value: PriceFormat.full(-order.discountAmount),
+              valueColor: AppColor.danger,
+            ),
+          const SizedBox(height: 6),
           TotalRow(label: 'Total', value: PriceFormat.full(order.total)),
           const SizedBox(height: 10),
           const Text('Metode Pembayaran', style: AppTextStyle.label),

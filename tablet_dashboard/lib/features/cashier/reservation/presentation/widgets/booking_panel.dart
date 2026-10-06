@@ -8,8 +8,10 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
+import 'package:tablet_dashboard/features/cashier/order/domain/entities/discount.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/provider/checkout_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/cart_item_tile.dart';
+import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/discount_section.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/payment_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
@@ -25,7 +27,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Keranjang & aksi booking yang dipilih, nominal dari server.
-// Booked = check-in, Progress = tambah layanan & bayar,
+// Booked = check-in, Progress = tambah layanan, diskon & bayar,
 // Completed = cetak struk, Cancel = kosong
 class BookingPanel extends StatefulWidget {
   const BookingPanel({super.key});
@@ -37,6 +39,22 @@ class BookingPanel extends StatefulWidget {
 class _BookingPanelState extends State<BookingPanel> {
   PaymentType _method = PaymentType.cash;
   bool _busy = false;
+
+  // Diskon kasir milik satu booking, pindah booking = tidak ikut
+  ({String bookingId, Discount discount})? _discount;
+
+  // Diskon hanya berlaku saat progress (backend cuma terima saat bayar)
+  Discount? _discountOf(Booking booking) =>
+      booking.status == BookingStatus.progress &&
+          _discount?.bookingId == booking.id
+      ? _discount!.discount
+      : null;
+
+  void _setDiscount(Booking booking, Discount? value) => setState(
+    () => _discount = value == null
+        ? null
+        : (bookingId: booking.id, discount: value),
+  );
 
   Future<void> _run(Future<void> Function() action) async {
     setState(() => _busy = true);
@@ -96,10 +114,12 @@ class _BookingPanelState extends State<BookingPanel> {
         );
       });
 
-  // Terima bayar pakai nominal server lalu cetak struk
+  // Terima bayar pakai nominal server (dikurangi diskon kasir) lalu cetak
   Future<void> _pay(Booking booking) async {
     final checkout = context.read<CheckoutController>();
     final method = _method;
+    final discount = _discountOf(booking);
+    final total = booking.total - (discount?.amountFor(booking.total) ?? 0);
     if (!checkout.canTakePayment) {
       AppToast.show(
         context,
@@ -109,11 +129,7 @@ class _BookingPanelState extends State<BookingPanel> {
       return;
     }
 
-    final cash = await showPaymentDialog(
-      context,
-      total: booking.total,
-      method: method,
-    );
+    final cash = await showPaymentDialog(context, total: total, method: method);
     if (cash == null || !mounted) return;
 
     await _run(() async {
@@ -121,6 +137,7 @@ class _BookingPanelState extends State<BookingPanel> {
         booking,
         method: method,
         cash: cash,
+        discount: discount,
       );
       if (!mounted) return;
       final receipt = result.receipt;
@@ -129,6 +146,7 @@ class _BookingPanelState extends State<BookingPanel> {
         return;
       }
 
+      setState(() => _discount = null);
       await printWithRetry(context, receipt.toEscPos(logo: ReceiptLogo.cached));
       if (!mounted) return;
       context.read<BookingsController>().refresh();
@@ -182,6 +200,8 @@ class _BookingPanelState extends State<BookingPanel> {
     // Backend hanya izinkan ubah item saat progress, dan booking tidak boleh kosong
     final editable = status == BookingStatus.progress && !_busy;
     final removable = editable && booking.services.length > 1;
+    final discount = _discountOf(booking);
+    final discountAmount = discount?.amountFor(booking.total) ?? 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -234,6 +254,20 @@ class _BookingPanelState extends State<BookingPanel> {
                             'tapi item yang sama cuma 1x.',
                   style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
                 ),
+                const SizedBox(height: 20),
+                DiscountSection(
+                  // Isian kosong lagi tiap ganti booking
+                  key: ValueKey(booking.id),
+                  value: discount,
+                  base: booking.total,
+                  onChanged: editable
+                      ? (value) => _setDiscount(booking, value)
+                      : null,
+                  note: status == BookingStatus.booked
+                      ? 'Diskon bisa dipakai setelah pelanggan check-in '
+                            '(status Progress).'
+                      : null,
+                ),
               ],
             ],
           ),
@@ -244,14 +278,23 @@ class _BookingPanelState extends State<BookingPanel> {
           label: 'Subtotal',
           value: PriceFormat.full(booking.subtotal),
         ),
-        if (booking.discount > 0)
+        if (booking.totalDiscount > 0)
           SummaryRow(
             label: 'Diskon/Poin',
-            value: PriceFormat.full(-booking.discount),
+            value: PriceFormat.full(-booking.totalDiscount),
+            valueColor: AppColor.danger,
+          ),
+        if (discount != null && discountAmount > 0)
+          SummaryRow(
+            label: discount.summaryLabel,
+            value: PriceFormat.full(-discountAmount),
             valueColor: AppColor.danger,
           ),
         const SizedBox(height: 6),
-        TotalRow(label: 'Total Bayar', value: PriceFormat.full(booking.total)),
+        TotalRow(
+          label: 'Total Bayar',
+          value: PriceFormat.full(booking.total - discountAmount),
+        ),
         const SizedBox(height: 12),
         ...switch (status) {
           BookingStatus.booked => [

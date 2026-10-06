@@ -76,4 +76,8 @@ class Booking {
   final int discount;
   final int total;
   final BookingStatus status;
+
+  // Semua potongan (promo + diskon kasir). Saat bayar backend menimpa
+  // discount_amount dengan diskon kasir saja, jadi hitung dari subtotal - total
+  int get totalDiscount => subtotal > total ? subtotal - total : 0;
 }
