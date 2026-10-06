@@ -247,6 +247,7 @@ class FakeApi
   Future<Paged<Booking>> bookings({
     BookingStatus? status,
     String? query,
+    DateTime? date,
     int page = 1,
     int limit = 5,
   }) async {
@@ -254,7 +255,9 @@ class FakeApi
     if (bookingsDelay != null) await Future<void>.delayed(bookingsDelay!);
     final items = [
       for (final booking in bookingList)
-        if (status == null || booking.status == status) booking,
+        if ((status == null || booking.status == status) &&
+            (date == null || booking.isOn(date)))
+          booking,
     ];
     return Paged(items: items, totalPages: 1, totalData: items.length);
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:tablet_dashboard/app/app_env.dart';
@@ -70,6 +71,10 @@ class _TabletDashboardAppState extends State<TabletDashboardApp> {
         title: "Dashboard Barberstuff",
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
+        // Teks bawaan Material (kalender, tombol dialog) pakai Bahasa Indonesia
+        locale: const Locale('id'),
+        supportedLocales: const [Locale('id')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         home: Consumer<SessionController>(
           builder: (context, session, _) {
             if (session.restoring) return const _Splash();

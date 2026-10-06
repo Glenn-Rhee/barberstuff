@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tablet_dashboard/app/app.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
+import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_card.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_table.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
+import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
@@ -890,6 +893,50 @@ void main() {
       );
       expect(api.bookingList.single.status, BookingStatus.progress);
       expect(find.textContaining('sudah check-in'), findsOneWidget);
+    });
+
+    testWidgets('reservasi: lihat booking hari lain lalu kembali ke hari ini', (
+      tester,
+    ) async {
+      api.bookingList = [fakeBooking(status: BookingStatus.progress)];
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+      await tester.tap(find.text('Dari Reservasi'));
+      await tester.pumpAndSettle();
+
+      // Chip tanggal membuka kalender
+      final today = DateFormatId.longDate(DateTime.now());
+      await tester.tap(find.text(today));
+      await tester.pumpAndSettle();
+      expect(find.text('Pilih tanggal booking'), findsOneWidget);
+      await tester.tapAt(Offset.zero);
+      await tester.pumpAndSettle();
+
+      final bookings = Provider.of<BookingsController>(
+        tester.element(find.text('Dari Reservasi')),
+        listen: false,
+      );
+      final day = api.bookingList.single.scheduledAt!;
+      bookings.setDate(day);
+      await tester.pumpAndSettle();
+      expect(find.text(DateFormatId.mediumDate(day)), findsOneWidget);
+      expect(find.text('Iqbal Apriand'), findsOneWidget);
+
+      // Hari tanpa booking
+      final before = day.subtract(const Duration(days: 1));
+      bookings.setDate(before);
+      await tester.pumpAndSettle();
+      expect(find.text('Iqbal Apriand'), findsNothing);
+      expect(
+        find.text('Tidak ada booking pada ${DateFormatId.longDate(before)}.'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byTooltip('Kembali ke hari ini'));
+      await tester.pumpAndSettle();
+      expect(bookings.isToday, isTrue);
+      expect(find.text(today), findsOneWidget);
     });
 
     testWidgets('reservasi progress: tambah & hapus layanan, tidak bisa 2x', (
