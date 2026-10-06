@@ -25,12 +25,12 @@ const (
 
 type Booking struct {
 	ID             uuid.UUID         `gorm:"column:id;primaryKey"`
-	StatusBooking  BookingStatusEnum `gorm:"column:status_booking;not null"`
 	IDStore        uuid.UUID         `gorm:"column:id_store;not null"`
 	IDCustomer     uuid.UUID         `gorm:"column:id_user;not null"`
 	IDCapster      uuid.UUID         `gorm:"column:id_capster"`
 	IDStaff        uuid.UUID         `gorm:"column:id_staff;not null"`
 	IDPromoClaimed *uuid.UUID        `gorm:"column:id_promo_claimed"`
+	StatusBooking  BookingStatusEnum `gorm:"column:status_booking;not null"`
 	SubTotal       decimal.Decimal   `gorm:"column:subtotal;default:0"`
 	DiscountAmount decimal.Decimal   `gorm:"column:discount_amount;default:0"`
 	TotalPrice     decimal.Decimal   `gorm:"column:total_price;not null;default:0"`
