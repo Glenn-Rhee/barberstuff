@@ -69,5 +69,18 @@ class DateFormatId {
     return int.parse(parts[0]) * 60 + int.parse(parts[1]);
   }
 
+  // "09:30" -> "2000-01-01T09:30:00.000Z" untuk open_hour / close_hour.
+  // Backend cuma pakai jam & menitnya sebagai jam lokal toko
+  static String clockToApi(String clock) {
+    final minutes = minutesOf(clock);
+    return DateTime.utc(
+      2000,
+      1,
+      1,
+      minutes ~/ 60,
+      minutes % 60,
+    ).toIso8601String();
+  }
+
   static String _two(int n) => n.toString().padLeft(2, '0');
 }

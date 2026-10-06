@@ -95,6 +95,9 @@ class FakeApi
   // Isi untuk tiru backend yang menolak membuat booking
   String? createError;
 
+  // Tiru booking dari aplikasi pelanggan: QR = "bk" + 4 karakter pertama id
+  bool shortQr = false;
+
   String? createdBookingCapster;
   List<String> createdBookingServices = const [];
   ({int amount, PaymentType? payment, String? bookingId})? lastSale;
@@ -299,10 +302,13 @@ class FakeApi
   @override
   Future<void> checkIn(String qrCode) async {
     calls.add('checkIn:$qrCode');
-    final booking = bookingList
-        .where((b) => 'bk${b.id}' == qrCode && b.status == BookingStatus.booked)
-        .firstOrNull;
+    String qrOf(Booking b) =>
+        shortQr ? 'bk${b.id.substring(0, 4)}' : 'bk${b.id}';
+    final booking = bookingList.where((b) => qrOf(b) == qrCode).firstOrNull;
     if (booking == null) {
+      throw const ApiException('Booking tidak ditemukan.', statusCode: 406);
+    }
+    if (booking.status != BookingStatus.booked) {
       throw const ApiException(
         'Booking tidak ditemukan atau telah checkin sebelumnya.',
         statusCode: 406,

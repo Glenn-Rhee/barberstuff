@@ -194,6 +194,7 @@ class _ReviewRow extends StatelessWidget {
     final bool reviewed = item.isReviewed;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         if (reviewed) ...<Widget>[
           Image.asset(
@@ -225,7 +226,6 @@ class _ReviewRow extends StatelessWidget {
               ),
             ),
           ),
-        const Spacer(),
         GestureDetector(
           onTap: onReview,
           behavior: HitTestBehavior.opaque,

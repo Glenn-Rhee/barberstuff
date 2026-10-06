@@ -28,6 +28,17 @@ class AppSidebar extends StatelessWidget {
     (AppSection.settings, 'Konfigurasi', AppAsset.settingIcon),
   ];
 
+  // Menu khusus admin, disisipkan setelah Dashboard
+  static const _adminItems = [
+    (AppSection.branches, 'Mengelola Cabang', AppAsset.locationIcon),
+  ];
+
+  static List<(AppSection, String, String)> _itemsFor(StaffRole? role) => [
+    _items.first,
+    if (role == StaffRole.admin) ..._adminItems,
+    ..._items.skip(1),
+  ];
+
   Future<void> _signOut(BuildContext context) async {
     final confirmed = await confirmDialog(
       context,
@@ -99,7 +110,9 @@ class AppSidebar extends StatelessWidget {
                 else
                   const Divider(color: AppColor.sidebarDivider),
                 const SizedBox(height: 16),
-                for (final (section, label, icon) in _items)
+                for (final (section, label, icon) in _itemsFor(
+                  profile?.staffRole,
+                ))
                   SidebarNavItem(
                     label: label,
                     icon: icon,

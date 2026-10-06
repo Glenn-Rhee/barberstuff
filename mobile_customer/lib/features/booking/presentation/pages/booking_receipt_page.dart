@@ -103,16 +103,27 @@ class _BookingReceiptPageState extends State<BookingReceiptPage> {
                   if (record.qrCode.isNotEmpty)
                     Center(
                       child: BarcodeWidget(
-                        barcode: Barcode.code128(),
+                        barcode: Barcode.qrCode(),
                         data: record.qrCode,
-                        width: double.infinity,
-                        height: 74,
+                        width: 200,
+                        height: 200,
                         color: AppColor.ink,
                         drawText: false,
                         errorBuilder: (BuildContext _, String _) =>
-                            const SizedBox(height: 74),
+                            const SizedBox.square(dimension: 200),
                       ),
                     ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: SelectableText(
+                      record.qrCode,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyle.bodySmall.copyWith(
+                        fontSize: 11,
+                        color: AppColor.ink,
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 22),
                   _ReceiptCard(
                     children: <Widget>[

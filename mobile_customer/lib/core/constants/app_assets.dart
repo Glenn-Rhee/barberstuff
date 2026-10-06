@@ -90,10 +90,19 @@ class AppAssets {
   static const String ellipseCardSecond = '$_imageHome/ellipse_card_2.png';
   static const String promoScissors = '$_imageHome/promo_scrissors.png';
 
-  static const String homeBottom = '$_iconNavBottom/home.png';
-  static const String scissorsBottom = '$_iconGeneral/scrissors_book.png';
-  static const String historyBottom = '$_iconGeneral/history.png';
-  static const String userBottom = '$_iconGeneral/person.png';
+  static const String homeBottomActive = '$_iconNavBottom/home_active.png';
+  static const String homeBottomInactive = '$_iconNavBottom/home_inactive.png';
+  static const String scissorsBottomActive =
+      '$_iconNavBottom/scrissor_active.png';
+  static const String scissorsBottomInactive =
+      '$_iconNavBottom/scrissor_inactive.png';
+  static const String historyBottomInactive =
+      '$_iconNavBottom/box_inactive.png';
+  static const String historyBottomActive = '$_iconNavBottom/box_active.png';
+  static const String profileBottomActive =
+      '$_iconNavBottom/profile_active.png';
+  static const String profileBottomInactive =
+      '$_iconNavBottom/profile_inactive.png';
 
   static const String userProfile = '$_iconGeneral/person.png';
   static const String globeProfile = '$_iconProfile/globe_language.png';

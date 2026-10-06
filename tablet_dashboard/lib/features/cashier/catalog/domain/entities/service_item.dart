@@ -22,6 +22,7 @@ class ServiceItem {
     required this.price,
     this.description,
     this.type = ServiceType.service,
+    this.active = true,
   });
 
   // Endpoint list kirim nama di field "string"
@@ -31,6 +32,7 @@ class ServiceItem {
     price: parseAmount(json['price']),
     description: json['description'] as String?,
     type: ServiceType.parse(json['type'] as String?),
+    active: (json['status'] as String? ?? 'active') == 'active',
   );
 
   final String id;
@@ -38,6 +40,9 @@ class ServiceItem {
   final int price;
   final String? description;
   final ServiceType type;
+
+  // Status dari admin (active / inactive)
+  final bool active;
 
   @override
   bool operator ==(Object other) => other is ServiceItem && other.id == id;

@@ -11,6 +11,11 @@ class BookingsController extends ChangeNotifier {
 
   static const pageSize = 5;
 
+  // QR booking dari aplikasi pelanggan = "bk" + 4 karakter pertama id,
+  // booking buatan kasir = "bk" + id penuh. GET /booking tidak kirim qr_code
+  static const _shortQrLength = 4;
+  static const _qrNotFound = 'Booking tidak ditemukan.';
+
   final BookingApi _api;
 
   BookingStatus? status;
@@ -107,25 +112,39 @@ class BookingsController extends ChangeNotifier {
     }
   }
 
-  // Ganti isi booking dengan satu layanan / paket (1 pelanggan = 1 item).
-  // Tambah yang baru dulu, baru hapus yang lama, karena backend menolak
-  // booking kosong. Balikin pesan error, atau null kalau berhasil
-  Future<String?> replaceService(Booking booking, String serviceId) async {
+  // Check-in dari tombol "Ubah Status Progress": coba QR id penuh dulu,
+  // kalau tidak ketemu baru QR pendek ala aplikasi pelanggan
+  Future<String?> checkInBooking(Booking booking) async {
+    final error = await checkIn('bk${booking.id}');
+    if (error != _qrNotFound || booking.id.length <= _shortQrLength) {
+      return error;
+    }
+    return checkIn('bk${booking.id.substring(0, _shortQrLength)}');
+  }
+
+  // Tambah layanan / paket ke booking. Item yang sama cuma boleh 1x,
+  // jadi yang sudah ada disaring di pemilih layanan.
+  // Balikin pesan error, atau null kalau berhasil
+  Future<String?> addService(Booking booking, String serviceId) => _changeItems(
+    () => _api.addService(bookingId: booking.id, serviceId: serviceId),
+  );
+
+  // Keluarkan satu item. Backend menolak booking kosong, jadi tombol hapus
+  // cuma muncul kalau item-nya lebih dari 1
+  Future<String?> removeService(Booking booking, String serviceId) =>
+      _changeItems(
+        () => _api.removeService(bookingId: booking.id, serviceId: serviceId),
+      );
+
+  Future<String?> _changeItems(Future<void> Function() request) async {
+    String? error;
     try {
-      await _api.addService(bookingId: booking.id, serviceId: serviceId);
-      for (final line in booking.services) {
-        if (line.item.id == serviceId) continue;
-        await _api.removeService(
-          bookingId: booking.id,
-          serviceId: line.item.id,
-        );
-      }
+      await request();
     } on ApiException catch (e) {
-      await refresh();
-      return e.message;
+      error = e.message;
     }
     await refresh();
-    return null;
+    return error;
   }
 
   // Tap baris yang sama lagi = tutup detail
@@ -134,13 +153,24 @@ class BookingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Setelah scan QR: buang filter, muat ulang, lalu pilih booking itu
+  // Setelah scan QR: buang filter, muat ulang, lalu pilih booking itu.
+  // QR aplikasi pelanggan cuma berisi awal id, jadi cocokkan awalannya
+  // dan pilih yang baru check-in (progress)
   Future<void> focus(String bookingId) async {
     status = null;
     query = '';
     page = 1;
     await refresh();
-    if (bookings.any((b) => b.id == bookingId)) selectedId = bookingId;
+    final match =
+        bookings.where((b) => b.id == bookingId).firstOrNull ??
+        bookings
+            .where(
+              (b) =>
+                  b.id.startsWith(bookingId) &&
+                  b.status == BookingStatus.progress,
+            )
+            .firstOrNull;
+    if (match != null) selectedId = match.id;
     notifyListeners();
   }
 
