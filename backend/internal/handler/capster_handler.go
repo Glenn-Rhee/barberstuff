@@ -178,7 +178,7 @@ func (h *CapsterHandler) UpdateCapster(ctx *gin.Context) {
 		return
 	}
 
-	if claimsResult.Role != entity.RoleAdmin {
+	if claimsResult.Role != entity.RoleAdmin && claimsResult.Role != entity.RoleCashier {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    "Anda tidak memiliki akses!",
 			StatusCode: http.StatusUnauthorized,
@@ -196,7 +196,7 @@ func (h *CapsterHandler) UpdateCapster(ctx *gin.Context) {
 	}
 
 	idCapster := ctx.Param("id")
-	err := h.service.UpdateCapster(ctx.Request.Context(), dataBody, idCapster)
+	err := h.service.UpdateCapster(claimsResult, ctx.Request.Context(), dataBody, idCapster)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
