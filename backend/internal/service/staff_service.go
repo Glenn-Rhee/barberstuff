@@ -823,6 +823,7 @@ func (s *staffService) CheckinBooking(qrCode string, claims *lib.CustomClaims) e
 		return errors.New("Tidak dapat checkin. Capster sedang sibuk.")
 	}
 
+	var ErrBookingNotFound = errors.New("Booking not found")
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		var scopesUpdate []func(*gorm.DB) *gorm.DB
 		scopesUpdate = append(scopesUpdate, func(d *gorm.DB) *gorm.DB {
@@ -839,14 +840,18 @@ func (s *staffService) CheckinBooking(qrCode string, claims *lib.CustomClaims) e
 		}
 
 		if rowsAffected == 0 {
-			return errors.New("Booking tidak ditemukan atau telah checkin sebelumnya.")
+			return ErrBookingNotFound
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		helper.Logger("commiit trnsaction", filePath, err)
+		helper.Logger("commit trnsaction", filePath, err)
+		if errors.Is(err, ErrBookingNotFound) {
+			return errors.New("Booking tidak ditemukan atau anda telah checkin.")
+		}
+
 		return errors.New(BASE_MESSAGE)
 	}
 
