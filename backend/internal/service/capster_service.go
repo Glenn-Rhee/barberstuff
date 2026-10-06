@@ -19,7 +19,7 @@ import (
 type CapsterService interface {
 	Create(ctx context.Context, req dto.CreateCapsterRequest) error
 	GetCapsters(query dto.QueryParamsCapsters, claims *lib.CustomClaims) ([]dto.CapsterDataResponse, dto.ResponsePagination, error)
-	UpdateCapster(ctx context.Context, req dto.UpdateCapsterRequest, id string) error
+	UpdateCapster(claims *lib.CustomClaims, ctx context.Context, req dto.UpdateCapsterRequest, id string) error
 	DeleteCapster(id string) error
 }
 
@@ -214,7 +214,7 @@ func (s *capsterService) GetCapsters(query dto.QueryParamsCapsters, claims *lib.
 	return dataCapsters, paginationData, nil
 }
 
-func (s *capsterService) UpdateCapster(ctx context.Context, req dto.UpdateCapsterRequest, id string) error {
+func (s *capsterService) UpdateCapster(claims *lib.CustomClaims, ctx context.Context, req dto.UpdateCapsterRequest, id string) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data capster!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -229,57 +229,65 @@ func (s *capsterService) UpdateCapster(ctx context.Context, req dto.UpdateCapste
 
 	updates := make(map[string]interface{})
 
-	if req.ImageUrl != nil {
-		dataCapster, err := s.capsterRepo.FindOne("id = ?", idCapster)
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return errors.New("Data capster tidak ditemukan.")
-			}
-			helper.Logger("Find one capster", filePath, err)
-			return errors.New(BASE_MESSAGE)
+	if claims.Role == entity.RoleCashier {
+		if req.Status == nil {
+			return errors.New("Anda wajib update status capster.")
 		}
 
-		if dataCapster.ImageUrl != nil && strings.Split(*dataCapster.ImageUrl, "/")[0] == "uploads" {
-			err = lib.DeleteObject(ctx, *dataCapster.ImageUrl)
+		updates["status"] = req.Status
+	} else {
+		if req.ImageUrl != nil {
+			dataCapster, err := s.capsterRepo.FindOne("id = ?", idCapster)
 			if err != nil {
-				helper.Logger("Delete image capster", filePath, err)
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					return errors.New("Data capster tidak ditemukan.")
+				}
+				helper.Logger("Find one capster", filePath, err)
 				return errors.New(BASE_MESSAGE)
 			}
-		}
 
-		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImageUrl)
-		if err != nil {
-			return err
-		}
-
-		updates["image_url"] = permanentKey
-	}
-
-	if req.Name != nil {
-		updates["name"] = req.Name
-	}
-
-	if req.Status != nil {
-		updates["status"] = req.Status
-	}
-
-	if req.IdStore != nil {
-		IdStore, err := uuid.Parse(*req.IdStore)
-		if err != nil {
-			return errors.New("Id toko tidak valid.")
-		}
-
-		_, err = s.storeRepo.FindOne("id = ?", IdStore)
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return errors.New("Toko tidak ditemukan.")
+			if dataCapster.ImageUrl != nil && strings.Split(*dataCapster.ImageUrl, "/")[0] == "uploads" {
+				err = lib.DeleteObject(ctx, *dataCapster.ImageUrl)
+				if err != nil {
+					helper.Logger("Delete image capster", filePath, err)
+					return errors.New(BASE_MESSAGE)
+				}
 			}
 
-			helper.Logger("Find one store", filePath, err)
-			return errors.New(BASE_MESSAGE)
+			permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImageUrl)
+			if err != nil {
+				return err
+			}
+
+			updates["image_url"] = permanentKey
 		}
 
-		updates["id_store"] = IdStore
+		if req.Name != nil {
+			updates["name"] = req.Name
+		}
+
+		if req.Status != nil {
+			updates["status"] = req.Status
+		}
+
+		if req.IdStore != nil {
+			IdStore, err := uuid.Parse(*req.IdStore)
+			if err != nil {
+				return errors.New("Id toko tidak valid.")
+			}
+
+			_, err = s.storeRepo.FindOne("id = ?", IdStore)
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					return errors.New("Toko tidak ditemukan.")
+				}
+
+				helper.Logger("Find one store", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+
+			updates["id_store"] = IdStore
+		}
 	}
 
 	rowsAffected, err := s.capsterRepo.Updates(updates, idCapster)
