@@ -726,7 +726,7 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Select("customer.id", "customer.name", "customer.phone_number", "customer.member_points", "customer.id_premium_type", "customer.image_customer")
+		return d.Where("EXISTS (SELECT 1 FROM booking WHERE booking.id_user = customer.id)")
 	})
 
 	totalData, err := c.customerRepo.Count(scopes...)
@@ -734,6 +734,10 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 		helper.Logger("Count total customer", filePath, err)
 		return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Select("customer.id", "customer.name", "customer.phone_number", "customer.member_points", "customer.id_premium_type", "customer.image_customer")
+	})
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 		return d.Clauses(clause.OrderBy{
