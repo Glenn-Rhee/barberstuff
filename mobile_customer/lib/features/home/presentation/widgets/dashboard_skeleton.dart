@@ -18,7 +18,7 @@ class DashboardSkeleton extends StatelessWidget {
           _pad,
           20,
           _pad,
-          28 + DashboardBottomNav.spaceOf(context),
+          DashboardBottomNav.spaceOf(context),
         ),
         children: <Widget>[
           const SkeletonBox(height: 96, radius: 16),
