@@ -11,6 +11,7 @@ import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/bo
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
+import 'package:tablet_dashboard/shared/widgets/display/total_row.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 
 import 'escpos_decoder.dart';
@@ -488,6 +489,65 @@ void main() {
       expect(find.textContaining('berhasil'), findsOneWidget);
     });
 
+    // Kotak isian "Diskon Produk"
+    final discountField = find.byWidgetPredicate(
+      (w) =>
+          w is TextField && w.decoration?.hintText == 'Masukkan jumlah diskon',
+    );
+
+    testWidgets('pesanan langsung: diskon persen terkirim & tercetak', (
+      tester,
+    ) async {
+      api.session = _openSession;
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+
+      await tester.tap(find.text('+ Tambah').first); // Classic Hair Cut 45.000
+      await tester.pump();
+      await fillWalkIn(tester);
+
+      await tester.ensureVisible(discountField);
+      await tester.pumpAndSettle();
+      await tester.enterText(discountField, '150');
+      await tester.pump();
+      expect(find.text('Diskon maksimal 100%'), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.widgetWithText(FilledButton, 'Terapkan Diskon'),
+            )
+            .onPressed,
+        isNull,
+      );
+
+      await tester.enterText(discountField, '10');
+      await tester.pump();
+      await tester.ensureVisible(find.text('Terapkan Diskon'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Terapkan Diskon'));
+      await tester.pumpAndSettle();
+      expect(find.text('Diskon 10% diterapkan'), findsOneWidget);
+      expect(find.text('Diskon Produk (10%)'), findsOneWidget);
+      expect(find.text('Rp 40.500'), findsOneWidget);
+
+      await tester.tap(find.text('Bayar & Cetak Struk'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Uang pas'));
+      await tester.pump();
+      await tester.tap(find.text('Konfirmasi & Cetak'));
+      await tester.pumpAndSettle();
+
+      expect(api.lastSale?.discount, 4500);
+      expect(api.lastSale?.amount, 40500);
+      final text = printed();
+      expect(text, contains(row('Diskon', '-Rp 4.500')));
+      expect(text, contains(row('TOTAL', 'Rp 40.500')));
+      // Pesanan baru mulai tanpa diskon
+      expect(find.text('Diskon 10% diterapkan'), findsNothing);
+      expect(tester.widget<TextField>(discountField).controller?.text, '');
+    });
+
     testWidgets('simpan pesanan: masuk Dari Reservasi status progress', (
       tester,
     ) async {
@@ -623,6 +683,99 @@ void main() {
       expect(text, contains(row('Pelanggan', 'Iqbal Apriand')));
       expect(text, contains(row('Diskon', '-Rp 15.000')));
       expect(text, contains(row('TOTAL', 'Rp 50.000')));
+    });
+
+    testWidgets('reservasi: diskon aktif setelah progress lalu ikut dibayar', (
+      tester,
+    ) async {
+      api.session = _openSession;
+      api.bookingList = [fakeBooking(price: 65000, discount: 15000)];
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+      await tester.tap(find.text('Dari Reservasi'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Iqbal Apriand'));
+      await tester.pumpAndSettle();
+
+      // Booked: diskon terkunci sampai pelanggan check-in
+      expect(tester.widget<TextField>(discountField).enabled, isFalse);
+      expect(
+        find.textContaining('setelah pelanggan check-in (status Progress)'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Ubah Status Progress'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<TextField>(discountField).enabled, isTrue);
+
+      await tester.tap(find.text('Nominal Rp'));
+      await tester.pump();
+      await tester.enterText(discountField, '60000');
+      await tester.pump();
+      expect(find.text('Diskon melebihi total Rp 50.000'), findsOneWidget);
+
+      await tester.enterText(discountField, '5000');
+      await tester.pump();
+      await tester.ensureVisible(find.text('Terapkan Diskon'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Terapkan Diskon'));
+      await tester.pumpAndSettle();
+      expect(find.text('Diskon Rp 5.000 diterapkan'), findsOneWidget);
+      expect(find.text('-Rp 15.000'), findsOneWidget); // promo dari server
+      // 65.000 - 15.000 - 5.000
+      expect(find.widgetWithText(TotalRow, 'Rp 45.000'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(FilledButton, 'Bayar'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Konfirmasi & Cetak'));
+      await tester.pumpAndSettle();
+
+      expect(api.lastSale?.discount, 5000);
+      expect(api.lastSale?.amount, 45000);
+      var text = printed();
+      expect(text, contains(row('Diskon', '-Rp 20.000')));
+      expect(text, contains(row('TOTAL', 'Rp 45.000')));
+
+      // Cetak ulang: backend menimpa discount_amount, total tetap benar
+      expect(discountField, findsNothing); // sudah lunas, tanpa diskon
+      await tester.tap(find.text('Cetak Struk'));
+      await tester.pumpAndSettle();
+      text = printed();
+      expect(text, contains(row('Diskon', '-Rp 20.000')));
+      expect(text, contains(row('TOTAL', 'Rp 45.000')));
+    });
+
+    testWidgets('diskon booking tidak ikut ke booking lain', (tester) async {
+      api.bookingList = [
+        fakeBooking(status: BookingStatus.progress),
+        fakeBooking(
+          id: 'BK-2',
+          customer: 'Budi Santoso',
+          status: BookingStatus.progress,
+        ),
+      ];
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+      await tester.tap(find.text('Dari Reservasi'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Iqbal Apriand'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(discountField, '20');
+      await tester.pump();
+      await tester.ensureVisible(find.text('Terapkan Diskon'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Terapkan Diskon'));
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(TotalRow, 'Rp 36.000'), findsOneWidget);
+
+      await tester.tap(find.text('Budi Santoso'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('diterapkan'), findsNothing);
+      expect(tester.widget<TextField>(discountField).controller?.text, '');
+      expect(find.text('Rp 36.000'), findsNothing);
     });
 
     testWidgets('check-in booking aplikasi pelanggan pakai QR pendek', (

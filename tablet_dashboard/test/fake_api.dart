@@ -100,7 +100,8 @@ class FakeApi
 
   String? createdBookingCapster;
   List<String> createdBookingServices = const [];
-  ({int amount, PaymentType? payment, String? bookingId})? lastSale;
+  ({int amount, int discount, PaymentType? payment, String? bookingId})?
+  lastSale;
   int? openedWith;
   int? closedWith;
 
@@ -395,22 +396,25 @@ class FakeApi
   }
 
   // Booking tidak bisa diubah, jadi diganti salinan baru
+  // [cashierDiscount] tiru backend saat bayar: discount_amount ditimpa
+  // diskon kasir, total_price dikurangi diskon kasir
   void _replace(
     Booking booking, {
     BookingStatus? status,
     List<CartLine>? services,
+    int? cashierDiscount,
   }) {
     final lines = services ?? booking.services;
-    final total = lines.fold(0, (sum, line) => sum + line.subtotal);
+    final subtotal = lines.fold(0, (sum, line) => sum + line.subtotal);
     final copy = Booking(
       id: booking.id,
       customer: booking.customer,
       capster: booking.capster,
       scheduledAt: booking.scheduledAt,
       services: lines,
-      subtotal: total,
-      discount: booking.discount,
-      total: total - booking.discount,
+      subtotal: subtotal,
+      discount: cashierDiscount ?? booking.discount,
+      total: subtotal - booking.discount - (cashierDiscount ?? 0),
       status: status ?? booking.status,
     );
     bookingList = [for (final b in bookingList) b.id == booking.id ? copy : b];
@@ -478,6 +482,7 @@ class FakeApi
     required String sessionId,
     required TransactionType type,
     required int amount,
+    int discountAmount = 0,
     PaymentType? paymentType,
     String? title,
     String? description,
@@ -485,9 +490,27 @@ class FakeApi
   }) async {
     calls.add('transaction:${type.name}');
     if (type == TransactionType.income) {
-      lastSale = (amount: amount, payment: paymentType, bookingId: bookingId);
       final booking = bookingList.where((b) => b.id == bookingId).firstOrNull;
-      if (booking != null) _replace(booking, status: BookingStatus.completed);
+      // Tiru backend: diskon tidak boleh melebihi total booking
+      if (booking != null && discountAmount > booking.total) {
+        throw const ApiException(
+          'Diskon tidak dapat melebihi sub total transaksi.',
+          statusCode: 400,
+        );
+      }
+      lastSale = (
+        amount: amount,
+        discount: discountAmount,
+        payment: paymentType,
+        bookingId: bookingId,
+      );
+      if (booking != null) {
+        _replace(
+          booking,
+          status: BookingStatus.completed,
+          cashierDiscount: discountAmount > 0 ? discountAmount : null,
+        );
+      }
     } else {
       lastOutcome = (amount: amount, title: title);
     }
