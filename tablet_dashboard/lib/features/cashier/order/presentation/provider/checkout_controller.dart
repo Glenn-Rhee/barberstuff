@@ -2,6 +2,7 @@ import 'package:tablet_dashboard/core/network/api_exception.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/customer/presentation/provider/customer_history_controller.dart';
+import 'package:tablet_dashboard/features/cashier/order/domain/entities/discount.dart';
 import 'package:tablet_dashboard/features/cashier/order/domain/entities/receipt.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/provider/order_controller.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
@@ -141,6 +142,7 @@ class CheckoutController {
     final lines = order.lines;
     final method = order.method;
     final customer = order.customerName;
+    final discount = order.discount;
 
     final started = await startWalkIn(order, capster: capster);
     final booking = started.booking;
@@ -148,8 +150,11 @@ class CheckoutController {
       return CheckoutResult.failed(started.error!, created: started.created);
     }
 
+    // Diskon dihitung dari total server, backend tolak kalau melebihi total
+    final discountAmount = discount?.amountFor(booking.total) ?? 0;
     final error = await _shift.recordSale(
-      amount: order.total,
+      amount: booking.total - discountAmount,
+      discountAmount: discountAmount,
       paymentType: method,
       title: 'Pesanan $customer',
       bookingId: booking.id,
@@ -169,20 +174,25 @@ class CheckoutController {
         customer: customer,
         capster: capster.name,
         lines: lines,
+        discount: discountAmount,
         method: method,
         cash: cash,
       ),
     );
   }
 
-  // Booking yang sudah ada: catat pembayaran pakai nominal dari server
+  // Booking yang sudah ada: catat pembayaran pakai nominal dari server,
+  // dikurangi [discount] kasir (hanya bisa saat status progress)
   Future<CheckoutResult> payBooking(
     Booking booking, {
     required PaymentType method,
     required int cash,
+    Discount? discount,
   }) async {
+    final discountAmount = discount?.amountFor(booking.total) ?? 0;
     final error = await _shift.recordSale(
-      amount: booking.total,
+      amount: booking.total - discountAmount,
+      discountAmount: discountAmount,
       paymentType: method,
       title: 'Booking ${booking.customer.name}',
       bookingId: booking.id,
@@ -190,15 +200,22 @@ class CheckoutController {
     if (error != null) return CheckoutResult.failed(error);
 
     return CheckoutResult.paid(
-      receiptForBooking(booking, method: method, cash: cash),
+      receiptForBooking(
+        booking,
+        method: method,
+        cash: cash,
+        discount: discountAmount,
+      ),
     );
   }
 
-  // Struk booking, [cash] null saat cetak ulang
+  // Struk booking, [cash] null saat cetak ulang.
+  // [discount] = diskon kasir yang baru dibayar, belum ada di data booking
   Receipt receiptForBooking(
     Booking booking, {
     required PaymentType method,
     required int? cash,
+    int discount = 0,
   }) {
     return Receipt(
       number: Receipt.numberFor(booking.id),
@@ -207,7 +224,7 @@ class CheckoutController {
       customer: booking.customer.name,
       capster: booking.capster.name,
       lines: booking.services,
-      discount: booking.discount,
+      discount: booking.totalDiscount + discount,
       method: method,
       cash: cash,
     );

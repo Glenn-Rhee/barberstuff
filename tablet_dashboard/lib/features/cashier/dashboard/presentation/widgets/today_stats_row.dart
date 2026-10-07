@@ -20,7 +20,8 @@ class TodayStatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final shift = context.watch<ShiftController>();
     final dashboard = context.watch<DashboardController>();
-    final capsters = context.watch<CatalogController>().activeCapsters;
+    // Semua capster, yang nonaktif di server dihitung tidak hadir
+    final capsters = context.watch<CatalogController>().capsters;
     final attendance = context.watch<AttendanceController>().summaryOf(
       capsters,
     );
@@ -83,7 +84,7 @@ class TodayStatsRow extends StatelessWidget {
                 capsters.isEmpty,
             value: capsters.isEmpty ? '—' : '${attendance.present} Hadir',
             caption: capsters.isEmpty
-                ? 'Belum ada capster aktif'
+                ? 'Belum ada capster'
                 : [
                     '${attendance.absent} karyawan off',
                     if (attendance.pending > 0)

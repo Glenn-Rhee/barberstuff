@@ -221,6 +221,413 @@ class AppLocalizationsId extends AppLocalizations {
   String get exceptionDefault => 'Terjadi Kesalahan yang tak terduga.';
 
   @override
+  String get exceptionRequestRejected =>
+      'Permintaan tidak dapat diproses. Periksa data Anda lalu coba lagi.';
+
+  @override
+  String get serverNoAccess => 'Anda tidak memiliki akses!';
+
+  @override
+  String get serverReadFailed => 'Gagal membaca data!';
+
+  @override
+  String get serverBadFormat => 'Format data tidak valid';
+
+  @override
+  String get serverSessionCheckFailed =>
+      'Terdapat kesalahan dalam proses validasi!';
+
+  @override
+  String get serverAccountGone => 'Akun tidak ditemukan atau telah dihapus!';
+
+  @override
+  String get serverTokenExpired => 'token sudah kadaluarsa';
+
+  @override
+  String get serverTokenInvalid => 'token tidak valid';
+
+  @override
+  String get serverBadHeader => 'Format header tidak valid!';
+
+  @override
+  String get serverSystemError => 'Terjadi kesalahan di sistem!';
+
+  @override
+  String get serverDataNotFound => 'Data tidak ditemukan!';
+
+  @override
+  String get serverDataGone => 'Data tidak ditemukan atau telah dihapus!';
+
+  @override
+  String get serverDataInvalid => 'Data tidak valid!';
+
+  @override
+  String get serverDataInvalidRelogin =>
+      'Data tidak valid! Mohon login kembali.';
+
+  @override
+  String get serverDataInvalidContact =>
+      'Data tidak valid! Harap hubungi pusat.';
+
+  @override
+  String get serverLoadFailed => 'Terjadi kesalahan saat mengambil data!';
+
+  @override
+  String get serverPhoneFormat =>
+      'No telepon tidak valid, gunakan format +62xxxx atau 08xxxx';
+
+  @override
+  String get serverMinAge => 'Minimal usia untuk mendaftar adalah 6 bulan!';
+
+  @override
+  String get serverOtpSent =>
+      'OTP telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.';
+
+  @override
+  String get serverOtpDigitsOnly =>
+      'Hanya masukkan OTP berupa angka diantara 0-9';
+
+  @override
+  String get serverRegisterFailed =>
+      'Terjadi kesalahan saat registrasi. Coba lagi nanti.';
+
+  @override
+  String get serverEmailVerifiedBySystem =>
+      'Email ini telah terdaftar dan terverifikasi oleh sistem!';
+
+  @override
+  String get serverEmailVerifiedUsePassword =>
+      'Email ini telah terdaftar dan terverifikasi! Silahkan anda login menggunakan password';
+
+  @override
+  String get serverEmailVerified =>
+      'Email ini telah terdaftar dan terverifikasi!';
+
+  @override
+  String get serverRegisterAgain =>
+      'Data anda sudah tidak valid mohon register ulang dengan akun Anda.';
+
+  @override
+  String get serverMembershipFailed =>
+      'Terjadi kesalahan saat mencari data premium';
+
+  @override
+  String get serverPhoneTaken => 'No telepon ini telah terdaftar!';
+
+  @override
+  String get serverLoginFailed =>
+      'Terjadi kesalahan saat login! Coba lagi nanti.';
+
+  @override
+  String get serverOtpWait => 'Mohon tunggu sebelum anda meminta OTP kembali.';
+
+  @override
+  String get serverOtpExpiredResend =>
+      'OTP sudah kedaluwarsa. Mohon kirim ulang OTP!';
+
+  @override
+  String get serverOtpExpiredRegister =>
+      'OTP sudah kedaluwarsa. Mohon daftar ulang / kirim ulang OTP!';
+
+  @override
+  String get serverOtpFiveWrong =>
+      'Anda telah melakukan kesalahan 5 kali percobaan! Mohon untuk kirim ulang OTP!';
+
+  @override
+  String get serverOtpFiveTries =>
+      'Anda telah melakukan percobaan sebanyak 5 kali. Coba lagi nanti!';
+
+  @override
+  String get serverResetFailed => 'Terjadi kesalahan saat reset password!';
+
+  @override
+  String get serverResetFailedLater =>
+      'Terjadi kesalahan saat reset password, coba lagi nanti!';
+
+  @override
+  String get serverEmailNotRegistered => 'Email tidak terdaftar!';
+
+  @override
+  String get serverEmailUnverifiedReset =>
+      'Email belum verified! Tidak dapat reset password.';
+
+  @override
+  String get serverEmailGoogleReset =>
+      'Email Anda login dengan google! Tidak dapat reset password.';
+
+  @override
+  String get serverTooManyAttempts =>
+      'Terlalu banyak percobaan, coba lagi nanti.';
+
+  @override
+  String get serverEmailUnverifiedLogin =>
+      'Email belum verifikasi! Verifikasi terlebih dahulu.';
+
+  @override
+  String get serverWrongPassword => 'Password yang anda masukkan salah.';
+
+  @override
+  String get serverAuthFailed => 'Terjadi kesalahan saat authentikasi';
+
+  @override
+  String get serverProviderUnavailable => 'Provider tidak tersedia!';
+
+  @override
+  String get serverGoogleUnverified =>
+      'Email anda belum terverifikasi oleh Google. Silahkan verifikasi terlebih dahulu';
+
+  @override
+  String get serverResetTokenInvalid =>
+      'Token tidak valid atau sudah kedaluwarsa.';
+
+  @override
+  String get serverAccountNotFound => 'Akun anda tidak ditemukan!';
+
+  @override
+  String get serverProfileLoadFailed =>
+      'Terdapat kesalahan saat mengambil data profile!';
+
+  @override
+  String get serverProfileUpdateFailed =>
+      'Terjadi kesalahan saat mengupdate data profile user!';
+
+  @override
+  String get serverRelogin => 'Data anda tidak valid. Mohon untuk login ulang.';
+
+  @override
+  String get serverProfileNoChange => 'Update minimal 1 data profile.';
+
+  @override
+  String get serverStoreLoadFailed =>
+      'Terjadi kesalahan saat mengambil data toko!';
+
+  @override
+  String get serverBranchNotFound =>
+      'Data toko cabang yang anda cari tidak ditemukan!';
+
+  @override
+  String get serverStoreNotFound => 'Toko tidak ditemukan';
+
+  @override
+  String get serverStoreGone => 'Toko tidak ditemukan atau telah dihapus!';
+
+  @override
+  String get serverStoreDataGone =>
+      'Data toko tidak ditemukan atau telah dihapus!';
+
+  @override
+  String get serverStoreDataInvalid => 'Data toko tidak valid!';
+
+  @override
+  String get serverStoreIdInvalid => 'Id toko tidak valid!';
+
+  @override
+  String get serverCapsterLoadFailed =>
+      'Terjadi kesalahan saat mengambil data capster!';
+
+  @override
+  String get serverBookingFailed => 'Terjadi kesalahan saat membuat booking';
+
+  @override
+  String get serverBookingFailedLater =>
+      'Terjadi kesalahan saat membuat booking. Coba lagi nanti!';
+
+  @override
+  String get serverStoreInvalid => 'Toko tidak valid';
+
+  @override
+  String get serverCapsterIdInvalid => 'Id capster tidak valid!';
+
+  @override
+  String get serverStoreNotReady => 'Toko belum siap menerima booking.';
+
+  @override
+  String get serverBookingPast =>
+      'Tanggal dan jam booking tidak boleh kurang dari waktu sekarang.';
+
+  @override
+  String get serverBookingMinLead => 'Booking minimal 30 menit dari sekarang.';
+
+  @override
+  String get serverUserInvalid => 'User tidak valid!';
+
+  @override
+  String get serverUserDataInvalid => 'Data user tidak valid!';
+
+  @override
+  String get serverCapsterGone => 'Capster tidak ditemukan atau telah dihapus!';
+
+  @override
+  String get serverCapsterOtherStore =>
+      'Capster ini bukan merupakan bagian dari toko yang anda pilih!';
+
+  @override
+  String get serverBookingExists =>
+      'Anda telah memiliki booking! Tidak dapat booking kembali.';
+
+  @override
+  String get serverBookingSlotMismatch =>
+      'Jam booking tidak sesuai dengan jam tersedia.';
+
+  @override
+  String get serverBookingInProgress =>
+      'Anda masih memiliki booking yang sedang diproses';
+
+  @override
+  String get serverNoCapsterLeft => 'Sudah tidak ada capster yang tersedia.';
+
+  @override
+  String get serverCapsterReserved =>
+      'Capster ini sedang direservasi untuk pelanggan lain.';
+
+  @override
+  String get serverCapsterBusy =>
+      'Capster ini sedang tidak tersedia pada rentang waktu tersebut.';
+
+  @override
+  String get serverSlotLocked => 'Slot ini sudah di kunci oleh orang lain.';
+
+  @override
+  String get serverLockFirst =>
+      'Anda belum melakukan lock booking! Mohon untuk lock booking terlebih dahulu!';
+
+  @override
+  String get serverNoLock => 'Anda belum melakukan lock booking';
+
+  @override
+  String get serverLockExpired =>
+      'Data Booking tidak ditemukan atau waktu booking telah habis!';
+
+  @override
+  String get serverBookingNotYours => 'Data booking ini bukan milik anda!';
+
+  @override
+  String get serverCapsterWalkIn =>
+      'Capster ini sedang direservasi untuk pelanggan on the spot. Mohon pilih capster lain.';
+
+  @override
+  String get serverServiceInvalid => 'Data Service tidak valid!';
+
+  @override
+  String get serverServiceGone => 'Service tidak ditemukan! Atau telah dihapus';
+
+  @override
+  String get serverServiceNotInStore =>
+      'Toko ini tidak memiliki service tersebut.';
+
+  @override
+  String get serverServiceUnavailable =>
+      'Service ini telah tidak tersedia! Mohon pilih ulang.';
+
+  @override
+  String get serverPromoUsed => 'Promo ini telah digunakan';
+
+  @override
+  String get serverPromoInvalidNow => 'Promo ini sudah tidak berlaku!';
+
+  @override
+  String get serverPromoExpired => 'Promo ini sudah kedaluwarsa!';
+
+  @override
+  String get serverPromoNotFound => 'Promo Anda tidak ditemukan';
+
+  @override
+  String get serverPromoInvalid => 'Promo tidak valid';
+
+  @override
+  String get serverScheduleLoadFailed =>
+      'Terjadi kesalahan saat mengambil booking toko. Coba lagi nanti!';
+
+  @override
+  String get serverBookingLoadFailed =>
+      'Terjadi kesalahan saat mengambil data booking!';
+
+  @override
+  String get serverIdentityInvalid => 'Identitas anda tidak valid';
+
+  @override
+  String get serverRatingFailed =>
+      'Terjadi kesalahan saat membuat data rating!';
+
+  @override
+  String get serverBookingInvalid => 'Booking tidak valid!';
+
+  @override
+  String get serverRatingNeedOne =>
+      'Mohon menilai setidaknya satu dari toko, capster, atau staff kami.';
+
+  @override
+  String get serverBookingNotFound => 'Booking tidak ditemukan!';
+
+  @override
+  String get serverRatingCashierOnly => 'Hanya dapat rating kasir!';
+
+  @override
+  String get serverFileType => 'Extensi file tidak didukung';
+
+  @override
+  String get serverFileMismatch =>
+      'extension file tidak sesuai dengan content type';
+
+  @override
+  String get serverFileEmpty => 'minimum upload file adalah 1 byte';
+
+  @override
+  String get serverFileTooBig => 'maximum upload file adalah 5 mb';
+
+  @override
+  String get serverUploadUrlFailed => 'Gagal generate URL upload.';
+
+  @override
+  String get serverImageTooBig => 'Ukuran gambar terlalu besar';
+
+  @override
+  String get serverImageKey => 'Image url harus berupa object key.';
+
+  @override
+  String get serverImageSaveFailed => 'Gagal membuat data, periksa image url.';
+
+  @override
+  String serverFieldRequired(String field) {
+    return '$field wajib diisi';
+  }
+
+  @override
+  String serverFieldEmail(String field) {
+    return '$field harus berupa email yang valid';
+  }
+
+  @override
+  String serverFieldNumeric(String field) {
+    return '$field harus berupa angka';
+  }
+
+  @override
+  String serverFieldMin(String field, String count) {
+    return '$field minimal $count karakter';
+  }
+
+  @override
+  String serverFieldMax(String field, String count) {
+    return '$field maksimal $count karakter';
+  }
+
+  @override
+  String serverFieldGreater(String field, String count) {
+    return '$field harus lebih dari $count karakter';
+  }
+
+  @override
+  String serverFieldInvalid(String field) {
+    return '$field tidak valid';
+  }
+
+  @override
+  String serverOtpAttemptsLeft(String count) {
+    return 'OTP tidak valid, silahkan coba lagi. Sisa percobaan $count kali';
+  }
+
+  @override
   String validatorRequired(String label) {
     return '$label wajib diisi';
   }
@@ -449,7 +856,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String storeReviewCount(String count) {
-    return '($count reviews)';
+    return '($count ulasan)';
   }
 
   @override
@@ -508,7 +915,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String storeTypeCount(int count) {
-    return '$count types';
+    return '$count jenis';
   }
 
   @override
@@ -1113,7 +1520,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get receiptTotal => 'Total Harga';
 
   @override
-  String get receiptDownload => 'Download E-Receipt';
+  String get receiptDownload => 'Unduh E-Receipt';
 
   @override
   String get comingSoonMessage => 'Segera hadir!';
@@ -1200,8 +1607,68 @@ class AppLocalizationsId extends AppLocalizations {
       'Poin belum cukup untuk menukar hadiah ini.';
 
   @override
+  String get promoBenefitPointsTitle => 'A-Poin Reguler';
+
+  @override
+  String get promoBenefitPointsDesc =>
+      'Dapatkan cashback poin reguler hingga 5% untuk setiap transaksi merchant mitra.';
+
+  @override
+  String get promoBenefitMerchantTitle => 'Promo Merchant';
+
+  @override
+  String get promoBenefitMerchantDesc =>
+      'Diskon eksklusif s.d 30% di berbagai restoran, kafe, dan outlet favorit terpilih.';
+
+  @override
+  String get promoBenefitVoucherTitle => 'Voucher Spesial Hari Raya';
+
+  @override
+  String get promoBenefitVoucherDesc =>
+      'Hadiah langsung berupa voucher belanja senilai Rp100.000 saat momen spesial.';
+
+  @override
+  String get promoBannerCashbackTitle => 'Cashback 20%';
+
+  @override
+  String get promoBannerCashbackSubtitle => 'Untuk semua layanan';
+
+  @override
+  String get promoBannerCashbackFootnote => 'Min. transaksi Rp150.000';
+
+  @override
+  String get promoBannerBundleTitle => 'Paket Hemat';
+
+  @override
+  String get promoBannerBundleSubtitle => 'Haircut 5x';
+
+  @override
+  String get promoBannerBundleFootnote => 'Hemat hingga 15%';
+
+  @override
+  String get promoRewardHalfOffTitle => 'Diskon 50% Potong Rambut';
+
+  @override
+  String get promoRewardHalfOffDesc =>
+      'Dapatkan akses eksklusif untuk potongan harga layanan potong rambut dan perawatan jenggot pilihan. Nikmati hasil cukur terbaik langsung dari barber profesional kami dengan standar pelayanan premium.';
+
+  @override
+  String get promoRewardPriorityTitle => 'Akses Antrean Prioritas Cukur';
+
+  @override
+  String get promoRewardPriorityDesc =>
+      'Lewati antrean dan langsung dilayani di cabang pilihanmu. Berlaku untuk satu kali kunjungan pada jam operasional normal.';
+
+  @override
+  String get promoRewardWashTitle => 'Gratis Keramas & Hair Tonic';
+
+  @override
+  String get promoRewardWashDesc =>
+      'Tambahan keramas dan hair tonic tanpa biaya untuk setiap layanan potong rambut. Berlaku di seluruh cabang Barberstuff.';
+
+  @override
   String promoPoints(String count) {
-    return '$count Points';
+    return '$count Poin';
   }
 
   @override

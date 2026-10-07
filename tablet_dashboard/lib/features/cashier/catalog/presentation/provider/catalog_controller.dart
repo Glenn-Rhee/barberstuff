@@ -142,6 +142,15 @@ class CatalogController extends ChangeNotifier {
     }
   }
 
+  // Ubah status capster di server lalu di daftar, error dilempar ke pemanggil
+  Future<Capster> setCapsterActive(Capster capster, bool active) async {
+    await _api.setCapsterActive(capster.id, active: active);
+    final updated = capster.copyWith(active: active);
+    capsters = [for (final c in capsters) c.id == capster.id ? updated : c];
+    notifyListeners();
+    return updated;
+  }
+
   void setFilter(CatalogFilter value) {
     filter = value;
     page = 1;

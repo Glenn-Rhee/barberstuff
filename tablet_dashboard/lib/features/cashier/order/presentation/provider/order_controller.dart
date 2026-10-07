@@ -3,6 +3,7 @@ import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capste
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/cart_line.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/features/cashier/customer/domain/entities/customer_profile.dart';
+import 'package:tablet_dashboard/features/cashier/order/domain/entities/discount.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 
 // Pesanan langsung yang sedang diinput.
@@ -21,13 +22,18 @@ class OrderController extends ChangeNotifier {
   Capster? capster;
   PaymentType method = PaymentType.cash;
 
+  // Diskon manual kasir, baru dikirim ke server saat bayar
+  Discount? discount;
+
   final List<ServiceItem> _items = [];
 
   List<ServiceItem> get items => List.unmodifiable(_items);
   List<CartLine> get lines => [for (final item in _items) CartLine(item)];
   bool get isEmpty => _items.isEmpty;
   bool contains(ServiceItem item) => _items.contains(item);
-  int get total => lines.subtotal;
+  int get subtotal => lines.subtotal;
+  int get discountAmount => discount?.amountFor(subtotal) ?? 0;
+  int get total => subtotal - discountAmount;
 
   String get customerName {
     final selected = customer;
@@ -82,6 +88,12 @@ class OrderController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // null = hapus diskon
+  void setDiscount(Discount? value) {
+    discount = value;
+    notifyListeners();
+  }
+
   // Ketik nama / no HP ikut memperbarui tombol simpan & bayar
   void touch() => notifyListeners();
 
@@ -91,6 +103,7 @@ class OrderController extends ChangeNotifier {
     customer = null;
     capster = null;
     method = PaymentType.cash;
+    discount = null;
     nameController.clear();
     phoneController.clear();
     notifyListeners();

@@ -5,6 +5,8 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/core/utils/thousands_formatter.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
+import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 import 'package:tablet_dashboard/shared/dialogs/app_form_dialog.dart';
@@ -32,9 +34,20 @@ Future<void> showOpenShiftDialog(BuildContext context) async {
     ),
   );
   if (opened != true || !context.mounted) return;
+
+  // Pagi = buka shift: capster yang belum absen dinonaktifkan,
+  // baru bisa dipilih pelanggan setelah ditandai Hadir
+  final problem = await context.read<AttendanceController>().resetForShift(
+    context.read<CatalogController>().capsters,
+  );
+  if (!context.mounted) return;
+  final opening = 'Shift dibuka · saldo awal ${PriceFormat.full(amount)}';
   AppToast.show(
     context,
-    'Shift dibuka · saldo awal ${PriceFormat.full(amount)}',
+    problem == null
+        ? '$opening. Tandai capster yang hadir di Absensi.'
+        : '$opening. $problem',
+    error: problem != null,
   );
 
   // Kasir baru dapat nama toko dari riwayat kas setelah shift pertama

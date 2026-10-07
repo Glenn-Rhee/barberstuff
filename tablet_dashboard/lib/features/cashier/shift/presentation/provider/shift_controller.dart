@@ -91,18 +91,21 @@ class ShiftController extends ChangeNotifier {
     }
   }
 
-  // Pemasukan selalu terhubung ke booking (aturan backend)
+  // Pemasukan selalu terhubung ke booking (aturan backend).
+  // [amount] = yang dibayar setelah [discountAmount] (diskon manual kasir)
   Future<String?> recordSale({
     required int amount,
     required PaymentType paymentType,
     required String title,
     String? bookingId,
     String? description,
+    int discountAmount = 0,
   }) => _run(() async {
     await _api.createTransaction(
       sessionId: sessionId!,
       type: TransactionType.income,
       amount: amount,
+      discountAmount: discountAmount,
       paymentType: paymentType,
       title: title,
       bookingId: bookingId,

@@ -13,7 +13,7 @@ class HistoryTile extends StatelessWidget {
     required this.onRebook,
   });
 
-  static const double _radius = 12;
+  static const double _radius = 16;
 
   final HaircutHistory history;
   final VoidCallback onTap;

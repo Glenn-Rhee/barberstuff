@@ -80,6 +80,185 @@
   "exceptionConnectionError": "Tidak dapat terhubung ke server.",
   "exceptionDefaultType": "Terjadi kesalahan pada server.",
   "exceptionDefault": "Terjadi Kesalahan yang tak terduga.",
+  "exceptionRequestRejected": "Permintaan tidak dapat diproses. Periksa data Anda lalu coba lagi.",
+  "serverNoAccess": "Anda tidak memiliki akses!",
+  "serverReadFailed": "Gagal membaca data!",
+  "serverBadFormat": "Format data tidak valid",
+  "serverSessionCheckFailed": "Terdapat kesalahan dalam proses validasi!",
+  "serverAccountGone": "Akun tidak ditemukan atau telah dihapus!",
+  "serverTokenExpired": "token sudah kadaluarsa",
+  "serverTokenInvalid": "token tidak valid",
+  "serverBadHeader": "Format header tidak valid!",
+  "serverSystemError": "Terjadi kesalahan di sistem!",
+  "serverDataNotFound": "Data tidak ditemukan!",
+  "serverDataGone": "Data tidak ditemukan atau telah dihapus!",
+  "serverDataInvalid": "Data tidak valid!",
+  "serverDataInvalidRelogin": "Data tidak valid! Mohon login kembali.",
+  "serverDataInvalidContact": "Data tidak valid! Harap hubungi pusat.",
+  "serverLoadFailed": "Terjadi kesalahan saat mengambil data!",
+  "serverPhoneFormat": "No telepon tidak valid, gunakan format +62xxxx atau 08xxxx",
+  "serverMinAge": "Minimal usia untuk mendaftar adalah 6 bulan!",
+  "serverOtpSent": "OTP telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.",
+  "serverOtpDigitsOnly": "Hanya masukkan OTP berupa angka diantara 0-9",
+  "serverRegisterFailed": "Terjadi kesalahan saat registrasi. Coba lagi nanti.",
+  "serverEmailVerifiedBySystem": "Email ini telah terdaftar dan terverifikasi oleh sistem!",
+  "serverEmailVerifiedUsePassword": "Email ini telah terdaftar dan terverifikasi! Silahkan anda login menggunakan password",
+  "serverEmailVerified": "Email ini telah terdaftar dan terverifikasi!",
+  "serverRegisterAgain": "Data anda sudah tidak valid mohon register ulang dengan akun Anda.",
+  "serverMembershipFailed": "Terjadi kesalahan saat mencari data premium",
+  "serverPhoneTaken": "No telepon ini telah terdaftar!",
+  "serverLoginFailed": "Terjadi kesalahan saat login! Coba lagi nanti.",
+  "serverOtpWait": "Mohon tunggu sebelum anda meminta OTP kembali.",
+  "serverOtpExpiredResend": "OTP sudah kedaluwarsa. Mohon kirim ulang OTP!",
+  "serverOtpExpiredRegister": "OTP sudah kedaluwarsa. Mohon daftar ulang / kirim ulang OTP!",
+  "serverOtpFiveWrong": "Anda telah melakukan kesalahan 5 kali percobaan! Mohon untuk kirim ulang OTP!",
+  "serverOtpFiveTries": "Anda telah melakukan percobaan sebanyak 5 kali. Coba lagi nanti!",
+  "serverResetFailed": "Terjadi kesalahan saat reset password!",
+  "serverResetFailedLater": "Terjadi kesalahan saat reset password, coba lagi nanti!",
+  "serverEmailNotRegistered": "Email tidak terdaftar!",
+  "serverEmailUnverifiedReset": "Email belum verified! Tidak dapat reset password.",
+  "serverEmailGoogleReset": "Email Anda login dengan google! Tidak dapat reset password.",
+  "serverTooManyAttempts": "Terlalu banyak percobaan, coba lagi nanti.",
+  "serverEmailUnverifiedLogin": "Email belum verifikasi! Verifikasi terlebih dahulu.",
+  "serverWrongPassword": "Password yang anda masukkan salah.",
+  "serverAuthFailed": "Terjadi kesalahan saat authentikasi",
+  "serverProviderUnavailable": "Provider tidak tersedia!",
+  "serverGoogleUnverified": "Email anda belum terverifikasi oleh Google. Silahkan verifikasi terlebih dahulu",
+  "serverResetTokenInvalid": "Token tidak valid atau sudah kedaluwarsa.",
+  "serverAccountNotFound": "Akun anda tidak ditemukan!",
+  "serverProfileLoadFailed": "Terdapat kesalahan saat mengambil data profile!",
+  "serverProfileUpdateFailed": "Terjadi kesalahan saat mengupdate data profile user!",
+  "serverRelogin": "Data anda tidak valid. Mohon untuk login ulang.",
+  "serverProfileNoChange": "Update minimal 1 data profile.",
+  "serverStoreLoadFailed": "Terjadi kesalahan saat mengambil data toko!",
+  "serverBranchNotFound": "Data toko cabang yang anda cari tidak ditemukan!",
+  "serverStoreNotFound": "Toko tidak ditemukan",
+  "serverStoreGone": "Toko tidak ditemukan atau telah dihapus!",
+  "serverStoreDataGone": "Data toko tidak ditemukan atau telah dihapus!",
+  "serverStoreDataInvalid": "Data toko tidak valid!",
+  "serverStoreIdInvalid": "Id toko tidak valid!",
+  "serverCapsterLoadFailed": "Terjadi kesalahan saat mengambil data capster!",
+  "serverBookingFailed": "Terjadi kesalahan saat membuat booking",
+  "serverBookingFailedLater": "Terjadi kesalahan saat membuat booking. Coba lagi nanti!",
+  "serverStoreInvalid": "Toko tidak valid",
+  "serverCapsterIdInvalid": "Id capster tidak valid!",
+  "serverStoreNotReady": "Toko belum siap menerima booking.",
+  "serverBookingPast": "Tanggal dan jam booking tidak boleh kurang dari waktu sekarang.",
+  "serverBookingMinLead": "Booking minimal 30 menit dari sekarang.",
+  "serverUserInvalid": "User tidak valid!",
+  "serverUserDataInvalid": "Data user tidak valid!",
+  "serverCapsterGone": "Capster tidak ditemukan atau telah dihapus!",
+  "serverCapsterOtherStore": "Capster ini bukan merupakan bagian dari toko yang anda pilih!",
+  "serverBookingExists": "Anda telah memiliki booking! Tidak dapat booking kembali.",
+  "serverBookingSlotMismatch": "Jam booking tidak sesuai dengan jam tersedia.",
+  "serverBookingInProgress": "Anda masih memiliki booking yang sedang diproses",
+  "serverNoCapsterLeft": "Sudah tidak ada capster yang tersedia.",
+  "serverCapsterReserved": "Capster ini sedang direservasi untuk pelanggan lain.",
+  "serverCapsterBusy": "Capster ini sedang tidak tersedia pada rentang waktu tersebut.",
+  "serverSlotLocked": "Slot ini sudah di kunci oleh orang lain.",
+  "serverLockFirst": "Anda belum melakukan lock booking! Mohon untuk lock booking terlebih dahulu!",
+  "serverNoLock": "Anda belum melakukan lock booking",
+  "serverLockExpired": "Data Booking tidak ditemukan atau waktu booking telah habis!",
+  "serverBookingNotYours": "Data booking ini bukan milik anda!",
+  "serverCapsterWalkIn": "Capster ini sedang direservasi untuk pelanggan on the spot. Mohon pilih capster lain.",
+  "serverServiceInvalid": "Data Service tidak valid!",
+  "serverServiceGone": "Service tidak ditemukan! Atau telah dihapus",
+  "serverServiceNotInStore": "Toko ini tidak memiliki service tersebut.",
+  "serverServiceUnavailable": "Service ini telah tidak tersedia! Mohon pilih ulang.",
+  "serverPromoUsed": "Promo ini telah digunakan",
+  "serverPromoInvalidNow": "Promo ini sudah tidak berlaku!",
+  "serverPromoExpired": "Promo ini sudah kedaluwarsa!",
+  "serverPromoNotFound": "Promo Anda tidak ditemukan",
+  "serverPromoInvalid": "Promo tidak valid",
+  "serverScheduleLoadFailed": "Terjadi kesalahan saat mengambil booking toko. Coba lagi nanti!",
+  "serverBookingLoadFailed": "Terjadi kesalahan saat mengambil data booking!",
+  "serverIdentityInvalid": "Identitas anda tidak valid",
+  "serverRatingFailed": "Terjadi kesalahan saat membuat data rating!",
+  "serverBookingInvalid": "Booking tidak valid!",
+  "serverRatingNeedOne": "Mohon menilai setidaknya satu dari toko, capster, atau staff kami.",
+  "serverBookingNotFound": "Booking tidak ditemukan!",
+  "serverRatingCashierOnly": "Hanya dapat rating kasir!",
+  "serverFileType": "Extensi file tidak didukung",
+  "serverFileMismatch": "extension file tidak sesuai dengan content type",
+  "serverFileEmpty": "minimum upload file adalah 1 byte",
+  "serverFileTooBig": "maximum upload file adalah 5 mb",
+  "serverUploadUrlFailed": "Gagal generate URL upload.",
+  "serverImageTooBig": "Ukuran gambar terlalu besar",
+  "serverImageKey": "Image url harus berupa object key.",
+  "serverImageSaveFailed": "Gagal membuat data, periksa image url.",
+  "serverFieldRequired": "{field} wajib diisi",
+  "@serverFieldRequired": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldEmail": "{field} harus berupa email yang valid",
+  "@serverFieldEmail": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldNumeric": "{field} harus berupa angka",
+  "@serverFieldNumeric": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldMin": "{field} minimal {count} karakter",
+  "@serverFieldMin": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldMax": "{field} maksimal {count} karakter",
+  "@serverFieldMax": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldGreater": "{field} harus lebih dari {count} karakter",
+  "@serverFieldGreater": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "serverFieldInvalid": "{field} tidak valid",
+  "@serverFieldInvalid": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "serverOtpAttemptsLeft": "OTP tidak valid, silahkan coba lagi. Sisa percobaan {count} kali",
+  "@serverOtpAttemptsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "validatorRequired": "{label} wajib diisi",
   "@validatorRequired": {
     "placeholders": {
@@ -233,7 +412,7 @@
   "storeDetailTitle": "Detail Toko",
   "storeOpen": "BUKA",
   "storeClosed": "TUTUP",
-  "storeReviewCount": "({count} reviews)",
+  "storeReviewCount": "({count} ulasan)",
   "@storeReviewCount": {
     "placeholders": {
       "count": {
@@ -259,7 +438,7 @@
   "storePackagesTitle": "Paket Kami",
   "storeReviewsTitle": "Ulasan Pelanggan",
   "storeBookNow": "Pesan Sekarang",
-  "storeTypeCount": "{count} types",
+  "storeTypeCount": "{count} jenis",
   "@storeTypeCount": {
     "placeholders": {
       "count": {
@@ -509,7 +688,7 @@
   "receiptTime": "Jam Booking",
   "receiptSpecialist": "Specialist",
   "receiptTotal": "Total Harga",
-  "receiptDownload": "Download E-Receipt",
+  "receiptDownload": "Unduh E-Receipt",
   "comingSoonMessage": "Segera hadir!",
   "commonRetry": "Coba Lagi",
   "offlineCachedData": "Sedang offline — menampilkan data tersimpan",
@@ -536,7 +715,25 @@
   "promoAboutVoucher": "Tentang Voucher",
   "promoClaimed": "Hadiah berhasil diklaim.",
   "promoNotEnoughPoints": "Poin belum cukup untuk menukar hadiah ini.",
-  "promoPoints": "{count} Points",
+  "promoBenefitPointsTitle": "A-Poin Reguler",
+  "promoBenefitPointsDesc": "Dapatkan cashback poin reguler hingga 5% untuk setiap transaksi merchant mitra.",
+  "promoBenefitMerchantTitle": "Promo Merchant",
+  "promoBenefitMerchantDesc": "Diskon eksklusif s.d 30% di berbagai restoran, kafe, dan outlet favorit terpilih.",
+  "promoBenefitVoucherTitle": "Voucher Spesial Hari Raya",
+  "promoBenefitVoucherDesc": "Hadiah langsung berupa voucher belanja senilai Rp100.000 saat momen spesial.",
+  "promoBannerCashbackTitle": "Cashback 20%",
+  "promoBannerCashbackSubtitle": "Untuk semua layanan",
+  "promoBannerCashbackFootnote": "Min. transaksi Rp150.000",
+  "promoBannerBundleTitle": "Paket Hemat",
+  "promoBannerBundleSubtitle": "Haircut 5x",
+  "promoBannerBundleFootnote": "Hemat hingga 15%",
+  "promoRewardHalfOffTitle": "Diskon 50% Potong Rambut",
+  "promoRewardHalfOffDesc": "Dapatkan akses eksklusif untuk potongan harga layanan potong rambut dan perawatan jenggot pilihan. Nikmati hasil cukur terbaik langsung dari barber profesional kami dengan standar pelayanan premium.",
+  "promoRewardPriorityTitle": "Akses Antrean Prioritas Cukur",
+  "promoRewardPriorityDesc": "Lewati antrean dan langsung dilayani di cabang pilihanmu. Berlaku untuk satu kali kunjungan pada jam operasional normal.",
+  "promoRewardWashTitle": "Gratis Keramas & Hair Tonic",
+  "promoRewardWashDesc": "Tambahan keramas dan hair tonic tanpa biaya untuk setiap layanan potong rambut. Berlaku di seluruh cabang Barberstuff.",
+  "promoPoints": "{count} Poin",
   "@promoPoints": {
     "placeholders": {
       "count": {

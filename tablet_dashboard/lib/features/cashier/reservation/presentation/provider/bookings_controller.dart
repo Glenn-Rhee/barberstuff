@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
 
@@ -20,6 +21,10 @@ class BookingsController extends ChangeNotifier {
 
   BookingStatus? status;
   String query = '';
+
+  // Hari booking yang dilihat. null = hari ini, jadi lewat tengah malam
+  // daftarnya ikut ganti hari
+  DateTime? date;
   int page = 1;
   int totalPages = 1;
   int totalData = 0;
@@ -37,6 +42,9 @@ class BookingsController extends ChangeNotifier {
 
   Booking? get selected =>
       bookings.where((b) => b.id == selectedId).firstOrNull;
+
+  DateTime get day => date ?? DateTime.now();
+  bool get isToday => date == null;
 
   // Booking yang belum selesai, urut dari jadwal terdekat
   List<Booking> get upcoming =>
@@ -62,6 +70,7 @@ class BookingsController extends ChangeNotifier {
       final result = await _api.bookings(
         status: status,
         query: query.trim().isEmpty ? null : query.trim(),
+        date: date,
         page: page,
         limit: pageSize,
       );
@@ -88,6 +97,18 @@ class BookingsController extends ChangeNotifier {
     page = 1;
     refresh();
   }
+
+  // Pilih hari ini = kembali ke null
+  void setDate(DateTime value) {
+    date = _dayOf(value);
+    page = 1;
+    refresh();
+  }
+
+  static DateTime? _dayOf(DateTime? value) =>
+      value == null || DateFormatId.isSameDay(value, DateTime.now())
+      ? null
+      : DateTime(value.year, value.month, value.day);
 
   void setQuery(String value) {
     query = value;
@@ -155,10 +176,12 @@ class BookingsController extends ChangeNotifier {
 
   // Setelah scan QR: buang filter, muat ulang, lalu pilih booking itu.
   // QR aplikasi pelanggan cuma berisi awal id, jadi cocokkan awalannya
-  // dan pilih yang baru check-in (progress)
-  Future<void> focus(String bookingId) async {
+  // dan pilih yang baru check-in (progress).
+  // [day] = hari booking itu, null = hari ini
+  Future<void> focus(String bookingId, {DateTime? day}) async {
     status = null;
     query = '';
+    date = _dayOf(day);
     page = 1;
     await refresh();
     final match =

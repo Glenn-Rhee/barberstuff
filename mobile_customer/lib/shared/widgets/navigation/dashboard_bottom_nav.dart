@@ -26,10 +26,16 @@ class DashboardBottomNav extends StatelessWidget {
   static double heightOf(BuildContext context) =>
       _baseHeight * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.3);
 
+  /// Jarak isi terakhir halaman ke tepi atas navbar saat discroll mentok.
+  /// Satu nilai untuk semua tab biar jaraknya seragam.
+  static const double contentGap = 20;
+
   /// Ruang yang harus disisakan halaman di bagian bawah biar
-  /// isi terakhirnya tidak ketutup navbar.
+  /// isi terakhirnya tidak ketutup navbar, sudah termasuk [contentGap].
+  /// Pakai viewPadding, bukan padding: Scaffold `extendBody` sudah memasukkan
+  /// tinggi navbar ke padding.bottom halaman, jadi navbar bakal terhitung 2x.
   static double spaceOf(BuildContext context) =>
-      heightOf(context) + MediaQuery.paddingOf(context).bottom;
+      heightOf(context) + MediaQuery.viewPaddingOf(context).bottom + contentGap;
 
   final DashboardTab current;
   final void Function(DashboardTab tab) onSelect;
