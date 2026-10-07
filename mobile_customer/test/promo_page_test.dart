@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
-import 'package:mobile_barberstuff/features/promo/data/datasources/promo_local_datasource.dart';
 import 'package:mobile_barberstuff/features/promo/presentation/pages/promo_page.dart';
 import 'package:mobile_barberstuff/features/promo/promo_injection.dart';
 import 'package:mobile_barberstuff/l10n/app_localization.dart';
@@ -65,11 +64,8 @@ void main() {
 
     expect(find.text('Keuntungan Grade Ini'), findsOneWidget);
     expect(find.text('Tukar Poin'), findsOneWidget);
-    expect(
-      find.text(PromoLocalDataSource.benefits.first.title),
-      findsOneWidget,
-    );
-    expect(find.text(PromoLocalDataSource.rewards.first.title), findsOneWidget);
+    expect(find.text('A-Poin Reguler'), findsOneWidget);
+    expect(find.text('Diskon 50% Potong Rambut'), findsOneWidget);
   });
 
   testWidgets('poin kurang menampilkan bilah kemajuan, bukan tombol klaim', (

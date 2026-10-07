@@ -9,23 +9,35 @@ class BookingApi {
 
   final ApiClient _client;
 
+  // [date] = hari booking yang diminta, null = hari ini.
+  // Backend sekarang masih selalu kirim booking hari ini dan mengabaikan
+  // `date`, jadi booking di luar [date] dibuang supaya tidak tampil di
+  // tanggal yang salah
   Future<Paged<Booking>> bookings({
     BookingStatus? status,
     String? query,
+    DateTime? date,
     int page = 1,
     int limit = 5,
   }) async {
+    final day = date == null ? null : DateTime(date.year, date.month, date.day);
     final res = await _client.get(
       '/booking/',
       query: {
         'status_booking': status?.api,
         'q': query,
+        // Format sama dengan /booking/store: awal hari lokal dalam UTC
+        'date': day?.toUtc().toIso8601String(),
         'page': page,
         'limit': limit,
       },
     );
+    final items = [for (final json in res.list) Booking.fromJson(json)];
     return Paged.fromPage(
-      [for (final json in res.list) Booking.fromJson(json)],
+      [
+        for (final booking in items)
+          if (day == null || booking.isOn(day)) booking,
+      ],
       page: page,
       limit: limit,
     );

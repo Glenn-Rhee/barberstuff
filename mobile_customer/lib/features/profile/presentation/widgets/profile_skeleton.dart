@@ -16,7 +16,7 @@ class ProfileSkeleton extends StatelessWidget {
           _sidePadding,
           24,
           _sidePadding,
-          28 + DashboardBottomNav.spaceOf(context),
+          DashboardBottomNav.spaceOf(context),
         ),
         children: <Widget>[
           const Center(child: SkeletonBox.circle(size: 96)),

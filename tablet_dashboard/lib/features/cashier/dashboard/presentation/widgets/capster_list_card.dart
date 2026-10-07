@@ -15,8 +15,8 @@ import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// "Karyawan Bertugas": capster aktif dengan status absen hari ini.
-// Urutan: hadir, belum absen, lalu tidak hadir
+// "Karyawan Bertugas": capster toko dengan status absen hari ini
+// (nonaktif di server = tidak hadir). Urutan: hadir, belum absen, tidak hadir
 class CapsterListCard extends StatelessWidget {
   const CapsterListCard({super.key});
 
@@ -26,10 +26,10 @@ class CapsterListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final catalog = context.watch<CatalogController>();
     final attendance = context.watch<AttendanceController>();
-    final capsters = catalog.activeCapsters;
+    final capsters = catalog.capsters;
     final summary = attendance.summaryOf(capsters);
 
-    int rank(Capster c) => switch (attendance.entryOf(c.id)?.status) {
+    int rank(Capster c) => switch (attendance.statusOf(c)) {
       AttendanceStatus.present => 0,
       null => 1,
       AttendanceStatus.absent => 2,
@@ -62,13 +62,14 @@ class CapsterListCard extends StatelessWidget {
             )
           else if (capsters.isEmpty)
             Text(
-              'Belum ada capster aktif di toko ini.',
+              'Belum ada capster di toko ini.',
               style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
             )
           else
             for (final capster in sorted.take(_maxShown))
               _CapsterTile(
                 capster: capster,
+                status: attendance.statusOf(capster),
                 entry: attendance.entryOf(capster.id),
               ),
           if (capsters.isNotEmpty)
@@ -88,25 +89,31 @@ class CapsterListCard extends StatelessWidget {
 }
 
 class _CapsterTile extends StatelessWidget {
-  const _CapsterTile({required this.capster, required this.entry});
+  const _CapsterTile({
+    required this.capster,
+    required this.status,
+    required this.entry,
+  });
 
   final Capster capster;
+  final AttendanceStatus? status;
   final AttendanceEntry? entry;
 
   @override
   Widget build(BuildContext context) {
     final entry = this.entry;
-    final (status, color) = switch (entry?.status) {
-      AttendanceStatus.present => (
-        'Hadir · ${DateFormatId.time(entry!.at)}',
+    final (label, color) = switch (status) {
+      AttendanceStatus.present when entry != null => (
+        'Hadir · ${DateFormatId.time(entry.at)}',
         AppColor.success,
       ),
+      AttendanceStatus.present => ('Hadir', AppColor.success),
       AttendanceStatus.absent => ('Tidak hadir', AppColor.danger),
       null => ('Belum absen', AppColor.inkSoft),
     };
 
     return Opacity(
-      opacity: entry?.status == AttendanceStatus.absent ? 0.55 : 1,
+      opacity: status == AttendanceStatus.absent ? 0.55 : 1,
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(10),
@@ -129,7 +136,7 @@ class _CapsterTile extends StatelessWidget {
                     style: AppTextStyle.bodyBold,
                   ),
                   Text(
-                    status,
+                    label,
                     style: AppTextStyle.caption.copyWith(color: color),
                   ),
                 ],
@@ -137,6 +144,7 @@ class _CapsterTile extends StatelessWidget {
             ),
             if (capster.rating > 0) ...[
               const AppIcon(AppAsset.starIcon, size: 14, tint: false),
+              const SizedBox(width: 4),
               Text(
                 capster.rating.toStringAsFixed(1),
                 style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),

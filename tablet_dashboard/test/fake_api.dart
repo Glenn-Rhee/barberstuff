@@ -100,7 +100,8 @@ class FakeApi
 
   String? createdBookingCapster;
   List<String> createdBookingServices = const [];
-  ({int amount, PaymentType? payment, String? bookingId})? lastSale;
+  ({int amount, int discount, PaymentType? payment, String? bookingId})?
+  lastSale;
   int? openedWith;
   int? closedWith;
 
@@ -228,10 +229,25 @@ class FakeApi
     return capsterList;
   }
 
+  // Tiru backend: PATCH /capster saat ini hanya untuk admin
+  Set<String> capsterStatusRoles = {'admin'};
+
+  @override
+  Future<void> setCapsterActive(String id, {required bool active}) async {
+    calls.add('capsterStatus:$id:${active ? 'active' : 'inactive'}');
+    if (!capsterStatusRoles.contains(staff.role)) {
+      throw const ApiException('Anda tidak memiliki akses!', statusCode: 401);
+    }
+    capsterList = [
+      for (final c in capsterList) c.id == id ? c.copyWith(active: active) : c,
+    ];
+  }
+
   @override
   Future<Paged<Booking>> bookings({
     BookingStatus? status,
     String? query,
+    DateTime? date,
     int page = 1,
     int limit = 5,
   }) async {
@@ -239,7 +255,9 @@ class FakeApi
     if (bookingsDelay != null) await Future<void>.delayed(bookingsDelay!);
     final items = [
       for (final booking in bookingList)
-        if (status == null || booking.status == status) booking,
+        if ((status == null || booking.status == status) &&
+            (date == null || booking.isOn(date)))
+          booking,
     ];
     return Paged(items: items, totalPages: 1, totalData: items.length);
   }
@@ -395,22 +413,25 @@ class FakeApi
   }
 
   // Booking tidak bisa diubah, jadi diganti salinan baru
+  // [cashierDiscount] tiru backend saat bayar: discount_amount ditimpa
+  // diskon kasir, total_price dikurangi diskon kasir
   void _replace(
     Booking booking, {
     BookingStatus? status,
     List<CartLine>? services,
+    int? cashierDiscount,
   }) {
     final lines = services ?? booking.services;
-    final total = lines.fold(0, (sum, line) => sum + line.subtotal);
+    final subtotal = lines.fold(0, (sum, line) => sum + line.subtotal);
     final copy = Booking(
       id: booking.id,
       customer: booking.customer,
       capster: booking.capster,
       scheduledAt: booking.scheduledAt,
       services: lines,
-      subtotal: total,
-      discount: booking.discount,
-      total: total - booking.discount,
+      subtotal: subtotal,
+      discount: cashierDiscount ?? booking.discount,
+      total: subtotal - booking.discount - (cashierDiscount ?? 0),
       status: status ?? booking.status,
     );
     bookingList = [for (final b in bookingList) b.id == booking.id ? copy : b];
@@ -478,6 +499,7 @@ class FakeApi
     required String sessionId,
     required TransactionType type,
     required int amount,
+    int discountAmount = 0,
     PaymentType? paymentType,
     String? title,
     String? description,
@@ -485,9 +507,27 @@ class FakeApi
   }) async {
     calls.add('transaction:${type.name}');
     if (type == TransactionType.income) {
-      lastSale = (amount: amount, payment: paymentType, bookingId: bookingId);
       final booking = bookingList.where((b) => b.id == bookingId).firstOrNull;
-      if (booking != null) _replace(booking, status: BookingStatus.completed);
+      // Tiru backend: diskon tidak boleh melebihi total booking
+      if (booking != null && discountAmount > booking.total) {
+        throw const ApiException(
+          'Diskon tidak dapat melebihi sub total transaksi.',
+          statusCode: 400,
+        );
+      }
+      lastSale = (
+        amount: amount,
+        discount: discountAmount,
+        payment: paymentType,
+        bookingId: bookingId,
+      );
+      if (booking != null) {
+        _replace(
+          booking,
+          status: BookingStatus.completed,
+          cashierDiscount: discountAmount > 0 ? discountAmount : null,
+        );
+      }
     } else {
       lastOutcome = (amount: amount, title: title);
     }

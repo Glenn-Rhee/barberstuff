@@ -6,6 +6,7 @@ import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/domain/entities/attendance_entry.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/widgets/attendance_card.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/refresh_button.dart';
@@ -22,24 +23,44 @@ Future<void> openAttendance(BuildContext context) => Navigator.push(
   MaterialPageRoute(builder: (_) => const AttendanceScreen()),
 );
 
-// Absensi capster hari ini. Capster yang tidak hadir tidak bisa dipilih di Kasir
+// Absensi capster hari ini. Hanya yang Hadir yang aktif di server, jadi
+// Belum Absen & Tidak Hadir tidak bisa dipilih di aplikasi pelanggan
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
 
+  // Sisanya = capster aktif yang belum absen, yang tidak hadir dibiarkan
   Future<void> _markAllPresent(BuildContext context) async {
     final attendance = context.read<AttendanceController>();
-    final capsters = context.read<CatalogController>().activeCapsters;
+    final capsters = context.read<CatalogController>().capsters;
     final pending = [
       for (final capster in capsters)
-        if (attendance.entryOf(capster.id) == null) capster.id,
+        if (attendance.statusOf(capster) == null) capster,
     ];
     if (pending.isEmpty) {
       AppToast.show(context, 'Semua capster sudah diabsen');
       return;
     }
-    await attendance.markAll(pending, AttendanceStatus.present);
+    final problem = await attendance.markAll(pending, AttendanceStatus.present);
     if (context.mounted) {
-      AppToast.show(context, '${pending.length} capster ditandai hadir');
+      AppToast.show(
+        context,
+        problem ?? '${pending.length} capster ditandai hadir',
+        error: problem != null,
+      );
+    }
+  }
+
+  Future<void> _mark(
+    BuildContext context,
+    Capster capster,
+    AttendanceStatus status,
+  ) async {
+    final problem = await context.read<AttendanceController>().mark(
+      capster,
+      status,
+    );
+    if (problem != null && context.mounted) {
+      AppToast.show(context, problem, error: true);
     }
   }
 
@@ -50,7 +71,7 @@ class AttendanceScreen extends StatelessWidget {
     final storeName = context.select<StoreController, String>(
       (s) => s.current?.displayName ?? '-',
     );
-    final capsters = catalog.activeCapsters;
+    final capsters = catalog.capsters;
     final summary = attendance.summaryOf(capsters);
 
     return Scaffold(
@@ -112,8 +133,9 @@ class AttendanceScreen extends StatelessWidget {
               Expanded(child: _body(context, catalog, attendance)),
               const SizedBox(height: 12),
               Text(
-                'Absensi tersimpan di tablet ini untuk hari ini. Capster yang '
-                'tidak hadir tidak muncul di pilihan capster Kasir.',
+                'Tiap buka shift, capster yang belum absen dinonaktifkan. '
+                'Pelanggan hanya bisa memilih capster yang ditandai Hadir '
+                '(juga untuk booking hari lain).',
                 style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
               ),
             ],
@@ -143,11 +165,11 @@ class AttendanceScreen extends StatelessWidget {
         onRetry: catalog.loadCapsters,
       );
     }
-    final capsters = catalog.activeCapsters;
+    final capsters = catalog.capsters;
     if (capsters.isEmpty) {
       return const EmptyState(
         icon: Icons.groups_outlined,
-        title: 'Belum ada capster aktif',
+        title: 'Belum ada capster',
         message: 'Capster toko ditambahkan oleh admin.',
       );
     }
@@ -167,8 +189,12 @@ class AttendanceScreen extends StatelessWidget {
           final capster = capsters[index];
           return AttendanceCard(
             capster: capster,
+            status: attendance.statusOf(capster),
             entry: attendance.entryOf(capster.id),
-            onMark: (status) => attendance.mark(capster.id, status),
+            localOnly: attendance.isLocalOnly(capster),
+            bookableWhilePending: attendance.isBookableWhilePending(capster),
+            busy: attendance.isBusy(capster.id),
+            onMark: (status) => _mark(context, capster, status),
           );
         },
       ),

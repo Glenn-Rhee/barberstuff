@@ -57,7 +57,9 @@ List<SingleChildWidget> appProviders({
     ChangeNotifierProvider(create: (_) => OrderController()),
     ChangeNotifierProvider(create: (_) => BookingsController(bookingApi)),
     ChangeNotifierProvider(create: (_) => StoreController(storeApi)),
-    ChangeNotifierProvider(create: (_) => AttendanceController()),
+    ChangeNotifierProvider(
+      create: (ctx) => AttendanceController(ctx.read<CatalogController>()),
+    ),
     ChangeNotifierProvider(create: (_) => DashboardController(bookingApi)),
     ChangeNotifierProvider(
       create: (_) => CustomerHistoryController(customerApi),

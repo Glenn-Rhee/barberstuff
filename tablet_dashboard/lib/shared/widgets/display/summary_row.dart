@@ -21,11 +21,16 @@ class SummaryRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Text(
-            label,
-            style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
+          // Label panjang dipotong, nominal selalu utuh
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 8),
           Text(value, style: AppTextStyle.label.copyWith(color: valueColor)),
         ],
       ),

@@ -30,7 +30,7 @@ class StoreInfo {
   // Status toko dari admin (open / close)
   final bool active;
 
-  String get displayName => name ?? 'Toko Anda';
+  String get displayName => name ?? 'Toko Barberstuff';
 
   // "09:00 - 17:00", null kalau jam belum diketahui
   String? get hours =>

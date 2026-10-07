@@ -76,14 +76,14 @@ class _StoreTabChip extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Text(
             label,
             maxLines: 1,
             style: AppTextStyle.labelMedium.copyWith(
               fontSize: 12,
               fontWeight: active ? FontWeight.w600 : FontWeight.w500,
-              color: active ? AppColor.surface : AppColor.goldDeep,
+              color: active ? AppColor.surface : AppColor.ink,
             ),
           ),
         ),

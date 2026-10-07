@@ -1,17 +1,28 @@
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/features/profile/domain/entities/customer_profile.dart';
 import 'package:mobile_barberstuff/features/promo/domain/entities/promo_content.dart';
+import 'package:mobile_barberstuff/l10n/app_localization.dart';
 
 /// Isi promo sementara. Tabel `promo` sudah ada di database tapi belum punya
-/// route, jadi teksnya ditulis di sini sampai endpointnya tersedia.
+/// route, jadi isinya ditulis di sini (teksnya di ARB supaya ikut bahasa
+/// aplikasi) sampai endpointnya tersedia.
 ///
 /// TODO(api): ini satu-satunya data yang masih ditulis tangan di aplikasi.
-/// Begitu route promo jadi di backend, ganti `grades`, `benefits`, `banners`,
-/// dan `rewards` dengan datasource remote di PromoRepositoryImpl, lalu hapus
-/// berkas ini.
+/// Begitu route promo jadi di backend, ganti [content] dengan datasource
+/// remote di PromoRepositoryImpl, lalu hapus berkas ini beserta key ARB
+/// `promoBenefit*`, `promoBanner*`, dan `promoReward*`.
+
 class PromoLocalDataSource {
   const PromoLocalDataSource._();
 
+  static PromoContent content(AppLocalizations l10n) => PromoContent(
+    grades: grades,
+    benefits: _benefits(l10n),
+    banners: _banners(l10n),
+    rewards: _rewards(l10n),
+  );
+
+  // Nama tier sama di semua bahasa
   static const List<GradeStep> grades = <GradeStep>[
     GradeStep(
       tier: MemberTier.silver,
@@ -33,82 +44,68 @@ class PromoLocalDataSource {
     ),
   ];
 
-  static const List<GradeBenefit> benefits = <GradeBenefit>[
+  static List<GradeBenefit> _benefits(AppLocalizations l10n) => <GradeBenefit>[
     GradeBenefit(
       iconAsset: AppAssets.giftDashboard,
-      title: 'A-Poin Reguler',
-      description:
-          'Dapatkan cashback poin reguler hingga 5% untuk setiap transaksi '
-          'merchant mitra.',
+      title: l10n.promoBenefitPointsTitle,
+      description: l10n.promoBenefitPointsDesc,
     ),
     GradeBenefit(
       iconAsset: AppAssets.tagDashboard,
-      title: 'Promo Merchant',
-      description:
-          'Diskon eksklusif s.d 30% di berbagai restoran, kafe, dan outlet '
-          'favorit terpilih.',
+      title: l10n.promoBenefitMerchantTitle,
+      description: l10n.promoBenefitMerchantDesc,
     ),
     GradeBenefit(
       iconAsset: AppAssets.ticketPromo,
-      title: 'Voucher Spesial Hari Raya',
-      description:
-          'Hadiah langsung berupa voucher belanja senilai Rp100.000 saat '
-          'momen spesial.',
+      title: l10n.promoBenefitVoucherTitle,
+      description: l10n.promoBenefitVoucherDesc,
     ),
   ];
 
-  static const List<PromoBanner> banners = <PromoBanner>[
+  static List<PromoBanner> _banners(AppLocalizations l10n) => <PromoBanner>[
     PromoBanner(
       id: 'cashback-20',
-      title: 'Cashback 20%',
-      subtitle: 'Untuk semua layanan',
-      footnote: 'Min. transaksi Rp150.000',
+      title: l10n.promoBannerCashbackTitle,
+      subtitle: l10n.promoBannerCashbackSubtitle,
+      footnote: l10n.promoBannerCashbackFootnote,
       iconAsset: AppAssets.ticketPromo,
     ),
     PromoBanner(
       id: 'paket-hemat',
-      title: 'Paket Hemat',
-      subtitle: 'Haircut 5x',
-      footnote: 'Hemat hingga 15%',
+      title: l10n.promoBannerBundleTitle,
+      subtitle: l10n.promoBannerBundleSubtitle,
+      footnote: l10n.promoBannerBundleFootnote,
       iconAsset: AppAssets.giftDashboard,
       highlighted: false,
     ),
     PromoBanner(
       id: 'cashback-20-b',
-      title: 'Cashback 20%',
-      subtitle: 'Untuk semua layanan',
-      footnote: 'Min. transaksi Rp150.000',
+      title: l10n.promoBannerCashbackTitle,
+      subtitle: l10n.promoBannerCashbackSubtitle,
+      footnote: l10n.promoBannerCashbackFootnote,
       iconAsset: AppAssets.ticketPromo,
     ),
   ];
 
-  static const List<RewardVoucher> rewards = <RewardVoucher>[
+  static List<RewardVoucher> _rewards(AppLocalizations l10n) => <RewardVoucher>[
     RewardVoucher(
       id: 'diskon-50',
-      title: 'Diskon 50% Potong Rambut',
-      description:
-          'Dapatkan akses eksklusif untuk potongan harga layanan potong '
-          'rambut dan perawatan jenggot pilihan. Nikmati hasil cukur terbaik '
-          'langsung dari barber profesional kami dengan standar pelayanan '
-          'premium.',
+      title: l10n.promoRewardHalfOffTitle,
+      description: l10n.promoRewardHalfOffDesc,
       points: 1000,
       imageAsset: AppAssets.dummyPromo,
     ),
     RewardVoucher(
       id: 'antrean-prioritas',
-      title: 'Akses Antrean Prioritas Cukur',
-      description:
-          'Lewati antrean dan langsung dilayani di cabang pilihanmu. Berlaku '
-          'untuk satu kali kunjungan pada jam operasional normal.',
+      title: l10n.promoRewardPriorityTitle,
+      description: l10n.promoRewardPriorityDesc,
       points: 1200,
       imageAsset: AppAssets.dummyPromo,
     ),
     RewardVoucher(
       id: 'gratis-keramas',
-      title: 'Gratis Keramas & Hair Tonic',
-      description:
-          'Tambahan keramas dan hair tonic tanpa biaya untuk setiap layanan '
-          'potong rambut. Berlaku di seluruh cabang Barberstuff.',
+      title: l10n.promoRewardWashTitle,
+      description: l10n.promoRewardWashDesc,
       points: 600,
       imageAsset: AppAssets.dummyPromo,
     ),

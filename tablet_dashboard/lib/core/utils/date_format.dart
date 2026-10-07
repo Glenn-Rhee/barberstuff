@@ -29,6 +29,10 @@ class DateFormatId {
   static String longDate(DateTime value) =>
       '${_days[value.weekday - 1]}, ${value.day} ${_months[value.month - 1]} ${value.year}';
 
+  // Senin, 27 Sep 2026
+  static String mediumDate(DateTime value) =>
+      '${_days[value.weekday - 1]}, ${compactDate(value)}';
+
   // 27 Mei 2024
   static String shortDate(DateTime value) =>
       '${value.day} ${_months[value.month - 1]} ${value.year}';

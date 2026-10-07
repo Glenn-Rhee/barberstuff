@@ -1,3 +1,4 @@
+import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/core/utils/json_value.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/cart_line.dart';
@@ -76,4 +77,14 @@ class Booking {
   final int discount;
   final int total;
   final BookingStatus status;
+
+  // Jadwal booking jatuh di hari [day] (jam lokal tablet)
+  bool isOn(DateTime day) {
+    final at = scheduledAt;
+    return at != null && DateFormatId.isSameDay(at, day);
+  }
+
+  // Semua potongan (promo + diskon kasir). Saat bayar backend menimpa
+  // discount_amount dengan diskon kasir saja, jadi hitung dari subtotal - total
+  int get totalDiscount => subtotal > total ? subtotal - total : 0;
 }

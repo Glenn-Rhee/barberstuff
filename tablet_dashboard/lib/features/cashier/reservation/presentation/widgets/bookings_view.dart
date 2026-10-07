@@ -56,7 +56,7 @@ class _BookingsViewState extends State<BookingsView> {
             const SizedBox(width: 12),
             const BookingStatusFilter(),
             const SizedBox(width: 12),
-            const _TodayChip(),
+            const _DateChip(),
           ],
         ),
         const SizedBox(height: 16),
@@ -113,10 +113,12 @@ class _BookingsViewState extends State<BookingsView> {
       );
     }
     if (bookings.bookings.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.event_busy_outlined,
         title: 'Belum ada booking',
-        message: 'Booking dari aplikasi pelanggan akan muncul di sini.',
+        message: bookings.isToday
+            ? 'Booking dari aplikasi pelanggan akan muncul di sini.'
+            : 'Tidak ada booking pada ${DateFormatId.longDate(bookings.day)}.',
       );
     }
 
@@ -137,32 +139,70 @@ class _BookingsViewState extends State<BookingsView> {
   }
 }
 
-// Tanggal booking yang tampil. GET /booking hanya kirim booking hari ini,
-// jadi tanggal tidak bisa diganti
-class _TodayChip extends StatelessWidget {
-  const _TodayChip();
+// Tanggal booking yang tampil, tap untuk pilih hari ini atau hari
+// sebelumnya. Selain hari ini chip berwarna emas + tombol kembali ke
+// hari ini, supaya kasir tidak lupa sedang lihat hari lain
+class _DateChip extends StatelessWidget {
+  const _DateChip();
+
+  // Batas mundur kalender, cukup untuk cari booking progress yang lupa dibayar
+  static const _maxDaysBack = 365;
+
+  Future<void> _pick(BuildContext context) async {
+    final bookings = context.read<BookingsController>();
+    final today = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: bookings.day,
+      firstDate: today.subtract(const Duration(days: _maxDaysBack)),
+      lastDate: today,
+      helpText: 'Pilih tanggal booking',
+    );
+    if (picked != null) bookings.setDate(picked);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: 'Daftar booking dari server hanya untuk hari ini',
-      child: Container(
-        height: 44,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColor.borderStrong),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const AppIcon(AppAsset.dateIcon, size: 16, color: AppColor.ink),
-            const SizedBox(width: 8),
-            Text(
-              DateFormatId.longDate(DateTime.now()),
-              style: AppTextStyle.body,
+    final bookings = context.watch<BookingsController>();
+    final today = bookings.isToday;
+
+    return Material(
+      color: today ? AppColor.surface : AppColor.goldSoft,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: () => _pick(context),
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          height: 44,
+          padding: EdgeInsets.only(left: 12, right: today ? 12 : 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: today ? AppColor.borderStrong : AppColor.goldBorder,
             ),
-          ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const AppIcon(AppAsset.dateIcon, size: 16, color: AppColor.ink),
+              const SizedBox(width: 8),
+              // Bulan disingkat kalau ada tombol kembali, supaya muat
+              Text(
+                today
+                    ? DateFormatId.longDate(bookings.day)
+                    : DateFormatId.mediumDate(bookings.day),
+                style: AppTextStyle.body,
+              ),
+              if (!today)
+                IconButton(
+                  tooltip: 'Kembali ke hari ini',
+                  onPressed: () => bookings.setDate(DateTime.now()),
+                  icon: const Icon(Icons.close, size: 16),
+                  color: AppColor.inkSoft,
+                  visualDensity: VisualDensity.compact,
+                ),
+            ],
+          ),
         ),
       ),
     );

@@ -47,6 +47,7 @@ class CapsterSelector extends StatelessWidget {
                 if (capster.rating > 0) ...[
                   const SizedBox(width: 12),
                   const AppIcon(AppAsset.starIcon, size: 14, tint: false),
+                  const SizedBox(width: 4),
                   Text(
                     capster.rating.toStringAsFixed(1),
                     style: AppTextStyle.caption.copyWith(
@@ -103,7 +104,7 @@ class CapsterSelector extends StatelessWidget {
                                 size: 14,
                                 tint: false,
                               ),
-                              const SizedBox(width: 2),
+                              const SizedBox(width: 4),
                               Text(
                                 value.rating.toStringAsFixed(1),
                                 style: AppTextStyle.caption,

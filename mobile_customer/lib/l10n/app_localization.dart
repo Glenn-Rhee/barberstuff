@@ -494,6 +494,690 @@ abstract class AppLocalizations {
   /// **'Terjadi Kesalahan yang tak terduga.'**
   String get exceptionDefault;
 
+  /// No description provided for @exceptionRequestRejected.
+  ///
+  /// In id, this message translates to:
+  /// **'Permintaan tidak dapat diproses. Periksa data Anda lalu coba lagi.'**
+  String get exceptionRequestRejected;
+
+  /// No description provided for @serverNoAccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda tidak memiliki akses!'**
+  String get serverNoAccess;
+
+  /// No description provided for @serverReadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal membaca data!'**
+  String get serverReadFailed;
+
+  /// No description provided for @serverBadFormat.
+  ///
+  /// In id, this message translates to:
+  /// **'Format data tidak valid'**
+  String get serverBadFormat;
+
+  /// No description provided for @serverSessionCheckFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terdapat kesalahan dalam proses validasi!'**
+  String get serverSessionCheckFailed;
+
+  /// No description provided for @serverAccountGone.
+  ///
+  /// In id, this message translates to:
+  /// **'Akun tidak ditemukan atau telah dihapus!'**
+  String get serverAccountGone;
+
+  /// No description provided for @serverTokenExpired.
+  ///
+  /// In id, this message translates to:
+  /// **'token sudah kadaluarsa'**
+  String get serverTokenExpired;
+
+  /// No description provided for @serverTokenInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'token tidak valid'**
+  String get serverTokenInvalid;
+
+  /// No description provided for @serverBadHeader.
+  ///
+  /// In id, this message translates to:
+  /// **'Format header tidak valid!'**
+  String get serverBadHeader;
+
+  /// No description provided for @serverSystemError.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan di sistem!'**
+  String get serverSystemError;
+
+  /// No description provided for @serverDataNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Data tidak ditemukan!'**
+  String get serverDataNotFound;
+
+  /// No description provided for @serverDataGone.
+  ///
+  /// In id, this message translates to:
+  /// **'Data tidak ditemukan atau telah dihapus!'**
+  String get serverDataGone;
+
+  /// No description provided for @serverDataInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Data tidak valid!'**
+  String get serverDataInvalid;
+
+  /// No description provided for @serverDataInvalidRelogin.
+  ///
+  /// In id, this message translates to:
+  /// **'Data tidak valid! Mohon login kembali.'**
+  String get serverDataInvalidRelogin;
+
+  /// No description provided for @serverDataInvalidContact.
+  ///
+  /// In id, this message translates to:
+  /// **'Data tidak valid! Harap hubungi pusat.'**
+  String get serverDataInvalidContact;
+
+  /// No description provided for @serverLoadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat mengambil data!'**
+  String get serverLoadFailed;
+
+  /// No description provided for @serverPhoneFormat.
+  ///
+  /// In id, this message translates to:
+  /// **'No telepon tidak valid, gunakan format +62xxxx atau 08xxxx'**
+  String get serverPhoneFormat;
+
+  /// No description provided for @serverMinAge.
+  ///
+  /// In id, this message translates to:
+  /// **'Minimal usia untuk mendaftar adalah 6 bulan!'**
+  String get serverMinAge;
+
+  /// No description provided for @serverOtpSent.
+  ///
+  /// In id, this message translates to:
+  /// **'OTP telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.'**
+  String get serverOtpSent;
+
+  /// No description provided for @serverOtpDigitsOnly.
+  ///
+  /// In id, this message translates to:
+  /// **'Hanya masukkan OTP berupa angka diantara 0-9'**
+  String get serverOtpDigitsOnly;
+
+  /// No description provided for @serverRegisterFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat registrasi. Coba lagi nanti.'**
+  String get serverRegisterFailed;
+
+  /// No description provided for @serverEmailVerifiedBySystem.
+  ///
+  /// In id, this message translates to:
+  /// **'Email ini telah terdaftar dan terverifikasi oleh sistem!'**
+  String get serverEmailVerifiedBySystem;
+
+  /// No description provided for @serverEmailVerifiedUsePassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Email ini telah terdaftar dan terverifikasi! Silahkan anda login menggunakan password'**
+  String get serverEmailVerifiedUsePassword;
+
+  /// No description provided for @serverEmailVerified.
+  ///
+  /// In id, this message translates to:
+  /// **'Email ini telah terdaftar dan terverifikasi!'**
+  String get serverEmailVerified;
+
+  /// No description provided for @serverRegisterAgain.
+  ///
+  /// In id, this message translates to:
+  /// **'Data anda sudah tidak valid mohon register ulang dengan akun Anda.'**
+  String get serverRegisterAgain;
+
+  /// No description provided for @serverMembershipFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat mencari data premium'**
+  String get serverMembershipFailed;
+
+  /// No description provided for @serverPhoneTaken.
+  ///
+  /// In id, this message translates to:
+  /// **'No telepon ini telah terdaftar!'**
+  String get serverPhoneTaken;
+
+  /// No description provided for @serverLoginFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat login! Coba lagi nanti.'**
+  String get serverLoginFailed;
+
+  /// No description provided for @serverOtpWait.
+  ///
+  /// In id, this message translates to:
+  /// **'Mohon tunggu sebelum anda meminta OTP kembali.'**
+  String get serverOtpWait;
+
+  /// No description provided for @serverOtpExpiredResend.
+  ///
+  /// In id, this message translates to:
+  /// **'OTP sudah kedaluwarsa. Mohon kirim ulang OTP!'**
+  String get serverOtpExpiredResend;
+
+  /// No description provided for @serverOtpExpiredRegister.
+  ///
+  /// In id, this message translates to:
+  /// **'OTP sudah kedaluwarsa. Mohon daftar ulang / kirim ulang OTP!'**
+  String get serverOtpExpiredRegister;
+
+  /// No description provided for @serverOtpFiveWrong.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda telah melakukan kesalahan 5 kali percobaan! Mohon untuk kirim ulang OTP!'**
+  String get serverOtpFiveWrong;
+
+  /// No description provided for @serverOtpFiveTries.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda telah melakukan percobaan sebanyak 5 kali. Coba lagi nanti!'**
+  String get serverOtpFiveTries;
+
+  /// No description provided for @serverResetFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat reset password!'**
+  String get serverResetFailed;
+
+  /// No description provided for @serverResetFailedLater.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat reset password, coba lagi nanti!'**
+  String get serverResetFailedLater;
+
+  /// No description provided for @serverEmailNotRegistered.
+  ///
+  /// In id, this message translates to:
+  /// **'Email tidak terdaftar!'**
+  String get serverEmailNotRegistered;
+
+  /// No description provided for @serverEmailUnverifiedReset.
+  ///
+  /// In id, this message translates to:
+  /// **'Email belum verified! Tidak dapat reset password.'**
+  String get serverEmailUnverifiedReset;
+
+  /// No description provided for @serverEmailGoogleReset.
+  ///
+  /// In id, this message translates to:
+  /// **'Email Anda login dengan google! Tidak dapat reset password.'**
+  String get serverEmailGoogleReset;
+
+  /// No description provided for @serverTooManyAttempts.
+  ///
+  /// In id, this message translates to:
+  /// **'Terlalu banyak percobaan, coba lagi nanti.'**
+  String get serverTooManyAttempts;
+
+  /// No description provided for @serverEmailUnverifiedLogin.
+  ///
+  /// In id, this message translates to:
+  /// **'Email belum verifikasi! Verifikasi terlebih dahulu.'**
+  String get serverEmailUnverifiedLogin;
+
+  /// No description provided for @serverWrongPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Password yang anda masukkan salah.'**
+  String get serverWrongPassword;
+
+  /// No description provided for @serverAuthFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat authentikasi'**
+  String get serverAuthFailed;
+
+  /// No description provided for @serverProviderUnavailable.
+  ///
+  /// In id, this message translates to:
+  /// **'Provider tidak tersedia!'**
+  String get serverProviderUnavailable;
+
+  /// No description provided for @serverGoogleUnverified.
+  ///
+  /// In id, this message translates to:
+  /// **'Email anda belum terverifikasi oleh Google. Silahkan verifikasi terlebih dahulu'**
+  String get serverGoogleUnverified;
+
+  /// No description provided for @serverResetTokenInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Token tidak valid atau sudah kedaluwarsa.'**
+  String get serverResetTokenInvalid;
+
+  /// No description provided for @serverAccountNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Akun anda tidak ditemukan!'**
+  String get serverAccountNotFound;
+
+  /// No description provided for @serverProfileLoadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terdapat kesalahan saat mengambil data profile!'**
+  String get serverProfileLoadFailed;
+
+  /// No description provided for @serverProfileUpdateFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat mengupdate data profile user!'**
+  String get serverProfileUpdateFailed;
+
+  /// No description provided for @serverRelogin.
+  ///
+  /// In id, this message translates to:
+  /// **'Data anda tidak valid. Mohon untuk login ulang.'**
+  String get serverRelogin;
+
+  /// No description provided for @serverProfileNoChange.
+  ///
+  /// In id, this message translates to:
+  /// **'Update minimal 1 data profile.'**
+  String get serverProfileNoChange;
+
+  /// No description provided for @serverStoreLoadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat mengambil data toko!'**
+  String get serverStoreLoadFailed;
+
+  /// No description provided for @serverBranchNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Data toko cabang yang anda cari tidak ditemukan!'**
+  String get serverBranchNotFound;
+
+  /// No description provided for @serverStoreNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Toko tidak ditemukan'**
+  String get serverStoreNotFound;
+
+  /// No description provided for @serverStoreGone.
+  ///
+  /// In id, this message translates to:
+  /// **'Toko tidak ditemukan atau telah dihapus!'**
+  String get serverStoreGone;
+
+  /// No description provided for @serverStoreDataGone.
+  ///
+  /// In id, this message translates to:
+  /// **'Data toko tidak ditemukan atau telah dihapus!'**
+  String get serverStoreDataGone;
+
+  /// No description provided for @serverStoreDataInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Data toko tidak valid!'**
+  String get serverStoreDataInvalid;
+
+  /// No description provided for @serverStoreIdInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Id toko tidak valid!'**
+  String get serverStoreIdInvalid;
+
+  /// No description provided for @serverCapsterLoadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat mengambil data capster!'**
+  String get serverCapsterLoadFailed;
+
+  /// No description provided for @serverBookingFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat membuat booking'**
+  String get serverBookingFailed;
+
+  /// No description provided for @serverBookingFailedLater.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat membuat booking. Coba lagi nanti!'**
+  String get serverBookingFailedLater;
+
+  /// No description provided for @serverStoreInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Toko tidak valid'**
+  String get serverStoreInvalid;
+
+  /// No description provided for @serverCapsterIdInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Id capster tidak valid!'**
+  String get serverCapsterIdInvalid;
+
+  /// No description provided for @serverStoreNotReady.
+  ///
+  /// In id, this message translates to:
+  /// **'Toko belum siap menerima booking.'**
+  String get serverStoreNotReady;
+
+  /// No description provided for @serverBookingPast.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal dan jam booking tidak boleh kurang dari waktu sekarang.'**
+  String get serverBookingPast;
+
+  /// No description provided for @serverBookingMinLead.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking minimal 30 menit dari sekarang.'**
+  String get serverBookingMinLead;
+
+  /// No description provided for @serverUserInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'User tidak valid!'**
+  String get serverUserInvalid;
+
+  /// No description provided for @serverUserDataInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Data user tidak valid!'**
+  String get serverUserDataInvalid;
+
+  /// No description provided for @serverCapsterGone.
+  ///
+  /// In id, this message translates to:
+  /// **'Capster tidak ditemukan atau telah dihapus!'**
+  String get serverCapsterGone;
+
+  /// No description provided for @serverCapsterOtherStore.
+  ///
+  /// In id, this message translates to:
+  /// **'Capster ini bukan merupakan bagian dari toko yang anda pilih!'**
+  String get serverCapsterOtherStore;
+
+  /// No description provided for @serverBookingExists.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda telah memiliki booking! Tidak dapat booking kembali.'**
+  String get serverBookingExists;
+
+  /// No description provided for @serverBookingSlotMismatch.
+  ///
+  /// In id, this message translates to:
+  /// **'Jam booking tidak sesuai dengan jam tersedia.'**
+  String get serverBookingSlotMismatch;
+
+  /// No description provided for @serverBookingInProgress.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda masih memiliki booking yang sedang diproses'**
+  String get serverBookingInProgress;
+
+  /// No description provided for @serverNoCapsterLeft.
+  ///
+  /// In id, this message translates to:
+  /// **'Sudah tidak ada capster yang tersedia.'**
+  String get serverNoCapsterLeft;
+
+  /// No description provided for @serverCapsterReserved.
+  ///
+  /// In id, this message translates to:
+  /// **'Capster ini sedang direservasi untuk pelanggan lain.'**
+  String get serverCapsterReserved;
+
+  /// No description provided for @serverCapsterBusy.
+  ///
+  /// In id, this message translates to:
+  /// **'Capster ini sedang tidak tersedia pada rentang waktu tersebut.'**
+  String get serverCapsterBusy;
+
+  /// No description provided for @serverSlotLocked.
+  ///
+  /// In id, this message translates to:
+  /// **'Slot ini sudah di kunci oleh orang lain.'**
+  String get serverSlotLocked;
+
+  /// No description provided for @serverLockFirst.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda belum melakukan lock booking! Mohon untuk lock booking terlebih dahulu!'**
+  String get serverLockFirst;
+
+  /// No description provided for @serverNoLock.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda belum melakukan lock booking'**
+  String get serverNoLock;
+
+  /// No description provided for @serverLockExpired.
+  ///
+  /// In id, this message translates to:
+  /// **'Data Booking tidak ditemukan atau waktu booking telah habis!'**
+  String get serverLockExpired;
+
+  /// No description provided for @serverBookingNotYours.
+  ///
+  /// In id, this message translates to:
+  /// **'Data booking ini bukan milik anda!'**
+  String get serverBookingNotYours;
+
+  /// No description provided for @serverCapsterWalkIn.
+  ///
+  /// In id, this message translates to:
+  /// **'Capster ini sedang direservasi untuk pelanggan on the spot. Mohon pilih capster lain.'**
+  String get serverCapsterWalkIn;
+
+  /// No description provided for @serverServiceInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Data Service tidak valid!'**
+  String get serverServiceInvalid;
+
+  /// No description provided for @serverServiceGone.
+  ///
+  /// In id, this message translates to:
+  /// **'Service tidak ditemukan! Atau telah dihapus'**
+  String get serverServiceGone;
+
+  /// No description provided for @serverServiceNotInStore.
+  ///
+  /// In id, this message translates to:
+  /// **'Toko ini tidak memiliki service tersebut.'**
+  String get serverServiceNotInStore;
+
+  /// No description provided for @serverServiceUnavailable.
+  ///
+  /// In id, this message translates to:
+  /// **'Service ini telah tidak tersedia! Mohon pilih ulang.'**
+  String get serverServiceUnavailable;
+
+  /// No description provided for @serverPromoUsed.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo ini telah digunakan'**
+  String get serverPromoUsed;
+
+  /// No description provided for @serverPromoInvalidNow.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo ini sudah tidak berlaku!'**
+  String get serverPromoInvalidNow;
+
+  /// No description provided for @serverPromoExpired.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo ini sudah kedaluwarsa!'**
+  String get serverPromoExpired;
+
+  /// No description provided for @serverPromoNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo Anda tidak ditemukan'**
+  String get serverPromoNotFound;
+
+  /// No description provided for @serverPromoInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo tidak valid'**
+  String get serverPromoInvalid;
+
+  /// No description provided for @serverScheduleLoadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat mengambil booking toko. Coba lagi nanti!'**
+  String get serverScheduleLoadFailed;
+
+  /// No description provided for @serverBookingLoadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat mengambil data booking!'**
+  String get serverBookingLoadFailed;
+
+  /// No description provided for @serverIdentityInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Identitas anda tidak valid'**
+  String get serverIdentityInvalid;
+
+  /// No description provided for @serverRatingFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Terjadi kesalahan saat membuat data rating!'**
+  String get serverRatingFailed;
+
+  /// No description provided for @serverBookingInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking tidak valid!'**
+  String get serverBookingInvalid;
+
+  /// No description provided for @serverRatingNeedOne.
+  ///
+  /// In id, this message translates to:
+  /// **'Mohon menilai setidaknya satu dari toko, capster, atau staff kami.'**
+  String get serverRatingNeedOne;
+
+  /// No description provided for @serverBookingNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Booking tidak ditemukan!'**
+  String get serverBookingNotFound;
+
+  /// No description provided for @serverRatingCashierOnly.
+  ///
+  /// In id, this message translates to:
+  /// **'Hanya dapat rating kasir!'**
+  String get serverRatingCashierOnly;
+
+  /// No description provided for @serverFileType.
+  ///
+  /// In id, this message translates to:
+  /// **'Extensi file tidak didukung'**
+  String get serverFileType;
+
+  /// No description provided for @serverFileMismatch.
+  ///
+  /// In id, this message translates to:
+  /// **'extension file tidak sesuai dengan content type'**
+  String get serverFileMismatch;
+
+  /// No description provided for @serverFileEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'minimum upload file adalah 1 byte'**
+  String get serverFileEmpty;
+
+  /// No description provided for @serverFileTooBig.
+  ///
+  /// In id, this message translates to:
+  /// **'maximum upload file adalah 5 mb'**
+  String get serverFileTooBig;
+
+  /// No description provided for @serverUploadUrlFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal generate URL upload.'**
+  String get serverUploadUrlFailed;
+
+  /// No description provided for @serverImageTooBig.
+  ///
+  /// In id, this message translates to:
+  /// **'Ukuran gambar terlalu besar'**
+  String get serverImageTooBig;
+
+  /// No description provided for @serverImageKey.
+  ///
+  /// In id, this message translates to:
+  /// **'Image url harus berupa object key.'**
+  String get serverImageKey;
+
+  /// No description provided for @serverImageSaveFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal membuat data, periksa image url.'**
+  String get serverImageSaveFailed;
+
+  /// No description provided for @serverFieldRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'{field} wajib diisi'**
+  String serverFieldRequired(String field);
+
+  /// No description provided for @serverFieldEmail.
+  ///
+  /// In id, this message translates to:
+  /// **'{field} harus berupa email yang valid'**
+  String serverFieldEmail(String field);
+
+  /// No description provided for @serverFieldNumeric.
+  ///
+  /// In id, this message translates to:
+  /// **'{field} harus berupa angka'**
+  String serverFieldNumeric(String field);
+
+  /// No description provided for @serverFieldMin.
+  ///
+  /// In id, this message translates to:
+  /// **'{field} minimal {count} karakter'**
+  String serverFieldMin(String field, String count);
+
+  /// No description provided for @serverFieldMax.
+  ///
+  /// In id, this message translates to:
+  /// **'{field} maksimal {count} karakter'**
+  String serverFieldMax(String field, String count);
+
+  /// No description provided for @serverFieldGreater.
+  ///
+  /// In id, this message translates to:
+  /// **'{field} harus lebih dari {count} karakter'**
+  String serverFieldGreater(String field, String count);
+
+  /// No description provided for @serverFieldInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'{field} tidak valid'**
+  String serverFieldInvalid(String field);
+
+  /// No description provided for @serverOtpAttemptsLeft.
+  ///
+  /// In id, this message translates to:
+  /// **'OTP tidak valid, silahkan coba lagi. Sisa percobaan {count} kali'**
+  String serverOtpAttemptsLeft(String count);
+
   /// No description provided for @validatorRequired.
   ///
   /// In id, this message translates to:
@@ -893,7 +1577,7 @@ abstract class AppLocalizations {
   /// No description provided for @storeReviewCount.
   ///
   /// In id, this message translates to:
-  /// **'({count} reviews)'**
+  /// **'({count} ulasan)'**
   String storeReviewCount(String count);
 
   /// No description provided for @storeActionCall.
@@ -1007,7 +1691,7 @@ abstract class AppLocalizations {
   /// No description provided for @storeTypeCount.
   ///
   /// In id, this message translates to:
-  /// **'{count} types'**
+  /// **'{count} jenis'**
   String storeTypeCount(int count);
 
   /// No description provided for @storeShareCopied.
@@ -2117,7 +2801,7 @@ abstract class AppLocalizations {
   /// No description provided for @receiptDownload.
   ///
   /// In id, this message translates to:
-  /// **'Download E-Receipt'**
+  /// **'Unduh E-Receipt'**
   String get receiptDownload;
 
   /// No description provided for @comingSoonMessage.
@@ -2276,10 +2960,118 @@ abstract class AppLocalizations {
   /// **'Poin belum cukup untuk menukar hadiah ini.'**
   String get promoNotEnoughPoints;
 
+  /// No description provided for @promoBenefitPointsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'A-Poin Reguler'**
+  String get promoBenefitPointsTitle;
+
+  /// No description provided for @promoBenefitPointsDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Dapatkan cashback poin reguler hingga 5% untuk setiap transaksi merchant mitra.'**
+  String get promoBenefitPointsDesc;
+
+  /// No description provided for @promoBenefitMerchantTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Promo Merchant'**
+  String get promoBenefitMerchantTitle;
+
+  /// No description provided for @promoBenefitMerchantDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Diskon eksklusif s.d 30% di berbagai restoran, kafe, dan outlet favorit terpilih.'**
+  String get promoBenefitMerchantDesc;
+
+  /// No description provided for @promoBenefitVoucherTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Voucher Spesial Hari Raya'**
+  String get promoBenefitVoucherTitle;
+
+  /// No description provided for @promoBenefitVoucherDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Hadiah langsung berupa voucher belanja senilai Rp100.000 saat momen spesial.'**
+  String get promoBenefitVoucherDesc;
+
+  /// No description provided for @promoBannerCashbackTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Cashback 20%'**
+  String get promoBannerCashbackTitle;
+
+  /// No description provided for @promoBannerCashbackSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Untuk semua layanan'**
+  String get promoBannerCashbackSubtitle;
+
+  /// No description provided for @promoBannerCashbackFootnote.
+  ///
+  /// In id, this message translates to:
+  /// **'Min. transaksi Rp150.000'**
+  String get promoBannerCashbackFootnote;
+
+  /// No description provided for @promoBannerBundleTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Paket Hemat'**
+  String get promoBannerBundleTitle;
+
+  /// No description provided for @promoBannerBundleSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Haircut 5x'**
+  String get promoBannerBundleSubtitle;
+
+  /// No description provided for @promoBannerBundleFootnote.
+  ///
+  /// In id, this message translates to:
+  /// **'Hemat hingga 15%'**
+  String get promoBannerBundleFootnote;
+
+  /// No description provided for @promoRewardHalfOffTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Diskon 50% Potong Rambut'**
+  String get promoRewardHalfOffTitle;
+
+  /// No description provided for @promoRewardHalfOffDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Dapatkan akses eksklusif untuk potongan harga layanan potong rambut dan perawatan jenggot pilihan. Nikmati hasil cukur terbaik langsung dari barber profesional kami dengan standar pelayanan premium.'**
+  String get promoRewardHalfOffDesc;
+
+  /// No description provided for @promoRewardPriorityTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Akses Antrean Prioritas Cukur'**
+  String get promoRewardPriorityTitle;
+
+  /// No description provided for @promoRewardPriorityDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Lewati antrean dan langsung dilayani di cabang pilihanmu. Berlaku untuk satu kali kunjungan pada jam operasional normal.'**
+  String get promoRewardPriorityDesc;
+
+  /// No description provided for @promoRewardWashTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Gratis Keramas & Hair Tonic'**
+  String get promoRewardWashTitle;
+
+  /// No description provided for @promoRewardWashDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambahan keramas dan hair tonic tanpa biaya untuk setiap layanan potong rambut. Berlaku di seluruh cabang Barberstuff.'**
+  String get promoRewardWashDesc;
+
   /// No description provided for @promoPoints.
   ///
   /// In id, this message translates to:
-  /// **'{count} Points'**
+  /// **'{count} Poin'**
   String promoPoints(String count);
 
   /// No description provided for @promoXp.
