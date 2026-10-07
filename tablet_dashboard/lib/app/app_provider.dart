@@ -1,6 +1,7 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:tablet_dashboard/core/network/api_client.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/data/branch_api.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_list_controller.dart';
@@ -44,6 +45,7 @@ List<SingleChildWidget> appProviders({
     Provider<StoreApi>.value(value: storeApi),
     Provider<CustomerApi>.value(value: customerApi),
     Provider<BranchApi>.value(value: branchApi),
+    ChangeNotifierProvider<ServerClock>.value(value: client.clock),
     ChangeNotifierProvider(create: (_) => printer ?? PrinterController()),
     ChangeNotifierProvider(create: (_) => NavigationController()),
     ChangeNotifierProvider(
@@ -71,6 +73,7 @@ List<SingleChildWidget> appProviders({
         ctx.read<ShiftController>(),
         ctx.read<SessionController>(),
         ctx.read<StoreController>(),
+        client.clock,
       ),
     ),
   ];

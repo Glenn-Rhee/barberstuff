@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tablet_dashboard/app/app.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_card.dart';
@@ -14,6 +17,7 @@ import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/bo
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/clock_drift_banner.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/total_row.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
@@ -664,6 +668,39 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Hendra'), findsOneWidget);
       expect(find.text('Progress'), findsOneWidget);
+    });
+
+    testWidgets('jam tablet ketinggalan: pesanan pakai jam server + banner', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+
+      // Tiru respons server yang jamnya 1 jam di depan jam tablet
+      Provider.of<ServerClock>(
+        tester.element(find.byType(ClockDriftBanner)),
+        listen: false,
+      ).sync(HttpDate.format(DateTime.now().add(const Duration(hours: 1))));
+      await tester.pump();
+      expect(
+        find.textContaining('Jam tablet 1 jam lebih lambat dari server'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('+ Tambah').first);
+      await tester.pump();
+      await fillWalkIn(tester);
+      await tester.ensureVisible(find.text('Simpan Pesanan'));
+      await tester.tap(find.text('Simpan Pesanan'));
+      await tester.pumpAndSettle();
+
+      // Jam server + 1 menit, bukan jam tablet + 1 menit
+      final scheduled = api.bookingList.single.scheduledAt!;
+      expect(
+        scheduled.difference(DateTime.now()).inSeconds,
+        inInclusiveRange(60 * 60, 62 * 60),
+      );
     });
 
     testWidgets('pesanan langsung wajib nama + no HP pelanggan baru', (

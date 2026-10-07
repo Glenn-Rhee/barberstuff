@@ -19,6 +19,7 @@ import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/sh
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
 import 'package:tablet_dashboard/features/home/presentation/widgets/app_sidebar.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/clock_drift_banner.dart';
 import 'package:tablet_dashboard/features/home/presentation/widgets/live_refresh.dart';
 import 'package:tablet_dashboard/features/mitra/dashboard/presentation/pages/mitra_dashboard_screen.dart';
 
@@ -81,18 +82,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             const AppSidebar(),
             Expanded(
-              child: switch (section) {
-                AppSection.dashboard => switch (role) {
-                  StaffRole.admin => const AdminDashboardScreen(),
-                  StaffRole.mitra => const MitraDashboardScreen(),
-                  _ => const CashierDashboardScreen(),
-                },
-                AppSection.branches => const BranchSection(),
-                AppSection.order => const OrderScreen(),
-                AppSection.customers => const CustomersScreen(),
-                AppSection.bookkeeping => const BookkeepingScreen(),
-                AppSection.settings => const SettingsScreen(),
-              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const ClockDriftBanner(),
+                  Expanded(
+                    child: switch (section) {
+                      AppSection.dashboard => switch (role) {
+                        StaffRole.admin => const AdminDashboardScreen(),
+                        StaffRole.mitra => const MitraDashboardScreen(),
+                        _ => const CashierDashboardScreen(),
+                      },
+                      AppSection.branches => const BranchSection(),
+                      AppSection.order => const OrderScreen(),
+                      AppSection.customers => const CustomersScreen(),
+                      AppSection.bookkeeping => const BookkeepingScreen(),
+                      AppSection.settings => const SettingsScreen(),
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),

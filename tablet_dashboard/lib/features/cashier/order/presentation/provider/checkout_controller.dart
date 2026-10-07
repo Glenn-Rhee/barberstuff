@@ -1,4 +1,5 @@
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/customer/presentation/provider/customer_history_controller.dart';
@@ -14,7 +15,13 @@ import 'package:tablet_dashboard/features/cashier/store/presentation/provider/st
 // Catat pesanan & pembayaran ke server dan buat struknya.
 // Dialog, cetak, dan toast tetap di widget, di sini cuma urusan API
 class CheckoutController {
-  CheckoutController(this._bookingApi, this._shift, this._session, this._store);
+  CheckoutController(
+    this._bookingApi,
+    this._shift,
+    this._session,
+    this._store,
+    this._clock,
+  );
 
   // Cari booking baru maks 4 halaman x 50
   static const _searchLimit = 50;
@@ -26,6 +33,9 @@ class CheckoutController {
 
   // Toko yang dipakai (admin bisa ganti cabang)
   final StoreController _store;
+
+  // Jam server, jam tablet bisa salah
+  final ServerClock _clock;
 
   // Pembayaran dicatat ke shift, jadi shift harus buka dulu
   bool get canTakePayment => _shift.isOpen;
@@ -48,8 +58,9 @@ class CheckoutController {
         storeId: _store.storeId,
         capsterId: capster.id,
         serviceIds: serviceIds,
-        // +1 menit supaya tidak dianggap jam lewat oleh server
-        bookingDate: DateTime.now().add(const Duration(minutes: 1)),
+        // Pakai jam server +1 menit supaya tidak dianggap jam lewat,
+        // walaupun jam tablet salah
+        bookingDate: _clock.now().add(const Duration(minutes: 1)),
         customerId: customer?.id,
         customerName: customer == null
             ? order.nameController.text.trim()
@@ -169,7 +180,7 @@ class CheckoutController {
     return CheckoutResult.paid(
       Receipt(
         number: Receipt.numberFor(booking.id),
-        createdAt: DateTime.now(),
+        createdAt: _clock.now(),
         cashier: _cashierName,
         customer: customer,
         capster: capster.name,

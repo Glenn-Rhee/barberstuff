@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
 import 'package:tablet_dashboard/core/network/api_response.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 
 import '../../app/app_env.dart';
 
@@ -27,6 +28,9 @@ class ApiClient {
 
   final Dio _dio;
   String? _token;
+
+  // Diperbarui dari header Date tiap respons
+  final ServerClock clock = ServerClock();
 
   // Mengatur token untuk permintaan API
   set token(String? value) {
@@ -60,6 +64,7 @@ class ApiClient {
         throw ApiException('Maaf Periksa Jaringan Anda', statusCode: 520);
       }
     }
+    clock.sync(res.headers.value(HttpHeaders.dateHeader));
     final data = res.data;
 
     if (data is! Map) {
