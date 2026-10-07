@@ -27,11 +27,27 @@ type cashSessionService struct {
 	cashSessionRepo repository.CashSessionRepository
 	storeRepo       repository.StoreRepository
 	staffRepo       repository.StaffRepository
+	serviceRepo     repository.ServiceRepository
+	capsterRepo     repository.CapsterRepository
 	db              *gorm.DB
 }
 
-func NewCashSessionService(csr repository.CashSessionRepository, sr repository.StoreRepository, str repository.StaffRepository, db *gorm.DB) CashSessionService {
-	return &cashSessionService{cashSessionRepo: csr, storeRepo: sr, staffRepo: str, db: db}
+func NewCashSessionService(
+	csr repository.CashSessionRepository,
+	sr repository.StoreRepository,
+	str repository.StaffRepository,
+	svr repository.ServiceRepository,
+	cpr repository.CapsterRepository,
+	db *gorm.DB,
+) CashSessionService {
+	return &cashSessionService{
+		cashSessionRepo: csr,
+		storeRepo:       sr,
+		staffRepo:       str,
+		db:              db,
+		serviceRepo:     svr,
+		capsterRepo:     cpr,
+	}
 }
 
 func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims *lib.CustomClaims) (dto.CreateCashSessionResponse, error) {
@@ -52,6 +68,7 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 		helper.Logger("find one staff account.", filePath, err)
 		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
 	}
+
 	if dataStaff.IdStore == nil {
 		return dto.CreateCashSessionResponse{}, errors.New("Anda tidak memiliki akses.")
 	}
@@ -65,6 +82,29 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 
 		helper.Logger("find one store", filePath, err)
 		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	var countScopes []func(*gorm.DB) *gorm.DB
+	countScopes = append(countScopes, func(d *gorm.DB) *gorm.DB {
+		return d.Where("id_store = ?", idStore)
+	})
+
+	totalService, err := s.serviceRepo.Count(countScopes...)
+	if err != nil {
+		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	if totalService <= 0 {
+		return dto.CreateCashSessionResponse{}, errors.New("Tidak dapat membuka kasir, tidak ada service.")
+	}
+
+	totalCapster, err := s.capsterRepo.Count(countScopes...)
+	if err != nil {
+		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
+	}
+
+	if totalCapster <= 0 {
+		return dto.CreateCashSessionResponse{}, errors.New("Tidak dapat membuka kasir, tidak ada capster.")
 	}
 
 	// Kalau kas sebelumnya tidak ditutup tidak bisa membuat.
@@ -105,6 +145,7 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 		Status:     entity.SessionOpen,
 	}
 
+	var errStoreNotFound = errors.New("Toko tidak ditemukan.")
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		err = s.cashSessionRepo.Create(tx, &dataCashSession)
 		if err != nil {
@@ -121,7 +162,7 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 		}
 
 		if rowsAffected == 0 {
-			return errors.New("Toko tidak ditemukan.")
+			return errStoreNotFound
 		}
 
 		return nil
@@ -132,7 +173,7 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 			return dto.CreateCashSessionResponse{}, errors.New("Kas untuk hari ini sudah pernah dibuka.")
 		}
 
-		if errors.Is(err, errors.New("Toko tidak ditemukan.")) {
+		if errors.Is(err, errStoreNotFound) {
 			return dto.CreateCashSessionResponse{}, err
 		}
 
@@ -353,6 +394,8 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 		"closed_at":     time.Now().In(loc),
 	}
 
+	var errCashNotFound = errors.New("Pembukuan tidak ditemukan, atau telah ditutup.")
+	var errStoreNotFound = errors.New("Toko tidak ditemukan.")
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		rowsAffected, err := s.cashSessionRepo.Updates(updates, scopes...)
 		if err != nil {
@@ -360,7 +403,7 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 		}
 
 		if rowsAffected == 0 {
-			return errors.New("Pembukuan tidak ditemukan, atau telah ditutup.")
+			return errCashNotFound
 		}
 
 		storeUpdates := map[string]interface{}{
@@ -373,18 +416,18 @@ func (s *cashSessionService) CloseCashSession(req dto.CloseCashSessionRequest, c
 		}
 
 		if rowsAffected == 0 {
-			return errors.New("Toko tidak ditemukan.")
+			return errStoreNotFound
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		if errors.Is(err, errors.New("Pembukuan tidak ditemukan, atau telah ditutup.")) {
+		if errors.Is(err, errCashNotFound) {
 			return dto.CloseCashSessionResponse{}, err
 		}
 
-		if errors.Is(err, errors.New("Toko tidak ditemukan.")) {
+		if errors.Is(err, errStoreNotFound) {
 			return dto.CloseCashSessionResponse{}, err
 		}
 

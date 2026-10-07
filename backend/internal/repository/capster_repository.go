@@ -56,7 +56,7 @@ func (r *capsterRepository) Create(c *entity.Capster) error {
 
 func (r *capsterRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
 	var total int64
-	result := r.db.Model(&entity.Capster{}).Count(&total).Scopes(scopes...)
+	result := r.db.Model(&entity.Capster{}).Scopes(scopes...).Count(&total)
 	return total, result.Error
 }
 
