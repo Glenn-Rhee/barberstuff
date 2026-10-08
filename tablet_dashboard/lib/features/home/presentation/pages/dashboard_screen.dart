@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/pages/branch_section.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/presentation/pages/branch_section.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';

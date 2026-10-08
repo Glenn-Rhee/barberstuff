@@ -8,7 +8,7 @@ import 'package:tablet_dashboard/core/network/api_client.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_theme.dart';
-import 'package:tablet_dashboard/features/admin/branch/data/branch_api.dart';
+import 'package:tablet_dashboard/features/admin/shared/data/branch_api.dart';
 import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
 import 'package:tablet_dashboard/features/auth/presentation/pages/login_screen.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
