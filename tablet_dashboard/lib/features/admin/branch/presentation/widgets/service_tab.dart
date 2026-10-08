@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/core/utils/thousands_formatter.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/service_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_table.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/package_items_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/widgets/service_icon.dart';
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
@@ -26,7 +26,10 @@ class ServiceTab extends StatefulWidget {
 }
 
 class _ServiceTabState extends State<ServiceTab> {
-  static const _flex = [4, 3, 4, 3, 4];
+  // Service: nama, harga, deskripsi, status, aksi
+  static const _serviceFlex = [5, 3, 4, 3, 4];
+  // Paket: nama, isi paket, harga, status, aksi
+  static const _packageFlex = [5, 6, 3, 3, 4];
   static const _newRow = '';
 
   // Backend menolak harga di bawah Rp 1.000
@@ -37,10 +40,14 @@ class _ServiceTabState extends State<ServiceTab> {
   final _name = TextEditingController();
   final _price = TextEditingController();
   final _description = TextEditingController();
+
+  // Isi paket yang dipilih, null = belum diubah (deskripsi lama tetap)
+  List<String>? _picked;
   bool _active = true;
   bool _busy = false;
 
   bool get _isPackage => widget.type == ServiceType.package;
+  List<int> get _flex => _isPackage ? _packageFlex : _serviceFlex;
 
   ServiceListController _list(BuildContext context, {bool listen = false}) =>
       _isPackage
@@ -60,26 +67,32 @@ class _ServiceTabState extends State<ServiceTab> {
     _name.text = item?.name ?? '';
     _price.text = item == null ? '' : PriceFormat.plain(item.price);
     _description.text = item?.description ?? '';
+    _picked = null;
     _active = item?.active ?? true;
   });
 
   void _cancel() => setState(() => _editing = null);
 
-  Future<void> _pickItems() async {
-    final services = context.read<ServiceListController>().all;
-    final text = await showPackageItemsDialog(
-      context,
-      services: services,
-      current: _description.text,
-    );
-    if (text != null) _description.text = text;
+  // Nama service di deskripsi paket "Cukur Rambut + Keramas"
+  static List<String> _itemsOf(String text, List<ServiceItem> services) {
+    final names = {
+      for (final part in text.split('+'))
+        if (part.trim().isNotEmpty) part.trim().toLowerCase(),
+    };
+    return [
+      for (final service in services)
+        if (names.contains(service.name.toLowerCase())) service.name,
+    ];
   }
 
   Future<void> _save(ServiceItem? item) async {
     final label = widget.type.label;
     final name = _name.text.trim();
     final price = ThousandsFormatter.parse(_price.text);
-    final description = _description.text.trim();
+    final picked = _picked;
+    final description = picked != null
+        ? picked.join(' + ')
+        : _description.text.trim();
     if (name.isEmpty) {
       AppToast.show(
         context,
@@ -169,13 +182,11 @@ class _ServiceTabState extends State<ServiceTab> {
         labelOf: (s) => s.label,
         onChanged: list.setSort,
       ),
-      columns: [
-        _isPackage ? 'NAMA PAKET' : 'SERVICE',
-        'HARGA',
-        _isPackage ? 'ISI PAKET' : 'DESKRIPSI',
-        'STATUS',
-        'AKSI',
-      ],
+      columns: _isPackage
+          ? const ['NAMA PAKET', 'PAKET TERDAFTAR', 'HARGA', 'STATUS', 'AKSI']
+          : const ['SERVICE', 'HARGA', 'DESKRIPSI', 'STATUS', 'AKSI'],
+      endColumns: _isPackage ? const {2} : const {},
+      headerColor: _isPackage ? AppColor.surfaceSubtle : AppColor.goldSoft,
       flex: _flex,
       loading: list.loading,
       error: list.error,
@@ -198,8 +209,8 @@ class _ServiceTabState extends State<ServiceTab> {
   }
 
   Widget _icon(ServiceItem item) => Container(
-    width: 38,
-    height: 38,
+    width: 40,
+    height: 40,
     decoration: BoxDecoration(
       color: AppColor.surfaceMuted,
       borderRadius: BorderRadius.circular(8),
@@ -207,47 +218,103 @@ class _ServiceTabState extends State<ServiceTab> {
     child: AppIcon(ServiceIcon.of(item), size: 20, color: AppColor.ink),
   );
 
+  Widget _descriptionText(ServiceItem item) => Text(
+    item.description ?? '-',
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: AppTextStyle.body.copyWith(color: AppColor.inkSoft),
+  );
+
   Widget _row(ServiceItem item) {
+    final actions = RowActions(
+      editAsset: _isPackage
+          ? AppAsset.editPackageIcon
+          : AppAsset.editServiceIcon,
+      onEdit: () => _startEdit(item),
+      onDelete: () => _delete(item),
+    );
+    final name = Text(
+      item.name,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: AppTextStyle.bodyBold,
+    );
+
     return BranchTableRow(
       flex: _flex,
-      children: [
-        Row(
-          children: [
-            _icon(item),
-            const SizedBox(width: 12),
-            Flexible(
-              child: Text(
-                item.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyle.bodyBold,
+      children: _isPackage
+          ? [
+              name,
+              _descriptionText(item),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  PriceFormat.full(item.price),
+                  style: AppTextStyle.bodyBold,
+                ),
               ),
-            ),
-          ],
-        ),
-        Text(
-          PriceFormat.full(item.price),
-          style: AppTextStyle.bodyBold.copyWith(color: AppColor.gold),
-        ),
-        Text(
-          item.description ?? '-',
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyle.body.copyWith(color: AppColor.inkSoft),
-        ),
-        ActiveBadge(active: item.active),
-        RowActions(
-          onEdit: () => _startEdit(item),
-          onDelete: () => _delete(item),
-        ),
-      ],
+              ActiveBadge(active: item.active),
+              actions,
+            ]
+          : [
+              Row(
+                children: [
+                  _icon(item),
+                  const SizedBox(width: 12),
+                  Flexible(child: name),
+                ],
+              ),
+              Text(
+                PriceFormat.full(item.price),
+                style: AppTextStyle.bodyBold.copyWith(color: AppColor.gold),
+              ),
+              _descriptionText(item),
+              ActiveBadge(active: item.active),
+              actions,
+            ],
     );
   }
 
   Widget _editRow(ServiceItem? item) {
+    final nameField = RowTextField(
+      controller: _name,
+      hint: _isPackage ? 'Nama paket' : 'Nama service',
+      autofocus: item == null,
+    );
+    // Layanan baru selalu aktif
+    final status = item == null
+        ? const ActiveBadge(active: true)
+        : ActiveSelect(
+            active: _active,
+            onChanged: (value) => setState(() => _active = value),
+          );
+    final actions = RowEditActions(
+      busy: _busy,
+      onSave: () => _save(item),
+      onCancel: _cancel,
+    );
+
+    if (_isPackage) {
+      final services = context.watch<ServiceListController>().all;
+      return BranchTableRow(
+        flex: _flex,
+        color: AppColor.warningSoft,
+        children: [
+          nameField,
+          _PackageItemsSelect(
+            services: services,
+            picked: _picked ?? _itemsOf(_description.text, services),
+            onChanged: (value) => setState(() => _picked = value),
+          ),
+          MoneyField(controller: _price),
+          status,
+          actions,
+        ],
+      );
+    }
+
     return BranchTableRow(
       flex: _flex,
-      highlight: true,
       children: [
         Row(
           children: [
@@ -261,43 +328,110 @@ class _ServiceTabState extends State<ServiceTab> {
                   ),
             ),
             const SizedBox(width: 12),
-            Expanded(
-              child: RowTextField(
-                controller: _name,
-                hint: _isPackage ? 'Nama paket' : 'Nama service',
-                autofocus: item == null,
-              ),
-            ),
+            Expanded(child: nameField),
           ],
         ),
         MoneyField(controller: _price),
-        RowTextField(
-          controller: _description,
-          hint: _isPackage ? 'Mis. Cukur + Keramas' : 'Deskripsi singkat',
-          suffix: _isPackage
-              ? IconButton(
-                  tooltip: 'Pilih dari service cabang',
-                  onPressed: _pickItems,
-                  icon: const Icon(
-                    Icons.playlist_add_check,
-                    color: AppColor.gold,
-                  ),
-                )
-              : null,
-        ),
-        // Layanan baru selalu aktif
-        item == null
-            ? const ActiveBadge(active: true)
-            : ActiveSelect(
-                active: _active,
-                onChanged: (value) => setState(() => _active = value),
-              ),
-        RowEditActions(
-          busy: _busy,
-          onSave: () => _save(item),
-          onCancel: _cancel,
-        ),
+        RowTextField(controller: _description, hint: 'Deskripsi singkat'),
+        status,
+        actions,
       ],
+    );
+  }
+}
+
+// "3 Terpilih": isi paket dari service cabang, menu tetap terbuka saat dicentang
+class _PackageItemsSelect extends StatelessWidget {
+  const _PackageItemsSelect({
+    required this.services,
+    required this.picked,
+    required this.onChanged,
+  });
+
+  final List<ServiceItem> services;
+
+  // Nama service yang dipilih
+  final List<String> picked;
+  final ValueChanged<List<String>> onChanged;
+
+  // Urutan isi paket ikut urutan service
+  void _toggle(ServiceItem service) {
+    final chosen = {...picked};
+    if (!chosen.remove(service.name)) chosen.add(service.name);
+    onChanged([
+      for (final s in services)
+        if (chosen.contains(s.name)) s.name,
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MenuAnchor(
+      style: MenuStyle(
+        backgroundColor: const WidgetStatePropertyAll(AppColor.surface),
+        surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: AppColor.border),
+          ),
+        ),
+      ),
+      menuChildren: [
+        if (services.isEmpty)
+          MenuItemButton(
+            child: Text(
+              'Belum ada service di cabang ini',
+              style: AppTextStyle.body.copyWith(color: AppColor.inkSoft),
+            ),
+          ),
+        for (final service in services)
+          MenuItemButton(
+            closeOnActivate: false,
+            onPressed: () => _toggle(service),
+            leadingIcon: SizedBox(
+              width: 16,
+              child: picked.contains(service.name)
+                  ? const AppIcon(AppAsset.checkIcon, size: 14, tint: false)
+                  : null,
+            ),
+            child: Text(service.name, style: AppTextStyle.bodyMedium),
+          ),
+      ],
+      builder: (context, controller, _) => InkWell(
+        onTap: () => controller.isOpen ? controller.close() : controller.open(),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: AppColor.surface,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColor.borderStrong),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  picked.isEmpty
+                      ? 'Pilih service'
+                      : '${picked.length} Terpilih',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.body.copyWith(
+                    color: picked.isEmpty ? AppColor.inkFaint : AppColor.ink,
+                  ),
+                ),
+              ),
+              const Icon(
+                Icons.keyboard_arrow_down,
+                size: 18,
+                color: AppColor.inkSoft,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

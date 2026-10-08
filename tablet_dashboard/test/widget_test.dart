@@ -1543,10 +1543,14 @@ void main() {
         'Paket Relax',
       );
       await tester.enterText(find.widgetWithText(TextField, '0'), '95000');
-      await tapVisible(tester, find.byTooltip('Pilih dari service cabang'));
+      // Menu tetap terbuka selama service dicentang
+      await tapVisible(tester, find.text('Pilih service'));
       await tester.tap(find.text('Keramas').last);
-      await tapVisible(tester, find.text('Pijat Kepala').last);
-      await tapVisible(tester, find.text('Pakai 2 Service'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pijat Kepala').last);
+      await tester.pumpAndSettle();
+      expect(find.text('2 Terpilih'), findsOneWidget);
+      await tapVisible(tester, find.text('2 Terpilih'));
       await tapVisible(tester, find.text('Simpan'));
       expect(
         branchApi.calls,

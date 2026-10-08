@@ -3,6 +3,7 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
+import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
@@ -32,6 +33,8 @@ class BranchListCard extends StatelessWidget {
     required this.pageCount,
     required this.onPage,
     this.sort,
+    this.headerColor = AppColor.goldSoft,
+    this.endColumns = const {},
   });
 
   final String title;
@@ -56,6 +59,10 @@ class BranchListCard extends StatelessWidget {
 
   // DropdownChip urutan, tampil setelah label "Urutkan:"
   final Widget? sort;
+  final Color headerColor;
+
+  // Kolom yang judulnya rata kanan, mis. harga
+  final Set<int> endColumns;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +100,6 @@ class BranchListCard extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onAdd,
                 style: FilledButton.styleFrom(
-                  foregroundColor: AppColor.ink,
                   elevation: 2,
                   shadowColor: AppColor.gold.withValues(alpha: 0.4),
                 ),
@@ -112,7 +118,12 @@ class BranchListCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          BranchTableHeader(labels: columns, flex: flex),
+          BranchTableHeader(
+            labels: columns,
+            flex: flex,
+            color: headerColor,
+            endColumns: endColumns,
+          ),
           if (loading)
             SkeletonRows(flex: flex, count: 4, rowHeight: 60)
           else if (error != null)
@@ -146,54 +157,60 @@ class BranchListCard extends StatelessWidget {
   }
 }
 
-// Baris judul kolom berlatar krem
+// Baris judul kolom, latar krem kecuali diatur [color]
 class BranchTableHeader extends StatelessWidget {
   const BranchTableHeader({
     super.key,
     required this.labels,
     required this.flex,
+    this.color = AppColor.goldSoft,
+    this.endColumns = const {},
   });
 
   final List<String> labels;
   final List<int> flex;
+  final Color color;
+  final Set<int> endColumns;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColor.goldSoft,
+        color: color,
         borderRadius: BorderRadius.circular(8),
       ),
       child: BranchTableCells(
         flex: flex,
         children: [
-          for (final label in labels)
-            Text(
-              label,
-              style: AppTextStyle.label.copyWith(
-                fontSize: 11,
-                color: AppColor.inkSoft,
-              ),
-            ),
+          for (final (i, label) in labels.indexed)
+            if (endColumns.contains(i))
+              Align(alignment: Alignment.centerRight, child: _label(label))
+            else
+              _label(label),
         ],
       ),
     );
   }
+
+  Widget _label(String text) => Text(
+    text,
+    style: AppTextStyle.label.copyWith(fontSize: 11, color: AppColor.inkSoft),
+  );
 }
 
-// Satu baris tabel dengan garis bawah. [highlight] = baris sedang diedit
+// Satu baris tabel dengan garis bawah. [color] = latar, mis. baris diedit
 class BranchTableRow extends StatelessWidget {
   const BranchTableRow({
     super.key,
     required this.flex,
     required this.children,
-    this.highlight = false,
+    this.color,
   });
 
   final List<int> flex;
   final List<Widget> children;
-  final bool highlight;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +218,7 @@ class BranchTableRow extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 64),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: highlight ? AppColor.goldSoft : null,
+        color: color,
         border: const Border(bottom: BorderSide(color: AppColor.border)),
       ),
       child: BranchTableCells(flex: flex, children: children),
@@ -241,20 +258,20 @@ class BranchTableCells extends StatelessWidget {
   }
 }
 
-// Tombol ikon kecil bergaris di kolom aksi (ubah / hapus)
+// Tombol ikon kecil di kolom aksi (ubah / hapus), ikon aset berwarna
 class RowIconButton extends StatelessWidget {
   const RowIconButton({
     super.key,
-    required this.icon,
+    required this.asset,
     required this.tooltip,
     required this.onTap,
-    this.color = AppColor.gold,
+    this.bordered = true,
   });
 
-  final IconData icon;
+  final String asset;
   final String tooltip;
   final VoidCallback? onTap;
-  final Color color;
+  final bool bordered;
 
   @override
   Widget build(BuildContext context) {
@@ -264,17 +281,20 @@ class RowIconButton extends StatelessWidget {
         color: AppColor.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(color: AppColor.borderStrong),
+          side: bordered
+              ? const BorderSide(color: AppColor.borderStrong)
+              : BorderSide.none,
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
           onTap: onTap,
           child: SizedBox.square(
-            dimension: 34,
-            child: Icon(
-              icon,
-              size: 18,
-              color: onTap == null ? AppColor.inkFaint : color,
+            dimension: bordered ? 34 : 30,
+            child: Center(
+              child: Opacity(
+                opacity: onTap == null ? 0.4 : 1,
+                child: AppIcon(asset, size: 16, tint: false),
+              ),
             ),
           ),
         ),
@@ -283,12 +303,20 @@ class RowIconButton extends StatelessWidget {
   }
 }
 
-// Ubah + hapus di ujung baris
+// Ubah + hapus di ujung baris. [editAsset] = pensil per tab
 class RowActions extends StatelessWidget {
-  const RowActions({super.key, required this.onEdit, required this.onDelete});
+  const RowActions({
+    super.key,
+    required this.onEdit,
+    required this.onDelete,
+    this.editAsset = AppAsset.editServiceIcon,
+    this.bordered = true,
+  });
 
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final String editAsset;
+  final bool bordered;
 
   @override
   Widget build(BuildContext context) {
@@ -296,15 +324,16 @@ class RowActions extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         RowIconButton(
-          icon: Icons.edit_outlined,
+          asset: editAsset,
           tooltip: 'Ubah',
+          bordered: bordered,
           onTap: onEdit,
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: bordered ? 8 : 2),
         RowIconButton(
-          icon: Icons.delete_outline,
+          asset: AppAsset.trashIcon,
           tooltip: 'Hapus',
-          color: AppColor.danger,
+          bordered: bordered,
           onTap: onDelete,
         ),
       ],
@@ -366,27 +395,39 @@ class RowEditActions extends StatelessWidget {
   }
 }
 
-// Label Aktif (emas) / Tidak Aktif (abu-abu)
+// Label Aktif hijau / Tidak Aktif merah. [gold] = gaya tab Capster
 class ActiveBadge extends StatelessWidget {
-  const ActiveBadge({super.key, required this.active});
+  const ActiveBadge({super.key, required this.active, this.gold = false});
 
   final bool active;
+  final bool gold;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: active ? AppColor.gold : AppColor.surfaceMuted,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        active ? 'Aktif' : 'Tidak Aktif',
-        style: AppTextStyle.label.copyWith(
-          color: active ? AppColor.surface : AppColor.inkSoft,
+    if (gold && active) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppColor.gold,
+          borderRadius: BorderRadius.circular(6),
         ),
-      ),
-    );
+        child: Text(
+          'Aktif',
+          style: AppTextStyle.label.copyWith(color: AppColor.surface),
+        ),
+      );
+    }
+    return active
+        ? const StatusBadge(
+            label: 'Aktif',
+            color: AppColor.success,
+            background: AppColor.successSoft,
+          )
+        : const StatusBadge(
+            label: 'Tidak Aktif',
+            color: AppColor.danger,
+            background: AppColor.dangerSoft,
+          );
   }
 }
 
@@ -405,19 +446,27 @@ class ActiveSelect extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<bool>(
       tooltip: 'Ubah status',
+      menuPadding: EdgeInsets.zero,
       // Di atas toast, bukan di dalam navigator cabang
       useRootNavigator: true,
       position: PopupMenuPosition.under,
       onSelected: onChanged,
       itemBuilder: (_) => [
         for (final value in const [true, false])
+          // Pilihan yang sedang dipakai berlatar emas
           PopupMenuItem(
             value: value,
-            child: Text(
-              value ? 'Aktif' : 'Tidak Aktif',
-              style: AppTextStyle.body.copyWith(
-                color: value == active ? AppColor.gold : null,
-                fontWeight: value == active ? FontWeight.w600 : null,
+            padding: EdgeInsets.zero,
+            child: Container(
+              width: double.infinity,
+              color: value == active ? AppColor.gold : null,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Text(
+                value ? 'Aktif' : 'Tidak Aktif',
+                style: AppTextStyle.body.copyWith(
+                  color: value == active ? AppColor.surface : AppColor.ink,
+                  fontWeight: value == active ? FontWeight.w600 : null,
+                ),
               ),
             ),
           ),

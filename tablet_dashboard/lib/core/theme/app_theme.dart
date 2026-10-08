@@ -72,6 +72,16 @@ class AppTheme {
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
       ),
+      // Menu pilihan putih bergaris tipis, bukan krem bawaan tema
+      popupMenuTheme: PopupMenuThemeData(
+        color: AppColor.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: radius,
+          side: const BorderSide(color: AppColor.border),
+        ),
+      ),
       dialogTheme: DialogThemeData(
         backgroundColor: AppColor.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

@@ -191,7 +191,7 @@ class _Rating extends StatelessWidget {
           ),
           const WidgetSpan(
             alignment: PlaceholderAlignment.middle,
-            child: AppIcon(AppAsset.starIcon, size: 14, tint: false),
+            child: AppIcon(AppAsset.fullStarIcon, size: 14, tint: false),
           ),
           TextSpan(
             text: ' $label',

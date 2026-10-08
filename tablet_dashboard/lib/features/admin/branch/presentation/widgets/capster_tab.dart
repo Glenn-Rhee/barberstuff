@@ -220,7 +220,7 @@ class _CapsterTabState extends State<CapsterTab> {
           ],
         ),
         const _Position(),
-        ActiveBadge(active: capster.active),
+        ActiveBadge(active: capster.active, gold: true),
         _Rating(value: capster.rating),
         Row(
           mainAxisSize: MainAxisSize.min,
@@ -286,7 +286,6 @@ class _CapsterTabState extends State<CapsterTab> {
 
     return BranchTableRow(
       flex: _flex,
-      highlight: true,
       children: [
         Row(
           children: [
@@ -342,7 +341,7 @@ class _CapsterTabState extends State<CapsterTab> {
         const _Position(),
         // Capster baru selalu aktif
         capster == null
-            ? const ActiveBadge(active: true)
+            ? const ActiveBadge(active: true, gold: true)
             : ActiveSelect(
                 active: _active,
                 onChanged: (value) => setState(() => _active = value),
@@ -381,7 +380,7 @@ class _MoveButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         textStyle: AppTextStyle.label,
       ),
-      icon: const Icon(Icons.swap_horiz, size: 16),
+      icon: const AppIcon(AppAsset.changeBranchIcon, size: 14, tint: false),
       label: const Text('Pindah Cabang', maxLines: 1),
     );
   }
@@ -471,7 +470,7 @@ class _Rating extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const AppIcon(AppAsset.starIcon, size: 16, tint: false),
+        const AppIcon(AppAsset.fullStarIcon, size: 16, tint: false),
         const SizedBox(width: 4),
         Text(
           value.toStringAsFixed(1),
