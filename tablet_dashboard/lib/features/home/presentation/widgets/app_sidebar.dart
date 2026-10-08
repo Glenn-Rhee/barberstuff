@@ -28,14 +28,32 @@ class AppSidebar extends StatelessWidget {
     (AppSection.settings, 'Konfigurasi', AppAsset.settingIcon),
   ];
 
-  // Menu admin
+  // Menu admin pakai ikon stack, jadi grid saat sedang dibuka
   static const _adminItems = [
     (AppSection.branches, 'Mengelola Cabang', AppAsset.stackIcon),
-    (AppSection.employees, 'Manajemen Karyawan', AppAsset.gridIcon),
+    (AppSection.employees, 'Manajemen Karyawan', AppAsset.stackIcon),
   ];
 
   static List<(AppSection, String, String)> _itemsFor(StaffRole? role) =>
       role == StaffRole.admin ? _adminItems : _items;
+
+  Widget _navItem(
+    NavigationController nav, {
+    required StaffRole? role,
+    required AppSection section,
+    required String label,
+    required String icon,
+    required bool expanded,
+  }) {
+    final selected = nav.sectionFor(role) == section;
+    return SidebarNavItem(
+      label: label,
+      icon: role == StaffRole.admin && selected ? AppAsset.gridIcon : icon,
+      expanded: expanded,
+      selected: selected,
+      onTap: () => nav.go(section),
+    );
+  }
 
   Future<void> _signOut(BuildContext context) async {
     final confirmed = await confirmDialog(
@@ -110,12 +128,13 @@ class AppSidebar extends StatelessWidget {
                 for (final (section, label, icon) in _itemsFor(
                   profile?.staffRole,
                 ))
-                  SidebarNavItem(
+                  _navItem(
+                    nav,
+                    role: profile?.staffRole,
+                    section: section,
                     label: label,
                     icon: icon,
                     expanded: expanded,
-                    selected: nav.sectionFor(profile?.staffRole) == section,
-                    onTap: () => nav.go(section),
                   ),
                 const Spacer(),
                 if (profile != null)

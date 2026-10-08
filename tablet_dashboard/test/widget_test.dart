@@ -18,6 +18,7 @@ import 'package:tablet_dashboard/features/cashier/reservation/presentation/provi
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/home/presentation/widgets/clock_drift_banner.dart';
+import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_nav_item.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/total_row.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
@@ -248,6 +249,7 @@ void main() {
         findsNWidgets(2),
       ); // sidebar + judul
       expect(find.text('Manajemen Karyawan'), findsOneWidget);
+
       for (final menu in ['Dashboard', 'Kasir', 'Pelanggan', 'Pembukuan']) {
         expect(find.text(menu), findsNothing, reason: menu);
       }
@@ -255,6 +257,22 @@ void main() {
       // Data kasir tidak dimuat untuk admin
       expect(api.calls.where((c) => c.startsWith('bookings')), isEmpty);
       expect(api.calls, isNot(contains('cashSession')));
+
+      // Ikon stack, menu yang sedang dibuka jadi grid
+      String iconOf(String menu) => tester
+          .widget<AppIcon>(
+            find.descendant(
+              of: find.widgetWithText(SidebarNavItem, menu),
+              matching: find.byType(AppIcon),
+            ),
+          )
+          .asset;
+      expect(iconOf('Mengelola Cabang'), AppAsset.gridIcon);
+      expect(iconOf('Manajemen Karyawan'), AppAsset.stackIcon);
+      await tester.tap(find.text('Manajemen Karyawan'));
+      await tester.pumpAndSettle();
+      expect(iconOf('Mengelola Cabang'), AppAsset.stackIcon);
+      expect(iconOf('Manajemen Karyawan'), AppAsset.gridIcon);
     });
 
     testWidgets('mitra masuk ke dashboard mitra', (tester) async {
