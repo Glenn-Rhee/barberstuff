@@ -309,7 +309,10 @@ class _BranchEditScreenState extends State<BranchEditScreen> {
                 ),
                 FilledButton(
                   onPressed: _saving == 'map' ? null : _saveMap,
-                  style: FilledButton.styleFrom(minimumSize: const Size(0, 36)),
+                  style: FilledButton.styleFrom(
+                    foregroundColor: AppColor.ink,
+                    minimumSize: const Size(0, 36),
+                  ),
                   child: const Text('Simpan Titik'),
                 ),
               ],

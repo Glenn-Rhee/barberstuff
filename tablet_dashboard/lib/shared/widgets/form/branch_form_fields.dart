@@ -340,7 +340,10 @@ class _InlineEditFieldState extends State<InlineEditField> {
               const SizedBox(width: 10),
               FilledButton(
                 onPressed: _busy ? null : _save,
-                style: FilledButton.styleFrom(minimumSize: const Size(80, 46)),
+                style: FilledButton.styleFrom(
+                  foregroundColor: AppColor.ink,
+                  minimumSize: const Size(80, 46),
+                ),
                 child: _busy
                     ? const SizedBox.square(
                         dimension: 16,
