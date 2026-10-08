@@ -12,8 +12,7 @@ import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/sh
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 
-// Kerangka dashboard yang dipakai kasir, admin, dan mitra.
-// Tiap role tinggal isi [title] dan kartu di kolom kanan ([side])
+// Kerangka dashboard semua role, isi [title] dan [side]
 class DashboardLayout extends StatefulWidget {
   const DashboardLayout({super.key, required this.title, required this.side});
 

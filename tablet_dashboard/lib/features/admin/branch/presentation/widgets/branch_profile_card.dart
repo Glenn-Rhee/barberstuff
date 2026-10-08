@@ -9,8 +9,7 @@ import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/bran
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Profil cabang di atas tab detail: alamat, jam, telepon, deskripsi,
-// jumlah layanan aktif, rating, lalu foto di kanan setinggi kartunya
+// Profil cabang di atas tab detail, foto di kanan
 class BranchProfileCard extends StatelessWidget {
   const BranchProfileCard({super.key});
 
@@ -20,8 +19,7 @@ class BranchProfileCard extends StatelessWidget {
     final services = context.watch<ServiceListController>();
     final packages = context.watch<PackageListController>();
 
-    // total_service backend ikut menghitung yang sudah dihapus,
-    // jadi pakai daftar aslinya kalau sudah dimuat
+    // total_service backend ikut hitung yang terhapus, pakai daftar asli
     String count(ServiceListController list, int fallback, String label) =>
         list.loading || list.error != null
         ? '$fallback $label'

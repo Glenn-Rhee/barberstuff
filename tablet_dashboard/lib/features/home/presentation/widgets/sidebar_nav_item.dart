@@ -46,8 +46,7 @@ class SidebarNavItem extends StatelessWidget {
                   AppIcon(icon, size: 20, color: foreground),
                   if (expanded) ...[
                     const SizedBox(width: 12),
-                    // Label panjang ("Mengelola Cabang") mengecil sedikit,
-                    // tidak terpotong
+                    // Label panjang mengecil, tidak terpotong
                     Expanded(
                       child: FittedBox(
                         fit: BoxFit.scaleDown,

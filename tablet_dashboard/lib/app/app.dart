@@ -47,9 +47,7 @@ class TabletDashboardApp extends StatefulWidget {
 }
 
 class _TabletDashboardAppState extends State<TabletDashboardApp> {
-  // Dibuat sekali saja. Kalau dibuat di build(), tiap rebuild / hot reload
-  // muncul client baru tanpa token, lalu controller yang dibuat belakangan
-  // (mis. CheckoutController) kirim request tanpa header Authorization
+  // Dibuat sekali, client baru tiap build() kehilangan token
   late final ApiClient _client = ApiClient(baseUrl: AppEnv.baseUrl);
   late final List<SingleChildWidget> _providers = appProviders(
     client: _client,

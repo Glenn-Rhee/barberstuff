@@ -27,8 +27,7 @@ import 'package:tablet_dashboard/shared/widgets/display/total_row.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Panel kanan pesanan langsung: pelanggan, keranjang, capster, diskon,
-// simpan / bayar
+// Panel kanan: pelanggan, keranjang, capster, diskon, simpan / bayar
 class OrderPanel extends StatefulWidget {
   const OrderPanel({super.key});
 
@@ -69,9 +68,7 @@ class _OrderPanelState extends State<OrderPanel> {
     }
   }
 
-  // Simpan tanpa bayar: pesanan langsung check-in, bayar nanti dari
-  // tab Dari Reservasi. Backend tidak bisa simpan diskon tanpa bayar,
-  // jadi diskon diterapkan lagi di sana
+  // Simpan tanpa bayar (check-in), diskon dipasang lagi saat bayar
   Future<void> _save() async {
     final capster = _validate();
     if (capster == null) return;
@@ -91,8 +88,8 @@ class _OrderPanelState extends State<OrderPanel> {
         result.error ??
             (discount == null
                 ? 'Pesanan $name tersimpan. Bayar dari tab Dari Reservasi.'
-                : 'Pesanan $name tersimpan. Terapkan lagi diskon '
-                      '${discount.label} saat bayar di tab Dari Reservasi.'),
+                : 'Pesanan $name tersimpan. Pasang lagi diskon '
+                      '${discount.label} saat bayar.'),
         error: result.error != null,
       );
     });
@@ -145,8 +142,7 @@ class _OrderPanelState extends State<OrderPanel> {
   Widget build(BuildContext context) {
     final order = context.watch<OrderController>();
     final attendance = context.watch<AttendanceController>();
-    // Capster yang absen "Tidak Hadir" tidak bisa dipilih
-    // (termasuk yang tidak hadir di tablet saja)
+    // Capster Tidak Hadir tidak bisa dipilih
     final capsters = [
       for (final capster in context.select<CatalogController, List<Capster>>(
         (c) => c.activeCapsters,

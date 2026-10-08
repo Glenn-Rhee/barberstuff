@@ -1,5 +1,4 @@
-// Pelanggan di histori (GET /customer). Member = pakai aplikasi (punya
-// akun / email), Reguler = didaftarkan kasir tanpa aplikasi
+// Pelanggan (GET /customer). Member = pakai aplikasi, Reguler = dari kasir
 class CustomerProfile {
   const CustomerProfile({
     required this.id,

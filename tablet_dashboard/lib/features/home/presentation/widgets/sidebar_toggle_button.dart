@@ -4,8 +4,7 @@ import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
-// Tombol tutup/buka sidebar. Terbuka = ikon + "Tutup Menu" bergaris bawah,
-// tertutup = ikon saja diputar balik (panah ke kanan)
+// Tutup / buka sidebar, tertutup = ikon saja diputar
 class SidebarToggleButton extends StatelessWidget {
   const SidebarToggleButton({
     super.key,

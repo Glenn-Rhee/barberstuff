@@ -11,15 +11,13 @@ import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dar
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 
-// Kelola cabang untuk admin: toko, capster, service / paket, akun cabang,
-// dan upload foto. Semua endpoint di sini khusus role admin
+// Kelola cabang (khusus admin): toko, capster, layanan, akun, foto
 class BranchApi {
   BranchApi(this._client, {Dio? storage}) : _storage = storage ?? Dio();
 
   final ApiClient _client;
 
-  // Dio polos tanpa token untuk PUT ke object storage. Tanda tangan sudah
-  // ada di upload_url, header Authorization malah ditolak storage
+  // Dio tanpa token untuk PUT ke storage, URL sudah bertanda tangan
   final Dio _storage;
 
   // Batas limit backend
@@ -34,8 +32,7 @@ class BranchApi {
     'gif': 'image/gif',
   };
 
-  // Ambil semua halaman. meta.total_pages backend salah hitung,
-  // jadi berhenti saat halaman tidak penuh
+  // Ambil semua halaman, berhenti saat halaman tidak penuh
   Future<List<Map<String, dynamic>>> _all(
     String path,
     Map<String, Object?> query,
@@ -224,8 +221,7 @@ class BranchApi {
 
   Future<void> deleteAccount(String id) => _client.delete('/staff/$id');
 
-  // Upload foto: minta presigned URL, PUT gambar ke storage, lalu
-  // object key-nya yang dikirim di image_url / banner_url
+  // Upload foto: presign, PUT ke storage, lalu kirim object key-nya
   Future<String> uploadImage(Uint8List bytes, String fileName) async {
     final ext = fileName.contains('.')
         ? fileName.split('.').last.toLowerCase()

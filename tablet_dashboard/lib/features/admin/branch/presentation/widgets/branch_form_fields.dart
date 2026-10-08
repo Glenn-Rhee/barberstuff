@@ -203,8 +203,7 @@ class _DashedBorder extends CustomPainter {
   bool shouldRepaint(_DashedBorder oldDelegate) => false;
 }
 
-// Field halaman Edit Cabang: tampil terkunci dengan ikon pensil,
-// tap pensil = bisa diketik lalu Simpan / Batal per field
+// Field Edit Cabang: terkunci, tap pensil untuk ubah lalu Simpan / Batal
 class InlineEditField extends StatefulWidget {
   const InlineEditField({
     super.key,

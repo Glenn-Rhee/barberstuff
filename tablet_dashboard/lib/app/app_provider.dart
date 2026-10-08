@@ -24,8 +24,7 @@ import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
 
-// Semua dependency aplikasi: API per fitur (pakai [client] yang sama),
-// printer, lalu controller yang dipakai layar
+// Semua dependency: API (satu [client]), printer, controller
 List<SingleChildWidget> appProviders({
   required ApiClient client,
   required AuthApi authApi,

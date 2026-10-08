@@ -30,9 +30,7 @@ enum CashCategory {
   final String label;
 }
 
-// Modal "Catat Kas": pengeluaran dari laci, atau pemasukan.
-// Backend mewajibkan pemasukan terhubung ke booking yang sedang dilayani,
-// jadi pemasukan = pilih booking progress, nominal ikut total booking
+// Catat Kas: pengeluaran, atau pemasukan dari booking progress
 Future<void> showCashEntryDialog(
   BuildContext context, {
   CashCategory initial = CashCategory.expense,
@@ -279,8 +277,7 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
         )
       else if (_bookings.isEmpty)
         Text(
-          'Belum ada booking yang sedang dilayani. Pemasukan di backend wajib '
-          'terhubung ke booking yang sudah check-in.',
+          'Belum ada booking yang sedang dilayani.',
           style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
         )
       else

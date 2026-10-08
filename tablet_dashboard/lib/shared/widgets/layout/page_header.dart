@@ -4,8 +4,7 @@ import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
-// Judul + subjudul halaman di kiri, [actions] di kanan.
-// [onBack] diisi = muncul tombol kembali
+// Judul + subjudul di kiri, [actions] di kanan, [onBack] = tombol kembali
 class PageHeader extends StatelessWidget {
   const PageHeader({
     super.key,

@@ -1,9 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
 
-// Daftar yang dimuat semua sekali, lalu cari, urut, dan halaman diproses
-// di tablet. meta.total_pages backend salah hitung, jadi jumlah halaman
-// dihitung dari data yang sudah dimuat
+// Daftar dimuat sekali, cari / urut / halaman diproses di tablet
 abstract class LocalListController<T> extends ChangeNotifier {
   LocalListController({required this.pageSize});
 
@@ -64,8 +62,7 @@ abstract class LocalListController<T> extends ChangeNotifier {
     }
   }
 
-  // Kirim perubahan ke backend lalu muat ulang.
-  // Balikin pesan error, atau null kalau berhasil
+  // Kirim perubahan lalu muat ulang. Balikin pesan error, null = berhasil
   Future<String?> mutate(Future<void> Function() action) async {
     try {
       await action();

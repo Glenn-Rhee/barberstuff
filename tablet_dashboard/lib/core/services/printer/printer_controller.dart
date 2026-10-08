@@ -71,8 +71,7 @@ class PrinterController extends ChangeNotifier {
     }
   }
 
-  // Batalkan konek/cetak yang sedang jalan (tombol Lewati). Status ikut
-  // dibereskan oleh printBytes begitu panggilan native-nya gagal.
+  // Batalkan konek / cetak yang sedang jalan (tombol Lewati)
   Future<void> cancel() => _printer.cancel();
 
   void _setStatus(PrinterStatus value) {

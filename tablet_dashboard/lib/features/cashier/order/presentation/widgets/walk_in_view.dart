@@ -89,8 +89,7 @@ class WalkInView extends StatelessWidget {
     OrderController order,
     double width,
   ) {
-    // Kolom ikut lebar area katalog (sidebar buka/tutup, layar cabang
-    // beda-beda), tinggi kartu ikut setelan ukuran font tablet
+    // Kolom ikut lebar area, tinggi kartu ikut ukuran font
     final scaler = MediaQuery.textScalerOf(context);
     final columns = GridColumns.of(
       width,

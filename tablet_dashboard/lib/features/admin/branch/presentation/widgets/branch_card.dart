@@ -7,8 +7,7 @@ import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/bran
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
 
-// Kartu cabang di grid Mengelola Cabang: foto, alamat, jam, ringkasan,
-// lalu tombol Lihat Detail / Edit
+// Kartu cabang: foto, alamat, jam, ringkasan, tombol Detail / Edit
 class BranchCard extends StatelessWidget {
   const BranchCard({
     super.key,

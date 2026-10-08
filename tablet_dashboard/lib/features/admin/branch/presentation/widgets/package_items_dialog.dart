@@ -4,9 +4,8 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/dialog_cancel_button.dart';
 
-// Backend tidak menyimpan relasi paket -> service, isi paket ditulis di
-// deskripsi. Dialog ini bantu menyusunnya dari service cabang:
-// "Cukur Rambut + Keramas". Balikin teks baru, null kalau batal
+// Susun isi paket dari service cabang ke deskripsi (backend tanpa relasi).
+// Balikin teks baru, null = batal
 Future<String?> showPackageItemsDialog(
   BuildContext context, {
   required List<ServiceItem> services,

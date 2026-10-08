@@ -139,9 +139,7 @@ class _BookingsViewState extends State<BookingsView> {
   }
 }
 
-// Tanggal booking yang tampil, tap untuk pilih hari ini atau hari
-// sebelumnya. Selain hari ini chip berwarna emas + tombol kembali ke
-// hari ini, supaya kasir tidak lupa sedang lihat hari lain
+// Pilih tanggal booking, selain hari ini chip emas + tombol kembali
 class _DateChip extends StatelessWidget {
   const _DateChip();
 

@@ -15,15 +15,13 @@ class CustomerPage extends Paged<CustomerProfile> {
   final CustomerKpi kpi;
 }
 
-// Histori pelanggan semua cabang. Pelanggan tanpa aplikasi otomatis
-// tersimpan oleh backend saat kasir membuat pesanan (nama + no HP)
+// Pelanggan semua cabang, termasuk yang didaftarkan kasir
 class CustomerApi {
   const CustomerApi(this._client);
 
   final ApiClient _client;
 
-  // q dicocokkan ke nama (sebagian), no HP / email / id (harus persis).
-  // Urut dari pelanggan terbaru
+  // q: nama sebagian, no HP / email / id harus persis. Terbaru dulu
   Future<CustomerPage> customers({
     String? query,
     int page = 1,

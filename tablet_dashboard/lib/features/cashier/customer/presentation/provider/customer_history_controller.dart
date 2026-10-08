@@ -27,9 +27,7 @@ enum CustomerSort {
   final String label;
 }
 
-// Histori pelanggan untuk halaman Pelanggan & Kasir.
-// Backend belum bisa filter member/reguler dan cari sebagian no HP, jadi
-// semua pelanggan dimuat (maks [_maxPages] x 50) lalu diolah di tablet
+// Semua pelanggan dimuat (maks [_maxPages] x 50), disaring di tablet
 class CustomerHistoryController extends ChangeNotifier {
   CustomerHistoryController(this._api);
 
@@ -108,8 +106,7 @@ class CustomerHistoryController extends ChangeNotifier {
     CustomerFilter.regular => !c.isMember,
   };
 
-  // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
-  // kerangka loading, dan kalau gagal data lama tidak dihapus
+  // [silent] = muat ulang diam-diam, kalau gagal data lama tetap
   Future<void> refresh({bool silent = false}) async {
     if (silent && loading) return;
     if (!silent) {
@@ -170,8 +167,7 @@ class CustomerHistoryController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Pelanggan yang no HP-nya sama persis, null kalau belum pernah datang.
-  // Ke server langsung supaya pelanggan yang baru dibuat ikut ketemu
+  // Pelanggan dengan no HP persis sama, null = belum pernah datang
   Future<CustomerProfile?> findByPhone(String phone) async {
     final digits = digitsOf(phone);
     if (digits.length < 9) return null;

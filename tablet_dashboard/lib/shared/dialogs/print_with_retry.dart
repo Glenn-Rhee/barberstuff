@@ -10,8 +10,7 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 // Hasil satu kali cetak: error null = berhasil, skipped = kasir menekan Lewati
 typedef _PrintResult = ({bool skipped, String? error});
 
-// Cetak [bytes], kalau gagal / kelamaan kasir bisa coba lagi atau lewati.
-// true = berhasil dicetak
+// Cetak dengan opsi coba lagi / lewati. true = berhasil
 Future<bool> printWithRetry(BuildContext context, Uint8List bytes) async {
   final printer = context.read<PrinterController>();
   while (true) {

@@ -2,15 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-// Jam server dari header Date tiap respons API. Jam tablet bisa salah
-// (waktu otomatis mati / zona waktu keliru), padahal backend menolak
-// booking yang jamnya sudah lewat menurut jam server
+// Jam server dari header Date, karena jam tablet bisa salah
 class ServerClock extends ChangeNotifier {
   // Selisih di atas ini dianggap jam tablet salah dan perlu ditegur
   static const tolerance = Duration(minutes: 2);
 
-  // Header Date cuma sampai detik + ada jeda jaringan,
-  // jadi perubahan selisih sekecil ini diabaikan
+  // Header Date cuma per detik, selisih sekecil ini diabaikan
   static const _jitter = Duration(seconds: 2);
 
   Duration _offset = Duration.zero;

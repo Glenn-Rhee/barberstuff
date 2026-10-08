@@ -3,8 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 
-// Foto cabang dari URL presigned backend, atau [bytes] hasil pilih galeri.
-// Kosong / gagal dimuat (link kedaluwarsa 30 menit) = ikon toko abu-abu
+// Foto cabang (URL presigned / [bytes]), kosong atau gagal = ikon toko
 class BranchBanner extends StatelessWidget {
   const BranchBanner({
     super.key,

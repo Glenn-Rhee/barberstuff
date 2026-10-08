@@ -69,8 +69,7 @@ class AppSidebar extends StatelessWidget {
       curve: Curves.easeOut,
       width: width,
       color: AppColor.ink,
-      // Isi menu langsung pakai lebar akhir, frame animasi di-clip
-      // supaya tidak overflow
+      // Isi pakai lebar akhir, frame animasi di-clip supaya tidak overflow
       child: ClipRect(
         child: OverflowBox(
           alignment: Alignment.topLeft,

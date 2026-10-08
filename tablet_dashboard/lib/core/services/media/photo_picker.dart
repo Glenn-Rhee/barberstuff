@@ -18,8 +18,7 @@ class PhotoPickerException implements Exception {
   String toString() => message;
 }
 
-// Pilih foto dari galeri. Sisi terpanjang dikecilkan supaya di bawah
-// batas upload backend (5 MB)
+// Pilih foto galeri, dikecilkan supaya di bawah batas upload 5 MB
 class PhotoPicker {
   const PhotoPicker._();
 

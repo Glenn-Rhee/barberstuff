@@ -23,9 +23,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/page_tabs.dart';
 
-// Detail satu cabang: profil + foto, lalu tab Capster, Service, Paket,
-// Maps Toko, dan Role Akun. Service & paket langsung dimuat (jumlahnya
-// tampil di profil), capster & akun saat tab-nya pertama dibuka
+// Detail cabang: profil + tab Capster, Service, Paket, Maps, Role Akun
 class BranchDetailScreen extends StatelessWidget {
   const BranchDetailScreen({super.key, required this.branch});
 
@@ -97,8 +95,8 @@ class _BranchDetailViewState extends State<_BranchDetailView> {
       context,
       title: 'Hapus $name?',
       message:
-          'Cabang hilang dari daftar dan aplikasi pelanggan. Akun kasir & '
-          'mitra cabang ini tidak bisa masuk tablet lagi.',
+          'Cabang hilang dari aplikasi pelanggan, akun kasir & mitra-nya '
+          'tidak bisa login lagi.',
       confirmLabel: 'Hapus Cabang',
       danger: true,
     );

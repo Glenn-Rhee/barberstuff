@@ -12,8 +12,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
 
-// Histori semua pelanggan: member (pakai aplikasi) dan reguler (diinput
-// kasir). Pilih pelanggan = langsung dipakai di pesanan langsung
+// Histori pelanggan, pilih = dipakai di pesanan langsung
 class CustomerHistoryView extends StatefulWidget {
   const CustomerHistoryView({super.key});
 

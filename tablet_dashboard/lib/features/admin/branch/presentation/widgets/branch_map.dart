@@ -12,8 +12,7 @@ const _userAgent = 'com.barberstuff.dashboard';
 // Titik awal peta kalau cabang belum punya koordinat (Jakarta)
 const _fallback = LatLng(-6.2, 106.816666);
 
-// Peta OpenStreetMap dengan pin cabang. [onTap] diisi = ketuk peta
-// untuk memindah pin
+// Peta pin cabang, [onTap] diisi = ketuk peta untuk pindah pin
 class BranchMapView extends StatelessWidget {
   const BranchMapView({
     super.key,
@@ -103,8 +102,7 @@ class BranchMapView extends StatelessWidget {
   }
 }
 
-// Peta untuk memilih titik GPS cabang: ketuk peta, cari dari alamat,
-// atau pakai lokasi tablet sekarang
+// Pilih titik GPS: ketuk peta, cari alamat, atau lokasi tablet
 class BranchMapPicker extends StatefulWidget {
   const BranchMapPicker({
     super.key,

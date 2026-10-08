@@ -10,8 +10,7 @@ import 'package:tablet_dashboard/features/cashier/catalog/presentation/widgets/s
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Kartu layanan dengan harga dan "+ Tambah". Sudah di keranjang =
-// tombol jadi "Dipilih", tap lagi untuk keluarkan dari keranjang
+// Kartu layanan, di keranjang = "Dipilih", tap lagi untuk keluarkan
 class ServiceCard extends StatelessWidget {
   const ServiceCard({
     super.key,
@@ -44,8 +43,7 @@ class ServiceCard extends StatelessWidget {
   // Lebar minimum kartu, ikut membesar kalau font tablet diperbesar
   static double minWidthFor(TextScaler scaler) => 160 * scaler.scale(14) / 14;
 
-  // Tinggi kartu di grid: muat nama 2 baris, tipe, harga, dan tombol
-  // tanpa ada teks yang kepotong, berapa pun ukuran font tablet
+  // Tinggi kartu muat semua teks di ukuran font apa pun
   static double heightFor(TextScaler scaler) =>
       _padding.vertical +
       2 + // border atas-bawah
@@ -77,8 +75,7 @@ class ServiceCard extends StatelessWidget {
             child: AppIcon(ServiceIcon.of(item), size: 20, color: AppColor.ink),
           ),
           const SizedBox(height: 8),
-          // Nama 1 baris menyisakan ruang di bawah tipe, jadi harga dan
-          // tombol tetap sejajar dengan kartu lain di baris yang sama
+          // Nama 1 baris: sisakan ruang supaya harga & tombol tetap sejajar
           Expanded(
             child: Column(
               children: [

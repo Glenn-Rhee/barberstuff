@@ -23,8 +23,7 @@ Future<void> openAttendance(BuildContext context) => Navigator.push(
   MaterialPageRoute(builder: (_) => const AttendanceScreen()),
 );
 
-// Absensi capster hari ini. Hanya yang Hadir yang aktif di server, jadi
-// Belum Absen & Tidak Hadir tidak bisa dipilih di aplikasi pelanggan
+// Absensi capster hari ini, hanya yang Hadir bisa dipilih pelanggan
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
 
@@ -133,9 +132,8 @@ class AttendanceScreen extends StatelessWidget {
               Expanded(child: _body(context, catalog, attendance)),
               const SizedBox(height: 12),
               Text(
-                'Tiap buka shift, capster yang belum absen dinonaktifkan. '
-                'Pelanggan hanya bisa memilih capster yang ditandai Hadir '
-                '(juga untuk booking hari lain).',
+                'Buka shift = yang belum absen nonaktif. Hanya capster Hadir '
+                'yang bisa dipilih pelanggan.',
                 style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
               ),
             ],

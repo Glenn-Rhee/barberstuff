@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
-import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
 // Panel hitam di kiri layar login dengan logo Barberstuff
 class LoginBrandPanel extends StatelessWidget {

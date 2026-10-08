@@ -10,8 +10,7 @@ import 'package:tablet_dashboard/features/cashier/store/presentation/provider/st
 class BranchSync {
   const BranchSync._();
 
-  // Pilihan cabang di header (nama, jam, status buka). Kalau cabang yang
-  // sedang dipakai dihapus, data yang ikut toko dimuat ulang ke cabang baru
+  // Pilihan cabang di header, cabang aktif dihapus = pindah ke cabang baru
   static Future<void> stores(BuildContext context) async {
     final profile = context.read<SessionController>().profile;
     if (profile == null) return;

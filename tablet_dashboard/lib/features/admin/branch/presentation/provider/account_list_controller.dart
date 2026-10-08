@@ -14,8 +14,7 @@ enum AccountRoleFilter {
   final StaffRole? role;
 }
 
-// Tab Role Akun di detail cabang. Backend membatasi 2 akun per cabang:
-// 1 kasir dan 1 mitra
+// Tab Role Akun, maks 2 akun per cabang: 1 kasir + 1 mitra
 class AccountListController extends LocalListController<StaffAccount> {
   AccountListController(this._api, this.storeId) : super(pageSize: 5);
 

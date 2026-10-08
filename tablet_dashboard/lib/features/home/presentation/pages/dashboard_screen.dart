@@ -23,9 +23,7 @@ import 'package:tablet_dashboard/features/home/presentation/widgets/clock_drift_
 import 'package:tablet_dashboard/features/home/presentation/widgets/live_refresh.dart';
 import 'package:tablet_dashboard/features/mitra/dashboard/presentation/pages/mitra_dashboard_screen.dart';
 
-// Layar utama setelah login: sidebar di kiri, isi menu di kanan.
-// Menu Dashboard beda tiap role, Mengelola Cabang khusus admin,
-// Kasir dan Konfigurasi sama
+// Layar utama: sidebar kiri, isi menu kanan (Dashboard beda per role)
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -41,8 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
   }
 
-  // Ambil data toko sekali setelah login. Toko dimuat dulu,
-  // karena katalog dan absensi ikut toko yang dipakai
+  // Muat data setelah login, toko dulu karena katalog & absensi ikut toko
   Future<void> _bootstrap() async {
     if (!mounted) return;
     final profile = context.read<SessionController>().profile;

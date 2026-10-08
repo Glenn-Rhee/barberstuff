@@ -11,9 +11,7 @@ import 'package:tablet_dashboard/features/cashier/order/presentation/provider/or
 import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
 
-// "Data Pelanggan" di panel pesanan.
-// Pelanggan dari histori = kartu profil. Pelanggan baru = isi nama + no HP,
-// kalau no HP sudah pernah datang, muncul saran pakai data lama
+// Data Pelanggan: kartu dari histori, atau isi nama + no HP baru
 class CustomerSection extends StatefulWidget {
   const CustomerSection({super.key});
 

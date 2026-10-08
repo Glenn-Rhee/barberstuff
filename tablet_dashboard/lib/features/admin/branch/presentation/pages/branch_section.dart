@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/pages/branch_list_screen.dart';
 
-// Menu Mengelola Cabang (khusus admin). Punya navigator sendiri supaya
-// detail / tambah / edit cabang terbuka di area konten, sidebar tetap tampil
+// Menu Mengelola Cabang (admin), navigator sendiri supaya sidebar tetap
 class BranchSection extends StatefulWidget {
   const BranchSection({super.key});
 

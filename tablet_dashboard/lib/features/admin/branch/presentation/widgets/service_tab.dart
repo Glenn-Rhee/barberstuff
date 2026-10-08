@@ -16,8 +16,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
 import 'package:tablet_dashboard/shared/widgets/form/money_field.dart';
 
-// Tab Service / Paket: daftar layanan cabang, tambah / ubah langsung di
-// baris tabel (nama, harga, deskripsi, status), dan hapus
+// Tab Service / Paket: daftar, tambah / ubah di baris tabel, hapus
 class ServiceTab extends StatefulWidget {
   const ServiceTab({super.key, required this.type});
 

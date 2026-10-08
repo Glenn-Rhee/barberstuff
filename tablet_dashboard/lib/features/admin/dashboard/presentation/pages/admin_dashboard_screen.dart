@@ -4,8 +4,7 @@ import 'package:tablet_dashboard/features/cashier/dashboard/presentation/widgets
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/widgets/dashboard_layout.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/widgets/shift_card.dart';
 
-// Dashboard admin: ringkasan toko + akses fitur kasir.
-// Kartu khusus admin ditambah di [side]
+// Dashboard admin, kartu khusus admin di [side]
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
 

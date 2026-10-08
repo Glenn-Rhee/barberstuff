@@ -4,8 +4,7 @@ import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dar
 import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
 import 'package:tablet_dashboard/features/cashier/store/domain/entities/store_info.dart';
 
-// Toko yang sedang dipakai. Kasir & mitra: lokasi ikut akun, tidak bisa
-// diganti. Admin: bisa pilih dari semua cabang
+// Toko yang dipakai. Kasir & mitra ikut akun, admin bisa ganti
 class StoreController extends ChangeNotifier {
   StoreController(this._api);
 
@@ -45,8 +44,7 @@ class StoreController extends ChangeNotifier {
         options.firstOrNull;
   }
 
-  // Kasir tidak boleh GET /store, jadi ambil dari riwayat kas dan slot booking.
-  // Dua-duanya boleh gagal, yang penting id toko tetap dari akun
+  // Kasir: dari riwayat kas & slot booking, boleh gagal (id dari akun)
   Future<StoreInfo> _cashierStore(String storeId) async {
     var store = StoreInfo(id: storeId);
     try {

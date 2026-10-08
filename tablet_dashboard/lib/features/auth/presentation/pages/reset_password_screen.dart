@@ -10,9 +10,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/message_box.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 import 'package:tablet_dashboard/shared/widgets/form/password_field.dart';
 
-// Reset password staff tanpa verifikasi email (tanpa OTP).
-// Pakai password lama / password awal dari admin, lalu isi password baru.
-// Berhasil = balik ke login sambil bawa email
+// Reset password tanpa OTP, berhasil = balik ke login bawa email
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key, this.initialEmail = ''});
 
@@ -132,8 +130,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         const SizedBox(height: 8),
         const Text('Reset Password', style: AppTextStyle.h1),
         Text(
-          'Tanpa verifikasi email. Masukkan password lama atau password awal '
-          'dari admin, lalu buat password baru.',
+          'Masukkan password lama atau password awal dari admin.',
           style: AppTextStyle.body.copyWith(color: AppColor.inkSoft),
         ),
         const SizedBox(height: 24),

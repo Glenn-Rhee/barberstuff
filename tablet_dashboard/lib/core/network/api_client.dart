@@ -7,8 +7,7 @@ import 'package:tablet_dashboard/core/network/server_clock.dart';
 
 import '../../app/app_env.dart';
 
-// bentuk data {data, message, meta, status, statusCode} lanjut get / post bungkus data
-/// kalo gagal [ApiException] akan dilempar ke server
+// Bungkus Dio: hasil jadi [ApiResponse], gagal lempar [ApiException]
 class ApiClient {
   ApiClient({Dio? dio, String baseUrl = AppEnv.baseUrl})
     : _dio =

@@ -35,8 +35,7 @@ Future<void> showOpenShiftDialog(BuildContext context) async {
   );
   if (opened != true || !context.mounted) return;
 
-  // Pagi = buka shift: capster yang belum absen dinonaktifkan,
-  // baru bisa dipilih pelanggan setelah ditandai Hadir
+  // Buka shift: capster belum absen nonaktif sampai ditandai Hadir
   final problem = await context.read<AttendanceController>().resetForShift(
     context.read<CatalogController>().capsters,
   );
@@ -72,11 +71,8 @@ Future<void> showCloseShiftDialog(BuildContext context) async {
       submitLabel: 'Tutup Shift',
       danger: true,
       note:
-          'Seharusnya ada ${PriceFormat.full(session.expectedCash)} '
-          '(saldo awal ${PriceFormat.plain(session.openingBalance)} + tunai '
-          '${PriceFormat.plain(session.incomeCash)} - kas keluar '
-          '${PriceFormat.plain(session.outcome)}). Kas hanya bisa ditutup '
-          'setelah toko lewat jam operasional.',
+          'Seharusnya ada ${PriceFormat.full(session.expectedCash)}. '
+          'Bisa ditutup setelah jam operasional.',
       onSubmit: (value) async {
         result = await shift.closeShift(value);
         // mis. "Toko masih dalam operasional tidak dapat menutup kas."

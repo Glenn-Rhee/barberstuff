@@ -46,8 +46,7 @@ class CashSessionApi {
     );
   }
 
-  // Shift yang sudah ditutup di bulan [month], terbaru dulu.
-  // [storeId] wajib untuk admin, role lain pakai toko akun
+  // Shift tertutup di [month], terbaru dulu. [storeId] wajib untuk admin
   Future<Paged<CashHistoryEntry>> history({
     required DateTime month,
     String? query,
@@ -72,9 +71,8 @@ class CashSessionApi {
     );
   }
 
-  // Pemasukan: nominal dihitung server dari total booking - [discountAmount],
-  // jadi amount tidak dikirim (backend tolak amount < 1000, padahal sisa
-  // bayar setelah diskon bisa di bawah itu). Pengeluaran: pakai [amount]
+  // Pemasukan: amount tidak dikirim (server hitung total - diskon, tolak < 1000).
+  // Pengeluaran pakai [amount]
   Future<void> createTransaction({
     required String sessionId,
     required TransactionType type,

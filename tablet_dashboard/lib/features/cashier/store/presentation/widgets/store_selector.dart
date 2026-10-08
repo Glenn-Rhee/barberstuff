@@ -11,8 +11,7 @@ import 'package:tablet_dashboard/features/cashier/store/presentation/provider/st
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 
-// Lokasi toko di header. Kasir & mitra terkunci ke toko akunnya,
-// admin bisa ganti cabang lewat dropdown
+// Lokasi toko di header, admin bisa ganti cabang
 class StoreSelector extends StatelessWidget {
   const StoreSelector({super.key});
 

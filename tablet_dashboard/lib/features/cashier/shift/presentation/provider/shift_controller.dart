@@ -14,8 +14,7 @@ class ShiftController extends ChangeNotifier {
   bool loading = false;
   bool busy = false;
 
-  // Hanya diisi kalau gagal memuat shift. Error aksi (buka/tutup/catat)
-  // dikembalikan ke pemanggil, jadi dashboard tidak tampil banner basi
+  // Error muat shift saja, error aksi dikembalikan ke pemanggil
   String? error;
 
   // Backend hanya izinkan role cashier untuk kas & transaksi
@@ -26,7 +25,7 @@ class ShiftController extends ChangeNotifier {
 
   // Alasan pembayaran belum bisa diterima
   String get closedMessage => enabled
-      ? 'Shift kasir belum dibuka. Buka shift di Dashboard untuk menerima pembayaran.'
+      ? 'Buka shift dulu di Dashboard untuk menerima pembayaran.'
       : 'Shift dan pembayaran hanya bisa dilakukan akun kasir.';
 
   void setEnabled(bool value) {
@@ -35,8 +34,7 @@ class ShiftController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
-  // kerangka loading, dan kalau gagal data lama tidak dihapus
+  // [silent] = muat ulang diam-diam, kalau gagal data lama tetap
   Future<void> refresh({bool silent = false}) async {
     if (!enabled) return;
     // Jangan timpa data selagi buka / tutup shift atau catat transaksi
@@ -91,8 +89,7 @@ class ShiftController extends ChangeNotifier {
     }
   }
 
-  // Pemasukan selalu terhubung ke booking (aturan backend).
-  // [amount] = yang dibayar setelah [discountAmount] (diskon manual kasir)
+  // Pemasukan wajib terhubung booking. [amount] = setelah [discountAmount]
   Future<String?> recordSale({
     required int amount,
     required PaymentType paymentType,

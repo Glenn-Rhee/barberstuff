@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 
-// Kerangka abu-abu berdenyut selama data dimuat. Isi [child] dengan
-// SkeletonBox yang meniru bentuk konten aslinya
+// Kerangka loading berdenyut, isi [child] dengan SkeletonBox
 class Skeleton extends StatefulWidget {
   const Skeleton({super.key, required this.child});
 
@@ -64,8 +63,7 @@ class SkeletonBox extends StatelessWidget {
 // Lebar baris teks yang berganti-ganti biar tidak kaku
 double _lineWidth(int i) => const [0.8, 0.55, 0.7, 0.45, 0.65][i % 5];
 
-// Baris tabel kerangka. [flex] sama dengan kolom tabel aslinya,
-// kolom terakhir berbentuk tombol / badge
+// Baris tabel kerangka, [flex] sama dengan kolom aslinya
 class SkeletonRows extends StatelessWidget {
   const SkeletonRows({
     super.key,

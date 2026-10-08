@@ -4,9 +4,7 @@ import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 
-// Peringatan kalau jam tablet beda jauh dari jam server. Pesanan langsung
-// dan struk sudah pakai jam server, tapi absensi & tanggal di layar masih
-// pakai jam tablet
+// Peringatan kalau jam tablet beda jauh dari jam server
 class ClockDriftBanner extends StatelessWidget {
   const ClockDriftBanner({super.key});
 
@@ -29,8 +27,7 @@ class ClockDriftBanner extends StatelessWidget {
             child: Text(
               'Jam tablet ${lengthOf(clock.offset)} lebih '
               '${behind ? 'lambat' : 'cepat'} dari server. Nyalakan '
-              'Tanggal & waktu otomatis di Pengaturan tablet supaya absensi '
-              'dan tanggal di layar sesuai.',
+              'Tanggal & waktu otomatis di Pengaturan.',
               style: AppTextStyle.label.copyWith(color: AppColor.warning),
             ),
           ),
@@ -39,8 +36,7 @@ class ClockDriftBanner extends StatelessWidget {
     );
   }
 
-  // "1 jam 5 menit", "3 menit". Dibulatkan ke menit terdekat, karena
-  // header Date cuma sampai detik (1 jam bisa terbaca 59:59)
+  // "1 jam 5 menit", dibulatkan ke menit (header Date per detik)
   static String lengthOf(Duration offset) {
     final minutes = (offset.abs().inSeconds / 60).round();
     final hours = minutes ~/ 60;

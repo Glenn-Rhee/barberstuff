@@ -1,8 +1,7 @@
 import 'package:tablet_dashboard/core/network/api_client.dart';
 import 'package:tablet_dashboard/features/cashier/store/domain/entities/store_info.dart';
 
-// Info toko cabang. Akses backend beda per role:
-// admin boleh GET /store, mitra boleh GET /store/{id}, kasir dua-duanya ditolak
+// Info toko. Admin GET /store, mitra GET /store/{id}, kasir ditolak
 class StoreApi {
   const StoreApi(this._client);
 
@@ -21,9 +20,7 @@ class StoreApi {
   Future<StoreInfo> store(String id) async =>
       StoreInfo.fromJson((await _client.get('/store/$id')).map);
 
-  // Untuk kasir: nama + jam toko ikut di riwayat kas bulan ini
-  // Riwayat cuma berisi shift yang sudah ditutup per bulan, jadi kalau bulan
-  // ini belum ada, cari mundur sampai 3 bulan ke belakang
+  // Kasir: nama & jam toko dari riwayat shift tertutup, mundur maks 3 bulan
   Future<StoreInfo?> storeFromCashHistory() async {
     final now = DateTime.now();
     for (var back = 0; back < 3; back++) {
@@ -38,8 +35,7 @@ class StoreApi {
     return null;
   }
 
-  // Untuk kasir: jam buka dari slot booking hari ini.
-  // Slot dibuat tiap 30 menit dari jam buka sampai sebelum jam tutup
+  // Kasir: jam buka dari slot booking (tiap 30 menit sampai jam tutup)
   Future<({String open, String close})?> hoursFromSlots(
     String storeId,
     DateTime date,

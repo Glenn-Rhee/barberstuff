@@ -313,7 +313,7 @@ void main() {
       await tester.tap(find.text('Tutup Shift Kasir'));
       await tester.pumpAndSettle();
       expect(
-        find.textContaining('setelah toko lewat jam operasional'),
+        find.textContaining('Bisa ditutup setelah jam operasional'),
         findsOneWidget,
       );
 
@@ -376,7 +376,7 @@ void main() {
       // tablet, tapi diberi tahu pelanggan masih bisa memilih
       expect(api.calls, contains('capsterStatus:CAP-2:inactive'));
       expect(api.capsterList.last.active, isTrue);
-      expect(find.textContaining('tablet ini saja'), findsOneWidget);
+      expect(find.textContaining('masih bisa dipilih pelanggan'), findsOneWidget);
       expect(find.text('Belum nonaktif di aplikasi pelanggan'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Kembali'));
@@ -408,7 +408,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(api.calls, contains('capsterStatus:CAP-2:inactive'));
       expect(api.capsterList.last.active, isFalse);
-      expect(find.textContaining('tablet ini saja'), findsNothing);
+      expect(find.textContaining('masih bisa dipilih pelanggan'), findsNothing);
 
       // Hadir lagi = aktif lagi, bisa dipilih pelanggan
       await tester.tap(find.widgetWithText(OutlinedButton, 'Hadir').last);

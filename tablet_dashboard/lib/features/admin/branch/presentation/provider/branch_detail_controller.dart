@@ -4,8 +4,7 @@ import 'package:tablet_dashboard/core/services/media/photo_picker.dart';
 import 'package:tablet_dashboard/features/admin/branch/data/branch_api.dart';
 import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch.dart';
 
-// Profil satu cabang untuk halaman Detail dan Edit Cabang.
-// Awalnya pakai data dari daftar, lalu diganti hasil GET /store/{id}
+// Profil cabang untuk Detail & Edit, awalnya dari daftar lalu GET /store/{id}
 class BranchDetailController extends ChangeNotifier {
   BranchDetailController(this._api, this.branch);
 
@@ -32,8 +31,7 @@ class BranchDetailController extends ChangeNotifier {
     }
   }
 
-  // Ubah sebagian data lalu muat ulang (URL foto presigned ikut baru).
-  // Balikin pesan error, atau null kalau berhasil
+  // Ubah data lalu muat ulang. Balikin pesan error, null = berhasil
   Future<String?> update({
     String? name,
     String? phone,

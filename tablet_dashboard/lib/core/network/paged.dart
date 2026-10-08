@@ -5,9 +5,7 @@ class Paged<T> {
     required this.totalData,
   });
 
-  // meta.total_data / total_pages dari backend tidak bisa dipakai: Count di
-  // repository jalan sebelum filter, jadi yang dihitung seluruh tabel.
-  // Jumlah halaman ditebak dari isi halaman ini: penuh = mungkin masih ada lagi
+  // meta backend salah hitung, jadi halaman penuh = anggap masih ada lagi
   factory Paged.fromPage(
     List<T> items, {
     required int page,

@@ -15,8 +15,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// "Karyawan Bertugas": capster toko dengan status absen hari ini
-// (nonaktif di server = tidak hadir). Urutan: hadir, belum absen, tidak hadir
+// Karyawan Bertugas, urut: hadir, belum absen, tidak hadir
 class CapsterListCard extends StatelessWidget {
   const CapsterListCard({super.key});
 

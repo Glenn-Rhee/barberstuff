@@ -6,9 +6,7 @@ import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provide
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 
-// Data yang bisa berubah dari luar tablet (booking dari aplikasi pelanggan,
-// shift) dimuat ulang diam-diam tiap [interval], dan langsung saat app
-// balik dari background. Tidak jalan selama app di background
+// Muat ulang diam-diam tiap [interval] dan saat app kembali dari background
 class LiveRefresh extends StatefulWidget {
   const LiveRefresh({
     super.key,

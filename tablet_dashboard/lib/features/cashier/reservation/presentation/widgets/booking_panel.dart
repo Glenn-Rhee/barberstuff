@@ -26,9 +26,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Keranjang & aksi booking yang dipilih, nominal dari server.
-// Booked = check-in, Progress = tambah layanan, diskon & bayar,
-// Completed = cetak struk, Cancel = kosong
+// Aksi booking: booked = check-in, progress = bayar, completed = struk
 class BookingPanel extends StatefulWidget {
   const BookingPanel({super.key});
 
@@ -81,8 +79,7 @@ class _BookingPanelState extends State<BookingPanel> {
     );
   });
 
-  // Boleh lebih dari 1 layanan / paket, tapi item yang sudah ada
-  // tidak muncul lagi di pemilih (tidak bisa 2x)
+  // Item yang sudah ada tidak muncul di pemilih
   Future<void> _addService(Booking booking) async {
     final bookings = context.read<BookingsController>();
     final item = await showServicePicker(

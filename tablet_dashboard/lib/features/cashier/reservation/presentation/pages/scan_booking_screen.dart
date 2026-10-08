@@ -10,8 +10,7 @@ import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/message_box.dart';
 
-// Buka halaman scan QR booking. Kalau check-in berhasil, pindah ke
-// Kasir > Dari Reservasi dengan booking itu langsung terpilih
+// Buka scan QR, berhasil = pindah ke Dari Reservasi dengan booking terpilih
 Future<void> openScanBooking(
   BuildContext context, {
   String? initialCode,
@@ -30,10 +29,8 @@ Future<void> openScanBooking(
   await bookings.focus(bookingId);
 }
 
-// Scan QR dari aplikasi pelanggan pakai kamera tablet.
-// Isi QR = "bk{id booking}" (booking aplikasi pelanggan cuma 4 karakter
-// pertama id), dikirim ke
-// PATCH /staff/booking/checkin/{qr}. Bisa juga diketik / scanner USB
+// Scan QR "bk{id}" lalu check-in (QR aplikasi pelanggan: 4 karakter awal id).
+// Bisa juga diketik / scanner USB
 class ScanBookingScreen extends StatefulWidget {
   const ScanBookingScreen({super.key, this.initialCode});
 
@@ -288,7 +285,8 @@ class _CameraError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final message = switch (error.errorCode) {
-      MobileScannerErrorCode.permissionDenied => 'Izin kamera ditolak. Aktifkan di Pengaturan > Aplikasi > Dashboard Barberstuff.',
+      MobileScannerErrorCode.permissionDenied =>
+        'Izin kamera ditolak, aktifkan di Pengaturan.',
       MobileScannerErrorCode.unsupported =>
         'Perangkat ini tidak punya kamera yang didukung.',
       _ => 'Kamera tidak bisa dibuka (${error.errorCode.name}).',

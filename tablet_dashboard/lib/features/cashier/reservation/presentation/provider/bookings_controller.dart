@@ -12,8 +12,7 @@ class BookingsController extends ChangeNotifier {
 
   static const pageSize = 5;
 
-  // QR booking dari aplikasi pelanggan = "bk" + 4 karakter pertama id,
-  // booking buatan kasir = "bk" + id penuh. GET /booking tidak kirim qr_code
+  // QR aplikasi = "bk" + 4 karakter awal id, kasir = "bk" + id penuh
   static const _shortQrLength = 4;
   static const _qrNotFound = 'Booking tidak ditemukan.';
 
@@ -22,8 +21,7 @@ class BookingsController extends ChangeNotifier {
   BookingStatus? status;
   String query = '';
 
-  // Hari booking yang dilihat. null = hari ini, jadi lewat tengah malam
-  // daftarnya ikut ganti hari
+  // null = hari ini, otomatis ganti hari lewat tengah malam
   DateTime? date;
   int page = 1;
   int totalPages = 1;
@@ -36,8 +34,7 @@ class BookingsController extends ChangeNotifier {
 
   Timer? _debounce;
 
-  // Nomor request terakhir. Balasan request lama diabaikan, mis. muat
-  // ulang otomatis yang kalah cepat dengan ganti filter
+  // Nomor request terakhir, balasan request lama diabaikan
   int _request = 0;
 
   Booking? get selected =>
@@ -57,8 +54,7 @@ class BookingsController extends ChangeNotifier {
         ),
       );
 
-  // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
-  // kerangka loading, dan kalau gagal data lama tidak dihapus
+  // [silent] = muat ulang diam-diam, kalau gagal data lama tetap
   Future<void> refresh({bool silent = false}) async {
     final request = ++_request;
     if (!silent) {
@@ -133,8 +129,7 @@ class BookingsController extends ChangeNotifier {
     }
   }
 
-  // Check-in dari tombol "Ubah Status Progress": coba QR id penuh dulu,
-  // kalau tidak ketemu baru QR pendek ala aplikasi pelanggan
+  // Check-in pakai QR id penuh, tidak ketemu = QR pendek
   Future<String?> checkInBooking(Booking booking) async {
     final error = await checkIn('bk${booking.id}');
     if (error != _qrNotFound || booking.id.length <= _shortQrLength) {
@@ -143,15 +138,12 @@ class BookingsController extends ChangeNotifier {
     return checkIn('bk${booking.id.substring(0, _shortQrLength)}');
   }
 
-  // Tambah layanan / paket ke booking. Item yang sama cuma boleh 1x,
-  // jadi yang sudah ada disaring di pemilih layanan.
-  // Balikin pesan error, atau null kalau berhasil
+  // Tambah layanan ke booking. Balikin error, null = berhasil
   Future<String?> addService(Booking booking, String serviceId) => _changeItems(
     () => _api.addService(bookingId: booking.id, serviceId: serviceId),
   );
 
-  // Keluarkan satu item. Backend menolak booking kosong, jadi tombol hapus
-  // cuma muncul kalau item-nya lebih dari 1
+  // Keluarkan item, backend menolak booking kosong
   Future<String?> removeService(Booking booking, String serviceId) =>
       _changeItems(
         () => _api.removeService(bookingId: booking.id, serviceId: serviceId),
@@ -174,10 +166,8 @@ class BookingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Setelah scan QR: buang filter, muat ulang, lalu pilih booking itu.
-  // QR aplikasi pelanggan cuma berisi awal id, jadi cocokkan awalannya
-  // dan pilih yang baru check-in (progress).
-  // [day] = hari booking itu, null = hari ini
+  // Setelah check-in: buang filter, muat ulang, pilih booking itu.
+  // QR aplikasi cuma awal id, jadi cocokkan awalannya. [day] null = hari ini
   Future<void> focus(String bookingId, {DateTime? day}) async {
     status = null;
     query = '';

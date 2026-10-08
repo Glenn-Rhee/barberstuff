@@ -18,8 +18,7 @@ import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/page_header.dart';
 import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
 
-// Halaman Mengelola Cabang: grid semua cabang, cari, tambah cabang,
-// lalu masuk ke detail atau edit
+// Mengelola Cabang: grid cabang, cari, tambah, detail, edit
 class BranchListScreen extends StatefulWidget {
   const BranchListScreen({super.key});
 

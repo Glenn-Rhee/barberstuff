@@ -17,8 +17,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/message_box.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Halaman Tambah Cabang: info toko di kiri, lokasi + titik peta di kanan.
-// Semua field yang diwajibkan backend ditandai *
+// Tambah Cabang: info toko di kiri, lokasi + peta di kanan
 class BranchCreateScreen extends StatefulWidget {
   const BranchCreateScreen({super.key});
 
@@ -60,8 +59,7 @@ class _BranchCreateScreenState extends State<BranchCreateScreen> {
     super.dispose();
   }
 
-  // Backend cuma punya satu kolom alamat, kota & kode pos digabung:
-  // "Jl. Cikutra No. 123, Bandung 40123"
+  // Backend cuma punya satu kolom alamat, kota & kode pos digabung
   String get _fullAddress {
     final region = [
       _city.text.trim(),

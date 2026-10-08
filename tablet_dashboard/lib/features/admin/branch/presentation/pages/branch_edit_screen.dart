@@ -18,9 +18,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Halaman Edit Cabang ("Informasi Cabang"). Tiap field disimpan sendiri
-// lewat PATCH /store/{id}, jadi tidak ada tombol simpan besar.
-// Butuh BranchDetailController dari Provider
+// Edit Cabang: tiap field disimpan sendiri lewat PATCH /store/{id}
 class BranchEditScreen extends StatefulWidget {
   const BranchEditScreen({super.key});
 
@@ -29,8 +27,7 @@ class BranchEditScreen extends StatefulWidget {
 }
 
 class _BranchEditScreenState extends State<BranchEditScreen> {
-  // Field yang sedang disimpan: 'photo', 'open', 'close', 'type', 'status',
-  // 'map'. Field teks punya status simpan sendiri
+  // Field non-teks yang sedang disimpan, mis. 'photo', 'open', 'map'
   String? _saving;
 
   // Titik baru yang belum disimpan

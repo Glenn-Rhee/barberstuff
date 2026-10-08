@@ -22,8 +22,7 @@ import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 import 'package:tablet_dashboard/shared/widgets/form/password_field.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-// Tab Role Akun: akun kasir / mitra yang bisa login ke cabang ini,
-// form tambah akun di kanan
+// Tab Role Akun: akun kasir / mitra cabang + form tambah
 class AccountTab extends StatelessWidget {
   const AccountTab({super.key});
 
@@ -267,9 +266,7 @@ class _AccountFormCardState extends State<_AccountFormCard> {
           const SizedBox(height: 16),
           if (list.full) ...[
             const MessageBox(
-              message:
-                  'Cabang ini sudah punya 1 Kasir dan 1 Mitra. Hapus salah '
-                  'satu akun untuk menambah yang baru.',
+              message: 'Sudah ada 1 Kasir dan 1 Mitra. Hapus satu akun dulu.',
             ),
             const SizedBox(height: 16),
           ],
@@ -307,9 +304,8 @@ class _AccountFormCardState extends State<_AccountFormCard> {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  'Akun akan terhubung otomatis ke $branchName. Password awal '
-                  'memakai password default staff dari server, minta staff '
-                  'menggantinya setelah login.',
+                  'Akun masuk ke $branchName. Password awal = password '
+                  'default staff, minta diganti setelah login.',
                   style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
                 ),
               ),
@@ -467,8 +463,7 @@ class _AccountEditDialogState extends State<_AccountEditDialog> {
         ),
         const SizedBox(height: 6),
         Text(
-          'Backend mewajibkan password baru setiap kali akun diubah. '
-          'Beri tahu staff password barunya.',
+          'Wajib isi password baru, beri tahu staff.',
           style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
         ),
       ],

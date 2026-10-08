@@ -48,8 +48,7 @@ class PersonAvatar extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.cover,
-        // Inisial selama foto dimuat, atau kalau gagal
-        // (link presigned dari backend kedaluwarsa 30 menit)
+        // Inisial selama foto dimuat atau gagal (link presigned 30 menit)
         frameBuilder: (_, child, frame, loadedSync) =>
             frame == null && !loadedSync ? initials : child,
         errorBuilder: (_, _, _) => initials,

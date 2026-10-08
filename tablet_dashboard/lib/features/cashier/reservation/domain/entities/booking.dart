@@ -84,7 +84,6 @@ class Booking {
     return at != null && DateFormatId.isSameDay(at, day);
   }
 
-  // Semua potongan (promo + diskon kasir). Saat bayar backend menimpa
-  // discount_amount dengan diskon kasir saja, jadi hitung dari subtotal - total
+  // Total potongan = subtotal - total (backend menimpa discount_amount)
   int get totalDiscount => subtotal > total ? subtotal - total : 0;
 }

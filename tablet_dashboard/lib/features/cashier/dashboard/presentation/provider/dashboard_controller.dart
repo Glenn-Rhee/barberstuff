@@ -3,8 +3,7 @@ import 'package:tablet_dashboard/core/network/api_exception.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
 
-// Ringkasan reservasi hari ini untuk dashboard, terpisah dari tabel
-// reservasi di Kasir supaya filter di sana tidak ikut mengubah dashboard
+// Reservasi hari ini untuk dashboard, terpisah dari filter tab Kasir
 class DashboardController extends ChangeNotifier {
   DashboardController(this._api);
 
@@ -39,8 +38,7 @@ class DashboardController extends ChangeNotifier {
         ),
       );
 
-  // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
-  // kerangka loading, dan kalau gagal data lama tidak dihapus
+  // [silent] = muat ulang diam-diam, kalau gagal data lama tetap
   Future<void> refresh({bool silent = false}) async {
     final request = ++_request;
     if (!silent) {
@@ -49,8 +47,7 @@ class DashboardController extends ChangeNotifier {
       notifyListeners();
     }
     try {
-      // GET /booking sudah otomatis booking hari ini di toko akun.
-      // Jumlah dihitung dari list, karena meta.total_data backend salah
+      // Booking hari ini, dihitung dari list (meta.total_data backend salah)
       final all = <Booking>[];
       for (var page = 1; page <= _maxPages; page++) {
         final result = await _api.bookings(page: page, limit: _maxLimit);

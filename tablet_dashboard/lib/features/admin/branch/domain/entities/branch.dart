@@ -93,8 +93,7 @@ class Branch {
   // Status toko dari admin (open / close)
   final bool open;
 
-  // Jumlah dari backend. total_service & total_package ikut menghitung
-  // layanan yang sudah dihapus, jadi detail cabang pakai daftar aslinya
+  // total_service / total_package backend ikut menghitung yang terhapus
   final int totalService;
   final int totalPackage;
   final int totalCapster;

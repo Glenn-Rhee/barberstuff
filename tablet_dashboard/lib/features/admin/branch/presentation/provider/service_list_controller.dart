@@ -12,8 +12,7 @@ enum ServiceSort {
   final String label;
 }
 
-// Tab Service di detail cabang. Paket pakai [PackageListController]
-// supaya dua-duanya bisa disediakan Provider bersamaan
+// Tab Service, paket di [PackageListController] supaya bisa berdampingan
 class ServiceListController extends LocalListController<ServiceItem> {
   ServiceListController(
     this._api,

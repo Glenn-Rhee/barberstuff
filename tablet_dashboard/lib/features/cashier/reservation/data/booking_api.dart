@@ -9,10 +9,7 @@ class BookingApi {
 
   final ApiClient _client;
 
-  // [date] = hari booking yang diminta, null = hari ini.
-  // Backend sekarang masih selalu kirim booking hari ini dan mengabaikan
-  // `date`, jadi booking di luar [date] dibuang supaya tidak tampil di
-  // tanggal yang salah
+  // [date] null = hari ini. Backend belum pakai `date`, jadi disaring di sini
   Future<Paged<Booking>> bookings({
     BookingStatus? status,
     String? query,
@@ -92,8 +89,7 @@ class BookingApi {
   Future<void> checkIn(String qrCode) =>
       _client.patch('/staff/booking/checkin/$qrCode');
 
-  // Hapus satu layanan dari booking (DELETE /staff/booking/item),
-  // backend menolak kalau booking jadi kosong
+  // Hapus satu layanan, backend menolak booking kosong
   Future<void> removeService({
     required String bookingId,
     required String serviceId,

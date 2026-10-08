@@ -84,9 +84,7 @@ class SessionController extends ChangeNotifier {
     }
   }
 
-  // Reset password tanpa verifikasi email: masuk pakai password lama
-  // (atau password awal dari admin), lalu ganti lewat PATCH /staff/{id}.
-  // Balikin pesan error, atau null kalau berhasil
+  // Reset password tanpa OTP lewat PATCH /staff/{id}. Balikin error, null = berhasil
   Future<String?> resetPassword({
     required String email,
     required String oldPassword,

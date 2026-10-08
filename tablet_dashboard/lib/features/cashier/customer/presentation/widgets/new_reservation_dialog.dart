@@ -22,9 +22,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 
-// Buat reservasi untuk pelanggan dari histori: tanggal, jam kosong dari
-// GET /booking/store, capster kosong di jam itu, dan layanan / paket
-// (boleh lebih dari 1, item yang sama cuma 1x)
+// Reservasi pelanggan: tanggal, jam & capster kosong, layanan (tiap item 1x)
 Future<void> showNewReservationDialog(
   BuildContext context,
   CustomerProfile customer,

@@ -12,8 +12,7 @@ import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_tra
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 
-// Catat pesanan & pembayaran ke server dan buat struknya.
-// Dialog, cetak, dan toast tetap di widget, di sini cuma urusan API
+// Catat pesanan & bayar ke server lalu buat struk (UI tetap di widget)
 class CheckoutController {
   CheckoutController(
     this._bookingApi,
@@ -42,10 +41,8 @@ class CheckoutController {
 
   String get _cashierName => _session.profile?.name ?? '-';
 
-  // Pesanan langsung dibuat sebagai booking jam sekarang, karena backend tidak
-  // mengembalikan id booking walk-in. Booking dicari lagi di GET /booking,
-  // lalu langsung check-in (status progress) supaya tidak kena auto-cancel.
-  // Hasilnya muncul di tab Dari Reservasi dan siap dibayar
+  // Walk-in dibuat sebagai booking (backend tidak balikin id), dicari lagi,
+  // lalu langsung check-in supaya tidak kena auto-cancel
   Future<WalkInResult> startWalkIn(
     OrderController order, {
     required Capster capster,
@@ -58,8 +55,7 @@ class CheckoutController {
         storeId: _store.storeId,
         capsterId: capster.id,
         serviceIds: serviceIds,
-        // Pakai jam server +1 menit supaya tidak dianggap jam lewat,
-        // walaupun jam tablet salah
+        // Jam server +1 menit, jam tablet bisa salah
         bookingDate: _clock.now().add(const Duration(minutes: 1)),
         customerId: customer?.id,
         customerName: customer == null
@@ -80,16 +76,15 @@ class CheckoutController {
         phone: phone,
         serviceIds: serviceIds,
       );
-    } on ApiException catch (e) {
-      return WalkInResult.failed(
-        'Pesanan tersimpan, tapi gagal dimuat ulang: ${e.message}. '
-        'Cek di tab Dari Reservasi.',
+    } on ApiException {
+      return const WalkInResult.failed(
+        'Pesanan tersimpan, cek di tab Dari Reservasi.',
         created: true,
       );
     }
     if (booking == null) {
       return const WalkInResult.failed(
-        'Pesanan tersimpan, tapi tidak ketemu di daftar. Cek di tab Dari Reservasi.',
+        'Pesanan tersimpan, cek di tab Dari Reservasi.',
         created: true,
       );
     }
@@ -98,8 +93,7 @@ class CheckoutController {
       await _bookingApi.checkIn('bk${booking.id}');
     } on ApiException catch (e) {
       return WalkInResult.failed(
-        'Pesanan tersimpan tapi belum check-in: ${e.message}. Check-in dari '
-        'tab Dari Reservasi dalam 10 menit, setelah itu dibatalkan otomatis.',
+        'Belum check-in, ulangi di Dari Reservasi dalam 10 menit. ${e.message}',
         created: true,
       );
     }
@@ -172,7 +166,7 @@ class CheckoutController {
     );
     if (error != null) {
       return CheckoutResult.failed(
-        'Pesanan tersimpan di Dari Reservasi, tapi pembayaran gagal dicatat: $error',
+        'Pembayaran gagal, ulangi di Dari Reservasi. $error',
         created: true,
       );
     }
@@ -192,8 +186,7 @@ class CheckoutController {
     );
   }
 
-  // Booking yang sudah ada: catat pembayaran pakai nominal dari server,
-  // dikurangi [discount] kasir (hanya bisa saat status progress)
+  // Bayar booking: total server dikurangi [discount] (hanya saat progress)
   Future<CheckoutResult> payBooking(
     Booking booking, {
     required PaymentType method,
@@ -220,8 +213,7 @@ class CheckoutController {
     );
   }
 
-  // Struk booking, [cash] null saat cetak ulang.
-  // [discount] = diskon kasir yang baru dibayar, belum ada di data booking
+  // Struk booking. [cash] null = cetak ulang, [discount] = diskon baru dibayar
   Receipt receiptForBooking(
     Booking booking, {
     required PaymentType method,
@@ -242,8 +234,7 @@ class CheckoutController {
   }
 }
 
-// Hasil pesanan langsung: booking yang sudah check-in, atau alasan gagal.
-// [created] true = pesanan sudah terlanjur dibuat di server
+// Hasil walk-in. [created] = pesanan sudah terbuat di server
 class WalkInResult {
   const WalkInResult.started(Booking this.booking)
     : error = null,
@@ -257,8 +248,7 @@ class WalkInResult {
   final bool created;
 }
 
-// Hasil bayar: struk untuk dicetak, atau alasan gagal.
-// [created] true = pesanan sudah ada di server walau bayar gagal
+// Hasil bayar. [created] = pesanan ada di server walau bayar gagal
 class CheckoutResult {
   const CheckoutResult.paid(Receipt this.receipt)
     : error = null,

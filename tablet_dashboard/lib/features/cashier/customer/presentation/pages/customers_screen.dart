@@ -15,8 +15,7 @@ import 'package:tablet_dashboard/shared/widgets/layout/page_header.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/page_tabs.dart';
 import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
 
-// Halaman Pelanggan: daftar semua pelanggan (member pakai aplikasi,
-// reguler didaftarkan kasir) + detail dan aksi di kanan
+// Halaman Pelanggan: daftar pelanggan + detail & aksi di kanan
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
 

@@ -6,9 +6,7 @@ import 'package:tablet_dashboard/features/cashier/customer/domain/entities/custo
 import 'package:tablet_dashboard/features/cashier/order/domain/entities/discount.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 
-// Pesanan langsung yang sedang diinput.
-// Aturan keranjang: boleh lebih dari 1 item, campur service & paket,
-// tapi item yang sama cuma 1x (tidak bisa cukur 2x)
+// Pesanan langsung: boleh banyak item, item yang sama cuma 1x
 class OrderController extends ChangeNotifier {
   // Batas no HP dari backend
   static const minPhone = 9;

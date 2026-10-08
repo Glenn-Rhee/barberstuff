@@ -3,8 +3,7 @@ import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/dialog_cancel_button.dart';
 
-// Dialog ya/tidak, true hanya kalau [confirmLabel] ditekan.
-// [danger] = tombol konfirmasi merah
+// Dialog ya / tidak, [danger] = tombol konfirmasi merah
 Future<bool> confirmDialog(
   BuildContext context, {
   required String title,

@@ -9,8 +9,7 @@ import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
 
-// Kartu daftar di tab detail cabang: judul, cari, tombol tambah, urutan,
-// lalu tabel dan halaman. Isi tabel diatur tab-nya lewat [rows]
+// Kartu tabel di tab detail: judul, cari, tambah, urut, tabel, halaman
 class BranchListCard extends StatelessWidget {
   const BranchListCard({
     super.key,

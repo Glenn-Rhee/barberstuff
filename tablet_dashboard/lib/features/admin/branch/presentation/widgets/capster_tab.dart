@@ -14,8 +14,7 @@ import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
 
-// Tab Capster: daftar capster cabang, tambah / ubah langsung di baris
-// tabel (nama, foto, status), dan hapus
+// Tab Capster: daftar, tambah / ubah di baris tabel, hapus
 class CapsterTab extends StatefulWidget {
   const CapsterTab({super.key});
 
