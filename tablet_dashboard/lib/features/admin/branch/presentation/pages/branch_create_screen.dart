@@ -194,7 +194,14 @@ class _BranchCreateScreenState extends State<BranchCreateScreen> {
                             color: AppColor.gold,
                           ),
                         )
-                      : const Text('Simpan Cabang Baru'),
+                      : const Text(
+                          'Simpan Cabang Baru',
+                          style: TextStyle(
+                            color: AppColor.ink,
+                            fontWeight: .bold,
+                            fontSize: 14,
+                          ),
+                        ),
                 ),
               ],
             ),

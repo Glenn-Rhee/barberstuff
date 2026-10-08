@@ -40,7 +40,7 @@ class StaffProfile {
 
   String get roleLabel => switch (role) {
     'cashier' => 'Kasir Barberstuff',
-    'admin' => 'Administrator',
+    'admin' => 'Admin Barberstuff',
     'mitra' => 'Mitra Barberstuff',
     _ => role,
   };
