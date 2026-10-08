@@ -236,24 +236,22 @@ void main() {
       expect(api.calls, isNot(contains('stores')));
     });
 
-    testWidgets('admin: bisa ganti cabang, shift khusus kasir', (tester) async {
+    testWidgets('admin: cuma menu Mengelola Cabang', (tester) async {
       api.staff = FakeApi.staffAs('admin');
       await pumpApp(tester);
       await signIn(tester);
 
-      expect(find.text('Dashboard Admin > Ringkasan'), findsOneWidget);
-      expect(find.text('Administrator'), findsNWidgets(2)); // sidebar + kartu
-      expect(api.calls, isNot(contains('cashSession')));
       expect(
-        find.text('Shift dan pembayaran hanya bisa dikelola akun kasir.'),
-        findsOneWidget,
-      );
-
-      await tester.tap(find.text('Barberstuff Cikutra'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Barberstuff Depok').last);
-      await tester.pumpAndSettle();
-      expect(find.text('Barberstuff Depok'), findsOneWidget);
+        find.text('Mengelola Cabang'),
+        findsNWidgets(2),
+      ); // sidebar + judul
+      for (final menu in ['Dashboard', 'Kasir', 'Pelanggan', 'Pembukuan']) {
+        expect(find.text(menu), findsNothing, reason: menu);
+      }
+      expect(find.text('Konfigurasi'), findsNothing);
+      // Data kasir tidak dimuat untuk admin
+      expect(api.calls.where((c) => c.startsWith('bookings')), isEmpty);
+      expect(api.calls, isNot(contains('cashSession')));
     });
 
     testWidgets('mitra masuk ke dashboard mitra', (tester) async {
@@ -376,7 +374,10 @@ void main() {
       // tablet, tapi diberi tahu pelanggan masih bisa memilih
       expect(api.calls, contains('capsterStatus:CAP-2:inactive'));
       expect(api.capsterList.last.active, isTrue);
-      expect(find.textContaining('masih bisa dipilih pelanggan'), findsOneWidget);
+      expect(
+        find.textContaining('masih bisa dipilih pelanggan'),
+        findsOneWidget,
+      );
       expect(find.text('Belum nonaktif di aplikasi pelanggan'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Kembali'));
@@ -393,28 +394,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Wahyu'), findsWidgets);
       expect(find.text('Rizal'), findsNothing);
-    });
-
-    testWidgets('absensi admin: tidak hadir menonaktifkan capster di server', (
-      tester,
-    ) async {
-      api.staff = FakeApi.staffAs('admin');
-      await pumpApp(tester);
-      await signIn(tester);
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Absensi Karyawan'));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Tidak Hadir').last);
-      await tester.pumpAndSettle();
-      expect(api.calls, contains('capsterStatus:CAP-2:inactive'));
-      expect(api.capsterList.last.active, isFalse);
-      expect(find.textContaining('masih bisa dipilih pelanggan'), findsNothing);
-
-      // Hadir lagi = aktif lagi, bisa dipilih pelanggan
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Hadir').last);
-      await tester.pumpAndSettle();
-      expect(api.calls, contains('capsterStatus:CAP-2:active'));
-      expect(api.capsterList.last.active, isTrue);
     });
 
     testWidgets('capster nonaktif tanpa absen = belum absen', (tester) async {
@@ -1254,20 +1233,6 @@ void main() {
       expect(api.calls.last, endsWith(':rina'));
       expect(find.text('Dewi Lestari'), findsNothing);
     });
-
-    testWidgets('admin: sesi kasir dikunci, history tetap bisa dilihat', (
-      tester,
-    ) async {
-      api.staff = FakeApi.staffAs('admin');
-      await pumpApp(tester);
-      await signIn(tester);
-      await openBookkeeping(tester);
-
-      expect(find.text('Sesi kasir khusus akun kasir'), findsOneWidget);
-      await tester.tap(find.text('History Harian'));
-      await tester.pumpAndSettle();
-      expect(find.text('Rina Kasir'), findsOneWidget);
-    });
   });
 
   group('muat ulang', () {
@@ -1418,8 +1383,7 @@ void main() {
     Future<void> openBranches(WidgetTester tester) async {
       api.staff = FakeApi.staffAs('admin');
       await pumpApp(tester);
-      await signIn(tester);
-      await tapVisible(tester, find.text('Mengelola Cabang'));
+      await signIn(tester); // admin langsung ke Mengelola Cabang
     }
 
     Future<void> openDetail(WidgetTester tester, String name) async {
@@ -1447,7 +1411,7 @@ void main() {
       expect(branchApi.calls, contains('branches'));
       expect(find.byType(BranchCard), findsNWidgets(2));
       expect(find.text('Jl. Cikutra No. 123, Bandung'), findsOneWidget);
-      expect(find.text('Tutup'), findsOneWidget); // Depok ditutup admin
+      expect(find.textContaining('Karyawan'), findsNWidgets(2));
 
       await tester.enterText(
         find.widgetWithText(TextFormField, 'Cari cabang...'),

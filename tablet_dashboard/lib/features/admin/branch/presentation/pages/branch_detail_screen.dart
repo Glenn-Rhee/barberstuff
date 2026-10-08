@@ -8,7 +8,6 @@ import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch.da
 import 'package:tablet_dashboard/features/admin/branch/presentation/pages/branch_edit_screen.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/account_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_detail_controller.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_sync.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/capster_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/service_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/account_tab.dart';
@@ -109,7 +108,6 @@ class _BranchDetailViewState extends State<_BranchDetailView> {
       AppToast.show(context, error, error: true);
       return;
     }
-    BranchSync.stores(context);
     AppToast.show(context, 'Cabang $name dihapus');
     Navigator.pop(context, true);
   }

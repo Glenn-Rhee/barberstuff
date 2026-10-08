@@ -4,7 +4,6 @@ import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/pages/branch_section.dart';
-import 'package:tablet_dashboard/features/admin/dashboard/presentation/pages/admin_dashboard_screen.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
@@ -43,7 +42,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _bootstrap() async {
     if (!mounted) return;
     final profile = context.read<SessionController>().profile;
-    if (profile == null) return;
+    // Admin cuma Mengelola Cabang, data kasir tidak perlu dimuat
+    if (profile == null || profile.staffRole == StaffRole.admin) return;
     final store = context.read<StoreController>();
     final catalog = context.read<CatalogController>();
     final attendance = context.read<AttendanceController>();
@@ -65,44 +65,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final section = context.select<NavigationController, AppSection>(
-      (n) => n.section,
-    );
     final role = context.select<SessionController, StaffRole?>(
       (s) => s.staffRole,
     );
+    final section = context.select<NavigationController, AppSection>(
+      (n) => n.sectionFor(role),
+    );
 
-    return LiveRefresh(
-      child: Scaffold(
-        body: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const AppSidebar(),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const ClockDriftBanner(),
-                  Expanded(
-                    child: switch (section) {
-                      AppSection.dashboard => switch (role) {
-                        StaffRole.admin => const AdminDashboardScreen(),
-                        StaffRole.mitra => const MitraDashboardScreen(),
-                        _ => const CashierDashboardScreen(),
-                      },
-                      AppSection.branches => const BranchSection(),
-                      AppSection.order => const OrderScreen(),
-                      AppSection.customers => const CustomersScreen(),
-                      AppSection.bookkeeping => const BookkeepingScreen(),
-                      AppSection.settings => const SettingsScreen(),
-                    },
-                  ),
-                ],
-              ),
+    final body = Scaffold(
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const AppSidebar(),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const ClockDriftBanner(),
+                Expanded(
+                  child: switch (section) {
+                    AppSection.dashboard =>
+                      role == StaffRole.mitra
+                          ? const MitraDashboardScreen()
+                          : const CashierDashboardScreen(),
+                    AppSection.branches => const BranchSection(),
+                    AppSection.order => const OrderScreen(),
+                    AppSection.customers => const CustomersScreen(),
+                    AppSection.bookkeeping => const BookkeepingScreen(),
+                    AppSection.settings => const SettingsScreen(),
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+
+    // Admin tidak butuh muat ulang data kasir
+    return role == StaffRole.admin ? body : LiveRefresh(child: body);
   }
 }

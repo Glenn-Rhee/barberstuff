@@ -6,6 +6,7 @@ class AppAsset {
   static const String _sidebar = 'assets/icons/sidebar';
   static const String _cashier = 'assets/icons/cashier';
   static const String _general = 'assets/icons/general';
+  static const String _admin = 'assets/icons/admin';
   static const String _image = 'assets/images';
 
   // Logo
@@ -52,6 +53,15 @@ class AppAsset {
   static const String searchIcon = '$_general/search.png';
   static const String logoutIcon = '$_general/logout.png';
   static const String scissorsIcon = '$_general/scrissors_book.png';
+
+  // Ikon admin (Mengelola Cabang). Pin, jam, bintang sudah emas,
+  // orang & kursi sudah abu-abu, jadi pakai tint: false
+  static const String mapPinIcon = '$_admin/map_loc.png';
+  static const String clockIcon = '$_admin/time.png';
+  static const String employeeIcon = '$_admin/person.png';
+  static const String chairIcon = '$_admin/chair.png';
+  static const String starOutlineIcon = '$_admin/star_not_full.png';
+  static const String plusIcon = '$_admin/plus.png';
 
   // Bintang rating, dua warna jadi jangan diwarnai ulang
   static const String starIcon = '$_general/full_star_history.png';

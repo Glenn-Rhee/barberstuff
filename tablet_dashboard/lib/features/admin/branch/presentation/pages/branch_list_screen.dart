@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/features/admin/branch/data/branch_api.dart';
 import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch.dart';
@@ -9,12 +10,11 @@ import 'package:tablet_dashboard/features/admin/branch/presentation/pages/branch
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_detail_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_card.dart';
-import 'package:tablet_dashboard/shared/widgets/buttons/refresh_button.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
-import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/page_header.dart';
 import 'package:tablet_dashboard/shared/widgets/navigation/pagination_bar.dart';
 
@@ -27,6 +27,8 @@ class BranchListScreen extends StatefulWidget {
 }
 
 class _BranchListScreenState extends State<BranchListScreen> {
+  static const _spacing = 16.0;
+
   @override
   void initState() {
     super.initState();
@@ -69,23 +71,22 @@ class _BranchListScreenState extends State<BranchListScreen> {
               subtitle: 'Kelola informasi dan layanan di setiap cabang.',
               actions: [
                 SizedBox(
-                  width: 240,
+                  width: 260,
                   child: AppSearchField(
                     hint: 'Cari cabang...',
                     initialValue: list.query,
                     onChanged: list.setQuery,
                   ),
                 ),
-                DropdownChip<BranchSort>(
-                  value: list.sort,
-                  options: BranchSort.values,
-                  labelOf: (s) => s.label,
-                  onChanged: list.setSort,
-                ),
-                RefreshButton(onRefresh: list.refresh),
                 FilledButton.icon(
                   onPressed: () => _open(const BranchCreateScreen()),
-                  icon: const Icon(Icons.add, size: 18),
+                  style: FilledButton.styleFrom(
+                    foregroundColor: AppColor.ink,
+                    elevation: 2,
+                    shadowColor: AppColor.gold.withValues(alpha: 0.4),
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                  ),
+                  icon: const AppIcon(AppAsset.plusIcon, size: 14),
                   label: const Text('Tambah Cabang'),
                 ),
               ],
@@ -110,12 +111,17 @@ class _BranchListScreenState extends State<BranchListScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final columns = constraints.maxWidth >= 800 ? 3 : 2;
+        // 2 baris pas satu layar seperti desain, layar pendek = bisa scroll
+        final cardHeight = ((constraints.maxHeight - _spacing) / 2).clamp(
+          BranchCard.minHeight,
+          BranchCard.maxHeight,
+        );
         if (list.loading) {
           return SkeletonGrid(
             crossAxisCount: columns,
-            mainAxisExtent: BranchCard.height,
+            mainAxisExtent: cardHeight,
             count: list.pageSize,
-            spacing: 16,
+            spacing: _spacing,
           );
         }
         if (list.error != null) {
@@ -142,9 +148,9 @@ class _BranchListScreenState extends State<BranchListScreen> {
           child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: columns,
-              mainAxisExtent: BranchCard.height,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
+              mainAxisExtent: cardHeight,
+              crossAxisSpacing: _spacing,
+              mainAxisSpacing: _spacing,
             ),
             itemCount: branches.length,
             itemBuilder: (_, i) => BranchCard(

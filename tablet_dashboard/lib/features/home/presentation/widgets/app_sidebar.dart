@@ -28,16 +28,13 @@ class AppSidebar extends StatelessWidget {
     (AppSection.settings, 'Konfigurasi', AppAsset.settingIcon),
   ];
 
-  // Menu khusus admin, disisipkan setelah Dashboard
+  // Admin sementara cuma Mengelola Cabang
   static const _adminItems = [
     (AppSection.branches, 'Mengelola Cabang', AppAsset.locationIcon),
   ];
 
-  static List<(AppSection, String, String)> _itemsFor(StaffRole? role) => [
-    _items.first,
-    if (role == StaffRole.admin) ..._adminItems,
-    ..._items.skip(1),
-  ];
+  static List<(AppSection, String, String)> _itemsFor(StaffRole? role) =>
+      role == StaffRole.admin ? _adminItems : _items;
 
   Future<void> _signOut(BuildContext context) async {
     final confirmed = await confirmDialog(
@@ -116,7 +113,7 @@ class AppSidebar extends StatelessWidget {
                     label: label,
                     icon: icon,
                     expanded: expanded,
-                    selected: nav.section == section,
+                    selected: nav.sectionFor(profile?.staffRole) == section,
                     onTap: () => nav.go(section),
                   ),
                 const Spacer(),

@@ -4,7 +4,6 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/services/media/photo_picker.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_sync.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/capster_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_table.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
@@ -88,7 +87,6 @@ class _CapsterTabState extends State<CapsterTab> {
       return;
     }
     setState(() => _editing = null);
-    BranchSync.catalog(context, list.storeId);
     AppToast.show(
       context,
       capster == null ? 'Capster $name ditambahkan' : 'Capster $name disimpan',
@@ -112,7 +110,6 @@ class _CapsterTabState extends State<CapsterTab> {
       AppToast.show(context, error, error: true);
       return;
     }
-    BranchSync.catalog(context, list.storeId);
     AppToast.show(context, 'Capster ${capster.name} dihapus');
   }
 

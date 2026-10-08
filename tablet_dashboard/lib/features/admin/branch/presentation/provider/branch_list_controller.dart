@@ -4,23 +4,11 @@ import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch.da
 import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch_draft.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/local_list_controller.dart';
 
-enum BranchSort {
-  name('Nama A-Z'),
-  newest('Terbaru'),
-  rating('Rating Tertinggi');
-
-  const BranchSort(this.label);
-
-  final String label;
-}
-
 // Semua cabang di halaman Mengelola Cabang (GET /store)
 class BranchListController extends LocalListController<Branch> {
   BranchListController(this._api) : super(pageSize: 6);
 
   final BranchApi _api;
-
-  BranchSort sort = BranchSort.name;
 
   @override
   Future<List<Branch>> fetch() => _api.branches();
@@ -32,19 +20,8 @@ class BranchListController extends LocalListController<Branch> {
       (branch.address?.toLowerCase().contains(keyword) ?? false);
 
   @override
-  int compare(Branch a, Branch b) {
-    final byName = a.name.toLowerCase().compareTo(b.name.toLowerCase());
-    final bySort = switch (sort) {
-      BranchSort.name => 0,
-      BranchSort.newest => (b.createdAt ?? DateTime(0)).compareTo(
-        a.createdAt ?? DateTime(0),
-      ),
-      BranchSort.rating => b.rating.compareTo(a.rating),
-    };
-    return bySort != 0 ? bySort : byName;
-  }
-
-  void setSort(BranchSort value) => change(() => sort = value);
+  int compare(Branch a, Branch b) =>
+      a.name.toLowerCase().compareTo(b.name.toLowerCase());
 
   // Foto diunggah dulu, baru cabang dibuat pakai object key-nya
   Future<String?> create(BranchDraft draft, PickedPhoto photo) =>

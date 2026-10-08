@@ -78,6 +78,7 @@ flutter:
     - assets/icons/sidebar/
     - assets/icons/cashier/
     - assets/icons/general/
+    - assets/icons/admin/
     - assets/images/
 
 

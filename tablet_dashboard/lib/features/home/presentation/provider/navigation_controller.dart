@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 
 // Menu sidebar. Isi Dashboard beda tiap role, Mengelola Cabang khusus admin
 enum AppSection { dashboard, branches, order, customers, bookkeeping, settings }
@@ -13,6 +14,10 @@ class NavigationController extends ChangeNotifier {
 
   // Sidebar kecil = ikon saja, area konten jadi lebih lebar
   bool sidebarExpanded = true;
+
+  // Admin sementara cuma punya Mengelola Cabang
+  AppSection sectionFor(StaffRole? role) =>
+      role == StaffRole.admin ? AppSection.branches : section;
 
   void toggleSidebar() {
     sidebarExpanded = !sidebarExpanded;

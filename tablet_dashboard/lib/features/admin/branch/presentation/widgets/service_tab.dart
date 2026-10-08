@@ -4,7 +4,6 @@ import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/core/utils/thousands_formatter.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_sync.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/service_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_table.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/package_items_dialog.dart';
@@ -126,7 +125,6 @@ class _ServiceTabState extends State<ServiceTab> {
       return;
     }
     setState(() => _editing = null);
-    BranchSync.catalog(context, list.storeId);
     AppToast.show(
       context,
       item == null ? '$label $name ditambahkan' : '$label $name disimpan',
@@ -150,7 +148,6 @@ class _ServiceTabState extends State<ServiceTab> {
       AppToast.show(context, error, error: true);
       return;
     }
-    BranchSync.catalog(context, list.storeId);
     AppToast.show(context, '$label ${item.name} dihapus');
   }
 

@@ -6,7 +6,6 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_detail_controller.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_sync.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_banner.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_form_fields.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_map.dart';
@@ -50,7 +49,6 @@ class _BranchEditScreenState extends State<BranchEditScreen> {
       if (key != null) AppToast.show(context, error, error: true);
       return error;
     }
-    BranchSync.stores(context);
     AppToast.show(context, message);
     return null;
   }

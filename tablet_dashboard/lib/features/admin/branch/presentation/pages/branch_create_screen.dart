@@ -7,7 +7,6 @@ import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch.dart';
 import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch_draft.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_list_controller.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_sync.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_form_fields.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_map.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/back_text_button.dart';
@@ -135,7 +134,6 @@ class _BranchCreateScreenState extends State<BranchCreateScreen> {
       });
       return;
     }
-    BranchSync.stores(context);
     AppToast.show(context, 'Cabang $name berhasil ditambahkan');
     Navigator.pop(context, true);
   }
