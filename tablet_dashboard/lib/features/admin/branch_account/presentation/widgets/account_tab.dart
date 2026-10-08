@@ -3,10 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/features/admin/branch_account/domain/entities/staff_account.dart';
 import 'package:tablet_dashboard/features/admin/branch_account/presentation/provider/account_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch_detail/presentation/provider/branch_detail_controller.dart';
-import 'package:tablet_dashboard/features/admin/shared/domain/entities/staff_account.dart';
-import 'package:tablet_dashboard/features/admin/shared/presentation/widgets/branch_table.dart';
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/shared/dialogs/app_form_dialog.dart';
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
@@ -23,6 +22,7 @@ import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 import 'package:tablet_dashboard/shared/widgets/form/password_field.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
+import 'package:tablet_dashboard/shared/widgets/table/branch_table.dart';
 
 // Tab Role Akun: akun kasir / mitra cabang + form tambah
 class AccountTab extends StatelessWidget {

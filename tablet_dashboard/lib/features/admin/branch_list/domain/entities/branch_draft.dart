@@ -1,4 +1,4 @@
-import 'package:tablet_dashboard/features/admin/shared/domain/entities/branch.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch.dart';
 
 // Isi form Tambah Cabang. Foto diunggah terpisah saat simpan
 class BranchDraft {

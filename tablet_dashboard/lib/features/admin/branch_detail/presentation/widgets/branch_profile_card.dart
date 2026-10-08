@@ -5,8 +5,8 @@ import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/admin/branch_detail/presentation/provider/branch_detail_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch_service/presentation/provider/service_list_controller.dart';
-import 'package:tablet_dashboard/features/admin/shared/presentation/widgets/branch_banner.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
+import 'package:tablet_dashboard/shared/widgets/display/branch_banner.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
 // Profil cabang di atas tab detail, foto di kanan

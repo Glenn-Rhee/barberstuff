@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
-import 'package:tablet_dashboard/features/admin/shared/domain/entities/branch.dart';
-import 'package:tablet_dashboard/features/admin/shared/presentation/widgets/branch_banner.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
+import 'package:tablet_dashboard/shared/widgets/display/branch_banner.dart';
 
 // Kartu cabang: foto, alamat, jam, ringkasan, tombol Detail / Edit
 class BranchCard extends StatelessWidget {

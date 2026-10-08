@@ -10,10 +10,10 @@ import 'package:tablet_dashboard/features/admin/branch_capster/presentation/widg
 import 'package:tablet_dashboard/features/admin/branch_detail/presentation/provider/branch_detail_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch_detail/presentation/widgets/branch_profile_card.dart';
 import 'package:tablet_dashboard/features/admin/branch_edit/presentation/pages/branch_edit_screen.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/data/branch_api.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch.dart';
 import 'package:tablet_dashboard/features/admin/branch_service/presentation/provider/service_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch_service/presentation/widgets/service_tab.dart';
-import 'package:tablet_dashboard/features/admin/shared/data/branch_api.dart';
-import 'package:tablet_dashboard/features/admin/shared/domain/entities/branch.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/back_text_button.dart';

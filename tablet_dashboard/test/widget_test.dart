@@ -10,7 +10,6 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/presentation/widgets/branch_card.dart';
-import 'package:tablet_dashboard/features/admin/shared/presentation/widgets/branch_table.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
@@ -21,6 +20,7 @@ import 'package:tablet_dashboard/features/home/presentation/widgets/clock_drift_
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/total_row.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
+import 'package:tablet_dashboard/shared/widgets/table/branch_table.dart';
 
 import 'escpos_decoder.dart';
 import 'fake_api.dart';

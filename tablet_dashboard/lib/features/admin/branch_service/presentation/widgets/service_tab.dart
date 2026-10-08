@@ -6,7 +6,6 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/core/utils/thousands_formatter.dart';
 import 'package:tablet_dashboard/features/admin/branch_service/presentation/provider/service_list_controller.dart';
-import 'package:tablet_dashboard/features/admin/shared/presentation/widgets/branch_table.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/widgets/service_icon.dart';
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
@@ -14,6 +13,7 @@ import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
 import 'package:tablet_dashboard/shared/widgets/form/money_field.dart';
+import 'package:tablet_dashboard/shared/widgets/table/branch_table.dart';
 
 // Tab Service / Paket: daftar, tambah / ubah di baris tabel, hapus
 class ServiceTab extends StatefulWidget {

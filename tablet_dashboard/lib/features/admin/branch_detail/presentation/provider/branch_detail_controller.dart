@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
 import 'package:tablet_dashboard/core/services/media/photo_picker.dart';
-import 'package:tablet_dashboard/features/admin/shared/data/branch_api.dart';
-import 'package:tablet_dashboard/features/admin/shared/domain/entities/branch.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/data/branch_api.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch.dart';
 
 // Profil cabang untuk Detail & Edit, awalnya dari daftar lalu GET /store/{id}
 class BranchDetailController extends ChangeNotifier {

@@ -4,17 +4,17 @@ import 'package:tablet_dashboard/core/services/media/photo_picker.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch_draft.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/presentation/provider/branch_list_controller.dart';
-import 'package:tablet_dashboard/features/admin/shared/domain/entities/branch.dart';
-import 'package:tablet_dashboard/features/admin/shared/domain/entities/branch_draft.dart';
-import 'package:tablet_dashboard/features/admin/shared/presentation/widgets/branch_form_fields.dart';
-import 'package:tablet_dashboard/features/admin/shared/presentation/widgets/branch_map.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/back_text_button.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/message_box.dart';
+import 'package:tablet_dashboard/shared/widgets/form/branch_form_fields.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
+import 'package:tablet_dashboard/shared/widgets/map/branch_map.dart';
 
 // Tambah Cabang: info toko di kiri, lokasi + peta di kanan
 class BranchCreateScreen extends StatefulWidget {

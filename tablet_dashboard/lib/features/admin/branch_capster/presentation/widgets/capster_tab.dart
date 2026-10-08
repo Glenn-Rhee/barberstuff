@@ -5,15 +5,15 @@ import 'package:tablet_dashboard/core/services/media/photo_picker.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/admin/branch_capster/presentation/provider/capster_list_controller.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/presentation/provider/branch_list_controller.dart';
-import 'package:tablet_dashboard/features/admin/shared/domain/entities/branch.dart';
-import 'package:tablet_dashboard/features/admin/shared/presentation/widgets/branch_table.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
+import 'package:tablet_dashboard/shared/widgets/table/branch_table.dart';
 
 // Tab Capster: daftar, tambah / ubah di baris tabel, pindah cabang, hapus
 class CapsterTab extends StatefulWidget {
