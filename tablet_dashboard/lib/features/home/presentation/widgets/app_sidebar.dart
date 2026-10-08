@@ -30,7 +30,7 @@ class AppSidebar extends StatelessWidget {
 
   // Admin sementara cuma Mengelola Cabang
   static const _adminItems = [
-    (AppSection.branches, 'Mengelola Cabang', AppAsset.locationIcon),
+    (AppSection.branches, 'Mengelola Cabang', AppAsset.stackIcon),
   ];
 
   static List<(AppSection, String, String)> _itemsFor(StaffRole? role) =>
