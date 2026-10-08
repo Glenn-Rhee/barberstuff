@@ -69,6 +69,18 @@ class AppAsset {
   static const String checkIcon = '$_admin/checklist_paket.png';
   static const String infoIcon = '$_admin/info.png';
 
+  // Ikon Manajemen Karyawan (sudah berwarna)
+  static const String employeesIcon = '$_admin/personal_empolye.png';
+  static const String employeeActiveIcon = '$_admin/personal_check_empolye.png';
+  static const String employeeInactiveIcon =
+      '$_admin/personal_uncheck_empoly.png';
+  static const String buildingIcon = '$_admin/docs_empolye.png';
+  static const String viewIcon = '$_admin/eye_empolye.png';
+  static const String editEmployeeIcon = '$_admin/edit_empolyee.png';
+  static const String deleteEmployeeIcon = '$_admin/trash_empolye.png';
+  static const String cameraIcon = '$_admin/camera_empolye.png';
+  static const String uploadIcon = '$_admin/upload_empolye.png';
+
   // Bintang rating, dua warna jadi jangan diwarnai ulang
   static const String starIcon = '$_general/full_star_history.png';
 }

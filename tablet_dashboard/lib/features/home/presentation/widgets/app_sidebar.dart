@@ -28,9 +28,10 @@ class AppSidebar extends StatelessWidget {
     (AppSection.settings, 'Konfigurasi', AppAsset.settingIcon),
   ];
 
-  // Admin sementara cuma Mengelola Cabang
+  // Menu admin
   static const _adminItems = [
     (AppSection.branches, 'Mengelola Cabang', AppAsset.stackIcon),
+    (AppSection.employees, 'Manajemen Karyawan', AppAsset.gridIcon),
   ];
 
   static List<(AppSection, String, String)> _itemsFor(StaffRole? role) =>

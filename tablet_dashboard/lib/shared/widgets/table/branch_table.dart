@@ -266,6 +266,7 @@ class RowIconButton extends StatelessWidget {
     required this.tooltip,
     required this.onTap,
     this.bordered = true,
+    this.background = AppColor.surface,
   });
 
   final String asset;
@@ -273,12 +274,15 @@ class RowIconButton extends StatelessWidget {
   final VoidCallback? onTap;
   final bool bordered;
 
+  // Mis. merah muda untuk tombol hapus
+  final Color background;
+
   @override
   Widget build(BuildContext context) {
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: AppColor.surface,
+        color: background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: bordered
