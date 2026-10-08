@@ -1,4 +1,4 @@
-import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
+import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 
 // Akun login cabang (GET /staff), maks. 1 kasir + 1 mitra per cabang
 class StaffAccount {

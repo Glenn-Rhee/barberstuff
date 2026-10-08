@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
+import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';

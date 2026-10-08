@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
-import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
+import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
 import 'package:tablet_dashboard/features/cashier/store/domain/entities/store_info.dart';
 

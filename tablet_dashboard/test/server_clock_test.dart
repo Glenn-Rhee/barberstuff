@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tablet_dashboard/core/network/server_clock.dart';
-import 'package:tablet_dashboard/features/home/presentation/widgets/clock_drift_banner.dart';
+import 'package:tablet_dashboard/features/home/shell/presentation/widgets/clock_drift_banner.dart';
 
 void main() {
   // Header Date server yang selisih [offset] dari jam tablet

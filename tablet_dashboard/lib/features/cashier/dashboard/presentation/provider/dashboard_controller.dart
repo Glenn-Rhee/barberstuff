@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/data/booking_api.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
 
 // Reservasi hari ini untuk dashboard, terpisah dari filter tab Kasir
 class DashboardController extends ChangeNotifier {

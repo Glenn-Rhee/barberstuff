@@ -9,15 +9,15 @@ import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_theme.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/data/branch_api.dart';
-import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
-import 'package:tablet_dashboard/features/auth/presentation/pages/login_screen.dart';
-import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
+import 'package:tablet_dashboard/features/auth/login/data/auth_api.dart';
+import 'package:tablet_dashboard/features/auth/login/presentation/pages/login_screen.dart';
+import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/data/catalog_api.dart';
-import 'package:tablet_dashboard/features/cashier/customer/data/customer_api.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
+import 'package:tablet_dashboard/features/cashier/customer_list/data/customer_api.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.dart';
 import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
-import 'package:tablet_dashboard/features/home/presentation/pages/dashboard_screen.dart';
+import 'package:tablet_dashboard/features/home/shell/presentation/pages/dashboard_screen.dart';
 
 class TabletDashboardApp extends StatefulWidget {
   const TabletDashboardApp({

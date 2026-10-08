@@ -1,6 +1,6 @@
 import 'package:tablet_dashboard/features/admin/branch_account/domain/entities/staff_account.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch.dart';
-import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
+import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 
 enum EmployeeRole {

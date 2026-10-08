@@ -6,7 +6,7 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/widgets/arrival_badge.dart';
-import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
+import 'package:tablet_dashboard/features/home/shell/presentation/provider/navigation_controller.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';

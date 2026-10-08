@@ -5,24 +5,24 @@ import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/data/branch_api.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/presentation/provider/branch_list_controller.dart';
-import 'package:tablet_dashboard/features/auth/data/auth_api.dart';
-import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
+import 'package:tablet_dashboard/features/auth/login/data/auth_api.dart';
+import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
 import 'package:tablet_dashboard/features/cashier/bookkeeping/presentation/provider/cash_history_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/data/catalog_api.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
-import 'package:tablet_dashboard/features/cashier/customer/data/customer_api.dart';
-import 'package:tablet_dashboard/features/cashier/customer/presentation/provider/customer_history_controller.dart';
+import 'package:tablet_dashboard/features/cashier/customer_list/data/customer_api.dart';
+import 'package:tablet_dashboard/features/cashier/customer_list/presentation/provider/customer_history_controller.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/provider/checkout_controller.dart';
-import 'package:tablet_dashboard/features/cashier/order/presentation/provider/order_controller.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/data/booking_api.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/provider/bookings_controller.dart';
+import 'package:tablet_dashboard/features/cashier/order_walk_in/presentation/provider/order_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
-import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
+import 'package:tablet_dashboard/features/home/shell/presentation/provider/navigation_controller.dart';
 
 // Semua dependency: API (satu [client]), printer, controller
 List<SingleChildWidget> appProviders({

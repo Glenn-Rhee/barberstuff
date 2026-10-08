@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
 
 // progress = Sudah Check-in, booked lewat = Menunggu, lainnya = Dijadwalkan

@@ -6,7 +6,7 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/admin/branch_account/domain/entities/staff_account.dart';
 import 'package:tablet_dashboard/features/admin/branch_account/presentation/provider/account_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch_detail/presentation/provider/branch_detail_controller.dart';
-import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
+import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/shared/dialogs/app_form_dialog.dart';
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
