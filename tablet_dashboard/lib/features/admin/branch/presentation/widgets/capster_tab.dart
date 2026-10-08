@@ -4,6 +4,8 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/services/media/photo_picker.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch.dart';
+import 'package:tablet_dashboard/features/admin/branch/presentation/provider/branch_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/provider/capster_list_controller.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_table.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
@@ -13,7 +15,7 @@ import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/form/dropdown_chip.dart';
 
-// Tab Capster: daftar, tambah / ubah di baris tabel, hapus
+// Tab Capster: daftar, tambah / ubah di baris tabel, pindah cabang, hapus
 class CapsterTab extends StatefulWidget {
   const CapsterTab({super.key});
 
@@ -32,6 +34,10 @@ class _CapsterTabState extends State<CapsterTab> {
   PickedPhoto? _photo;
   bool _busy = false;
 
+  // Capster yang sedang dipindah + cabang tujuannya
+  String? _moving;
+  Branch? _target;
+
   @override
   void dispose() {
     _name.dispose();
@@ -39,6 +45,7 @@ class _CapsterTabState extends State<CapsterTab> {
   }
 
   void _startEdit(Capster? capster) => setState(() {
+    _moving = null;
     _editing = capster?.id ?? _newRow;
     _name.text = capster?.name ?? '';
     _active = capster?.active ?? true;
@@ -46,6 +53,33 @@ class _CapsterTabState extends State<CapsterTab> {
   });
 
   void _cancel() => setState(() => _editing = null);
+
+  void _startMove(Capster capster) => setState(() {
+    _editing = null;
+    _moving = capster.id;
+    _target = null;
+  });
+
+  void _cancelMove() => setState(() => _moving = null);
+
+  Future<void> _move(Capster capster) async {
+    final target = _target;
+    if (target == null) {
+      AppToast.show(context, 'Pilih cabang tujuan dulu', error: true);
+      return;
+    }
+    final list = context.read<CapsterListController>();
+    setState(() => _busy = true);
+    final error = await list.move(capster, target.id);
+    if (!mounted) return;
+    setState(() => _busy = false);
+    if (error != null) {
+      AppToast.show(context, error, error: true);
+      return;
+    }
+    setState(() => _moving = null);
+    AppToast.show(context, '${capster.name} dipindah ke ${target.name}');
+  }
 
   Future<void> _pickPhoto() async {
     try {
@@ -147,8 +181,10 @@ class _CapsterTabState extends State<CapsterTab> {
       onPage: list.setPage,
       rows: [
         if (_editing == _newRow) _editRow(null),
-        for (final capster in visible)
+        for (final capster in visible) ...[
           if (_editing == capster.id) _editRow(capster) else _row(capster),
+          if (_moving == capster.id) _moveRow(capster),
+        ],
       ],
     );
   }
@@ -186,11 +222,62 @@ class _CapsterTabState extends State<CapsterTab> {
         const _Position(),
         ActiveBadge(active: capster.active),
         _Rating(value: capster.rating),
-        RowActions(
-          onEdit: () => _startEdit(capster),
-          onDelete: () => _delete(capster),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(child: _MoveButton(onTap: () => _startMove(capster))),
+            const SizedBox(width: 8),
+            RowActions(
+              onEdit: () => _startEdit(capster),
+              onDelete: () => _delete(capster),
+            ),
+          ],
         ),
       ],
+    );
+  }
+
+  // Baris krem di bawah capster: pilih cabang tujuan lalu Simpan
+  Widget _moveRow(Capster capster) {
+    final storeId = context.read<CapsterListController>().storeId;
+    final branches = [
+      for (final branch in context.watch<BranchListController>().all)
+        if (branch.id != storeId) branch,
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: const BoxDecoration(
+        color: AppColor.goldSoft,
+        border: Border(bottom: BorderSide(color: AppColor.border)),
+      ),
+      child: Row(
+        children: [
+          Text('Pindah cabang', style: AppTextStyle.label),
+          const SizedBox(width: 12),
+          _TargetSelect(
+            branches: branches,
+            value: _target,
+            onChanged: (branch) => setState(() => _target = branch),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Setelah disimpan, capster pindah ke cabang tujuan dan '
+              'hilang dari daftar cabang ini, bukan dihapus.',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
+            ),
+          ),
+          const SizedBox(width: 12),
+          RowEditActions(
+            busy: _busy,
+            onSave: () => _move(capster),
+            onCancel: _cancelMove,
+          ),
+        ],
+      ),
     );
   }
 
@@ -272,6 +359,90 @@ class _CapsterTabState extends State<CapsterTab> {
           onCancel: _cancel,
         ),
       ],
+    );
+  }
+}
+
+// "⇄ Pindah Cabang" di kolom aksi
+class _MoveButton extends StatelessWidget {
+  const _MoveButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        backgroundColor: AppColor.goldSoft,
+        side: const BorderSide(color: AppColor.goldBorder),
+        minimumSize: const Size(0, 34),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        textStyle: AppTextStyle.label,
+      ),
+      icon: const Icon(Icons.swap_horiz, size: 16),
+      label: const Text('Pindah Cabang', maxLines: 1),
+    );
+  }
+}
+
+// Pilihan cabang tujuan, cabang yang sedang dibuka tidak ikut
+class _TargetSelect extends StatelessWidget {
+  const _TargetSelect({
+    required this.branches,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final List<Branch> branches;
+  final Branch? value;
+  final ValueChanged<Branch> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<Branch>(
+      tooltip: 'Pilih cabang tujuan',
+      // Di atas toast, bukan di dalam navigator cabang
+      useRootNavigator: true,
+      position: PopupMenuPosition.under,
+      enabled: branches.isNotEmpty,
+      onSelected: onChanged,
+      itemBuilder: (_) => [
+        for (final branch in branches)
+          PopupMenuItem(
+            value: branch,
+            child: Text(branch.name, style: AppTextStyle.body),
+          ),
+      ],
+      child: Container(
+        width: 220,
+        height: 36,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: AppColor.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColor.borderStrong),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                value?.name ??
+                    (branches.isEmpty
+                        ? 'Tidak ada cabang lain'
+                        : 'Pilih cabang tujuan'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.body.copyWith(
+                  color: value == null ? AppColor.inkSoft : AppColor.ink,
+                ),
+              ),
+            ),
+            const Icon(Icons.keyboard_arrow_down, size: 18),
+          ],
+        ),
+      ),
     );
   }
 }

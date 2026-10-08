@@ -1449,6 +1449,29 @@ void main() {
       expect(find.byType(BranchCard), findsNWidgets(2));
     });
 
+    testWidgets('capster: pindah ke cabang lain', (tester) async {
+      await openDetail(tester, 'Barberstuff Cikutra');
+      // Urut rating tertinggi: Wahyu (4.9) di baris pertama
+      await tapVisible(tester, find.text('Pindah Cabang').first);
+
+      // Belum pilih cabang tujuan, tidak dikirim
+      await tapVisible(tester, find.text('Simpan'));
+      expect(find.text('Pilih cabang tujuan dulu'), findsOneWidget);
+      expect(
+        branchApi.calls.where((c) => c.startsWith('moveCapster')),
+        isEmpty,
+      );
+
+      await tapVisible(tester, find.text('Pilih cabang tujuan'));
+      await tester.tap(find.text('Barberstuff Depok').last);
+      await tester.pumpAndSettle();
+      await tapVisible(tester, find.text('Simpan'));
+
+      expect(branchApi.calls, contains('moveCapster:CAP-1:STORE-2'));
+      expect(find.text('Wahyu'), findsNothing);
+      expect(find.text('Wahyu dipindah ke Barberstuff Depok'), findsOneWidget);
+    });
+
     testWidgets('capster: tambah, nonaktifkan, dan hapus di tabel', (
       tester,
     ) async {

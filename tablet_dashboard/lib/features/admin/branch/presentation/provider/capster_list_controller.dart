@@ -67,6 +67,10 @@ class CapsterListController extends LocalListController<Capster> {
     );
   });
 
+  // Pindah ke cabang lain, lalu hilang dari daftar cabang ini
+  Future<String?> move(Capster capster, String storeId) =>
+      mutate(() => _api.updateCapster(capster.id, storeId: storeId));
+
   Future<String?> delete(Capster capster) =>
       mutate(() => _api.deleteCapster(capster.id));
 

@@ -127,17 +127,20 @@ class BranchApi {
     data: {'id_store': storeId, 'name': name, 'image_url': ?imageKey},
   );
 
+  // [storeId] diisi = pindah ke cabang lain
   Future<void> updateCapster(
     String id, {
     String? name,
     bool? active,
     String? imageKey,
+    String? storeId,
   }) => _client.patch(
     '/capster/$id',
     data: {
       'name': ?name,
       if (active != null) 'status': active ? 'active' : 'inactive',
       'image_url': ?imageKey,
+      'id_store': ?storeId,
     },
   );
 

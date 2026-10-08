@@ -207,9 +207,19 @@ class FakeBranchApi implements BranchApi {
     String? name,
     bool? active,
     String? imageKey,
+    String? storeId,
   }) async {
     calls.add('updateCapster:$id:${name ?? ''}:${active ?? ''}');
     _check();
+    if (storeId != null) {
+      calls.add('moveCapster:$id:$storeId');
+      final moved = capsterMap.values
+          .expand((l) => l)
+          .firstWhere((c) => c.id == id);
+      capsterMap.updateAll((_, list) => [...list.where((c) => c.id != id)]);
+      capsterMap[storeId] = [...?capsterMap[storeId], moved];
+      return;
+    }
     capsterMap.updateAll(
       (_, list) => [
         for (final c in list)
