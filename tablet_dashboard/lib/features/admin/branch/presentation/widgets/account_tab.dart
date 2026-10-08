@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/admin/branch/domain/entities/staff_account.dart';
@@ -9,6 +10,7 @@ import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/bran
 import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/shared/dialogs/app_form_dialog.dart';
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/person_avatar.dart';
 import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
@@ -31,9 +33,9 @@ class AccountTab extends StatelessWidget {
     return const Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: _AccountListCard()),
+        Expanded(flex: 3, child: _AccountListCard()),
         SizedBox(width: 20),
-        SizedBox(width: 340, child: _AccountFormCard()),
+        Expanded(flex: 2, child: _AccountFormCard()),
       ],
     );
   }
@@ -42,7 +44,7 @@ class AccountTab extends StatelessWidget {
 class _AccountListCard extends StatelessWidget {
   const _AccountListCard();
 
-  static const _flex = [4, 5, 2, 3];
+  static const _flex = [7, 7, 3, 3, 3];
 
   Future<void> _edit(BuildContext context, StaffAccount account) async {
     final saved = await showDialog<bool>(
@@ -77,6 +79,52 @@ class _AccountListCard extends StatelessWidget {
     );
   }
 
+  Widget _row(BuildContext context, StaffAccount account) {
+    return BranchTableRow(
+      flex: _flex,
+      children: [
+        Row(
+          children: [
+            PersonAvatar(
+              name: account.name,
+              size: 32,
+              background: AppColor.goldSoft,
+              foreground: AppColor.gold,
+            ),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Text(
+                account.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.bodyBold,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          account.email,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
+        ),
+        StatusBadge(
+          label: account.role?.label ?? '-',
+          color: AppColor.ink,
+          background: AppColor.surfaceMuted,
+        ),
+        // Backend belum punya status akun, akun yang ada bisa login
+        const ActiveBadge(active: true),
+        RowActions(
+          editAsset: AppAsset.editPackageIcon,
+          bordered: false,
+          onEdit: () => _edit(context, account),
+          onDelete: () => _delete(context, account),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final list = context.watch<AccountListController>();
@@ -87,7 +135,10 @@ class _AccountListCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Akun Cabang', style: AppTextStyle.h3),
+          Text(
+            'Akun Cabang',
+            style: AppTextStyle.title.copyWith(fontWeight: FontWeight.w700),
+          ),
           Text(
             'Kelola akun yang dapat login dan mengakses cabang ini.',
             style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
@@ -100,6 +151,7 @@ class _AccountListCard extends StatelessWidget {
                   hint: 'Cari nama atau email...',
                   initialValue: list.query,
                   onChanged: list.setQuery,
+                  fillColor: AppColor.surfaceMuted,
                 ),
               ),
               const SizedBox(width: 12),
@@ -112,72 +164,45 @@ class _AccountListCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const BranchTableHeader(
-            labels: ['NAMA', 'EMAIL', 'ROLE', 'AKSI'],
-            flex: _flex,
-          ),
-          if (list.loading)
-            const SkeletonRows(flex: _flex, count: 2, rowHeight: 60)
-          else if (list.error != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: ErrorRetryView(
-                title: 'Gagal memuat akun',
-                message: list.error!,
-                onRetry: list.refresh,
-              ),
-            )
-          else if (accounts.isEmpty)
-            EmptyState(
-              icon: Icons.manage_accounts_outlined,
-              title: list.all.isEmpty
-                  ? 'Belum ada akun'
-                  : 'Akun tidak ditemukan',
-              message: list.all.isEmpty
-                  ? 'Buat akun kasir atau mitra lewat form di kanan.'
-                  : 'Coba kata kunci atau role lain.',
-            )
-          else
-            for (final account in accounts)
-              BranchTableRow(
-                flex: _flex,
-                children: [
-                  Row(
-                    children: [
-                      PersonAvatar(name: account.name, size: 32),
-                      const SizedBox(width: 10),
-                      Flexible(
-                        child: Text(
-                          account.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyle.bodyBold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    account.email,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyle.body.copyWith(color: AppColor.inkSoft),
-                  ),
-                  StatusBadge(
-                    label: account.role?.label ?? '-',
-                    color: AppColor.ink,
-                    background: AppColor.surfaceMuted,
-                  ),
-                  RowActions(
-                    onEdit: () => _edit(context, account),
-                    onDelete: () => _delete(context, account),
-                  ),
-                ],
-              ),
-          const SizedBox(height: 12),
-          Text(
-            'Maks. ${AccountListController.maxAccounts} akun per cabang: '
-            '1 Kasir dan 1 Mitra.',
-            style: AppTextStyle.caption.copyWith(color: AppColor.inkFaint),
+          Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColor.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const BranchTableHeader(
+                  labels: ['NAMA', 'EMAIL', 'ROLE', 'STATUS', 'AKSI'],
+                  flex: _flex,
+                  color: AppColor.surfaceSubtle,
+                ),
+                if (list.loading)
+                  const SkeletonRows(flex: _flex, count: 2, rowHeight: 60)
+                else if (list.error != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: ErrorRetryView(
+                      title: 'Gagal memuat akun',
+                      message: list.error!,
+                      onRetry: list.refresh,
+                    ),
+                  )
+                else if (accounts.isEmpty)
+                  EmptyState(
+                    icon: Icons.manage_accounts_outlined,
+                    title: list.all.isEmpty
+                        ? 'Belum ada akun'
+                        : 'Akun tidak ditemukan',
+                    message: list.all.isEmpty
+                        ? 'Buat akun kasir atau mitra lewat form di kanan.'
+                        : 'Coba kata kunci atau role lain.',
+                  )
+                else
+                  for (final account in accounts) _row(context, account),
+              ],
+            ),
           ),
         ],
       ),
@@ -262,7 +287,10 @@ class _AccountFormCardState extends State<_AccountFormCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Tambah Akun Cabang', style: AppTextStyle.title),
+          Text(
+            'Tambah Akun Cabang',
+            style: AppTextStyle.title.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 16),
           if (list.full) ...[
             const MessageBox(
@@ -300,12 +328,12 @@ class _AccountFormCardState extends State<_AccountFormCard> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.info_outline, size: 16, color: AppColor.inkSoft),
+              const AppIcon(AppAsset.infoIcon, size: 14, tint: false),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  'Akun masuk ke $branchName. Password awal = password '
-                  'default staff, minta diganti setelah login.',
+                  'Akun akan terhubung otomatis ke $branchName. Password '
+                  'awal = password default staff.',
                   style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
                 ),
               ),
@@ -317,31 +345,28 @@ class _AccountFormCardState extends State<_AccountFormCard> {
           ],
           const SizedBox(height: 16),
           Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: _busy ? null : _reset,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColor.ink,
-                    side: const BorderSide(color: AppColor.borderStrong),
-                  ),
-                  child: const Text('Batal'),
+              OutlinedButton(
+                onPressed: _busy ? null : _reset,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColor.ink,
+                  side: const BorderSide(color: AppColor.borderStrong),
                 ),
+                child: const Text('Batal'),
               ),
               const SizedBox(width: 10),
-              Expanded(
-                child: FilledButton(
-                  onPressed: locked || _busy ? null : _submit,
-                  child: _busy
-                      ? const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppColor.gold,
-                          ),
-                        )
-                      : const Text('Simpan Akun'),
-                ),
+              FilledButton(
+                onPressed: locked || _busy ? null : _submit,
+                child: _busy
+                    ? const SizedBox.square(
+                        dimension: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColor.gold,
+                        ),
+                      )
+                    : const Text('Simpan Akun'),
               ),
             ],
           ),
@@ -373,15 +398,29 @@ class _RoleSelect extends StatelessWidget {
       // Di atas toast, bukan di dalam navigator cabang
       useRootNavigator: true,
       position: PopupMenuPosition.under,
+      menuPadding: EdgeInsets.zero,
       onSelected: onChanged,
       itemBuilder: (_) => [
         for (final role in AccountListController.roles)
+          // Role yang sedang dipilih berlatar krem
           PopupMenuItem(
             value: role,
             enabled: !taken(role),
-            child: Text(
-              taken(role) ? '${role.label} (sudah ada)' : role.label,
-              style: AppTextStyle.body,
+            padding: EdgeInsets.zero,
+            child: Container(
+              width: double.infinity,
+              color: role == value ? AppColor.goldSoft : null,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Text(
+                taken(role) ? '${role.label} (sudah ada)' : role.label,
+                style: AppTextStyle.body.copyWith(
+                  color: taken(role)
+                      ? AppColor.inkFaint
+                      : role == value
+                      ? AppColor.gold
+                      : AppColor.ink,
+                ),
+              ),
             ),
           ),
       ],

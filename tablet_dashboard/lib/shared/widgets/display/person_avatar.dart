@@ -10,6 +10,8 @@ class PersonAvatar extends StatelessWidget {
     required this.name,
     this.photo,
     this.size = 36,
+    this.background = AppColor.surfaceMuted,
+    this.foreground = AppColor.inkSoft,
   });
 
   final String name;
@@ -18,21 +20,22 @@ class PersonAvatar extends StatelessWidget {
   final String? photo;
   final double size;
 
+  // Warna lingkaran & inisial kalau tanpa foto
+  final Color background;
+  final Color foreground;
+
   @override
   Widget build(BuildContext context) {
     final initials = Container(
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        color: AppColor.surfaceMuted,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: background, shape: BoxShape.circle),
       child: Text(
         initialsOf(name),
         style: AppTextStyle.label.copyWith(
           fontSize: size * 0.3,
-          color: AppColor.inkSoft,
+          color: foreground,
         ),
       ),
     );
