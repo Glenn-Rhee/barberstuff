@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
-import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_retry_view.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
@@ -53,7 +54,7 @@ class BranchListCard extends StatelessWidget {
   final int pageCount;
   final ValueChanged<int> onPage;
 
-  // DropdownChip urutan, opsional
+  // DropdownChip urutan, tampil setelah label "Urutkan:"
   final Widget? sort;
 
   @override
@@ -63,30 +64,51 @@ class BranchListCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(title, style: AppTextStyle.h3),
-          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 320),
-                    child: AppSearchField(
-                      hint: searchHint,
-                      initialValue: query,
-                      onChanged: onQuery,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTextStyle.title.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 320),
+                      child: AppSearchField(
+                        hint: searchHint,
+                        initialValue: query,
+                        onChanged: onQuery,
+                        fillColor: AppColor.surfaceMuted,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 12),
               FilledButton.icon(
                 onPressed: onAdd,
-                icon: const Icon(Icons.add, size: 18),
+                style: FilledButton.styleFrom(
+                  foregroundColor: AppColor.ink,
+                  elevation: 2,
+                  shadowColor: AppColor.gold.withValues(alpha: 0.4),
+                ),
+                icon: const AppIcon(AppAsset.plusIcon, size: 14),
                 label: Text(addLabel),
               ),
-              if (sort != null) ...[const SizedBox(width: 12), sort!],
+              if (sort != null) ...[
+                const SizedBox(width: 16),
+                Text(
+                  'Urutkan:',
+                  style: AppTextStyle.body.copyWith(color: AppColor.inkSoft),
+                ),
+                const SizedBox(width: 8),
+                sort!,
+              ],
             ],
           ),
           const SizedBox(height: 16),
@@ -124,7 +146,7 @@ class BranchListCard extends StatelessWidget {
   }
 }
 
-// Baris judul kolom berlatar abu-abu
+// Baris judul kolom berlatar krem
 class BranchTableHeader extends StatelessWidget {
   const BranchTableHeader({
     super.key,
@@ -140,8 +162,8 @@ class BranchTableHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColor.surfaceSubtle,
-        borderRadius: BorderRadius.circular(10),
+        color: AppColor.goldSoft,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: BranchTableCells(
         flex: flex,
@@ -187,7 +209,7 @@ class BranchTableRow extends StatelessWidget {
   }
 }
 
-// Kolom-kolom selebar [flex], kolom terakhir (aksi) rata kanan
+// Kolom-kolom selebar [flex], kolom terakhir (aksi) rata tengah
 class BranchTableCells extends StatelessWidget {
   const BranchTableCells({
     super.key,
@@ -209,9 +231,7 @@ class BranchTableCells extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(right: i == last ? 0 : 12),
               child: Align(
-                alignment: i == last
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft,
+                alignment: i == last ? Alignment.center : Alignment.centerLeft,
                 child: child,
               ),
             ),
@@ -346,7 +366,7 @@ class RowEditActions extends StatelessWidget {
   }
 }
 
-// Label Aktif / Tidak Aktif
+// Label Aktif (emas) / Tidak Aktif (abu-abu)
 class ActiveBadge extends StatelessWidget {
   const ActiveBadge({super.key, required this.active});
 
@@ -354,17 +374,19 @@ class ActiveBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return active
-        ? const StatusBadge(
-            label: 'Aktif',
-            color: AppColor.success,
-            background: AppColor.successSoft,
-          )
-        : const StatusBadge(
-            label: 'Tidak Aktif',
-            color: AppColor.danger,
-            background: AppColor.dangerSoft,
-          );
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: active ? AppColor.gold : AppColor.surfaceMuted,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        active ? 'Aktif' : 'Tidak Aktif',
+        style: AppTextStyle.label.copyWith(
+          color: active ? AppColor.surface : AppColor.inkSoft,
+        ),
+      ),
+    );
   }
 }
 

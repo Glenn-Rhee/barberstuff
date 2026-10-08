@@ -22,7 +22,7 @@ class CapsterTab extends StatefulWidget {
 }
 
 class _CapsterTabState extends State<CapsterTab> {
-  static const _flex = [6, 2, 2, 3];
+  static const _flex = [7, 2, 3, 2, 6];
   static const _newRow = '';
 
   // Baris yang sedang diedit: id capster, [_newRow] = baris tambah baru
@@ -129,10 +129,9 @@ class _CapsterTabState extends State<CapsterTab> {
         value: list.sort,
         options: CapsterSort.values,
         labelOf: (s) => s.label,
-        prefix: 'Urutkan: ',
         onChanged: list.setSort,
       ),
-      columns: const ['NAMA CAPSTER', 'STATUS', 'RATING', 'AKSI'],
+      columns: const ['NAMA KARYAWAN', 'POSISI', 'STATUS', 'RATING', 'AKSI'],
       flex: _flex,
       loading: list.loading,
       error: list.error,
@@ -163,15 +162,28 @@ class _CapsterTabState extends State<CapsterTab> {
             PersonAvatar(name: capster.name, photo: capster.photoUrl, size: 38),
             const SizedBox(width: 12),
             Flexible(
-              child: Text(
-                capster.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyle.bodyBold,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    capster.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.bodyBold,
+                  ),
+                  Text(
+                    'ID: ${_shortId(capster.id)}',
+                    maxLines: 1,
+                    style: AppTextStyle.caption.copyWith(
+                      color: AppColor.inkFaint,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
+        const _Position(),
         ActiveBadge(active: capster.active),
         _Rating(value: capster.rating),
         RowActions(
@@ -240,6 +252,7 @@ class _CapsterTabState extends State<CapsterTab> {
             ),
           ],
         ),
+        const _Position(),
         // Capster baru selalu aktif
         capster == null
             ? const ActiveBadge(active: true)
@@ -263,6 +276,20 @@ class _CapsterTabState extends State<CapsterTab> {
   }
 }
 
+// Id pendek untuk dibaca admin, mis. "269971FF"
+String _shortId(String id) =>
+    (id.length > 8 ? id.substring(0, 8) : id).toUpperCase();
+
+// Backend belum punya posisi capster, semua tercatat sebagai Capster
+class _Position extends StatelessWidget {
+  const _Position();
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Capster', style: AppTextStyle.caption);
+  }
+}
+
 class _Rating extends StatelessWidget {
   const _Rating({required this.value});
 
@@ -275,7 +302,10 @@ class _Rating extends StatelessWidget {
       children: [
         const AppIcon(AppAsset.starIcon, size: 16, tint: false),
         const SizedBox(width: 4),
-        Text(value.toStringAsFixed(1), style: AppTextStyle.bodyBold),
+        Text(
+          value.toStringAsFixed(1),
+          style: AppTextStyle.bodyBold.copyWith(color: AppColor.gold),
+        ),
       ],
     );
   }

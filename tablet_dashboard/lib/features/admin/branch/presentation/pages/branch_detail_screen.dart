@@ -13,7 +13,6 @@ import 'package:tablet_dashboard/features/admin/branch/presentation/provider/ser
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/account_tab.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_profile_card.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/capster_tab.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/map_tab.dart';
 import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/service_tab.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
@@ -22,7 +21,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/page_tabs.dart';
 
-// Detail cabang: profil + tab Capster, Service, Paket, Maps, Role Akun
+// Detail cabang: profil + tab Capster, Service, Paket, Role Akun
 class BranchDetailScreen extends StatelessWidget {
   const BranchDetailScreen({super.key, required this.branch});
 
@@ -64,13 +63,7 @@ class _BranchDetailView extends StatefulWidget {
 }
 
 class _BranchDetailViewState extends State<_BranchDetailView> {
-  static const _tabs = [
-    'Capster',
-    'Service',
-    'Paket',
-    'Maps Toko',
-    'Role Akun',
-  ];
+  static const _tabs = ['Capster', 'Service', 'Paket', 'Role Akun'];
 
   int _tab = 0;
   bool _deleting = false;
@@ -164,6 +157,7 @@ class _BranchDetailViewState extends State<_BranchDetailView> {
                 const SizedBox(width: 12),
                 FilledButton.icon(
                   onPressed: _deleting ? null : _edit,
+                  style: FilledButton.styleFrom(foregroundColor: AppColor.ink),
                   icon: const Icon(Icons.edit_outlined, size: 18),
                   label: const Text('Edit Cabang'),
                 ),
@@ -195,7 +189,6 @@ class _BranchDetailViewState extends State<_BranchDetailView> {
                 key: ValueKey('package'),
                 type: ServiceType.package,
               ),
-              3 => MapTab(onEdit: _edit),
               _ => const AccountTab(),
             },
           ],

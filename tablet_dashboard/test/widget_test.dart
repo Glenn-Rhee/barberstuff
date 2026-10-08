@@ -1434,9 +1434,12 @@ void main() {
 
       expect(find.text('Profil Cabang'), findsOneWidget);
       expect(find.text('Detail Cabang'), findsOneWidget);
-      expect(find.text('081234567890'), findsOneWidget);
-      expect(find.text('2 Service Aktif\n1 Paket Aktif'), findsOneWidget);
-      expect(find.text('4.9 (12 ulasan)'), findsOneWidget);
+      expect(find.text('0812-3456-7890'), findsOneWidget);
+      expect(find.text('2 Service Operasional'), findsOneWidget);
+      expect(
+        find.textContaining(RegExp(r'^Rating Cabang: .* 4\.9$')),
+        findsOneWidget,
+      );
       expect(branchApi.calls, contains('branch:STORE-1'));
       // Tab Capster terbuka duluan
       expect(find.text('Wahyu'), findsOneWidget);

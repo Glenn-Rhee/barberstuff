@@ -13,98 +13,102 @@ import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 class BranchProfileCard extends StatelessWidget {
   const BranchProfileCard({super.key});
 
+  // Tinggi tetap, kalau ikut foto kartunya memanjang sesuai ukuran gambar
+  static const height = 220.0;
+
+  // "081234567890" -> "0812-3456-7890"
+  static String phoneLabel(String? phone) {
+    if (phone == null || phone.isEmpty) return '-';
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+    return [
+      for (var i = 0; i < digits.length; i += 4)
+        digits.substring(i, (i + 4).clamp(0, digits.length)),
+    ].join('-');
+  }
+
   @override
   Widget build(BuildContext context) {
     final branch = context.watch<BranchDetailController>().branch;
     final services = context.watch<ServiceListController>();
-    final packages = context.watch<PackageListController>();
 
     // total_service backend ikut hitung yang terhapus, pakai daftar asli
-    String count(ServiceListController list, int fallback, String label) =>
-        list.loading || list.error != null
-        ? '$fallback $label'
-        : '${list.activeCount} $label Aktif';
+    final serviceCount = services.loading || services.error != null
+        ? branch.totalService
+        : services.activeCount;
 
-    return IntrinsicHeight(
+    return SizedBox(
+      height: height,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             flex: 3,
             child: AppCard(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Profil Cabang', style: AppTextStyle.title),
+                  Text(
+                    'Profil Cabang',
+                    style: AppTextStyle.title.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _ProfileColumn(
-                          children: [
-                            _ProfileField(
-                              label: 'ALAMAT',
-                              value: branch.address,
-                              maxLines: 3,
-                            ),
-                            _ProfileField(
-                              label: 'JAM OPERASIONAL',
-                              value: branch.hours,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: _ProfileColumn(
-                          children: [
-                            _ProfileField(
-                              label: 'TELEPON',
-                              value: branch.phone,
-                            ),
-                            _ProfileField(
-                              label: 'DESKRIPSI',
-                              value: branch.description,
-                              maxLines: 3,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: _ProfileColumn(
-                          children: [
-                            _ProfileField(
-                              label: 'JUMLAH LAYANAN',
-                              value:
-                                  '${count(services, branch.totalService, 'Service')}\n'
-                                  '${count(packages, branch.totalPackage, 'Paket')}',
-                              maxLines: 2,
-                            ),
-                            _ProfileField(
-                              label: 'STATUS',
-                              value:
-                                  '${branch.open ? 'Buka' : 'Tutup'} · '
-                                  '${branch.type.label}',
-                            ),
-                            _ProfileField(
-                              label: 'RATING CABANG',
-                              value: branch.reviewCount == 0
-                                  ? 'Belum ada ulasan'
-                                  : '${branch.rating.toStringAsFixed(1)} '
-                                        '(${branch.reviewCount} ulasan)',
-                              leading: const AppIcon(
-                                AppAsset.starIcon,
-                                size: 14,
-                                tint: false,
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              _ProfileField(
+                                label: 'ALAMAT',
+                                value: branch.address,
+                                maxLines: 2,
                               ),
-                            ),
-                          ],
+                              _ProfileField(
+                                label: 'JAM OPERASIONAL',
+                                value: branch.hours,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              _ProfileField(
+                                label: 'TELEPON',
+                                value: phoneLabel(branch.phone),
+                              ),
+                              _ProfileField(
+                                label: 'DESKRIPSI',
+                                value: branch.description,
+                                maxLines: 2,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _ProfileField(
+                                label: 'JUMLAH SERVICE',
+                                value: '$serviceCount Service Operasional',
+                              ),
+                              _Rating(
+                                label: branch.reviewCount == 0
+                                    ? 'Belum ada'
+                                    : branch.rating.toStringAsFixed(1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -113,30 +117,13 @@ class BranchProfileCard extends StatelessWidget {
           const SizedBox(width: 20),
           Expanded(
             flex: 2,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 220),
-              child: BranchBanner(
-                url: branch.bannerUrl,
-                radius: BorderRadius.circular(16),
-              ),
+            child: BranchBanner(
+              url: branch.bannerUrl,
+              radius: BorderRadius.circular(16),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ProfileColumn extends StatelessWidget {
-  const _ProfileColumn({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: children,
     );
   }
 }
@@ -146,25 +133,17 @@ class _ProfileField extends StatelessWidget {
     required this.label,
     required this.value,
     this.maxLines = 1,
-    this.leading,
   });
 
   final String label;
   final String? value;
   final int maxLines;
-  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
-    final text = Text(
-      value ?? '-',
-      maxLines: maxLines,
-      overflow: TextOverflow.ellipsis,
-      style: AppTextStyle.bodyMedium.copyWith(height: 1.3),
-    );
-
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.only(bottom: 6),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColor.border)),
@@ -177,24 +156,51 @@ class _ProfileField extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyle.caption.copyWith(
-              fontSize: 11,
+              fontSize: 10,
               letterSpacing: 0.5,
               color: AppColor.inkSoft,
             ),
           ),
           const SizedBox(height: 2),
-          if (leading == null)
-            text
-          else
-            Row(
-              children: [
-                leading!,
-                const SizedBox(width: 4),
-                Flexible(child: text),
-              ],
-            ),
+          Text(
+            value ?? '-',
+            maxLines: maxLines,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyle.bodyMedium.copyWith(fontSize: 13, height: 1.3),
+          ),
         ],
       ),
+    );
+  }
+}
+
+// "Rating Cabang: ★ 4.9"
+class _Rating extends StatelessWidget {
+  const _Rating({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: 'Rating Cabang: ',
+            style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
+          ),
+          const WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: AppIcon(AppAsset.starIcon, size: 14, tint: false),
+          ),
+          TextSpan(
+            text: ' $label',
+            style: AppTextStyle.bodyBold.copyWith(fontSize: 13),
+          ),
+        ],
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

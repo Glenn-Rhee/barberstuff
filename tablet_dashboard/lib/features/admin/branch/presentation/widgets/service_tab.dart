@@ -167,7 +167,6 @@ class _ServiceTabState extends State<ServiceTab> {
         value: list.sort,
         options: ServiceSort.values,
         labelOf: (s) => s.label,
-        prefix: 'Urutkan: ',
         onChanged: list.setSort,
       ),
       columns: [
