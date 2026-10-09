@@ -828,7 +828,9 @@ func (s *staffService) CheckinBooking(qrCode string, claims *lib.CustomClaims) e
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		var scopesUpdate []func(*gorm.DB) *gorm.DB
 		scopesUpdate = append(scopesUpdate, func(d *gorm.DB) *gorm.DB {
-			return d.Where("qr_code = ? AND status_booking = ?", qrCode, entity.BookingStatusBooked)
+			return d.
+				Where("qr_code = ? AND status_booking = ?", qrCode, entity.BookingStatusBooked).
+				Where("id_store = ?", dataStore.ID)
 		})
 
 		rowsAffected, err := s.bookingRepo.Updates(tx, map[string]interface{}{
@@ -1082,9 +1084,6 @@ func (s *staffService) UpdateBooking(claims *lib.CustomClaims, req dto.UpdateBoo
 				Where("id_store = ?", dataStore.ID).
 				Where("status_booking = ? OR status_booking = ?", entity.BookingStatusBooked, entity.BookingStatusProgress)
 		})
-
-		log.Println("id booking:", idBooking)
-		log.Println("id store:", dataStore.ID)
 
 		rowsAffected, err := s.bookingRepo.Updates(tx, updates, scopes...)
 		if err != nil {
