@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
@@ -108,14 +109,16 @@ class StoreSelector extends StatelessWidget {
   }
 }
 
-// "● Toko Buka" / "● Toko Tutup" sesuai status dan jam operasional
+// "● Toko Buka" / "● Toko Tutup" sesuai status dan jam operasional.
+// Pakai jam server, jam tablet bisa salah
 class StoreOpenChip extends StatelessWidget {
   const StoreOpenChip({super.key});
 
   @override
   Widget build(BuildContext context) {
     final store = context.select<StoreController, StoreInfo?>((s) => s.current);
-    final open = store?.isOpenAt(DateTime.now()) ?? false;
+    final now = context.watch<ServerClock>().now();
+    final open = store?.isOpenAt(now) ?? false;
     final color = open ? AppColor.success : AppColor.danger;
 
     return Container(

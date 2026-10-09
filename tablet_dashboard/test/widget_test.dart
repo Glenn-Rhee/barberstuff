@@ -668,6 +668,29 @@ void main() {
       expect(find.text('Progress'), findsOneWidget);
     });
 
+    testWidgets('status toko buka / tutup ikut jam server', (tester) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      final clock = Provider.of<ServerClock>(
+        tester.element(find.byType(ClockDriftBanner)),
+        listen: false,
+      );
+      final today = DateTime.now();
+
+      // Toko 09:00 - 21:00, jam tablet apa pun
+      clock.sync(
+        HttpDate.format(DateTime(today.year, today.month, today.day, 12)),
+      );
+      await tester.pump();
+      expect(find.text('Toko Buka'), findsOneWidget);
+
+      clock.sync(
+        HttpDate.format(DateTime(today.year, today.month, today.day, 22)),
+      );
+      await tester.pump();
+      expect(find.text('Toko Tutup'), findsOneWidget);
+    });
+
     testWidgets('jam tablet ketinggalan: pesanan pakai jam server + banner', (
       tester,
     ) async {
