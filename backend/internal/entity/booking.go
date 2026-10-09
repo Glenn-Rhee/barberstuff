@@ -36,6 +36,7 @@ type Booking struct {
 	TotalPrice     decimal.Decimal   `gorm:"column:total_price;not null;default:0"`
 	ScheduledAt    time.Time         `gorm:"column:scheduled_at"`
 	QRCode         string            `gorm:"column:qr_code"`
+	Notes          *string           `gorm:"column:notes"`
 	BookingType    BookingTypeEnum   `gorm:"column:booking_type;not null"`
 	CreatedAt      time.Time         `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt      time.Time         `gorm:"column:updated_at;not null;autoUpdateTime"`
