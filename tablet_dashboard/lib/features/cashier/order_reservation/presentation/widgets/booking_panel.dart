@@ -15,6 +15,7 @@ import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/dis
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/payment_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/provider/bookings_controller.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/widgets/cancel_booking_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/widgets/service_picker_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
@@ -170,6 +171,18 @@ class _BookingPanelState extends State<BookingPanel> {
     if (printed && mounted) AppToast.show(context, 'Struk dicetak ulang');
   }
 
+  // Batalkan booking (booked/progress), completed tidak bisa dicancel
+  Future<void> _cancel(Booking booking) async {
+    final bookings = context.read<BookingsController>();
+    final cancelled = await showCancelBookingDialog(
+      context,
+      onSubmit: (reason) => bookings.cancel(booking, reason),
+    );
+    if (!cancelled || !mounted) return;
+    context.read<BookingsController>().refresh();
+    AppToast.show(context, 'Pesanan ${booking.customer.name} dibatalkan');
+  }
+
   @override
   Widget build(BuildContext context) {
     final booking = context.watch<BookingsController>().selected;
@@ -301,6 +314,8 @@ class _BookingPanelState extends State<BookingPanel> {
               onPressed: _busy ? null : () => _checkIn(booking),
               child: const Text('Ubah Status Progress'),
             ),
+            const SizedBox(height: 8),
+            _cancelButton(booking),
           ],
           BookingStatus.progress => [
             Text(
@@ -344,6 +359,8 @@ class _BookingPanelState extends State<BookingPanel> {
               icon: const Icon(Icons.print_outlined, size: 18),
               label: const Text('Bayar'),
             ),
+            const SizedBox(height: 8),
+            _cancelButton(booking),
           ],
           BookingStatus.completed => [
             FilledButton.icon(
@@ -357,4 +374,10 @@ class _BookingPanelState extends State<BookingPanel> {
       ],
     );
   }
+
+  Widget _cancelButton(Booking booking) => OutlinedButton(
+    style: AppButtonStyle.dangerFilled,
+    onPressed: _busy ? null : () => _cancel(booking),
+    child: const Text('Cancel Pesanan'),
+  );
 }

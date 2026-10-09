@@ -4,10 +4,17 @@ import 'package:tablet_dashboard/core/theme/app_color.dart';
 class AppButtonStyle {
   const AppButtonStyle._();
 
-  // Tombol garis merah ("Tutup Shift Kasir", "Cancel Pesanan")
+  // Tombol garis merah ("Tutup Shift Kasir")
   static final ButtonStyle dangerOutlined = OutlinedButton.styleFrom(
     foregroundColor: AppColor.danger,
     backgroundColor: AppColor.dangerSoft,
+    side: const BorderSide(color: AppColor.danger),
+  );
+
+  // Tombol merah solid ("Cancel Pesanan")
+  static final ButtonStyle dangerFilled = OutlinedButton.styleFrom(
+    foregroundColor: AppColor.danger,
+    backgroundColor: AppColor.surface,
     side: const BorderSide(color: AppColor.danger),
   );
 

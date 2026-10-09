@@ -129,6 +129,15 @@ class BookingsController extends ChangeNotifier {
     }
   }
 
+  Future<String?> cancel(Booking booking, String notes) async {
+    try {
+      await _api.cancel(bookingId: booking.id, notes: notes);
+      return null;
+    } on ApiException catch (e) {
+      return e.message;
+    }
+  }
+
   // Check-in pakai QR id penuh, tidak ketemu = QR pendek
   Future<String?> checkInBooking(Booking booking) async {
     final error = await checkIn('bk${booking.id}');

@@ -3,6 +3,7 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/admin/employee_create/presentation/pages/employee_create_screen.dart';
+import 'package:tablet_dashboard/features/admin/employee_list/presentation/widgets/employee_filter_bar.dart';
 import 'package:tablet_dashboard/features/admin/employee_list/presentation/widgets/grid_tabel_stat.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
@@ -25,13 +26,11 @@ class EmployeeListScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: <Widget>[
-                const PageHeader(
-                  title: 'Manajemen Karyawan',
-                  subtitle: 'Kelola biodata dan hak akses seluruh karyawan Barberstuff.',
-                ),
-
+            PageHeader(
+              title: 'Manajemen Karyawan',
+              subtitle:
+                  'Kelola biodata dan hak akses seluruh karyawan Barberstuff.',
+              actions: [
                 FilledButton.icon(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -44,8 +43,8 @@ class EmployeeListScreen extends StatelessWidget {
                     shadowColor: AppColor.gold.withValues(alpha: 0.4),
                     padding: const EdgeInsets.symmetric(horizontal: 18),
                   ),
-                  icon: AppIcon(AppAsset.plusIcon, size: 14),
-                  label: const Text('Tambah Cabang'),
+                  icon: const AppIcon(AppAsset.plusIcon, size: 14),
+                  label: const Text('Tambah Karyawan'),
                 ),
               ],
             ),
@@ -66,12 +65,14 @@ class EmployeeListScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
+                    const EmployeeFilterBar(),
+                    const SizedBox(height: 16),
                     const BranchTableHeader(
                       labels: [
                         'KARYAWAN',
                         'JABATAN',
                         'CABANG',
-                        'EMAIL',
+                        'NOMOR TELEPON',
                         'STATUS',
                         'AKSI',
                       ],
