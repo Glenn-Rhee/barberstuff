@@ -10,7 +10,6 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/presentation/widgets/branch_card.dart';
-import 'package:tablet_dashboard/features/admin/employee_list/presentation/widgets/employee_stat_card.dart';
 import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
@@ -22,7 +21,6 @@ import 'package:tablet_dashboard/features/home/shell/presentation/widgets/sideba
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/total_row.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
-import 'package:tablet_dashboard/shared/widgets/form/select_box.dart';
 import 'package:tablet_dashboard/shared/widgets/table/branch_table.dart';
 
 import 'escpos_decoder.dart';
@@ -1697,151 +1695,18 @@ void main() {
   });
 
   group('manajemen karyawan', () {
-    Future<void> tapVisible(WidgetTester tester, Finder finder) async {
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(finder);
-      await tester.pumpAndSettle();
-      await tester.tap(finder);
-      await tester.pumpAndSettle();
-    }
-
-    Future<void> openEmployees(WidgetTester tester) async {
+    testWidgets('kerangka tabel kosong, belum hit API', (tester) async {
       api.staff = FakeApi.staffAs('admin');
       await pumpApp(tester);
       await signIn(tester);
-      await tapVisible(tester, find.text('Manajemen Karyawan'));
-    }
+      final before = [...api.calls, ...branchApi.calls];
 
-    Finder stat(String label, String value) => find.descendant(
-      of: find.widgetWithText(EmployeeStatCard, label),
-      matching: find.text(value),
-    );
-
-    // Pilih dari SelectBox yang sedang menampilkan [current]
-    Future<void> select(
-      WidgetTester tester,
-      String current,
-      String option,
-    ) async {
-      final box = find.ancestor(
-        of: find.text(current),
-        matching: find.byWidgetPredicate((w) => w is SelectBox),
-      );
-      await tapVisible(tester, box.first);
-      await tester.tap(find.text(option).last);
+      await tester.tap(find.text('Manajemen Karyawan'));
       await tester.pumpAndSettle();
-    }
-
-    testWidgets('daftar dari semua cabang, ringkasan, dan filter', (
-      tester,
-    ) async {
-      await openEmployees(tester);
-      // Capster & akun dimuat per cabang (backend wajib id_store)
-      expect(
-        branchApi.calls,
-        containsAll([
-          'capsters:STORE-1',
-          'accounts:STORE-1',
-          'capsters:STORE-2',
-          'accounts:STORE-2',
-        ]),
-      );
-      expect(find.text('Wahyu'), findsOneWidget);
-      expect(find.text('Rizal'), findsOneWidget);
-      expect(find.text('Siti Aulia'), findsOneWidget);
-      expect(find.text('siti@barberstuff.id'), findsOneWidget);
-      expect(stat('Total Karyawan', '3'), findsOneWidget);
-      expect(stat('Aktif', '2'), findsOneWidget);
-      expect(stat('Tidak Aktif', '1'), findsOneWidget);
-      expect(stat('Jumlah Cabang', '2'), findsOneWidget);
-
-      await select(tester, 'Semua Status', 'Tidak Aktif');
-      expect(find.text('Rizal'), findsOneWidget);
-      expect(find.text('Wahyu'), findsNothing);
-
-      await select(tester, 'Tidak Aktif', 'Semua Status');
-      await select(tester, 'Semua Jabatan', 'Kasir');
-      expect(find.text('Siti Aulia'), findsOneWidget);
-      expect(find.text('Wahyu'), findsNothing);
-    });
-
-    testWidgets('tambah kasir dan capster dari data asli', (tester) async {
-      await openEmployees(tester);
-      await tapVisible(tester, find.text('Tambah Karyawan'));
-
-      await tapVisible(tester, find.text('Simpan Karyawan'));
-      expect(find.text('Pilih jabatan'), findsWidgets);
-      expect(branchApi.calls.where((c) => c.startsWith('create')), isEmpty);
-
-      // Cikutra sudah punya kasir, tidak bisa dipilih
-      await select(tester, 'Pilih jabatan', 'Kasir');
-      await tapVisible(
-        tester,
-        find.ancestor(
-          of: find.text('Pilih cabang'),
-          matching: find.byWidgetPredicate((w) => w is SelectBox),
-        ),
-      );
-      await tester.tap(find.text('Barberstuff Cikutra (sudah ada Kasir)'));
-      await tester.pumpAndSettle();
-      expect(find.text('Pilih cabang'), findsOneWidget);
-      await tester.tap(find.text('Barberstuff Depok').last);
-      await tester.pumpAndSettle();
-
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Masukkan nama lengkap'),
-        'Andi Wijaya',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextField, 'nama@email.com'),
-        'andi@barberstuff.id',
-      );
-      await tapVisible(tester, find.text('Simpan Karyawan'));
-      expect(
-        branchApi.calls,
-        contains('createAccount:cashier:andi@barberstuff.id'),
-      );
-      expect(find.text('Andi Wijaya'), findsOneWidget);
-      expect(stat('Total Karyawan', '4'), findsOneWidget);
-
-      // Capster: tanpa email, langsung aktif
-      await tapVisible(tester, find.text('Tambah Karyawan'));
-      await select(tester, 'Pilih jabatan', 'Capster');
-      expect(find.widgetWithText(TextField, 'nama@email.com'), findsNothing);
-      await select(tester, 'Pilih cabang', 'Barberstuff Cikutra');
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Masukkan nama lengkap'),
-        'Budi Capster',
-      );
-      await tapVisible(tester, find.text('Simpan Karyawan'));
-      expect(branchApi.calls, contains('createCapster:Budi Capster'));
-      expect(find.text('Budi Capster'), findsOneWidget);
-    });
-
-    testWidgets('lihat, ubah status, dan hapus karyawan', (tester) async {
-      await openEmployees(tester);
-      Finder action(String name, String tooltip) => find.descendant(
-        of: find.ancestor(
-          of: find.text(name),
-          matching: find.byType(BranchTableRow),
-        ),
-        matching: find.byTooltip(tooltip),
-      );
-
-      await tapVisible(tester, action('Siti Aulia', 'Lihat'));
-      expect(find.text('siti@barberstuff.id'), findsNWidgets(2));
-      await tapVisible(tester, find.text('Tutup'));
-
-      await tapVisible(tester, action('Wahyu', 'Ubah'));
-      await select(tester, 'Aktif', 'Tidak Aktif');
-      await confirmAndSubmit(tester, 'Simpan');
-      expect(branchApi.calls, contains('updateCapster:CAP-1::false'));
-      expect(stat('Tidak Aktif', '2'), findsOneWidget);
-
-      await tapVisible(tester, action('Rizal', 'Hapus'));
-      await tapVisible(tester, find.widgetWithText(FilledButton, 'Hapus'));
-      expect(branchApi.calls, contains('deleteCapster:CAP-2'));
-      expect(find.text('Rizal'), findsNothing);
+      expect(find.text('Daftar Karyawan'), findsOneWidget);
+      expect(find.text('KARYAWAN'), findsOneWidget);
+      expect(find.text('Belum ada data karyawan'), findsOneWidget);
+      expect([...api.calls, ...branchApi.calls], before);
     });
   });
 }

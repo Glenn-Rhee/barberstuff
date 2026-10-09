@@ -4,7 +4,7 @@ import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/presentation/pages/branch_section.dart';
-import 'package:tablet_dashboard/features/admin/employee_list/presentation/pages/employee_section.dart';
+import 'package:tablet_dashboard/features/admin/employee_list/presentation/pages/employee_list_screen.dart';
 import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
@@ -90,7 +90,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ? const MitraDashboardScreen()
                           : const CashierDashboardScreen(),
                     AppSection.branches => const BranchSection(),
-                    AppSection.employees => const EmployeeSection(),
+                    AppSection.employees => const EmployeeListScreen(),
                     AppSection.order => const OrderScreen(),
                     AppSection.customers => const CustomersScreen(),
                     AppSection.bookkeeping => const BookkeepingScreen(),
