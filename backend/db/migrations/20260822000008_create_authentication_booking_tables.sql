@@ -46,6 +46,7 @@ CREATE TABLE booking (
     total_price NUMERIC(12,2) NOT NULL DEFAULT 0,  -- sekarang = SUM dari booking_item
     scheduled_at TIMESTAMP,
     qr_code VARCHAR(255),
+    notes TEXT,
     booking_type booking_type NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
