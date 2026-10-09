@@ -642,3 +642,76 @@ func (h *StaffHandler) DeleteBookingItem(ctx *gin.Context) {
 		StatusCode: http.StatusOK,
 	})
 }
+
+// UpdateBooking godoc
+//
+// @Summary      Kasir membatalkan booking customer
+// @Description  Kasir dapat membatalkan booking customer dengan menambahkan catatan (notes) melalui routes ini. Hanya dapat diakses oleh kasir.
+//
+// @Tags         Staff
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        id_booking path string true "ID Booking"
+// @Param        request body dto.UpdateBookingReq true "Data pembatalan booking"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membatalkan booking"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal membatalkan booking"
+//
+// @Router       /staff/booking/{id_booking} [patch]
+func (h *StaffHandler) UpdateBooking(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleCashier {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	idBooking := ctx.Param("id")
+	var dataBody dto.UpdateBookingReq
+
+	if err := ctx.ShouldBindJSON(&dataBody); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	err := h.service.UpdateBooking(claimsResult, dataBody, idBooking)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+		Data:       nil,
+		Message:    "Berhasil membatalkan booking!",
+		StatusCode: http.StatusOK,
+	})
+}

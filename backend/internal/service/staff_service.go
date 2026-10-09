@@ -30,6 +30,7 @@ type StaffService interface {
 	CheckinBooking(qrCode string, claims *lib.CustomClaims) error
 	AddItemBooking(req dto.BookingItemReq) error
 	DeleteItemBooking(req dto.BookingItemReq) error
+	UpdateBooking(claims *lib.CustomClaims, req dto.UpdateBookingReq, idBooking string) error
 }
 
 type staffService struct {
@@ -1025,6 +1026,86 @@ func (s *staffService) DeleteItemBooking(req dto.BookingItemReq) error {
 
 		return nil
 	})
+
+	return nil
+}
+
+func (s *staffService) UpdateBooking(claims *lib.CustomClaims, req dto.UpdateBookingReq, idBook string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat checkin. Mohon coba lagi nanti"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idBooking, err := uuid.Parse(idBook)
+	if err != nil {
+		return errors.New("Id booking tidak valid.")
+	}
+
+	idStaff, err := uuid.Parse(claims.UserId)
+	if err != nil {
+		return errors.New("Id staff tidak valid.")
+	}
+
+	dataStaff, err := s.staffRepo.FindOne("id = ?", idStaff)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Akun anda tidak ditemukan, atau telah dihapus.")
+		}
+
+		helper.Logger("find one staff", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if dataStaff.IdStore == nil {
+		return errors.New("Anda tidak memiliki akses, hubungi kasir cabang tersebut.")
+	}
+
+	dataStore, err := s.storeRepo.FindOne("id = ?", dataStaff.IdStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Toko tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("find one staff", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	var errFieldNotFound = errors.New("Booking not found.")
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		updates := map[string]interface{}{
+			"status_booking": entity.BookingStatusCanceled,
+			"notes":          req.Notes,
+		}
+
+		var scopes []func(*gorm.DB) *gorm.DB
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.
+				Where("id = ?", idBooking).
+				Where("id_store = ?", dataStore.ID).
+				Where("status_booking = ? OR status_booking = ?", entity.BookingStatusBooked, entity.BookingStatusProgress)
+		})
+
+		log.Println("id booking:", idBooking)
+		log.Println("id store:", dataStore.ID)
+
+		rowsAffected, err := s.bookingRepo.Updates(tx, updates, scopes...)
+		if err != nil {
+			return err
+		}
+
+		if rowsAffected == 0 {
+			return errFieldNotFound
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		if errors.Is(err, errFieldNotFound) {
+			return errors.New("Booking tidak ditemukan atau booking telah selesai/cancel")
+		}
+
+		helper.Logger("failed update booking", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
 
 	return nil
 }

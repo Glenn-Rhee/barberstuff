@@ -82,6 +82,7 @@ func main() {
 		booking := staff.Group("/booking")
 		{
 			booking.POST("/", h.StaffHandler.CreateBooking)
+			booking.PATCH("/:id", h.StaffHandler.UpdateBooking)
 			booking.PATCH("/checkin/:qr_code", h.StaffHandler.CheckinBooking)
 			booking.POST("/item", h.StaffHandler.AddBookingItem)
 			booking.DELETE("/item", h.StaffHandler.DeleteBookingItem)

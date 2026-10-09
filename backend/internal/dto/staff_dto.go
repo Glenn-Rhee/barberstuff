@@ -68,3 +68,7 @@ type BookingItemReq struct {
 	IdBooking string `json:"id_booking"`
 	IdService string `json:"id_service"`
 }
+
+type UpdateBookingReq struct {
+	Notes string `json:"notes" binding:"required"`
+}
