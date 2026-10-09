@@ -136,7 +136,10 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
     final note = _note.text.trim();
     switch (_category) {
       case CashCategory.expense:
-        final error = await shift.recordCashOut(amount: _value, title: note);
+        final error = await shift.recordCashOut(
+          amount: _value,
+          description: note,
+        );
         if (error == null) {
           widget.onSaved('Pengeluaran ${PriceFormat.full(_value)} dicatat');
         }
@@ -146,7 +149,6 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
         final error = await shift.recordSale(
           amount: booking.total,
           paymentType: _method,
-          title: 'Booking ${booking.customer.name}',
           bookingId: booking.id,
           description: note.isEmpty ? null : note,
         );

@@ -89,11 +89,12 @@ class ShiftController extends ChangeNotifier {
     }
   }
 
-  // Pemasukan wajib terhubung booking. [amount] = setelah [discountAmount]
+  // Pemasukan wajib terhubung booking. [amount] = setelah [discountAmount].
+  // Server abaikan [title], judul diisi dari nama layanan booking
   Future<String?> recordSale({
     required int amount,
     required PaymentType paymentType,
-    required String title,
+    String? title,
     String? bookingId,
     String? description,
     int discountAmount = 0,
@@ -111,16 +112,17 @@ class ShiftController extends ChangeNotifier {
     session = await _api.cashSession();
   });
 
+  // Keterangan masuk [description]. Backend wajib title untuk pengeluaran,
+  // jadi diisi tetap
   Future<String?> recordCashOut({
     required int amount,
-    required String title,
-    String? description,
+    required String description,
   }) => _run(() async {
     await _api.createTransaction(
       sessionId: sessionId!,
       type: TransactionType.outcome,
       amount: amount,
-      title: title,
+      title: 'Pengeluaran',
       description: description,
     );
     session = await _api.cashSession();

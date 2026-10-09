@@ -56,7 +56,7 @@ class EmployeeListScreen extends StatelessWidget {
                       child: EmptyState(
                         icon: Icons.badge_outlined,
                         title: 'Belum ada data karyawan',
-                        message: 'Data karyawan belum terhubung ke API.',
+                        message: 'Data Kosong',
                       ),
                     ),
                   ],
