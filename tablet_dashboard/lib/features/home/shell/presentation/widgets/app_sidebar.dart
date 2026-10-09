@@ -17,7 +17,8 @@ import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
 class AppSidebar extends StatelessWidget {
   const AppSidebar({super.key});
 
-  static const expandedWidth = 220.0;
+  // Harus cukup untuk label terpanjang, kalau kurang label otomatis mengecil
+  static const expandedWidth = 264.0;
   static const collapsedWidth = 76.0;
 
   static const _items = [
@@ -30,9 +31,15 @@ class AppSidebar extends StatelessWidget {
 
   // Menu admin pakai ikon stack, jadi grid saat sedang dibuka
   static const _adminItems = [
+    (AppSection.admindash, 'Dashboard', AppAsset.stackIcon),
     (AppSection.branches, 'Mengelola Cabang', AppAsset.stackIcon),
     (AppSection.employees, 'Manajemen Karyawan', AppAsset.stackIcon),
+    (AppSection.financialStatements, 'Laporan Keuangan', AppAsset.stackIcon),
+    (AppSection.manageApps, 'Manajemen Aplikasi', AppAsset.stackIcon),
   ];
+
+  // Ukuran font label 'Manajemen Karyawan' saja, menu lain tetap 14
+  static const employeesLabelFontSize = 15.0;
 
   static List<(AppSection, String, String)> _itemsFor(StaffRole? role) =>
       role == StaffRole.admin ? _adminItems : _items;
@@ -52,6 +59,9 @@ class AppSidebar extends StatelessWidget {
       expanded: expanded,
       selected: selected,
       onTap: () => nav.go(section),
+      labelFontSize: section == AppSection.employees
+          ? employeesLabelFontSize
+          : null,
     );
   }
 

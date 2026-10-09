@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+import 'package:tablet_dashboard/features/admin/employee_create/presentation/pages/employee_create_screen.dart';
+import 'package:tablet_dashboard/features/admin/employee_list/presentation/widgets/grid_tabel_stat.dart';
+import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/page_header.dart';
@@ -21,12 +25,34 @@ class EmployeeListScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const PageHeader(
-              title: 'Manajemen Karyawan',
-              subtitle:
-                  'Kelola biodata dan hak akses seluruh karyawan Barberstuff.',
+            Row(
+              children: <Widget>[
+                const PageHeader(
+                  title: 'Manajemen Karyawan',
+                  subtitle: 'Kelola biodata dan hak akses seluruh karyawan Barberstuff.',
+                ),
+
+                FilledButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const EmployeeCreateScreen(),
+                    ),
+                  ),
+                  style: FilledButton.styleFrom(
+                    foregroundColor: AppColor.ink,
+                    elevation: 2,
+                    shadowColor: AppColor.gold.withValues(alpha: 0.4),
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                  ),
+                  icon: AppIcon(AppAsset.plusIcon, size: 14),
+                  label: const Text('Tambah Cabang'),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
+
+            const SizedBox(height: 24),
+            GridTabelStat(),
+            const SizedBox(height: 24),
             Expanded(
               child: AppCard(
                 padding: const EdgeInsets.all(20),

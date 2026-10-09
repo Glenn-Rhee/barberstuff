@@ -87,13 +87,24 @@ class _MainShellViewState extends State<_MainShellView> {
     ];
     final int index = stacked.indexOf(_tab).clamp(0, stacked.length - 1);
 
+    // Preset light/dark bawaan bikin nav bar sistem hitam berikon putih.
+    // Di Android 15+ itu jadi pita gelap yang nutupin bagian bawah navbar,
+    // jadi area tombol home/gesture dibikin putih, ikon gelap, tanpa scrim.
+    final SystemUiOverlayStyle base = onHome
+        ? SystemUiOverlayStyle.light
+        : SystemUiOverlayStyle.dark;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: onHome ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      value: base.copyWith(
+        systemNavigationBarColor: AppColor.surface,
+        systemNavigationBarDividerColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarContrastEnforced: false,
+      ),
       child: Scaffold(
         // Area status bar sudah dicat hitam oleh DashboardHeader.
         backgroundColor: AppColor.surface,
-        // Konten dibiarkan memanjang ke belakang nav bawah yang tembus pandang.
-        extendBody: true,
+        // Tanpa extendBody: konten berhenti di atas navbar, tidak ketutup.
         body: IndexedStack(
           index: index,
           children: <Widget>[

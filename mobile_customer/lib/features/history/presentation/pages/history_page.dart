@@ -141,7 +141,7 @@ class HistoryView extends StatelessWidget {
                         sidePadding,
                         0,
                         sidePadding,
-                        DashboardBottomNav.spaceOf(context),
+                        DashboardBottomNav.contentGap,
                       ),
                       itemBuilder: (BuildContext _, int _) =>
                           const SkeletonListTile(thumbSize: 64, lines: 3),
@@ -175,7 +175,7 @@ class HistoryView extends StatelessWidget {
                           sidePadding,
                           0,
                           sidePadding,
-                          DashboardBottomNav.spaceOf(context),
+                          DashboardBottomNav.contentGap,
                         ),
                         itemCount: p.items.length,
                         separatorBuilder: (BuildContext _, int _) =>

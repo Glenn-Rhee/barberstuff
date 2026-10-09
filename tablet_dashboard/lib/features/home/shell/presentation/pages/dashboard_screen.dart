@@ -4,7 +4,10 @@ import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
 import 'package:tablet_dashboard/features/admin/branch_list/presentation/pages/branch_section.dart';
+import 'package:tablet_dashboard/features/admin/dashboard/presentation/pages/admin_dashboard_screen.dart';
 import 'package:tablet_dashboard/features/admin/employee_list/presentation/pages/employee_list_screen.dart';
+import 'package:tablet_dashboard/features/admin/financial_statements/presentation/pages/financial_statements_screen.dart';
+import 'package:tablet_dashboard/features/admin/manage_apps/presentation/pages/manage_apps_screen.dart';
 import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
@@ -89,12 +92,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       role == StaffRole.mitra
                           ? const MitraDashboardScreen()
                           : const CashierDashboardScreen(),
-                    AppSection.branches => const BranchSection(),
-                    AppSection.employees => const EmployeeListScreen(),
                     AppSection.order => const OrderScreen(),
                     AppSection.customers => const CustomersScreen(),
                     AppSection.bookkeeping => const BookkeepingScreen(),
                     AppSection.settings => const SettingsScreen(),
+
+                    // INI ADMIN Tab Dibawah ini
+                    AppSection.admindash => const AdminDashboardScreen(),
+                    AppSection.employees => const EmployeeListScreen(),
+                    AppSection.branches => const BranchSection(),
+                    AppSection.financialStatements =>
+                      const FinancialStatementsScreen(),
+                    AppSection.manageApps => const ManageAppsScreen(),
                   },
                 ),
               ],

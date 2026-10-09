@@ -12,6 +12,7 @@ class SidebarNavItem extends StatelessWidget {
     required this.selected,
     required this.expanded,
     required this.onTap,
+    this.labelFontSize,
   });
 
   final String label;
@@ -20,6 +21,8 @@ class SidebarNavItem extends StatelessWidget {
   final bool selected;
   final bool expanded;
   final VoidCallback onTap;
+  // null = ukuran default (body)
+  final double? labelFontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +59,7 @@ class SidebarNavItem extends StatelessWidget {
                           maxLines: 1,
                           style: AppTextStyle.body.copyWith(
                             color: foreground,
+                            fontSize: labelFontSize,
                             fontWeight: selected
                                 ? FontWeight.w600
                                 : FontWeight.w400,

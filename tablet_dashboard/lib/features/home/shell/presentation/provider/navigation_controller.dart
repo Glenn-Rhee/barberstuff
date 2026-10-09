@@ -5,12 +5,15 @@ import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profi
 // Manajemen Karyawan khusus admin
 enum AppSection {
   dashboard,
+  admindash,
   branches,
   employees,
   order,
   customers,
   bookkeeping,
   settings,
+  financialStatements,
+  manageApps,
 }
 
 // Tampilan di halaman Kasir: dua tab + histori pelanggan
@@ -25,7 +28,13 @@ class NavigationController extends ChangeNotifier {
   bool sidebarExpanded = true;
 
   // Menu yang dimiliki admin
-  static const adminSections = {AppSection.branches, AppSection.employees};
+  static const adminSections = {
+    AppSection.branches,
+    AppSection.employees,
+    AppSection.admindash,
+    AppSection.financialStatements,
+    AppSection.manageApps,
+  };
 
   // Admin cuma punya menu admin, selain itu kembali ke Mengelola Cabang
   AppSection sectionFor(StaffRole? role) =>

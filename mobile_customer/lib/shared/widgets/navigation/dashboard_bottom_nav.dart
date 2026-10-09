@@ -1,5 +1,3 @@
-import 'dart:ui' show ImageFilter;
-
 import 'package:flutter/material.dart';
 import 'package:mobile_barberstuff/core/constants/app_assets.dart';
 import 'package:mobile_barberstuff/core/theme/app_color.dart';
@@ -23,19 +21,13 @@ class DashboardBottomNav extends StatelessWidget {
   static const double _baseHeight = 76;
 
   /// Tinggi navbar tanpa area aman bawah, ikut skala font HP.
-  static double heightOf(BuildContext context) =>
+  static double _heightOf(BuildContext context) =>
       _baseHeight * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.3);
 
   /// Jarak isi terakhir halaman ke tepi atas navbar saat discroll mentok.
-  /// Satu nilai untuk semua tab biar jaraknya seragam.
+  /// Satu nilai untuk semua tab biar jaraknya seragam. Konten tidak lagi
+  /// jalan di belakang navbar, jadi tinggi navbar tidak perlu ikut dihitung.
   static const double contentGap = 20;
-
-  /// Ruang yang harus disisakan halaman di bagian bawah biar
-  /// isi terakhirnya tidak ketutup navbar, sudah termasuk [contentGap].
-  /// Pakai viewPadding, bukan padding: Scaffold `extendBody` sudah memasukkan
-  /// tinggi navbar ke padding.bottom halaman, jadi navbar bakal terhitung 2x.
-  static double spaceOf(BuildContext context) =>
-      heightOf(context) + MediaQuery.viewPaddingOf(context).bottom + contentGap;
 
   final DashboardTab current;
   final void Function(DashboardTab tab) onSelect;
@@ -78,43 +70,34 @@ class DashboardBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    // Konten halaman jalan di belakang navbar, jadi latarnya dibuat buram
-    // tembus pandang biar ikon tetap kebaca tanpa blok putih solid.
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(_radius)),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: DecoratedBox(
-          // Tanpa border: garis atas saja (border tak seragam) tidak boleh
-          // digabung dengan borderRadius, Flutter akan melempar error.
-          decoration: BoxDecoration(
-            color: AppColor.surface.withValues(alpha: 0.82),
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(_radius),
-            ),
-            border: Border.all(color: AppColor.ink, width: 1),
-          ),
-
-          child: SafeArea(
-            top: false,
-            child: SizedBox(
-              height: heightOf(context),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(4, 10, 4, 6),
-                child: Row(
-                  children: <Widget>[
-                    for (final DashboardTab tab in DashboardTab.values)
-                      Expanded(
-                        child: _NavItem(
-                          iconPath: _iconOf(tab, active: tab == current),
-                          label: _labelOf(tab, l10n),
-                          active: tab == current,
-                          onTap: () => onSelect(tab),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+    // Latar solid: konten tidak lewat di belakang navbar lagi.
+    // Pakai Material (bukan DecoratedBox) biar efek tap InkWell tetap
+    // kelihatan di atas latar yang tidak tembus pandang.
+    return Material(
+      color: AppColor.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(_radius)),
+        side: BorderSide(color: AppColor.ink),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: _heightOf(context),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(4, 10, 4, 6),
+            child: Row(
+              children: <Widget>[
+                for (final DashboardTab tab in DashboardTab.values)
+                  Expanded(
+                    child: _NavItem(
+                      iconPath: _iconOf(tab, active: tab == current),
+                      label: _labelOf(tab, l10n),
+                      active: tab == current,
+                      onTap: () => onSelect(tab),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

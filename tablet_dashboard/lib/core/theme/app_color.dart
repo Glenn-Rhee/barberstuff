@@ -43,4 +43,12 @@ class AppColor {
   // Sidebar (latarnya pakai ink)
   static const Color sidebarDivider = Color(0xFF3E3E3E);
   static const Color sidebarMuted = Color(0xFF8C8C8C);
+
+  // status card
+  static const Color iconPersonal = Color(0xFF5A3D10);
+  static const Color iconInActive = Color(0xFFEF4444);
+  static const Color iconBuilding = Color(0xFF3B82F6);
+  static const Color boxActive = Color(0xFFD1FAE5);
+  static const Color boxInActive = Color(0xFFFEE2E2);
+  static const Color boxBuilding = Color(0xFFE0F2FE);
 }
