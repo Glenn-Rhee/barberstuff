@@ -2426,6 +2426,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/staff/booking/{id_booking}": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Kasir dapat membatalkan booking customer dengan menambahkan catatan (notes) melalui routes ini. Hanya dapat diakses oleh kasir.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Kasir membatalkan booking customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Booking",
+                        "name": "id_booking",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data pembatalan booking",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateBookingReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membatalkan booking",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal membatalkan booking",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/staff/{id}": {
             "delete": {
                 "security": [
@@ -4448,6 +4512,17 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "minLength": 5
+                }
+            }
+        },
+        "dto.UpdateBookingReq": {
+            "type": "object",
+            "required": [
+                "notes"
+            ],
+            "properties": {
+                "notes": {
+                    "type": "string"
                 }
             }
         },

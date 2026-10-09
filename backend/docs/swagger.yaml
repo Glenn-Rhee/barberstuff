@@ -1003,6 +1003,13 @@ definitions:
     - name
     - password
     type: object
+  dto.UpdateBookingReq:
+    properties:
+      notes:
+        type: string
+    required:
+    - notes
+    type: object
   dto.UpdateCapsterRequest:
     properties:
       id_store:
@@ -2737,6 +2744,48 @@ paths:
       security:
       - BearerAuth: []
       summary: Membuat booking customer
+      tags:
+      - Staff
+  /staff/booking/{id_booking}:
+    patch:
+      consumes:
+      - application/json
+      description: Kasir dapat membatalkan booking customer dengan menambahkan catatan
+        (notes) melalui routes ini. Hanya dapat diakses oleh kasir.
+      parameters:
+      - description: ID Booking
+        in: path
+        name: id_booking
+        required: true
+        type: string
+      - description: Data pembatalan booking
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateBookingReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membatalkan booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal membatalkan booking
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Kasir membatalkan booking customer
       tags:
       - Staff
   /staff/booking/checkin/{qr_code}:
