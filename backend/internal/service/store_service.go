@@ -93,6 +93,7 @@ func (s *storeService) CreateNewStore(ctx context.Context, req dto.NewStoreReque
 		Description: req.Description,
 		Status:      entity.StoreStatusOpen,
 		StoreType:   req.StoreType,
+		Timezone:    req.Timezone,
 	}
 
 	err = s.storeRepo.Create(&store)
