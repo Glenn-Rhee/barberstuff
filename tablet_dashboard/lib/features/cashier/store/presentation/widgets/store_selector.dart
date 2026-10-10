@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
-<<<<<<< HEAD
-=======
 import 'package:tablet_dashboard/core/network/server_clock.dart';
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
@@ -15,12 +12,7 @@ import 'package:tablet_dashboard/features/cashier/store/presentation/provider/st
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 
-<<<<<<< HEAD
-// Lokasi toko di header. Kasir & mitra terkunci ke toko akunnya,
-// admin bisa ganti cabang lewat dropdown
-=======
 // Lokasi toko di header, admin bisa ganti cabang
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class StoreSelector extends StatelessWidget {
   const StoreSelector({super.key});
 
@@ -117,24 +109,16 @@ class StoreSelector extends StatelessWidget {
   }
 }
 
-<<<<<<< HEAD
-// "● Toko Buka" / "● Toko Tutup" sesuai status dan jam operasional
-=======
 // "● Toko Buka" / "● Toko Tutup" sesuai status dan jam operasional.
 // Pakai jam server, jam tablet bisa salah
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class StoreOpenChip extends StatelessWidget {
   const StoreOpenChip({super.key});
 
   @override
   Widget build(BuildContext context) {
     final store = context.select<StoreController, StoreInfo?>((s) => s.current);
-<<<<<<< HEAD
-    final open = store?.isOpenAt(DateTime.now()) ?? false;
-=======
     final now = context.watch<ServerClock>().now();
     final open = store?.isOpenAt(now) ?? false;
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
     final color = open ? AppColor.success : AppColor.danger;
 
     return Container(

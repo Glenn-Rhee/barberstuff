@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-<<<<<<< HEAD
-import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
-=======
 import 'package:tablet_dashboard/features/home/shell/presentation/provider/navigation_controller.dart';
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
 
 // Pilihan "Pesanan Langsung" / "Dari Reservasi" di atas halaman Kasir

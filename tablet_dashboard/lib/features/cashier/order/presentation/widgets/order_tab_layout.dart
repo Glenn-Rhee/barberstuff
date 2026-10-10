@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/widgets/order_tabs.dart';
 
-<<<<<<< HEAD
-// Layout halaman Kasir: tab + [children] di kiri,
-// [panel] lebar tetap di kanan (detail pesanan / booking).
-// [showTabs] false untuk tampilan histori pelanggan
-=======
 // Layout Kasir: tab + [children] di kiri, [panel] di kanan
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class OrderTabLayout extends StatelessWidget {
   const OrderTabLayout({
     super.key,

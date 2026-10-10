@@ -9,12 +9,7 @@ enum DiscountType {
   final String label;
 }
 
-<<<<<<< HEAD
-// Diskon manual kasir. Backend cuma terima nominal (discount_amount),
-// jadi persen diubah ke rupiah dari total yang dibayar
-=======
 // Diskon kasir. Backend cuma terima nominal, persen diubah ke rupiah
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class Discount {
   const Discount(this.type, this.value);
 

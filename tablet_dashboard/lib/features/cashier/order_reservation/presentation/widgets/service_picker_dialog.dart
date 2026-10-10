@@ -12,12 +12,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/form/app_search_field.dart';
 
-<<<<<<< HEAD:tablet_dashboard/lib/features/cashier/reservation/presentation/widgets/service_picker_dialog.dart
-// Pilih 1 layanan / paket dari katalog untuk ditambahkan.
-// [excludeIds] = layanan yang sudah dipakai, tidak ditampilkan (tidak bisa 2x)
-=======
 // Pilih 1 layanan, [excludeIds] tidak ditampilkan
->>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/cashier/order_reservation/presentation/widgets/service_picker_dialog.dart
 Future<ServiceItem?> showServicePicker(
   BuildContext context, {
   Set<String> excludeIds = const {},

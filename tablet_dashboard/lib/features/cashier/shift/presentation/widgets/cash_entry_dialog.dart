@@ -8,15 +8,9 @@ import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/core/utils/thousands_formatter.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
-<<<<<<< HEAD
-import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
-=======
 import 'package:tablet_dashboard/features/cashier/order_reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/provider/bookings_controller.dart';
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/shared/dialogs/app_form_dialog.dart';
@@ -36,13 +30,7 @@ enum CashCategory {
   final String label;
 }
 
-<<<<<<< HEAD
-// Modal "Catat Kas": pengeluaran dari laci, atau pemasukan.
-// Backend mewajibkan pemasukan terhubung ke booking yang sedang dilayani,
-// jadi pemasukan = pilih booking progress, nominal ikut total booking
-=======
 // Catat Kas: pengeluaran, atau pemasukan dari booking progress
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 Future<void> showCashEntryDialog(
   BuildContext context, {
   CashCategory initial = CashCategory.expense,
@@ -148,14 +136,10 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
     final note = _note.text.trim();
     switch (_category) {
       case CashCategory.expense:
-<<<<<<< HEAD
-        final error = await shift.recordCashOut(amount: _value, title: note);
-=======
         final error = await shift.recordCashOut(
           amount: _value,
           description: note,
         );
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
         if (error == null) {
           widget.onSaved('Pengeluaran ${PriceFormat.full(_value)} dicatat');
         }
@@ -165,10 +149,6 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
         final error = await shift.recordSale(
           amount: booking.total,
           paymentType: _method,
-<<<<<<< HEAD
-          title: 'Booking ${booking.customer.name}',
-=======
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
           bookingId: booking.id,
           description: note.isEmpty ? null : note,
         );
@@ -299,12 +279,7 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
         )
       else if (_bookings.isEmpty)
         Text(
-<<<<<<< HEAD
-          'Belum ada booking yang sedang dilayani. Pemasukan di backend wajib '
-          'terhubung ke booking yang sudah check-in.',
-=======
           'Belum ada booking yang sedang dilayani.',
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
           style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
         )
       else

@@ -24,6 +24,7 @@ class DashboardBottomNav extends StatelessWidget {
   static double _heightOf(BuildContext context) =>
       _baseHeight * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.3);
 
+  /// Jarak isi terakhir halaman ke tepi atas navbar saat discroll mentok.
   /// Satu nilai untuk semua tab biar jaraknya seragam. Konten tidak lagi
   /// jalan di belakang navbar, jadi tinggi navbar tidak perlu ikut dihitung.
   static const double contentGap = 20;

@@ -84,11 +84,6 @@ class Booking {
     return at != null && DateFormatId.isSameDay(at, day);
   }
 
-<<<<<<< HEAD:tablet_dashboard/lib/features/cashier/reservation/domain/entities/booking.dart
-  // Semua potongan (promo + diskon kasir). Saat bayar backend menimpa
-  // discount_amount dengan diskon kasir saja, jadi hitung dari subtotal - total
-=======
   // Total potongan = subtotal - total (backend menimpa discount_amount)
->>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/cashier/order_reservation/domain/entities/booking.dart
   int get totalDiscount => subtotal > total ? subtotal - total : 0;
 }

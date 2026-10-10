@@ -50,13 +50,7 @@ class CashHistoryEntry {
 
   int get income => incomeCash + incomeCashless;
 
-<<<<<<< HEAD
-  // Non-tunai masuk rekening, tidak dihitung di laci.
-  // Sama dengan rumus backend saat tutup kas (status di history backend
-  // ikut menjumlah non-tunai, jadi dihitung ulang di sini)
-=======
   // Uang laci: non-tunai tidak dihitung (rumus tutup kas backend)
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
   int get expectedCash => openingBalance + incomeCash - outcome;
   int get difference => actualCash - expectedCash;
 

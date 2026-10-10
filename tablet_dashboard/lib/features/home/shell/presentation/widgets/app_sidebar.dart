@@ -3,16 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
-<<<<<<<< HEAD:tablet_dashboard/lib/features/home/presentation/widgets/app_sidebar.dart
-import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
-import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
-import 'package:tablet_dashboard/features/cashier/order/presentation/provider/order_controller.dart';
-import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
-import 'package:tablet_dashboard/features/home/presentation/provider/navigation_controller.dart';
-import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_account_tile.dart';
-import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_brand.dart';
-import 'package:tablet_dashboard/features/home/presentation/widgets/sidebar_nav_item.dart';
-========
 import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order_walk_in/presentation/provider/order_controller.dart';
@@ -21,7 +11,6 @@ import 'package:tablet_dashboard/features/home/shell/presentation/provider/navig
 import 'package:tablet_dashboard/features/home/shell/presentation/widgets/sidebar_account_tile.dart';
 import 'package:tablet_dashboard/features/home/shell/presentation/widgets/sidebar_brand.dart';
 import 'package:tablet_dashboard/features/home/shell/presentation/widgets/sidebar_nav_item.dart';
->>>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/home/shell/presentation/widgets/app_sidebar.dart
 import 'package:tablet_dashboard/shared/dialogs/confirm_dialog.dart';
 
 // Navigasi kiri, bisa diperkecil jadi ikon saja
@@ -38,20 +27,6 @@ class AppSidebar extends StatelessWidget {
     (AppSection.customers, 'Pelanggan', AppAsset.personIcon),
     (AppSection.bookkeeping, 'Pembukuan', AppAsset.cashIcon),
     (AppSection.settings, 'Konfigurasi', AppAsset.settingIcon),
-<<<<<<<< HEAD:tablet_dashboard/lib/features/home/presentation/widgets/app_sidebar.dart
-  ];
-
-  // Menu khusus admin, disisipkan setelah Dashboard
-  static const _adminItems = [
-    (AppSection.branches, 'Mengelola Cabang', AppAsset.locationIcon),
-  ];
-
-  static List<(AppSection, String, String)> _itemsFor(StaffRole? role) => [
-    _items.first,
-    if (role == StaffRole.admin) ..._adminItems,
-    ..._items.skip(1),
-========
->>>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/home/shell/presentation/widgets/app_sidebar.dart
   ];
 
   // Menu admin pakai ikon stack, jadi grid saat sedang dibuka
@@ -163,14 +138,10 @@ class AppSidebar extends StatelessWidget {
                 for (final (section, label, icon) in _itemsFor(
                   profile?.staffRole,
                 ))
-<<<<<<<< HEAD:tablet_dashboard/lib/features/home/presentation/widgets/app_sidebar.dart
-                  SidebarNavItem(
-========
                   _navItem(
                     nav,
                     role: profile?.staffRole,
                     section: section,
->>>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/home/shell/presentation/widgets/app_sidebar.dart
                     label: label,
                     icon: icon,
                     expanded: expanded,

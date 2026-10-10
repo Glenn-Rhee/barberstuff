@@ -23,12 +23,7 @@ class Capster {
   final String? photoUrl;
   final double rating;
 
-<<<<<<< HEAD
-  // Status di server: inactive = tidak muncul di aplikasi pelanggan
-  // dan tidak bisa dipesan (dipakai untuk "Tidak Hadir")
-=======
   // inactive = tidak muncul & tidak bisa dipesan (dipakai untuk Tidak Hadir)
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
   final bool active;
 
   Capster copyWith({bool? active}) => Capster(
