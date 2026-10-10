@@ -3914,6 +3914,12 @@ const docTemplate = `{
                 "total_outcome": {
                     "type": "number"
                 },
+                "total_void_income": {
+                    "type": "number"
+                },
+                "total_void_outcome": {
+                    "type": "number"
+                },
                 "transactions": {
                     "type": "array",
                     "items": {
@@ -4533,6 +4539,9 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "description": {

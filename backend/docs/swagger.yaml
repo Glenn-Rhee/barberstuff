@@ -562,6 +562,10 @@ definitions:
         type: number
       total_outcome:
         type: number
+      total_void_income:
+        type: number
+      total_void_outcome:
+        type: number
       transactions:
         items:
           $ref: '#/definitions/dto.TransactionResponse'
@@ -981,6 +985,8 @@ definitions:
       amount:
         type: number
       created_at:
+        type: string
+      deleted_at:
         type: string
       description:
         type: string
