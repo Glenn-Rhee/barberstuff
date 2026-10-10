@@ -28,7 +28,7 @@ const (
 )
 
 type QueryParamsService struct {
-	IdStore     string                 `form:"id_store" binding:"required"`
+	IdStore     *string                `form:"id_store" binding:"omitempty"`
 	Type        entity.ProductTypeEnum `form:"type" binding:"required,oneof=service package"`
 	ServiceName *string                `form:"name"`
 	SortBy      *SortService           `form:"sort_by" binding:"omitempty,oneof=name price created_at"`
