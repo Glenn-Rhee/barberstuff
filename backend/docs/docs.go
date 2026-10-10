@@ -1821,8 +1821,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Id Toko",
                         "name": "id_store",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "enum": [
@@ -3943,14 +3942,14 @@ const docTemplate = `{
                 "id_store": {
                     "type": "string"
                 },
+                "name": {
+                    "type": "string"
+                },
                 "price": {
                     "type": "number"
                 },
                 "status": {
                     "$ref": "#/definitions/entity.ProductStatusEnum"
-                },
-                "string": {
-                    "type": "string"
                 },
                 "type": {
                     "$ref": "#/definitions/entity.ProductTypeEnum"

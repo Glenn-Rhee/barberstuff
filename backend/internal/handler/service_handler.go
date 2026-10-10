@@ -25,7 +25,7 @@ func NewServiceHandler(service service.ServiceService) *ServiceHandler {
 // @Tags         Service
 // @Produce      json
 // @Security     BearerAuth
-// @Param		 id_store 	query string true "Id Toko"
+// @Param		 id_store 	query string false "Id Toko"
 // @Param		 type 		query string true "Service Type" Enums(service, package)
 // @Param        name    	query string false "Nama service"
 // @Param        page    	query int    false "Page"

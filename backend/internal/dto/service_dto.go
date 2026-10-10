@@ -10,7 +10,7 @@ import (
 
 type GetServiceResponse struct {
 	Id          uuid.UUID                `json:"id"`
-	Name        string                   `json:"string"`
+	Name        string                   `json:"name"`
 	Price       decimal.Decimal          `json:"price"`
 	Description *string                  `json:"description"`
 	Status      entity.ProductStatusEnum `json:"status"`

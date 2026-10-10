@@ -581,12 +581,12 @@ definitions:
         type: string
       id_store:
         type: string
+      name:
+        type: string
       price:
         type: number
       status:
         $ref: '#/definitions/entity.ProductStatusEnum'
-      string:
-        type: string
       type:
         $ref: '#/definitions/entity.ProductTypeEnum'
     type: object
@@ -2407,7 +2407,6 @@ paths:
       - description: Id Toko
         in: query
         name: id_store
-        required: true
         type: string
       - description: Service Type
         enum:
