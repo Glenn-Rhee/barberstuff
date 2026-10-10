@@ -8,7 +8,8 @@ import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/servic
 enum CatalogFilter {
   all('Semua'),
   service('Service'),
-  package('Paket');
+  package('Paket'),
+  produk('Produk');
 
   const CatalogFilter(this.label);
 
@@ -18,6 +19,7 @@ enum CatalogFilter {
     all => true,
     service => item.type == ServiceType.service,
     package => item.type == ServiceType.package,
+    produk => item.type == ServiceType.produk,
   };
 }
 

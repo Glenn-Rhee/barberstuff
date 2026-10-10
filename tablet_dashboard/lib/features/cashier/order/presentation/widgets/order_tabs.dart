@@ -14,13 +14,13 @@ class OrderTabs extends StatelessWidget {
     return Row(
       children: [
         Pill(
-          label: 'Pesanan Langsung',
+          label: 'Buat Pesanan',
           selected: nav.orderTab == OrderTab.walkIn,
           onTap: () => nav.openOrder(OrderTab.walkIn),
         ),
         const SizedBox(width: 8),
         Pill(
-          label: 'Dari Reservasi',
+          label: 'Progress Pesanan',
           selected: nav.orderTab == OrderTab.reservation,
           onTap: () => nav.openOrder(OrderTab.reservation),
         ),

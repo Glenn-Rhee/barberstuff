@@ -141,10 +141,10 @@ class _CapsterTile extends StatelessWidget {
                 ],
               ),
             ),
-
-            // if (capster.active) [
-
-            // ]
+            if (status == AttendanceStatus.present)
+              (Icon(Icons.check, color: AppColor.success))
+            else
+              (Icon(Icons.close, color: AppColor.danger)),
           ],
         ),
       ),
