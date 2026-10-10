@@ -51,7 +51,7 @@ class LoginBrandPanel extends StatelessWidget {
             SizedBox(
               width: 450,
               child: Text(
-                'Dashboard yang digunakan untuk Kasir Barberstuff, Administrator, dan Mitra Barberstuff',
+                'Dashboard yang digunakan untuk Kasir Barberstuff dan Mitra Barberstuff',
                 style: AppTextStyle.body.copyWith(
                   color: AppColor.surface,
                   fontSize: 15,

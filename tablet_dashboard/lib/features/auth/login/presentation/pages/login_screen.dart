@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         const Text('Masuk ke Dashboard', style: AppTextStyle.h1),
         Text(
-          'Gunakan akun kasir, admin, atau mitra Barberstuff.',
+          'Gunakan akun kasir atau mitra Barberstuff.',
           style: AppTextStyle.body.copyWith(color: AppColor.inkSoft),
         ),
         const SizedBox(height: 24),
