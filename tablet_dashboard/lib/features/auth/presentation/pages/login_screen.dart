@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tablet_dashboard/app/app_env.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
+<<<<<<<< HEAD:tablet_dashboard/lib/features/auth/presentation/pages/login_screen.dart
 import 'package:tablet_dashboard/features/auth/presentation/pages/reset_password_screen.dart';
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/auth/presentation/widgets/login_brand_panel.dart';
+========
+import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
+import 'package:tablet_dashboard/features/auth/login/presentation/widgets/login_brand_panel.dart';
+import 'package:tablet_dashboard/features/auth/reset_password/presentation/pages/reset_password_screen.dart';
+>>>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/auth/login/presentation/pages/login_screen.dart
 import 'package:tablet_dashboard/shared/widgets/feedback/message_box.dart';
 import 'package:tablet_dashboard/shared/widgets/form/field_label.dart';
 import 'package:tablet_dashboard/shared/widgets/form/password_field.dart';

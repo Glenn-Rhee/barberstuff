@@ -1,10 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+<<<<<<< HEAD
 import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
 
 // Ringkasan reservasi hari ini untuk dashboard, terpisah dari tabel
 // reservasi di Kasir supaya filter di sana tidak ikut mengubah dashboard
+=======
+import 'package:tablet_dashboard/features/cashier/order_reservation/data/booking_api.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
+
+// Reservasi hari ini untuk dashboard, terpisah dari filter tab Kasir
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class DashboardController extends ChangeNotifier {
   DashboardController(this._api);
 
@@ -39,8 +46,12 @@ class DashboardController extends ChangeNotifier {
         ),
       );
 
+<<<<<<< HEAD
   // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
   // kerangka loading, dan kalau gagal data lama tidak dihapus
+=======
+  // [silent] = muat ulang diam-diam, kalau gagal data lama tetap
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
   Future<void> refresh({bool silent = false}) async {
     final request = ++_request;
     if (!silent) {
@@ -49,8 +60,12 @@ class DashboardController extends ChangeNotifier {
       notifyListeners();
     }
     try {
+<<<<<<< HEAD
       // GET /booking sudah otomatis booking hari ini di toko akun.
       // Jumlah dihitung dari list, karena meta.total_data backend salah
+=======
+      // Booking hari ini, dihitung dari list (meta.total_data backend salah)
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
       final all = <Booking>[];
       for (var page = 1; page <= _maxPages; page++) {
         final result = await _api.bookings(page: page, limit: _maxLimit);

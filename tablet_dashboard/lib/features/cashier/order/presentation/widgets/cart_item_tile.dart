@@ -7,8 +7,12 @@ import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/servic
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/widgets/service_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 
+<<<<<<< HEAD
 // Satu layanan di keranjang (tanpa jumlah, tiap layanan cuma 1x).
 // Tombol hapus muncul kalau [onRemove] diisi
+=======
+// Satu layanan di keranjang, tombol hapus kalau [onRemove] diisi
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class CartItemTile extends StatelessWidget {
   const CartItemTile({
     super.key,

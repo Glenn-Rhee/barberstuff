@@ -11,11 +11,13 @@ class AppSearchField extends StatelessWidget {
     required this.hint,
     required this.onChanged,
     this.initialValue = '',
+    this.fillColor = AppColor.surface,
   });
 
   final String hint;
   final String initialValue;
   final ValueChanged<String> onChanged;
+  final Color fillColor;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class AppSearchField extends StatelessWidget {
         style: AppTextStyle.body,
         decoration: InputDecoration(
           hintText: hint,
-          fillColor: AppColor.surface,
+          fillColor: fillColor,
           prefixIcon: const Padding(
             padding: EdgeInsets.all(12),
             child: AppIcon(AppAsset.searchIcon, color: AppColor.inkSoft),

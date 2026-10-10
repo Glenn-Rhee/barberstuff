@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,18 +7,21 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tablet_dashboard/app/app.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
-import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_card.dart';
-import 'package:tablet_dashboard/features/admin/branch/presentation/widgets/branch_table.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/presentation/widgets/branch_card.dart';
+import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/presentation/provider/bookings_controller.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_session.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
+import 'package:tablet_dashboard/features/home/shell/presentation/widgets/clock_drift_banner.dart';
+import 'package:tablet_dashboard/features/home/shell/presentation/widgets/sidebar_nav_item.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/total_row.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
+import 'package:tablet_dashboard/shared/widgets/table/branch_table.dart';
 
 import 'escpos_decoder.dart';
 import 'fake_api.dart';
@@ -232,24 +237,40 @@ void main() {
       expect(api.calls, isNot(contains('stores')));
     });
 
-    testWidgets('admin: bisa ganti cabang, shift khusus kasir', (tester) async {
+    testWidgets('admin: cuma menu cabang dan karyawan', (tester) async {
       api.staff = FakeApi.staffAs('admin');
       await pumpApp(tester);
       await signIn(tester);
 
-      expect(find.text('Dashboard Admin > Ringkasan'), findsOneWidget);
-      expect(find.text('Administrator'), findsNWidgets(2)); // sidebar + kartu
-      expect(api.calls, isNot(contains('cashSession')));
       expect(
-        find.text('Shift dan pembayaran hanya bisa dikelola akun kasir.'),
-        findsOneWidget,
-      );
+        find.text('Mengelola Cabang'),
+        findsNWidgets(2),
+      ); // sidebar + judul
+      expect(find.text('Manajemen Karyawan'), findsOneWidget);
 
-      await tester.tap(find.text('Barberstuff Cikutra'));
+      for (final menu in ['Dashboard', 'Kasir', 'Pelanggan', 'Pembukuan']) {
+        expect(find.text(menu), findsNothing, reason: menu);
+      }
+      expect(find.text('Konfigurasi'), findsNothing);
+      // Data kasir tidak dimuat untuk admin
+      expect(api.calls.where((c) => c.startsWith('bookings')), isEmpty);
+      expect(api.calls, isNot(contains('cashSession')));
+
+      // Ikon stack, menu yang sedang dibuka jadi grid
+      String iconOf(String menu) => tester
+          .widget<AppIcon>(
+            find.descendant(
+              of: find.widgetWithText(SidebarNavItem, menu),
+              matching: find.byType(AppIcon),
+            ),
+          )
+          .asset;
+      expect(iconOf('Mengelola Cabang'), AppAsset.gridIcon);
+      expect(iconOf('Manajemen Karyawan'), AppAsset.stackIcon);
+      await tester.tap(find.text('Manajemen Karyawan'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Barberstuff Depok').last);
-      await tester.pumpAndSettle();
-      expect(find.text('Barberstuff Depok'), findsOneWidget);
+      expect(iconOf('Mengelola Cabang'), AppAsset.stackIcon);
+      expect(iconOf('Manajemen Karyawan'), AppAsset.gridIcon);
     });
 
     testWidgets('mitra masuk ke dashboard mitra', (tester) async {
@@ -309,7 +330,7 @@ void main() {
       await tester.tap(find.text('Tutup Shift Kasir'));
       await tester.pumpAndSettle();
       expect(
-        find.textContaining('setelah toko lewat jam operasional'),
+        find.textContaining('Bisa ditutup setelah jam operasional'),
         findsOneWidget,
       );
 
@@ -372,7 +393,10 @@ void main() {
       // tablet, tapi diberi tahu pelanggan masih bisa memilih
       expect(api.calls, contains('capsterStatus:CAP-2:inactive'));
       expect(api.capsterList.last.active, isTrue);
-      expect(find.textContaining('tablet ini saja'), findsOneWidget);
+      expect(
+        find.textContaining('masih bisa dipilih pelanggan'),
+        findsOneWidget,
+      );
       expect(find.text('Belum nonaktif di aplikasi pelanggan'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Kembali'));
@@ -389,28 +413,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Wahyu'), findsWidgets);
       expect(find.text('Rizal'), findsNothing);
-    });
-
-    testWidgets('absensi admin: tidak hadir menonaktifkan capster di server', (
-      tester,
-    ) async {
-      api.staff = FakeApi.staffAs('admin');
-      await pumpApp(tester);
-      await signIn(tester);
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Absensi Karyawan'));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Tidak Hadir').last);
-      await tester.pumpAndSettle();
-      expect(api.calls, contains('capsterStatus:CAP-2:inactive'));
-      expect(api.capsterList.last.active, isFalse);
-      expect(find.textContaining('tablet ini saja'), findsNothing);
-
-      // Hadir lagi = aktif lagi, bisa dipilih pelanggan
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Hadir').last);
-      await tester.pumpAndSettle();
-      expect(api.calls, contains('capsterStatus:CAP-2:active'));
-      expect(api.capsterList.last.active, isTrue);
     });
 
     testWidgets('capster nonaktif tanpa absen = belum absen', (tester) async {
@@ -664,6 +666,62 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Hendra'), findsOneWidget);
       expect(find.text('Progress'), findsOneWidget);
+    });
+
+    testWidgets('status toko buka / tutup ikut jam server', (tester) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      final clock = Provider.of<ServerClock>(
+        tester.element(find.byType(ClockDriftBanner)),
+        listen: false,
+      );
+      final today = DateTime.now();
+
+      // Toko 09:00 - 21:00, jam tablet apa pun
+      clock.sync(
+        HttpDate.format(DateTime(today.year, today.month, today.day, 12)),
+      );
+      await tester.pump();
+      expect(find.text('Toko Buka'), findsOneWidget);
+
+      clock.sync(
+        HttpDate.format(DateTime(today.year, today.month, today.day, 22)),
+      );
+      await tester.pump();
+      expect(find.text('Toko Tutup'), findsOneWidget);
+    });
+
+    testWidgets('jam tablet ketinggalan: pesanan pakai jam server + banner', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await signIn(tester);
+      await openOrder(tester);
+
+      // Tiru respons server yang jamnya 1 jam di depan jam tablet
+      Provider.of<ServerClock>(
+        tester.element(find.byType(ClockDriftBanner)),
+        listen: false,
+      ).sync(HttpDate.format(DateTime.now().add(const Duration(hours: 1))));
+      await tester.pump();
+      expect(
+        find.textContaining('Jam tablet 1 jam lebih lambat dari server'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('+ Tambah').first);
+      await tester.pump();
+      await fillWalkIn(tester);
+      await tester.ensureVisible(find.text('Simpan Pesanan'));
+      await tester.tap(find.text('Simpan Pesanan'));
+      await tester.pumpAndSettle();
+
+      // Jam server + 1 menit, bukan jam tablet + 1 menit
+      final scheduled = api.bookingList.single.scheduledAt!;
+      expect(
+        scheduled.difference(DateTime.now()).inSeconds,
+        inInclusiveRange(60 * 60, 62 * 60),
+      );
     });
 
     testWidgets('pesanan langsung wajib nama + no HP pelanggan baru', (
@@ -1217,20 +1275,6 @@ void main() {
       expect(api.calls.last, endsWith(':rina'));
       expect(find.text('Dewi Lestari'), findsNothing);
     });
-
-    testWidgets('admin: sesi kasir dikunci, history tetap bisa dilihat', (
-      tester,
-    ) async {
-      api.staff = FakeApi.staffAs('admin');
-      await pumpApp(tester);
-      await signIn(tester);
-      await openBookkeeping(tester);
-
-      expect(find.text('Sesi kasir khusus akun kasir'), findsOneWidget);
-      await tester.tap(find.text('History Harian'));
-      await tester.pumpAndSettle();
-      expect(find.text('Rina Kasir'), findsOneWidget);
-    });
   });
 
   group('muat ulang', () {
@@ -1381,8 +1425,7 @@ void main() {
     Future<void> openBranches(WidgetTester tester) async {
       api.staff = FakeApi.staffAs('admin');
       await pumpApp(tester);
-      await signIn(tester);
-      await tapVisible(tester, find.text('Mengelola Cabang'));
+      await signIn(tester); // admin langsung ke Mengelola Cabang
     }
 
     Future<void> openDetail(WidgetTester tester, String name) async {
@@ -1410,7 +1453,13 @@ void main() {
       expect(branchApi.calls, contains('branches'));
       expect(find.byType(BranchCard), findsNWidgets(2));
       expect(find.text('Jl. Cikutra No. 123, Bandung'), findsOneWidget);
-      expect(find.text('Tutup'), findsOneWidget); // Depok ditutup admin
+      expect(
+        find.descendant(
+          of: find.byType(BranchCard),
+          matching: find.textContaining('Karyawan'),
+        ),
+        findsNWidgets(2),
+      );
 
       await tester.enterText(
         find.widgetWithText(TextFormField, 'Cari cabang...'),
@@ -1433,9 +1482,12 @@ void main() {
 
       expect(find.text('Profil Cabang'), findsOneWidget);
       expect(find.text('Detail Cabang'), findsOneWidget);
-      expect(find.text('081234567890'), findsOneWidget);
-      expect(find.text('2 Service Aktif\n1 Paket Aktif'), findsOneWidget);
-      expect(find.text('4.9 (12 ulasan)'), findsOneWidget);
+      expect(find.text('0812-3456-7890'), findsOneWidget);
+      expect(find.text('2 Service Operasional'), findsOneWidget);
+      expect(
+        find.textContaining(RegExp(r'^Rating Cabang: .* 4\.9$')),
+        findsOneWidget,
+      );
       expect(branchApi.calls, contains('branch:STORE-1'));
       // Tab Capster terbuka duluan
       expect(find.text('Wahyu'), findsOneWidget);
@@ -1443,6 +1495,29 @@ void main() {
 
       await tapVisible(tester, find.text('Kembali'));
       expect(find.byType(BranchCard), findsNWidgets(2));
+    });
+
+    testWidgets('capster: pindah ke cabang lain', (tester) async {
+      await openDetail(tester, 'Barberstuff Cikutra');
+      // Urut rating tertinggi: Wahyu (4.9) di baris pertama
+      await tapVisible(tester, find.text('Pindah Cabang').first);
+
+      // Belum pilih cabang tujuan, tidak dikirim
+      await tapVisible(tester, find.text('Simpan'));
+      expect(find.text('Pilih cabang tujuan dulu'), findsOneWidget);
+      expect(
+        branchApi.calls.where((c) => c.startsWith('moveCapster')),
+        isEmpty,
+      );
+
+      await tapVisible(tester, find.text('Pilih cabang tujuan'));
+      await tester.tap(find.text('Barberstuff Depok').last);
+      await tester.pumpAndSettle();
+      await tapVisible(tester, find.text('Simpan'));
+
+      expect(branchApi.calls, contains('moveCapster:CAP-1:STORE-2'));
+      expect(find.text('Wahyu'), findsNothing);
+      expect(find.text('Wahyu dipindah ke Barberstuff Depok'), findsOneWidget);
     });
 
     testWidgets('capster: tambah, nonaktifkan, dan hapus di tabel', (
@@ -1516,10 +1591,14 @@ void main() {
         'Paket Relax',
       );
       await tester.enterText(find.widgetWithText(TextField, '0'), '95000');
-      await tapVisible(tester, find.byTooltip('Pilih dari service cabang'));
+      // Menu tetap terbuka selama service dicentang
+      await tapVisible(tester, find.text('Pilih service'));
       await tester.tap(find.text('Keramas').last);
-      await tapVisible(tester, find.text('Pijat Kepala').last);
-      await tapVisible(tester, find.text('Pakai 2 Service'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pijat Kepala').last);
+      await tester.pumpAndSettle();
+      expect(find.text('2 Terpilih'), findsOneWidget);
+      await tapVisible(tester, find.text('2 Terpilih'));
       await tapVisible(tester, find.text('Simpan'));
       expect(
         branchApi.calls,
@@ -1635,6 +1714,22 @@ void main() {
 
       expect(branchApi.calls, contains('deleteBranch:STORE-2'));
       expect(find.byType(BranchCard), findsOneWidget);
+    });
+  });
+
+  group('manajemen karyawan', () {
+    testWidgets('kerangka tabel kosong, belum hit API', (tester) async {
+      api.staff = FakeApi.staffAs('admin');
+      await pumpApp(tester);
+      await signIn(tester);
+      final before = [...api.calls, ...branchApi.calls];
+
+      await tester.tap(find.text('Manajemen Karyawan'));
+      await tester.pumpAndSettle();
+      expect(find.text('Daftar Karyawan'), findsOneWidget);
+      expect(find.text('KARYAWAN'), findsOneWidget);
+      expect(find.text('Belum ada data karyawan'), findsOneWidget);
+      expect([...api.calls, ...branchApi.calls], before);
     });
   });
 }

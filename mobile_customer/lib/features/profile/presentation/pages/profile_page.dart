@@ -110,7 +110,7 @@ class ProfilePage extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.only(
               top: 24,
-              bottom: DashboardBottomNav.spaceOf(context),
+              bottom: DashboardBottomNav.contentGap,
             ),
             children: <Widget>[
               ProfileHeader(profile: profile),

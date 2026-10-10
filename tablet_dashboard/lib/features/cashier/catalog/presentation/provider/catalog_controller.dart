@@ -21,9 +21,13 @@ enum CatalogFilter {
   };
 }
 
+<<<<<<< HEAD
 // Layanan, paket, dan capster toko. Semua layanan dimuat sekali
 // (GET /service wajib pilih type, jadi service & paket diambil terpisah),
 // lalu filter, cari, dan halaman diproses di tablet
+=======
+// Layanan, paket, capster toko. Dimuat sekali, filter & cari di tablet
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class CatalogController extends ChangeNotifier {
   CatalogController(this._api);
 
@@ -81,8 +85,12 @@ class CatalogController extends ChangeNotifier {
     await Future.wait([refresh(), loadCapsters()]);
   }
 
+<<<<<<< HEAD
   // [silent] = muat ulang di belakang layar: data lama tetap tampil tanpa
   // kerangka loading, dan kalau gagal data lama tidak dihapus
+=======
+  // [silent] = muat ulang diam-diam, kalau gagal data lama tetap
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
   Future<void> refresh({bool silent = false}) async {
     if (storeId.isEmpty || (silent && loading)) return;
     if (!silent) {

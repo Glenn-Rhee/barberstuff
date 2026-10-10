@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 
-// Kerangka modal form sesuai desain: judul + tombol tutup, isi form,
-// centang "Saya memastikan data sudah benar", lalu Batal / Simpan.
-// [onSubmit] balikin pesan error (dialog tetap terbuka) atau null (dialog tutup)
+// Modal form: judul, isi, centang konfirmasi, Batal / Simpan.
+// [onSubmit] balikin error (dialog tetap buka) atau null (tutup)
 class AppFormDialog extends StatefulWidget {
   const AppFormDialog({
     super.key,

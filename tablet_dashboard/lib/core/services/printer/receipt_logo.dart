@@ -46,8 +46,7 @@ class ReceiptLogo {
     image.dispose();
     codec.dispose();
 
-    // Logo putih di latar transparan tidak punya piksel gelap,
-    // jadi semua piksel yang tidak transparan dianggap tinta
+    // Logo putih transparan: piksel tidak transparan dianggap tinta
     var opaque = 0;
     var luminanceSum = 0;
     for (var i = 0; i < rgba.length; i += 4) {

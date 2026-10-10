@@ -1,9 +1,7 @@
 class GridColumns {
   const GridColumns._();
 
-  // Jumlah kolom yang muat di [width] tanpa kartu lebih sempit dari
-  // [minItemWidth]. Layar tablet tiap cabang bisa beda, jadi kolom
-  // dihitung dari lebar asli, bukan angka tetap
+  // Jumlah kolom yang muat di [width], kartu minimal [minItemWidth]
   static int of(
     double width, {
     required double minItemWidth,

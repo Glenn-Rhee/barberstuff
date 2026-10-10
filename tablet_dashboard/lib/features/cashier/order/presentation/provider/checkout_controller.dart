@@ -1,20 +1,37 @@
 import 'package:tablet_dashboard/core/network/api_exception.dart';
-import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
+import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
+<<<<<<< HEAD
 import 'package:tablet_dashboard/features/cashier/customer/presentation/provider/customer_history_controller.dart';
+=======
+import 'package:tablet_dashboard/features/cashier/customer_list/presentation/provider/customer_history_controller.dart';
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 import 'package:tablet_dashboard/features/cashier/order/domain/entities/discount.dart';
 import 'package:tablet_dashboard/features/cashier/order/domain/entities/receipt.dart';
-import 'package:tablet_dashboard/features/cashier/order/presentation/provider/order_controller.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/data/booking_api.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/data/booking_api.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
+import 'package:tablet_dashboard/features/cashier/order_walk_in/presentation/provider/order_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 
+<<<<<<< HEAD
 // Catat pesanan & pembayaran ke server dan buat struknya.
 // Dialog, cetak, dan toast tetap di widget, di sini cuma urusan API
 class CheckoutController {
   CheckoutController(this._bookingApi, this._shift, this._session, this._store);
+=======
+// Catat pesanan & bayar ke server lalu buat struk (UI tetap di widget)
+class CheckoutController {
+  CheckoutController(
+    this._bookingApi,
+    this._shift,
+    this._session,
+    this._store,
+    this._clock,
+  );
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 
   // Cari booking baru maks 4 halaman x 50
   static const _searchLimit = 50;
@@ -27,15 +44,26 @@ class CheckoutController {
   // Toko yang dipakai (admin bisa ganti cabang)
   final StoreController _store;
 
+<<<<<<< HEAD
+=======
+  // Jam server, jam tablet bisa salah
+  final ServerClock _clock;
+
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
   // Pembayaran dicatat ke shift, jadi shift harus buka dulu
   bool get canTakePayment => _shift.isOpen;
 
   String get _cashierName => _session.profile?.name ?? '-';
 
+<<<<<<< HEAD
   // Pesanan langsung dibuat sebagai booking jam sekarang, karena backend tidak
   // mengembalikan id booking walk-in. Booking dicari lagi di GET /booking,
   // lalu langsung check-in (status progress) supaya tidak kena auto-cancel.
   // Hasilnya muncul di tab Dari Reservasi dan siap dibayar
+=======
+  // Walk-in dibuat sebagai booking (backend tidak balikin id), dicari lagi,
+  // lalu langsung check-in supaya tidak kena auto-cancel
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
   Future<WalkInResult> startWalkIn(
     OrderController order, {
     required Capster capster,
@@ -48,8 +76,13 @@ class CheckoutController {
         storeId: _store.storeId,
         capsterId: capster.id,
         serviceIds: serviceIds,
+<<<<<<< HEAD
         // +1 menit supaya tidak dianggap jam lewat oleh server
         bookingDate: DateTime.now().add(const Duration(minutes: 1)),
+=======
+        // Jam server +1 menit, jam tablet bisa salah
+        bookingDate: _clock.now().add(const Duration(minutes: 1)),
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
         customerId: customer?.id,
         customerName: customer == null
             ? order.nameController.text.trim()
@@ -69,16 +102,26 @@ class CheckoutController {
         phone: phone,
         serviceIds: serviceIds,
       );
+<<<<<<< HEAD
     } on ApiException catch (e) {
       return WalkInResult.failed(
         'Pesanan tersimpan, tapi gagal dimuat ulang: ${e.message}. '
         'Cek di tab Dari Reservasi.',
+=======
+    } on ApiException {
+      return const WalkInResult.failed(
+        'Pesanan tersimpan, cek di tab Dari Reservasi.',
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
         created: true,
       );
     }
     if (booking == null) {
       return const WalkInResult.failed(
+<<<<<<< HEAD
         'Pesanan tersimpan, tapi tidak ketemu di daftar. Cek di tab Dari Reservasi.',
+=======
+        'Pesanan tersimpan, cek di tab Dari Reservasi.',
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
         created: true,
       );
     }
@@ -87,8 +130,12 @@ class CheckoutController {
       await _bookingApi.checkIn('bk${booking.id}');
     } on ApiException catch (e) {
       return WalkInResult.failed(
+<<<<<<< HEAD
         'Pesanan tersimpan tapi belum check-in: ${e.message}. Check-in dari '
         'tab Dari Reservasi dalam 10 menit, setelah itu dibatalkan otomatis.',
+=======
+        'Belum check-in, ulangi di Dari Reservasi dalam 10 menit. ${e.message}',
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
         created: true,
       );
     }
@@ -161,7 +208,11 @@ class CheckoutController {
     );
     if (error != null) {
       return CheckoutResult.failed(
+<<<<<<< HEAD
         'Pesanan tersimpan di Dari Reservasi, tapi pembayaran gagal dicatat: $error',
+=======
+        'Pembayaran gagal, ulangi di Dari Reservasi. $error',
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
         created: true,
       );
     }
@@ -169,7 +220,11 @@ class CheckoutController {
     return CheckoutResult.paid(
       Receipt(
         number: Receipt.numberFor(booking.id),
+<<<<<<< HEAD
         createdAt: DateTime.now(),
+=======
+        createdAt: _clock.now(),
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
         cashier: _cashierName,
         customer: customer,
         capster: capster.name,
@@ -181,8 +236,12 @@ class CheckoutController {
     );
   }
 
+<<<<<<< HEAD
   // Booking yang sudah ada: catat pembayaran pakai nominal dari server,
   // dikurangi [discount] kasir (hanya bisa saat status progress)
+=======
+  // Bayar booking: total server dikurangi [discount] (hanya saat progress)
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
   Future<CheckoutResult> payBooking(
     Booking booking, {
     required PaymentType method,
@@ -209,8 +268,12 @@ class CheckoutController {
     );
   }
 
+<<<<<<< HEAD
   // Struk booking, [cash] null saat cetak ulang.
   // [discount] = diskon kasir yang baru dibayar, belum ada di data booking
+=======
+  // Struk booking. [cash] null = cetak ulang, [discount] = diskon baru dibayar
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
   Receipt receiptForBooking(
     Booking booking, {
     required PaymentType method,
@@ -231,8 +294,12 @@ class CheckoutController {
   }
 }
 
+<<<<<<< HEAD
 // Hasil pesanan langsung: booking yang sudah check-in, atau alasan gagal.
 // [created] true = pesanan sudah terlanjur dibuat di server
+=======
+// Hasil walk-in. [created] = pesanan sudah terbuat di server
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class WalkInResult {
   const WalkInResult.started(Booking this.booking)
     : error = null,
@@ -246,8 +313,12 @@ class WalkInResult {
   final bool created;
 }
 
+<<<<<<< HEAD
 // Hasil bayar: struk untuk dicetak, atau alasan gagal.
 // [created] true = pesanan sudah ada di server walau bayar gagal
+=======
+// Hasil bayar. [created] = pesanan ada di server walau bayar gagal
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class CheckoutResult {
   const CheckoutResult.paid(Receipt this.receipt)
     : error = null,

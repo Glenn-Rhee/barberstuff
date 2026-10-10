@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 
-// Tombol "Muat ulang" di header halaman: hit ulang API halaman itu.
-// Berputar selama data dimuat
+// Tombol muat ulang, berputar selama dimuat
 class RefreshButton extends StatefulWidget {
   const RefreshButton({super.key, required this.onRefresh});
 

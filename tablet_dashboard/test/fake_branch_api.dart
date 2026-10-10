@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:tablet_dashboard/core/network/api_exception.dart';
-import 'package:tablet_dashboard/features/admin/branch/data/branch_api.dart';
-import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch.dart';
-import 'package:tablet_dashboard/features/admin/branch/domain/entities/branch_draft.dart';
-import 'package:tablet_dashboard/features/admin/branch/domain/entities/staff_account.dart';
-import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
+import 'package:tablet_dashboard/features/admin/branch_account/domain/entities/staff_account.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/data/branch_api.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch.dart';
+import 'package:tablet_dashboard/features/admin/branch_list/domain/entities/branch_draft.dart';
+import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 
@@ -207,9 +207,19 @@ class FakeBranchApi implements BranchApi {
     String? name,
     bool? active,
     String? imageKey,
+    String? storeId,
   }) async {
     calls.add('updateCapster:$id:${name ?? ''}:${active ?? ''}');
     _check();
+    if (storeId != null) {
+      calls.add('moveCapster:$id:$storeId');
+      final moved = capsterMap.values
+          .expand((l) => l)
+          .firstWhere((c) => c.id == id);
+      capsterMap.updateAll((_, list) => [...list.where((c) => c.id != id)]);
+      capsterMap[storeId] = [...?capsterMap[storeId], moved];
+      return;
+    }
     capsterMap.updateAll(
       (_, list) => [
         for (final c in list)

@@ -10,6 +10,8 @@ class PersonAvatar extends StatelessWidget {
     required this.name,
     this.photo,
     this.size = 36,
+    this.background = AppColor.surfaceMuted,
+    this.foreground = AppColor.inkSoft,
   });
 
   final String name;
@@ -18,21 +20,22 @@ class PersonAvatar extends StatelessWidget {
   final String? photo;
   final double size;
 
+  // Warna lingkaran & inisial kalau tanpa foto
+  final Color background;
+  final Color foreground;
+
   @override
   Widget build(BuildContext context) {
     final initials = Container(
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        color: AppColor.surfaceMuted,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: background, shape: BoxShape.circle),
       child: Text(
         initialsOf(name),
         style: AppTextStyle.label.copyWith(
           fontSize: size * 0.3,
-          color: AppColor.inkSoft,
+          color: foreground,
         ),
       ),
     );
@@ -48,8 +51,7 @@ class PersonAvatar extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.cover,
-        // Inisial selama foto dimuat, atau kalau gagal
-        // (link presigned dari backend kedaluwarsa 30 menit)
+        // Inisial selama foto dimuat atau gagal (link presigned 30 menit)
         frameBuilder: (_, child, frame, loadedSync) =>
             frame == null && !loadedSync ? initials : child,
         errorBuilder: (_, _, _) => initials,

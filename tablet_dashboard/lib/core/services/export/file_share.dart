@@ -4,8 +4,7 @@ import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-// Simpan file ke folder sementara lalu buka menu bagikan Android
-// (simpan ke Files / Drive / kirim WhatsApp)
+// Simpan ke folder sementara lalu buka menu bagikan Android
 class FileShare {
   const FileShare._();
 

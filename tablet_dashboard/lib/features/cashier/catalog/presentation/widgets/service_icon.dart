@@ -1,8 +1,12 @@
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/service_item.dart';
 
+<<<<<<< HEAD
 // Ikon layanan dipilih dari nama layanan (backend tidak kirim ikon).
 // Tidak ketemu = gunting untuk service, bintang untuk paket
+=======
+// Ikon dari nama layanan, default gunting (service) / bintang (paket)
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class ServiceIcon {
   const ServiceIcon._();
 

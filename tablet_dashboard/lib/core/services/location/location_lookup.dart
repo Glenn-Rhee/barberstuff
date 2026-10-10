@@ -10,8 +10,7 @@ class LocationException implements Exception {
   String toString() => message;
 }
 
-// Titik GPS untuk peta cabang: posisi tablet sekarang, atau cari dari
-// alamat lewat OpenStreetMap Nominatim (gratis, tanpa API key)
+// Titik GPS cabang: posisi tablet, atau cari alamat via Nominatim
 class LocationLookup {
   LocationLookup({Dio? dio})
     : _dio =

@@ -7,9 +7,13 @@ import 'package:tablet_dashboard/core/utils/thousands_formatter.dart';
 import 'package:tablet_dashboard/features/cashier/order/domain/entities/discount.dart';
 import 'package:tablet_dashboard/shared/widgets/buttons/pill.dart';
 
+<<<<<<< HEAD
 // "Diskon Produk": pilih persen / nominal, isi jumlah, lalu Terapkan.
 // [value] = diskon yang sedang dipakai, [base] = total sebelum diskon.
 // [onChanged] null = terkunci (mis. booking belum check-in), alasannya di [note]
+=======
+// Diskon persen / nominal. [onChanged] null = terkunci, alasan di [note]
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class DiscountSection extends StatefulWidget {
   const DiscountSection({
     super.key,

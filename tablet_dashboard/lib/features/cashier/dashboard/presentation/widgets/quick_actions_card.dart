@@ -3,7 +3,11 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/pages/attendance_screen.dart';
+<<<<<<< HEAD
 import 'package:tablet_dashboard/features/cashier/reservation/presentation/pages/scan_booking_screen.dart';
+=======
+import 'package:tablet_dashboard/features/cashier/order_scan/presentation/pages/scan_booking_screen.dart';
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/cash_entry_dialog.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';

@@ -12,6 +12,7 @@ class SidebarNavItem extends StatelessWidget {
     required this.selected,
     required this.expanded,
     required this.onTap,
+    this.labelFontSize,
   });
 
   final String label;
@@ -20,6 +21,8 @@ class SidebarNavItem extends StatelessWidget {
   final bool selected;
   final bool expanded;
   final VoidCallback onTap;
+  // null = ukuran default (body)
+  final double? labelFontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +49,12 @@ class SidebarNavItem extends StatelessWidget {
                   AppIcon(icon, size: 20, color: foreground),
                   if (expanded) ...[
                     const SizedBox(width: 12),
+<<<<<<<< HEAD:tablet_dashboard/lib/features/home/presentation/widgets/sidebar_nav_item.dart
                     // Label panjang ("Mengelola Cabang") mengecil sedikit,
                     // tidak terpotong
+========
+                    // Label panjang mengecil, tidak terpotong
+>>>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/home/shell/presentation/widgets/sidebar_nav_item.dart
                     Expanded(
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
@@ -57,6 +64,10 @@ class SidebarNavItem extends StatelessWidget {
                           maxLines: 1,
                           style: AppTextStyle.body.copyWith(
                             color: foreground,
+<<<<<<<< HEAD:tablet_dashboard/lib/features/home/presentation/widgets/sidebar_nav_item.dart
+========
+                            fontSize: labelFontSize,
+>>>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/home/shell/presentation/widgets/sidebar_nav_item.dart
                             fontWeight: selected
                                 ? FontWeight.w600
                                 : FontWeight.w400,

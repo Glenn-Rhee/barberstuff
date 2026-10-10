@@ -60,8 +60,7 @@ class DateFormatId {
   static bool isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
-  // Jam dari backend, mis. "0000-01-01T09:00:00Z" -> "09:00".
-  // Diambil apa adanya (jam lokal toko), jangan dikonversi zona waktu
+  // "0000-01-01T09:00:00Z" -> "09:00", jam lokal toko, jangan dikonversi
   static String? clockOf(Object? value) {
     final match = RegExp(r'T(\d{2}):(\d{2})').firstMatch('${value ?? ''}');
     return match == null ? null : '${match[1]}:${match[2]}';
@@ -73,8 +72,7 @@ class DateFormatId {
     return int.parse(parts[0]) * 60 + int.parse(parts[1]);
   }
 
-  // "09:30" -> "2000-01-01T09:30:00.000Z" untuk open_hour / close_hour.
-  // Backend cuma pakai jam & menitnya sebagai jam lokal toko
+  // "09:30" -> "2000-01-01T09:30:00.000Z", backend cuma pakai jam & menit
   static String clockToApi(String clock) {
     final minutes = minutesOf(clock);
     return DateTime.utc(

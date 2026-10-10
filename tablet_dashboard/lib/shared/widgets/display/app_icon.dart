@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Ikon dari assets (PNG satu warna). Warna & ukuran ikut [color] / [size],
-// kalau kosong ikut IconTheme, jadi di dalam tombol otomatis sama dengan
-// warna teks tombol. [tint] false = pakai warna asli gambar (mis. bintang)
+// Ikon PNG satu warna, ikut [color] / IconTheme. [tint] false = warna asli
 class AppIcon extends StatelessWidget {
   const AppIcon(
     this.asset, {

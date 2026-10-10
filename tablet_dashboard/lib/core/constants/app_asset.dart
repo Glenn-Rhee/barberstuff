@@ -6,6 +6,7 @@ class AppAsset {
   static const String _sidebar = 'assets/icons/sidebar';
   static const String _cashier = 'assets/icons/cashier';
   static const String _general = 'assets/icons/general';
+  static const String _admin = 'assets/icons/admin';
   static const String _image = 'assets/images';
 
   // Logo
@@ -52,6 +53,33 @@ class AppAsset {
   static const String searchIcon = '$_general/search.png';
   static const String logoutIcon = '$_general/logout.png';
   static const String scissorsIcon = '$_general/scrissors_book.png';
+
+  // Ikon admin, sudah berwarna jadi pakai tint: false
+  // (kecuali plus, ikut warna teks tombol)
+  static const String mapPinIcon = '$_admin/map_loc.png';
+  static const String clockIcon = '$_admin/time.png';
+  static const String employeeIcon = '$_admin/person.png';
+  static const String chairIcon = '$_admin/chair.png';
+  static const String starOutlineIcon = '$_admin/star_not_full.png';
+  static const String plusIcon = '$_admin/plus.png';
+  static const String fullStarIcon = '$_admin/full_star.png';
+  static const String changeBranchIcon = '$_admin/change_branch.png';
+  static const String editServiceIcon = '$_admin/edit_service.png';
+  static const String editPackageIcon = '$_admin/edit_paket.png';
+  static const String checkIcon = '$_admin/checklist_paket.png';
+  static const String infoIcon = '$_admin/info.png';
+
+  // Ikon Manajemen Karyawan (sudah berwarna)
+  static const String employeesIcon = '$_admin/personal_empolye.png';
+  static const String employeeActiveIcon = '$_admin/personal_check_empolye.png';
+  static const String employeeInactiveIcon =
+      '$_admin/personal_uncheck_empoly.png';
+  static const String buildingIcon = '$_admin/docs_empolye.png';
+  static const String viewIcon = '$_admin/eye_empolye.png';
+  static const String editEmployeeIcon = '$_admin/edit_empolyee.png';
+  static const String deleteEmployeeIcon = '$_admin/trash_empolye.png';
+  static const String cameraIcon = '$_admin/camera_empolye.png';
+  static const String uploadIcon = '$_admin/upload_empolye.png';
 
   // Bintang rating, dua warna jadi jangan diwarnai ulang
   static const String starIcon = '$_general/full_star_history.png';

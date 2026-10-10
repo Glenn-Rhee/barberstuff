@@ -4,8 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/domain/entities/attendance_entry.dart';
 
+<<<<<<< HEAD
 // Absensi disimpan di tablet per toko per hari, karena backend belum
 // punya endpoint absensi
+=======
+// Absensi per toko per hari di tablet (backend belum punya endpoint)
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class AttendanceStorage {
   const AttendanceStorage();
 

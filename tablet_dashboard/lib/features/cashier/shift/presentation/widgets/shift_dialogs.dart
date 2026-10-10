@@ -4,7 +4,11 @@ import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/core/utils/thousands_formatter.dart';
+<<<<<<< HEAD
 import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
+=======
+import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
@@ -35,8 +39,12 @@ Future<void> showOpenShiftDialog(BuildContext context) async {
   );
   if (opened != true || !context.mounted) return;
 
+<<<<<<< HEAD
   // Pagi = buka shift: capster yang belum absen dinonaktifkan,
   // baru bisa dipilih pelanggan setelah ditandai Hadir
+=======
+  // Buka shift: capster belum absen nonaktif sampai ditandai Hadir
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
   final problem = await context.read<AttendanceController>().resetForShift(
     context.read<CatalogController>().capsters,
   );
@@ -72,11 +80,16 @@ Future<void> showCloseShiftDialog(BuildContext context) async {
       submitLabel: 'Tutup Shift',
       danger: true,
       note:
+<<<<<<< HEAD
           'Seharusnya ada ${PriceFormat.full(session.expectedCash)} '
           '(saldo awal ${PriceFormat.plain(session.openingBalance)} + tunai '
           '${PriceFormat.plain(session.incomeCash)} - kas keluar '
           '${PriceFormat.plain(session.outcome)}). Kas hanya bisa ditutup '
           'setelah toko lewat jam operasional.',
+=======
+          'Seharusnya ada ${PriceFormat.full(session.expectedCash)}. '
+          'Bisa ditutup setelah jam operasional.',
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
       onSubmit: (value) async {
         result = await shift.closeShift(value);
         // mis. "Toko masih dalam operasional tidak dapat menutup kas."

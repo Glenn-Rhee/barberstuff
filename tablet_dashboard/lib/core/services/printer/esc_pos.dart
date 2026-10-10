@@ -18,8 +18,7 @@ class RasterImage {
   int get bytesPerRow => width ~/ 8;
 }
 
-// Penyusun perintah ESC/POS untuk printer thermal 58mm.
-// 58mm = 384 titik, muat 32 karakter per baris (16 kalau large)
+// Perintah ESC/POS printer 58mm: 384 titik, 32 karakter per baris
 class EscPos {
   EscPos({this.lineWidth = 32}) {
     _bytes.add(const [0x1B, 0x40]); // ESC @ : reset printer
@@ -53,8 +52,7 @@ class EscPos {
       ]); // balik ke default
   }
 
-  // [left] di kiri, [right] di kanan dalam satu baris.
-  // Kalau tidak muat, dipecah jadi dua baris
+  // [left] di kiri, [right] di kanan, tidak muat = dua baris
   void row(String left, String right, {bool bold = false}) {
     final gap = lineWidth - left.length - right.length;
     if (gap < 1) {

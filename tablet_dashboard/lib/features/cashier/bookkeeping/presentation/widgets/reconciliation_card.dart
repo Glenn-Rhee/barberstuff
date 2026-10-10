@@ -36,8 +36,13 @@ class _ReconciliationCardState extends State<ReconciliationCard> {
       context,
       title: 'Tutup shift?',
       message:
+<<<<<<< HEAD
           'Uang fisik di laci ${PriceFormat.full(actual)}. Shift ditutup dan '
           'transaksi baru tidak bisa dicatat sampai shift dibuka lagi.',
+=======
+          'Uang di laci ${PriceFormat.full(actual)}. Transaksi baru '
+          'tidak bisa dicatat sampai shift dibuka lagi.',
+>>>>>>> 7d13d7e32679190728e118598f013051b3289112
       confirmLabel: 'Tutup Shift',
       danger: true,
     );
