@@ -15,12 +15,7 @@ import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
 
-<<<<<<< HEAD
-// "Karyawan Bertugas": capster toko dengan status absen hari ini
-// (nonaktif di server = tidak hadir). Urutan: hadir, belum absen, tidak hadir
-=======
 // Karyawan Bertugas, urut: hadir, belum absen, tidak hadir
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class CapsterListCard extends StatelessWidget {
   const CapsterListCard({super.key});
 
@@ -146,14 +141,10 @@ class _CapsterTile extends StatelessWidget {
                 ],
               ),
             ),
-            if (capster.rating > 0) ...[
-              const AppIcon(AppAsset.starIcon, size: 14, tint: false),
-              const SizedBox(width: 4),
-              Text(
-                capster.rating.toStringAsFixed(1),
-                style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
-              ),
-            ],
+            if (status == AttendanceStatus.present)
+              (Icon(Icons.check, color: AppColor.success))
+            else
+              (Icon(Icons.close, color: AppColor.danger)),
           ],
         ),
       ),

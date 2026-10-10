@@ -100,18 +100,29 @@ class _BookingPanelState extends State<BookingPanel> {
     });
   }
 
-  Future<void> _removeService(Booking booking, ServiceItem item) =>
+  // +1 (POST item) / -1 (DELETE item), jumlah baru dibaca lagi dari server
+  Future<void> _changeQty(Booking booking, ServiceItem item, int delta) =>
       _run(() async {
-        final error = await context.read<BookingsController>().removeService(
-          booking,
-          item.id,
-        );
+        final bookings = context.read<BookingsController>();
+        final before = booking.qtyOf(item.id);
+        final error = delta > 0
+            ? await bookings.addService(booking, item.id)
+            : await bookings.removeService(booking, item.id);
         if (!mounted) return;
-        AppToast.show(
-          context,
-          error ?? '${item.name} dikeluarkan dari booking',
-          error: error != null,
-        );
+        if (error != null) {
+          AppToast.show(context, error, error: true);
+          return;
+        }
+        // Server bisa balas sukses tapi jumlahnya tidak berubah
+        final after = bookings.selected?.qtyOf(item.id);
+        if (after != null && after != before + delta) {
+          AppToast.show(
+            context,
+            'Server belum mengubah jumlah ${item.name} '
+            '(tetap x$after).',
+            error: true,
+          );
+        }
       });
 
   // Terima bayar pakai nominal server (dikurangi diskon kasir) lalu cetak
@@ -171,7 +182,7 @@ class _BookingPanelState extends State<BookingPanel> {
     if (printed && mounted) AppToast.show(context, 'Struk dicetak ulang');
   }
 
-  // Batalkan booking (booked/progress), completed tidak bisa dicancel
+  // Batalkan booking (booked/progress)
   Future<void> _cancel(Booking booking) async {
     final bookings = context.read<BookingsController>();
     final cancelled = await showCancelBookingDialog(
@@ -211,7 +222,7 @@ class _BookingPanelState extends State<BookingPanel> {
     final status = booking.status;
     // Backend hanya izinkan ubah item saat progress, dan booking tidak boleh kosong
     final editable = status == BookingStatus.progress && !_busy;
-    final removable = editable && booking.services.length > 1;
+    final removable = editable && booking.itemCount > 1;
     final discount = _discountOf(booking);
     final discountAmount = discount?.amountFor(booking.total) ?? 0;
 
@@ -228,8 +239,12 @@ class _BookingPanelState extends State<BookingPanel> {
                 CartItemTile(
                   item: catalog.byId(line.item.id) ?? line.item,
                   subtitle: booking.capster.name,
+                  qty: line.qty,
+                  onAdd: editable
+                      ? () => _changeQty(booking, line.item, 1)
+                      : null,
                   onRemove: removable
-                      ? () => _removeService(booking, line.item)
+                      ? () => _changeQty(booking, line.item, -1)
                       : null,
                 ),
               if (booking.services.isEmpty)
@@ -262,8 +277,8 @@ class _BookingPanelState extends State<BookingPanel> {
                 Text(
                   status == BookingStatus.booked
                       ? 'Layanan bisa ditambah setelah pelanggan check-in.'
-                      : 'Boleh lebih dari 1 layanan / paket, '
-                            'tapi item yang sama cuma 1x.',
+                      : 'Boleh lebih dari 1 layanan / paket. '
+                            'Tekan + di keranjang untuk menambah jumlah.',
                   style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
                 ),
                 const SizedBox(height: 20),
@@ -309,14 +324,17 @@ class _BookingPanelState extends State<BookingPanel> {
         ),
         const SizedBox(height: 12),
         ...switch (status) {
+          // INI KALO BOOKINGNYA MASIH BOOKED
           BookingStatus.booked => [
+            _cancelButton(booking),
+            const SizedBox(height: 8),
             FilledButton(
               onPressed: _busy ? null : () => _checkIn(booking),
               child: const Text('Ubah Status Progress'),
             ),
-            const SizedBox(height: 8),
-            _cancelButton(booking),
           ],
+
+          // INI KALO BOOKINGNYA PRGORESS
           BookingStatus.progress => [
             Text(
               'METODE PEMBAYARAN',
@@ -354,15 +372,18 @@ class _BookingPanelState extends State<BookingPanel> {
                   style: AppTextStyle.caption.copyWith(color: AppColor.danger),
                 ),
               ),
+            _cancelButton(booking),
+            const SizedBox(height: 8),
             FilledButton.icon(
               onPressed: shift.isOpen && !_busy ? () => _pay(booking) : null,
               icon: const Icon(Icons.print_outlined, size: 18),
               label: const Text('Bayar'),
             ),
-            const SizedBox(height: 8),
-            _cancelButton(booking),
           ],
+
+          // INI KALO COMPLETED BOOKINGNYA
           BookingStatus.completed => [
+            // TUNGGU API
             FilledButton.icon(
               onPressed: () => _reprint(booking),
               icon: const Icon(Icons.print_outlined, size: 18),

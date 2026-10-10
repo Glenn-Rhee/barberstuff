@@ -8,6 +8,7 @@ import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/domain/entities/attendance_entry.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/cart_line.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/customer_list/presentation/provider/customer_history_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/presentation/provider/checkout_controller.dart';
@@ -150,8 +151,8 @@ class _OrderPanelState extends State<OrderPanel> {
         if (attendance.statusOf(capster) != AttendanceStatus.absent) capster,
     ];
     final shift = context.watch<ShiftController>();
-    final items = order.items;
-    final ready = !_busy && items.isNotEmpty;
+    final lines = order.lines;
+    final ready = !_busy && lines.isNotEmpty;
 
     return AppCard(
       child: Column(
@@ -166,7 +167,7 @@ class _OrderPanelState extends State<OrderPanel> {
                   const SizedBox(height: 16),
                   const Text('Keranjang', style: AppTextStyle.label),
                   const SizedBox(height: 8),
-                  if (items.isEmpty)
+                  if (lines.isEmpty)
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -181,11 +182,13 @@ class _OrderPanelState extends State<OrderPanel> {
                         ),
                       ),
                     ),
-                  for (final item in items)
+                  for (final CartLine(:item, :qty) in lines)
                     CartItemTile(
                       item: item,
                       subtitle: item.type.label,
-                      onRemove: _busy ? null : () => order.remove(item),
+                      qty: qty,
+                      onAdd: _busy ? null : () => order.increment(item),
+                      onRemove: _busy ? null : () => order.decrement(item),
                     ),
                   const SizedBox(height: 16),
                   const Text('Pilih Capster', style: AppTextStyle.label),

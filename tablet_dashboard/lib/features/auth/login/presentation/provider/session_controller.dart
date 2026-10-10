@@ -84,13 +84,7 @@ class SessionController extends ChangeNotifier {
     }
   }
 
-<<<<<<< HEAD:tablet_dashboard/lib/features/auth/presentation/provider/session_controller.dart
-  // Reset password tanpa verifikasi email: masuk pakai password lama
-  // (atau password awal dari admin), lalu ganti lewat PATCH /staff/{id}.
-  // Balikin pesan error, atau null kalau berhasil
-=======
   // Reset password tanpa OTP lewat PATCH /staff/{id}. Balikin error, null = berhasil
->>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/auth/login/presentation/provider/session_controller.dart
   Future<String?> resetPassword({
     required String email,
     required String oldPassword,

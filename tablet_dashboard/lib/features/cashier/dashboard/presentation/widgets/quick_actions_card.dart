@@ -3,11 +3,7 @@ import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/pages/attendance_screen.dart';
-<<<<<<< HEAD
-import 'package:tablet_dashboard/features/cashier/reservation/presentation/pages/scan_booking_screen.dart';
-=======
 import 'package:tablet_dashboard/features/cashier/order_scan/presentation/pages/scan_booking_screen.dart';
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/cash_entry_dialog.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/layout/app_card.dart';
@@ -31,6 +27,7 @@ class QuickActionsCard extends StatelessWidget {
                   icon: AppAsset.scanIcon,
                   label: 'Scan Barcode',
                   onTap: () => openScanBooking(context),
+                  color: AppColor.yellow,
                 ),
               ),
               const SizedBox(width: 12),
@@ -39,6 +36,7 @@ class QuickActionsCard extends StatelessWidget {
                   icon: AppAsset.graphicIcon,
                   label: 'Catat Kas Keluar',
                   onTap: () => showCashEntryDialog(context),
+                  color: AppColor.success,
                 ),
               ),
               const SizedBox(width: 12),
@@ -47,6 +45,7 @@ class QuickActionsCard extends StatelessWidget {
                   icon: AppAsset.personIcon,
                   label: 'Absensi Karyawan',
                   onTap: () => openAttendance(context),
+                  color: AppColor.info,
                 ),
               ),
             ],
@@ -62,12 +61,14 @@ class _ActionButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    required this.color,
   });
 
   // Path asset ikon
   final String icon;
   final String label;
   final VoidCallback onTap;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +78,15 @@ class _ActionButton extends StatelessWidget {
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         backgroundColor: AppColor.surface,
+        side: BorderSide(color: color),
       ),
-      icon: AppIcon(icon, size: 18),
-      label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+      icon: AppIcon(icon, size: 18, color: color),
+      label: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: color),
+      ),
     );
   }
 }

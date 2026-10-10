@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
-<<<<<<< HEAD
-import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
-import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
-
-// Status kedatangan di tabel dashboard:
-// progress = Sudah Check-in, booked lewat jadwal = Menunggu, booked nanti = Dijadwalkan
-=======
 import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
 
 // progress = Sudah Check-in, booked lewat = Menunggu, lainnya = Dijadwalkan
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class ArrivalBadge extends StatelessWidget {
   const ArrivalBadge({super.key, required this.booking, required this.now});
 

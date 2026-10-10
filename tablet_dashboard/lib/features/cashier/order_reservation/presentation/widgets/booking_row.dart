@@ -5,13 +5,8 @@ import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/core/utils/name_format.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/features/cashier/order/domain/entities/receipt.dart';
-<<<<<<< HEAD:tablet_dashboard/lib/features/cashier/reservation/presentation/widgets/booking_row.dart
-import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/presentation/widgets/booking_status_badge.dart';
-=======
 import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/widgets/booking_status_badge.dart';
->>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/cashier/order_reservation/presentation/widgets/booking_row.dart
 
 // Satu baris di tabel reservasi, tap untuk buka detail pelanggan
 class BookingRow extends StatelessWidget {

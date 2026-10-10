@@ -41,16 +41,19 @@ class Booking {
         .cast<String, dynamic>();
     final capster = (booking['capster'] as Map? ?? const {})
         .cast<String, dynamic>();
+    // Backend kirim 1 baris per item, layanan yang sama digabung jadi jumlah
+    final qty = <ServiceItem, int>{};
+    for (final item in (booking['services'] as List? ?? const [])) {
+      if (item is! Map) continue;
+      final service = ServiceItem(
+        id: item['id'] as String? ?? '',
+        name: item['name'] as String? ?? '-',
+        price: parseAmount(item['price']),
+      );
+      qty.update(service, (count) => count + 1, ifAbsent: () => 1);
+    }
     final services = [
-      for (final item in (booking['services'] as List? ?? const []))
-        if (item is Map)
-          CartLine(
-            ServiceItem(
-              id: item['id'] as String? ?? '',
-              name: item['name'] as String? ?? '-',
-              price: parseAmount(item['price']),
-            ),
-          ),
+      for (final MapEntry(:key, :value) in qty.entries) CartLine(key, value),
     ];
     return Booking(
       id: booking['id'] as String? ?? '',
@@ -84,11 +87,13 @@ class Booking {
     return at != null && DateFormatId.isSameDay(at, day);
   }
 
-<<<<<<< HEAD:tablet_dashboard/lib/features/cashier/reservation/domain/entities/booking.dart
-  // Semua potongan (promo + diskon kasir). Saat bayar backend menimpa
-  // discount_amount dengan diskon kasir saja, jadi hitung dari subtotal - total
-=======
+  // Jumlah [serviceId] di booking ini, 0 = tidak ada
+  int qtyOf(String serviceId) =>
+      services.where((line) => line.item.id == serviceId).firstOrNull?.qty ?? 0;
+
+  // Total item di server (layanan x jumlah), backend tolak hapus yang terakhir
+  int get itemCount => services.fold(0, (sum, line) => sum + line.qty);
+
   // Total potongan = subtotal - total (backend menimpa discount_amount)
->>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/cashier/order_reservation/domain/entities/booking.dart
   int get totalDiscount => subtotal > total ? subtotal - total : 0;
 }

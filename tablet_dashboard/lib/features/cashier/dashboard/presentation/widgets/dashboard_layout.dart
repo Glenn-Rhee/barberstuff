@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-<<<<<<< HEAD
-import 'package:tablet_dashboard/features/auth/presentation/provider/session_controller.dart';
-=======
 import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 import 'package:tablet_dashboard/features/cashier/attendance/presentation/provider/attendance_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/catalog_controller.dart';
 import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
@@ -16,12 +12,7 @@ import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/sh
 import 'package:tablet_dashboard/features/cashier/store/presentation/provider/store_controller.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 
-<<<<<<< HEAD
-// Kerangka dashboard yang dipakai kasir, admin, dan mitra.
-// Tiap role tinggal isi [title] dan kartu di kolom kanan ([side])
-=======
 // Kerangka dashboard semua role, isi [title] dan [side]
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class DashboardLayout extends StatefulWidget {
   const DashboardLayout({super.key, required this.title, required this.side});
 

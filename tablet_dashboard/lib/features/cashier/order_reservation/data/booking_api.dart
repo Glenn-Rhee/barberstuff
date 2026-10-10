@@ -1,12 +1,7 @@
 import 'package:tablet_dashboard/core/network/api_client.dart';
 import 'package:tablet_dashboard/core/network/paged.dart';
-<<<<<<< HEAD:tablet_dashboard/lib/features/cashier/reservation/data/booking_api.dart
-import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking.dart';
-import 'package:tablet_dashboard/features/cashier/reservation/domain/entities/booking_slot.dart';
-=======
 import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking_slot.dart';
->>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/cashier/order_reservation/data/booking_api.dart
 
 // Booking toko: list, buat di kasir, check-in, tambah layanan
 class BookingApi {
@@ -14,14 +9,7 @@ class BookingApi {
 
   final ApiClient _client;
 
-<<<<<<< HEAD:tablet_dashboard/lib/features/cashier/reservation/data/booking_api.dart
-  // [date] = hari booking yang diminta, null = hari ini.
-  // Backend sekarang masih selalu kirim booking hari ini dan mengabaikan
-  // `date`, jadi booking di luar [date] dibuang supaya tidak tampil di
-  // tanggal yang salah
-=======
   // [date] null = hari ini. Backend belum pakai `date`, jadi disaring di sini
->>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/cashier/order_reservation/data/booking_api.dart
   Future<Paged<Booking>> bookings({
     BookingStatus? status,
     String? query,
@@ -101,12 +89,7 @@ class BookingApi {
   Future<void> checkIn(String qrCode) =>
       _client.patch('/staff/booking/checkin/$qrCode');
 
-<<<<<<< HEAD:tablet_dashboard/lib/features/cashier/reservation/data/booking_api.dart
-  // Hapus satu layanan dari booking (DELETE /staff/booking/item),
-  // backend menolak kalau booking jadi kosong
-=======
   // Hapus satu layanan, backend menolak booking kosong
->>>>>>> 7d13d7e32679190728e118598f013051b3289112:tablet_dashboard/lib/features/cashier/order_reservation/data/booking_api.dart
   Future<void> removeService({
     required String bookingId,
     required String serviceId,
@@ -124,10 +107,7 @@ class BookingApi {
     data: {'id_booking': bookingId, 'id_service': serviceId},
   );
 
-  Future<void> cancel({
-    required String bookingId,
-    required String notes,
-  }) async {
-    _client.patch('/staff/booking/$bookingId', data: {'notes': notes});
-  }
+  // Batalkan booking booked/progress, [notes] = alasan
+  Future<void> cancel({required String bookingId, required String notes}) =>
+      _client.patch('/staff/booking/$bookingId', data: {'notes': notes});
 }

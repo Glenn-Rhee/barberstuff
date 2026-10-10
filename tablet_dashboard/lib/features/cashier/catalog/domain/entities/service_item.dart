@@ -2,7 +2,8 @@ import 'package:tablet_dashboard/core/utils/json_value.dart';
 
 enum ServiceType {
   service('service', 'Service'),
-  package('package', 'Paket');
+  package('package', 'Paket'),
+  produk('produk', 'Produk');
 
   const ServiceType(this.api, this.label);
 

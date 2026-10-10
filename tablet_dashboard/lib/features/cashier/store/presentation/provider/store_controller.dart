@@ -1,19 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
-<<<<<<< HEAD
-import 'package:tablet_dashboard/features/auth/domain/entities/staff_profile.dart';
-import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
-import 'package:tablet_dashboard/features/cashier/store/domain/entities/store_info.dart';
-
-// Toko yang sedang dipakai. Kasir & mitra: lokasi ikut akun, tidak bisa
-// diganti. Admin: bisa pilih dari semua cabang
-=======
 import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
 import 'package:tablet_dashboard/features/cashier/store/domain/entities/store_info.dart';
 
 // Toko yang dipakai. Kasir & mitra ikut akun, admin bisa ganti
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
 class StoreController extends ChangeNotifier {
   StoreController(this._api);
 
@@ -53,12 +44,7 @@ class StoreController extends ChangeNotifier {
         options.firstOrNull;
   }
 
-<<<<<<< HEAD
-  // Kasir tidak boleh GET /store, jadi ambil dari riwayat kas dan slot booking.
-  // Dua-duanya boleh gagal, yang penting id toko tetap dari akun
-=======
   // Kasir: dari riwayat kas & slot booking, boleh gagal (id dari akun)
->>>>>>> 7d13d7e32679190728e118598f013051b3289112
   Future<StoreInfo> _cashierStore(String storeId) async {
     var store = StoreInfo(id: storeId);
     try {

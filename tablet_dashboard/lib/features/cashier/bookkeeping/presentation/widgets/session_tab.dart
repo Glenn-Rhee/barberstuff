@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
+import 'package:tablet_dashboard/core/theme/app_button_style.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/features/cashier/bookkeeping/presentation/widgets/reconciliation_card.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/widgets/cancel_booking_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/cash_entry_dialog.dart';
@@ -328,7 +330,7 @@ class _SalesCard extends StatelessWidget {
           width: 480,
           height: 420,
           child: ListView(
-            children: [for (final t in sales) _SaleTile(sale: t)],
+            children: [for (final t in sales) _SaleTile(transaction: t)],
           ),
         ),
         actions: [
@@ -369,36 +371,59 @@ class _SalesCard extends StatelessWidget {
                 style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
               ),
             ),
-          for (final t in sales.reversed.take(_shown)) _SaleTile(sale: t),
+          for (final t in sales.reversed.take(_shown))
+            _SaleTile(transaction: t),
         ],
       ),
     );
   }
 }
 
-class _SaleTile extends StatelessWidget {
-  const _SaleTile({required this.sale});
+class _SaleTile extends StatefulWidget {
+  const _SaleTile({required this.transaction});
 
-  final CashTransaction sale;
+  final CashTransaction transaction;
+
+  @override
+  State<_SaleTile> createState() => __SaleTileState();
+}
+
+class __SaleTileState extends State<_SaleTile> {
+  // Batalkan booking (Completed)
+  Future<void> _cancelWhenCompleted(CashTransaction transaction) async {
+    final transaction = null;
+    final cancelled = null;
+    showCancelBookingDialog(
+      context,
+      onSubmit: (reason) => transaction.cancel(transaction: reason),
+    );
+  }
+
+  Widget _cancelButtonWhenCompleted(CashTransaction transaction) =>
+      OutlinedButton(
+        style: AppButtonStyle.dangerFilled,
+        onPressed: () => _cancelWhenCompleted(transaction),
+        child: const Text("Cancel Pesanan"),
+      );
 
   @override
   Widget build(BuildContext context) {
-    final cash = sale.paymentType == PaymentType.cash;
-    final at = sale.createdAt;
-
+    final cash = widget.transaction.paymentType == PaymentType.cash;
+    final at = widget.transaction.createdAt;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColor.border)),
       ),
       child: Row(
+        crossAxisAlignment: .start,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  sale.title,
+                  widget.transaction.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.bodyBold,
@@ -413,13 +438,21 @@ class _SaleTile extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(PriceFormat.full(sale.amount), style: AppTextStyle.bodyBold),
+              Text(
+                PriceFormat.full(widget.transaction.amount),
+                style: AppTextStyle.bodyBold,
+              ),
               StatusBadge(
                 label: cash ? 'Tunai' : 'Non Tunai',
                 color: cash ? AppColor.success : AppColor.info,
                 background: cash ? AppColor.successSoft : AppColor.infoSoft,
               ),
             ],
+          ),
+          const SizedBox(width: 15),
+          GestureDetector(
+            onTap: () => _cancelWhenCompleted(widget.transaction),
+            child: Image.asset(AppAsset.trashIcon, height: 20),
           ),
         ],
       ),
