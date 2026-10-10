@@ -27,7 +27,7 @@ type CustomerService interface {
 	OauthRegister(dataNewCustomer dto.OauthCustomerRequest, ctx context.Context) (dto.AuthenticationResponse, error)
 	ForgotPassword(ctx context.Context, dataForgotPassword dto.ForgotPasswordRequest) (dto.ForgotPassswordResponse, error)
 	GetProfile(claims *lib.CustomClaims) (dto.ProfileCustomerResponse, error)
-	FindCustomers(params dto.FindCustomerRequest) (dto.FindCustomerResponse, dto.ResponsePagination, error)
+	FindCustomers(params dto.FindCustomerRequest, claims *lib.CustomClaims) (dto.FindCustomerResponse, dto.ResponsePagination, error)
 	UpdateProfile(ctx context.Context, claims *lib.CustomClaims, req dto.UpdateProfileRequest) error
 }
 
@@ -35,6 +35,7 @@ type customerService struct {
 	customerRepo    repository.CustomerRepository
 	authRepo        repository.AuthenticationRepository
 	premiumTypeRepo repository.PremiumTypeRepository
+	staffRepo       repository.StaffRepository
 	db              *gorm.DB
 	client          *redis.Client
 }
@@ -51,6 +52,7 @@ func NewCustomerService(
 	db *gorm.DB,
 	client *redis.Client,
 	ptr repository.PremiumTypeRepository,
+	staffRepo repository.StaffRepository,
 ) CustomerService {
 	return &customerService{
 		customerRepo:    custRepo,
@@ -58,6 +60,7 @@ func NewCustomerService(
 		db:              db,
 		client:          client,
 		premiumTypeRepo: ptr,
+		staffRepo:       staffRepo,
 	}
 }
 
@@ -690,7 +693,7 @@ func findMostFrequent(count map[uuid.UUID]int, nameMap map[uuid.UUID]string) str
 	return nameMap[maxID]
 }
 
-func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.FindCustomerResponse, dto.ResponsePagination, error) {
+func (c *customerService) FindCustomers(params dto.FindCustomerRequest, claims *lib.CustomClaims) (dto.FindCustomerResponse, dto.ResponsePagination, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data customer!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -712,21 +715,55 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 	if params.Page != nil {
 		page = *params.Page
 	}
-
 	if params.Limit != nil {
 		limit = *params.Limit
 	}
-
 	if params.SortBy != nil {
 		sortBy = *params.SortBy
 	}
-
 	if params.OrderBy != nil {
 		orderBy = *params.OrderBy
 	}
 
+	// Tentukan cabang: staff dikunci ke cabangnya, admin boleh memilih lewat id_store
+	var idStore *uuid.UUID
+	if claims.Role != entity.RoleAdmin {
+		idStaff, err := uuid.Parse(claims.UserId)
+		if err != nil {
+			return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New("Data tidak valid. Mohon login ulang.")
+		}
+
+		dataStaff, err := c.staffRepo.FindOne("id = ?", idStaff)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New("Data tidak ditemukan. Mohon login ulang.")
+			}
+
+			helper.Logger("find one staff", filePath, err)
+			return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+		}
+
+		if dataStaff.IdStore == nil {
+			return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New("Data tidak ditemukan. Mohon login ulang.")
+		}
+		idStore = dataStaff.IdStore
+	} else if params.IdStore != nil {
+		id, err := uuid.Parse(*params.IdStore)
+		if err != nil {
+			return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New("Id toko tidak valid.")
+		}
+		idStore = &id
+	}
+
+	// Hanya customer yang pernah menyelesaikan booking (di cabang terkait, jika ada)
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Where("EXISTS (SELECT 1 FROM booking WHERE booking.id_user = customer.id)")
+		cond := "EXISTS (SELECT 1 FROM booking WHERE booking.id_user = customer.id AND booking.status_booking = ?"
+		args := []interface{}{entity.BookingStatusCompleted}
+		if idStore != nil {
+			cond += " AND booking.id_store = ?"
+			args = append(args, *idStore)
+		}
+		return d.Where(cond+")", args...)
 	})
 
 	totalData, err := c.customerRepo.Count(scopes...)
@@ -751,7 +788,7 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 	})
 
 	paginationData := helper.GetPaginationData(page, limit, int(totalData))
-	customers, err := c.customerRepo.FindAll(scopes...)
+	customers, err := c.customerRepo.FindAllByStore(idStore, scopes...)
 	if err != nil {
 		helper.Logger("Find all data customers", filePath, err)
 		return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
@@ -759,33 +796,29 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 
 	dataCustomers := make([]dto.DataUserFindCustomer, 0, len(customers))
 	totalMembers := 0
-	for _, c := range customers {
+	for _, cust := range customers {
 		var status dto.StatusCustomer
-		if c.IdPremiumType == nil {
+		if cust.IdPremiumType == nil {
 			status = dto.StatusReguler
 		} else {
 			status = dto.StatusMember
 			totalMembers++
 		}
-		var totalVisited int64 = 0
+
+		var totalVisited int64
 		var lastVisitedAt *time.Time
 
 		capsterCount := make(map[uuid.UUID]int)
 		capsterNameMap := make(map[uuid.UUID]string)
-
 		serviceCount := make(map[uuid.UUID]int)
 		serviceNameMap := make(map[uuid.UUID]string)
 
-		firstCompletedFound := false
-		for _, b := range c.Bookings {
-			if b.StatusBooking != entity.BookingStatusCompleted {
-				continue
-			}
-
+		// Bookings sudah difilter (completed + cabang) dan urut scheduled_at DESC dari repository
+		for i, b := range cust.Bookings {
 			totalVisited++
-			if !firstCompletedFound {
-				lastVisitedAt = &b.ScheduledAt
-				firstCompletedFound = true
+			if i == 0 {
+				t := b.ScheduledAt
+				lastVisitedAt = &t
 			}
 
 			capsterCount[b.IDCapster]++
@@ -801,41 +834,35 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest) (dto.Fin
 		favoriteServiceName := findMostFrequent(serviceCount, serviceNameMap)
 
 		var imgUrl *string
-		if c.ImageCustomer != nil {
-			pressignedURL, err := lib.GeneratePressignedGetURL(*c.ImageCustomer)
+		if cust.ImageCustomer != nil {
+			presignedURL, err := lib.GeneratePressignedGetURL(*cust.ImageCustomer)
 			if err != nil {
 				helper.Logger("generate pressignedURL", filePath, err)
-				imgUrl = nil
+			} else {
+				imgUrl = &presignedURL
 			}
-
-			imgUrl = &pressignedURL
 		}
+
 		dataCustomers = append(dataCustomers, dto.DataUserFindCustomer{
-			Id:              c.ID,
-			Name:            c.Name,
-			PhoneNumber:     c.PhoneNumber,
-			MemberPoints:    int64(c.MemberPoints),
+			Id:              cust.ID,
+			Name:            cust.Name,
+			PhoneNumber:     cust.PhoneNumber,
+			MemberPoints:    int64(cust.MemberPoints),
 			Status:          status,
 			TotalVisited:    totalVisited,
 			LastVisitedAt:   lastVisitedAt,
 			ServiceFavorite: favoriteServiceName,
 			CapsterFavorite: favoriteCapsterName,
 			ImageUrl:        imgUrl,
-			Email:           c.Authentication.Email,
+			Email:           cust.Authentication.Email,
 		})
 	}
 
 	now := time.Now()
-	startDate := time.Date(
-		now.Year(),
-		now.Month(),
-		1,
-		0, 0, 0, 0,
-		now.Location(),
-	)
+	startDate := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
 	endDate := startDate.AddDate(0, 1, 0)
 
-	totalNewCustomers, err := c.customerRepo.CountNewCustomers(startDate, endDate)
+	totalNewCustomers, err := c.customerRepo.CountNewCustomersByStore(startDate, endDate, idStore)
 	if err != nil {
 		helper.Logger("count total new cust", filePath, err)
 		return dto.FindCustomerResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)

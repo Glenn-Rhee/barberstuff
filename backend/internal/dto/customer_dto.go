@@ -102,8 +102,9 @@ const (
 )
 
 type FindCustomerRequest struct {
-	Query  *string       `form:"q" binding:"omitempty"`
-	SortBy *SortCustomer `form:"sort_by" binding:"omitempty,oneof=name created_at member_points email"`
+	Query   *string       `form:"q" binding:"omitempty"`
+	SortBy  *SortCustomer `form:"sort_by" binding:"omitempty,oneof=name created_at member_points email"`
+	IdStore *string       `form:"id_store"`
 	RequestParamsPagination
 }
 

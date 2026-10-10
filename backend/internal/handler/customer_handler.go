@@ -387,7 +387,7 @@ func (h *CustomerHandler) FindCustomers(ctx *gin.Context) {
 		return
 	}
 
-	result, paginationData, err := h.service.FindCustomers(params)
+	result, paginationData, err := h.service.FindCustomers(params, claimsResult)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
