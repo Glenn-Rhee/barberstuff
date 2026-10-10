@@ -51,4 +51,7 @@ class AppColor {
   static const Color boxActive = Color(0xFFD1FAE5);
   static const Color boxInActive = Color(0xFFFEE2E2);
   static const Color boxBuilding = Color(0xFFE0F2FE);
+
+  // Yellow
+  static const Color yellow = Color(0xFFFACC15);
 }

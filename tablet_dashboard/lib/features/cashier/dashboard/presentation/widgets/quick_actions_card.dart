@@ -27,6 +27,7 @@ class QuickActionsCard extends StatelessWidget {
                   icon: AppAsset.scanIcon,
                   label: 'Scan Barcode',
                   onTap: () => openScanBooking(context),
+                  color: AppColor.yellow,
                 ),
               ),
               const SizedBox(width: 12),
@@ -35,6 +36,7 @@ class QuickActionsCard extends StatelessWidget {
                   icon: AppAsset.graphicIcon,
                   label: 'Catat Kas Keluar',
                   onTap: () => showCashEntryDialog(context),
+                  color: AppColor.success,
                 ),
               ),
               const SizedBox(width: 12),
@@ -43,6 +45,7 @@ class QuickActionsCard extends StatelessWidget {
                   icon: AppAsset.personIcon,
                   label: 'Absensi Karyawan',
                   onTap: () => openAttendance(context),
+                  color: AppColor.info,
                 ),
               ),
             ],
@@ -58,12 +61,14 @@ class _ActionButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    required this.color,
   });
 
   // Path asset ikon
   final String icon;
   final String label;
   final VoidCallback onTap;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -73,9 +78,15 @@ class _ActionButton extends StatelessWidget {
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         backgroundColor: AppColor.surface,
+        side: BorderSide(color: color),
       ),
-      icon: AppIcon(icon, size: 18),
-      label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+      icon: AppIcon(icon, size: 18, color: color),
+      label: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: color),
+      ),
     );
   }
 }

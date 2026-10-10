@@ -171,7 +171,7 @@ class _BookingPanelState extends State<BookingPanel> {
     if (printed && mounted) AppToast.show(context, 'Struk dicetak ulang');
   }
 
-  // Batalkan booking (booked/progress), completed tidak bisa dicancel
+  // Batalkan booking (booked/progress)
   Future<void> _cancel(Booking booking) async {
     final bookings = context.read<BookingsController>();
     final cancelled = await showCancelBookingDialog(
@@ -181,6 +181,16 @@ class _BookingPanelState extends State<BookingPanel> {
     if (!cancelled || !mounted) return;
     context.read<BookingsController>().refresh();
     AppToast.show(context, 'Pesanan ${booking.customer.name} dibatalkan');
+  }
+
+  // Batalkan booking (Completed)
+  Future<void> _cancelWhenCompleted(Booking booking) async {
+    final bookings = null;
+    final cancelled = null;
+    showCancelBookingDialog(
+      context,
+      onSubmit: (reason) => bookings.cancel(booking: reason),
+    );
   }
 
   @override
@@ -309,6 +319,7 @@ class _BookingPanelState extends State<BookingPanel> {
         ),
         const SizedBox(height: 12),
         ...switch (status) {
+          // INI KALO BOOKINGNYA MASIH BOOKED
           BookingStatus.booked => [
             FilledButton(
               onPressed: _busy ? null : () => _checkIn(booking),
@@ -317,6 +328,8 @@ class _BookingPanelState extends State<BookingPanel> {
             const SizedBox(height: 8),
             _cancelButton(booking),
           ],
+
+          // INI KALO BOOKINGNYA PRGORESS
           BookingStatus.progress => [
             Text(
               'METODE PEMBAYARAN',
@@ -354,15 +367,20 @@ class _BookingPanelState extends State<BookingPanel> {
                   style: AppTextStyle.caption.copyWith(color: AppColor.danger),
                 ),
               ),
+            _cancelButton(booking),
+            const SizedBox(height: 8),
             FilledButton.icon(
               onPressed: shift.isOpen && !_busy ? () => _pay(booking) : null,
               icon: const Icon(Icons.print_outlined, size: 18),
               label: const Text('Bayar'),
             ),
-            const SizedBox(height: 8),
-            _cancelButton(booking),
           ],
+
+          // INI KALO COMPLETED BOOKINGNYA
           BookingStatus.completed => [
+            // TUNGGU API
+            _cancelButtonWhenCompleted(booking),
+            const SizedBox(height: 8),
             FilledButton.icon(
               onPressed: () => _reprint(booking),
               icon: const Icon(Icons.print_outlined, size: 18),
@@ -379,5 +397,11 @@ class _BookingPanelState extends State<BookingPanel> {
     style: AppButtonStyle.dangerFilled,
     onPressed: _busy ? null : () => _cancel(booking),
     child: const Text('Cancel Pesanan'),
+  );
+
+  Widget _cancelButtonWhenCompleted(Booking booking) => OutlinedButton(
+    style: AppButtonStyle.dangerFilled,
+    onPressed: _busy ? null : () => _cancelWhenCompleted(booking),
+    child: const Text("Cancel Pesanan"),
   );
 }
