@@ -19,13 +19,15 @@ CREATE TABLE cash_session (
 CREATE TABLE transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     id_cash_session UUID NOT NULL REFERENCES cash_session(id),
+    id_booking UUID REFERENCES booking(id);
     title TEXT NOT NULL,
     payment_type payment_type NOT NULL,
     amount NUMERIC(12,2) NOT NULL,
     transaction_type transaction_type NOT NULL,
     description TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP
 );
 CREATE UNIQUE INDEX idx_cash_session_store_date ON cash_session (id_store, created_at);
 -- +goose StatementEnd
