@@ -367,6 +367,17 @@ class FakeApi
     _replace(booking, services: lines);
   }
 
+  // Batal dari kasir, alasan masuk notes
+  @override
+  Future<void> cancel({
+    required String bookingId,
+    required String notes,
+  }) async {
+    calls.add('cancel:$bookingId');
+    final booking = bookingList.firstWhere((b) => b.id == bookingId);
+    _replace(booking, status: BookingStatus.canceled);
+  }
+
   // Tiga slot, semua capster kosong
   @override
   Future<List<BookingSlot>> slots({
