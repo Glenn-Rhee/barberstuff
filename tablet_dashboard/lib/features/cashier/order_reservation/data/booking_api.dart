@@ -107,10 +107,7 @@ class BookingApi {
     data: {'id_booking': bookingId, 'id_service': serviceId},
   );
 
-  Future<void> cancel({
-    required String bookingId,
-    required String notes,
-  }) async {
-    _client.patch('/staff/booking/$bookingId', data: {'notes': notes});
-  }
+  // Batalkan booking booked/progress, [notes] = alasan
+  Future<void> cancel({required String bookingId, required String notes}) =>
+      _client.patch('/staff/booking/$bookingId', data: {'notes': notes});
 }

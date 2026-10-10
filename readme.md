@@ -2,6 +2,7 @@
 
 1. nanti increment kasirnya 
 2. cancel api pesann when completed
+3. api employee
 
 
 
@@ -14,3 +15,4 @@ UI/UX:
 6. di pilih layanan best seller taro paling atas
 7. servie paket 
 8. fitur crop dan di profile bisa dan juga di pencet profile bisa crop
+9. ourtreatment

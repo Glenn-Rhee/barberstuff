@@ -100,18 +100,29 @@ class _BookingPanelState extends State<BookingPanel> {
     });
   }
 
-  Future<void> _removeService(Booking booking, ServiceItem item) =>
+  // +1 (POST item) / -1 (DELETE item), jumlah baru dibaca lagi dari server
+  Future<void> _changeQty(Booking booking, ServiceItem item, int delta) =>
       _run(() async {
-        final error = await context.read<BookingsController>().removeService(
-          booking,
-          item.id,
-        );
+        final bookings = context.read<BookingsController>();
+        final before = booking.qtyOf(item.id);
+        final error = delta > 0
+            ? await bookings.addService(booking, item.id)
+            : await bookings.removeService(booking, item.id);
         if (!mounted) return;
-        AppToast.show(
-          context,
-          error ?? '${item.name} dikeluarkan dari booking',
-          error: error != null,
-        );
+        if (error != null) {
+          AppToast.show(context, error, error: true);
+          return;
+        }
+        // Server bisa balas sukses tapi jumlahnya tidak berubah
+        final after = bookings.selected?.qtyOf(item.id);
+        if (after != null && after != before + delta) {
+          AppToast.show(
+            context,
+            'Server belum mengubah jumlah ${item.name} '
+            '(tetap x$after).',
+            error: true,
+          );
+        }
       });
 
   // Terima bayar pakai nominal server (dikurangi diskon kasir) lalu cetak
@@ -221,7 +232,7 @@ class _BookingPanelState extends State<BookingPanel> {
     final status = booking.status;
     // Backend hanya izinkan ubah item saat progress, dan booking tidak boleh kosong
     final editable = status == BookingStatus.progress && !_busy;
-    final removable = editable && booking.services.length > 1;
+    final removable = editable && booking.itemCount > 1;
     final discount = _discountOf(booking);
     final discountAmount = discount?.amountFor(booking.total) ?? 0;
 
@@ -238,8 +249,12 @@ class _BookingPanelState extends State<BookingPanel> {
                 CartItemTile(
                   item: catalog.byId(line.item.id) ?? line.item,
                   subtitle: booking.capster.name,
+                  qty: line.qty,
+                  onAdd: editable
+                      ? () => _changeQty(booking, line.item, 1)
+                      : null,
                   onRemove: removable
-                      ? () => _removeService(booking, line.item)
+                      ? () => _changeQty(booking, line.item, -1)
                       : null,
                 ),
               if (booking.services.isEmpty)
@@ -272,8 +287,8 @@ class _BookingPanelState extends State<BookingPanel> {
                 Text(
                   status == BookingStatus.booked
                       ? 'Layanan bisa ditambah setelah pelanggan check-in.'
-                      : 'Boleh lebih dari 1 layanan / paket, '
-                            'tapi item yang sama cuma 1x.',
+                      : 'Boleh lebih dari 1 layanan / paket. '
+                            'Tekan + di keranjang untuk menambah jumlah.',
                   style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
                 ),
                 const SizedBox(height: 20),

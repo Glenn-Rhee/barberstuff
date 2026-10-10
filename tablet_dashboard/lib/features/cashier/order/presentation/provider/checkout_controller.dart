@@ -2,6 +2,7 @@ import 'package:tablet_dashboard/core/network/api_exception.dart';
 import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/features/auth/login/presentation/provider/session_controller.dart';
 import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/capster.dart';
+import 'package:tablet_dashboard/features/cashier/catalog/domain/entities/cart_line.dart';
 import 'package:tablet_dashboard/features/cashier/customer_list/presentation/provider/customer_history_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order/domain/entities/discount.dart';
 import 'package:tablet_dashboard/features/cashier/order/domain/entities/receipt.dart';
@@ -49,7 +50,9 @@ class CheckoutController {
   }) async {
     final customer = order.customer;
     final phone = order.customerPhone;
-    final serviceIds = [for (final item in order.items) item.id];
+    final lines = order.lines;
+    // Dibuat 1x per layanan, sisa jumlahnya ditambah setelah check-in
+    final serviceIds = [for (final line in lines) line.item.id];
     try {
       await _bookingApi.createBooking(
         storeId: _store.storeId,
@@ -97,7 +100,81 @@ class CheckoutController {
         created: true,
       );
     }
+
+    if (lines.every((line) => line.qty == 1)) {
+      return WalkInResult.started(booking);
+    }
+    return _addExtraQty(booking.id, lines);
+  }
+
+  // Jumlah > 1: tambah lewat POST /staff/booking/item (1 item per request,
+  // hanya saat progress), lalu baca lagi booking-nya supaya total ikut server
+  Future<WalkInResult> _addExtraQty(
+    String bookingId,
+    List<CartLine> lines,
+  ) async {
+    for (final line in lines) {
+      for (var i = 1; i < line.qty; i++) {
+        try {
+          await _bookingApi.addService(
+            bookingId: bookingId,
+            serviceId: line.item.id,
+          );
+        } on ApiException catch (e) {
+          return WalkInResult.failed(
+            'Pesanan tersimpan, tapi ${line.item.name} x${line.qty} gagal: '
+            '${e.message} Cek di tab Dari Reservasi.',
+            created: true,
+          );
+        }
+      }
+    }
+
+    final Booking? booking;
+    try {
+      booking = await _findProgress(bookingId);
+    } on ApiException {
+      return const WalkInResult.failed(
+        'Pesanan tersimpan, bayar dari tab Dari Reservasi.',
+        created: true,
+      );
+    }
+    if (booking == null) {
+      return const WalkInResult.failed(
+        'Pesanan tersimpan, bayar dari tab Dari Reservasi.',
+        created: true,
+      );
+    }
+
+    // Server bisa balas sukses tapi jumlahnya tidak bertambah
+    final wrong = [
+      for (final line in lines)
+        if (booking.qtyOf(line.item.id) != line.qty)
+          '${line.item.name} x${booking.qtyOf(line.item.id)}',
+    ];
+    if (wrong.isNotEmpty) {
+      return WalkInResult.failed(
+        'Pesanan tersimpan, tapi di server ${wrong.join(', ')}. '
+        'Cek di tab Dari Reservasi.',
+        created: true,
+      );
+    }
     return WalkInResult.started(booking);
+  }
+
+  // Booking progress dengan [id] (pesanan hari ini)
+  Future<Booking?> _findProgress(String id) async {
+    for (var page = 1; page <= _searchPages; page++) {
+      final result = await _bookingApi.bookings(
+        status: BookingStatus.progress,
+        page: page,
+        limit: _searchLimit,
+      );
+      final match = result.items.where((b) => b.id == id).firstOrNull;
+      if (match != null) return match;
+      if (result.items.length < _searchLimit) break;
+    }
+    return null;
   }
 
   // Booking "booked" terbaru dengan capster, pelanggan, dan layanan yang sama

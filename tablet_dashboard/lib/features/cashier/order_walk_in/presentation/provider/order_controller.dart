@@ -6,7 +6,7 @@ import 'package:tablet_dashboard/features/cashier/customer_list/domain/entities/
 import 'package:tablet_dashboard/features/cashier/order/domain/entities/discount.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 
-// Pesanan langsung: boleh banyak item, item yang sama cuma 1x
+// Pesanan langsung: boleh banyak item, item yang sama boleh lebih dari 1x
 class OrderController extends ChangeNotifier {
   // Batas no HP dari backend
   static const minPhone = 9;
@@ -23,12 +23,14 @@ class OrderController extends ChangeNotifier {
   // Diskon manual kasir, baru dikirim ke server saat bayar
   Discount? discount;
 
-  final List<ServiceItem> _items = [];
+  // Layanan + jumlahnya, urut sesuai waktu ditambah
+  final Map<ServiceItem, int> _qty = {};
 
-  List<ServiceItem> get items => List.unmodifiable(_items);
-  List<CartLine> get lines => [for (final item in _items) CartLine(item)];
-  bool get isEmpty => _items.isEmpty;
-  bool contains(ServiceItem item) => _items.contains(item);
+  List<CartLine> get lines => [
+    for (final MapEntry(:key, :value) in _qty.entries) CartLine(key, value),
+  ];
+  bool get isEmpty => _qty.isEmpty;
+  bool contains(ServiceItem item) => _qty.containsKey(item);
   int get subtotal => lines.subtotal;
   int get discountAmount => discount?.amountFor(subtotal) ?? 0;
   int get total => subtotal - discountAmount;
@@ -54,13 +56,31 @@ class OrderController extends ChangeNotifier {
   }
 
   void add(ServiceItem item) {
-    if (_items.contains(item)) return;
-    _items.add(item);
+    if (_qty.containsKey(item)) return;
+    _qty[item] = 1;
+    notifyListeners();
+  }
+
+  // Tombol "+" di keranjang
+  void increment(ServiceItem item) {
+    _qty.update(item, (qty) => qty + 1, ifAbsent: () => 1);
+    notifyListeners();
+  }
+
+  // Tombol sampah di keranjang: -1, sisa 1 = keluar dari keranjang
+  void decrement(ServiceItem item) {
+    final qty = _qty[item];
+    if (qty == null) return;
+    if (qty <= 1) {
+      _qty.remove(item);
+    } else {
+      _qty[item] = qty - 1;
+    }
     notifyListeners();
   }
 
   void remove(ServiceItem item) {
-    _items.remove(item);
+    _qty.remove(item);
     notifyListeners();
   }
 
@@ -97,7 +117,7 @@ class OrderController extends ChangeNotifier {
 
   // "Hapus Semua", juga dipanggil setelah pesanan tersimpan / dibayar
   void clearAll() {
-    _items.clear();
+    _qty.clear();
     customer = null;
     capster = null;
     method = PaymentType.cash;
