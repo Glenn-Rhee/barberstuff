@@ -2953,6 +2953,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/transactions/void": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Kasir dapat melakukan void transaksi dengan menyertakan ID transaksi dan deskripsi alasan void. Hanya dapat diakses oleh kasir.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Kasir melakukan void transaksi",
+                "parameters": [
+                    {
+                        "description": "Data void transaksi",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.VoidTransactionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Berhasil void transaksi",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal melakukan void transaksi",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/upload/presign": {
             "post": {
                 "description": "Menghasilkan presigned URL untuk mengunggah gambar secara langsung ke object storage. File yang diperbolehkan adalah JPG, JPEG, PNG, WEBP, dan GIF dengan ukuran maksimal 5 MB. Extension file harus sesuai dengan content type yang dikirimkan. Field file_size satuannya adalah byte.",
@@ -4695,6 +4746,21 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "reset_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.VoidTransactionReq": {
+            "type": "object",
+            "required": [
+                "description",
+                "id_transaction"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id_transaction": {
                     "type": "string"
                 }
             }

@@ -1119,6 +1119,16 @@ definitions:
       reset_token:
         type: string
     type: object
+  dto.VoidTransactionReq:
+    properties:
+      description:
+        type: string
+      id_transaction:
+        type: string
+    required:
+    - description
+    - id_transaction
+    type: object
   entity.BookingStatusEnum:
     enum:
     - booked
@@ -3123,6 +3133,39 @@ paths:
       security:
       - BearerAuth: []
       summary: Membuat transaksi
+      tags:
+      - Transactions
+  /transactions/void:
+    patch:
+      consumes:
+      - application/json
+      description: Kasir dapat melakukan void transaksi dengan menyertakan ID transaksi
+        dan deskripsi alasan void. Hanya dapat diakses oleh kasir.
+      parameters:
+      - description: Data void transaksi
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VoidTransactionReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Berhasil void transaksi
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau gagal melakukan void transaksi
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Kasir melakukan void transaksi
       tags:
       - Transactions
   /upload/presign:
