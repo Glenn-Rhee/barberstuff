@@ -23,6 +23,8 @@ type GetCashSessionResponse struct {
 	TotalIncomeCash     decimal.Decimal       `json:"total_income_cash"`
 	TotalIncomeCashless decimal.Decimal       `json:"total_income_cashless"`
 	TotalOutcome        decimal.Decimal       `json:"total_outcome"`
+	TotalVoidIncome     decimal.Decimal       `json:"total_void_income"`
+	TotalVoidOutcome    decimal.Decimal       `json:"total_void_outcome"`
 	Transactions        []TransactionResponse `json:"transactions"`
 }
 
@@ -34,6 +36,7 @@ type TransactionResponse struct {
 	TransactionType entity.TransactionType `json:"transaction_type"`
 	Description     *string                `json:"description"`
 	CreatedAt       time.Time              `json:"created_at"`
+	DeletedAt       *time.Time             `json:"deleted_at"`
 }
 
 type CloseCashSessionRequest struct {

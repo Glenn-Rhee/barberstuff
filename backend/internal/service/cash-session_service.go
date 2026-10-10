@@ -233,16 +233,25 @@ func (s *cashSessionService) GetToday(claims *lib.CustomClaims) (dto.GetCashSess
 	var totalIncomeCash decimal.Decimal
 	var totalIncomeCashless decimal.Decimal
 	var totalOutcome decimal.Decimal
+	var totalVoidIncome, totalVoidOutcome decimal.Decimal
 	var transactions = make([]dto.TransactionResponse, 0, len(dataCashSession.Transactions))
 	for _, v := range dataCashSession.Transactions {
-		if v.TransactionType == entity.TransactionIncome {
-			if v.PaymentType == entity.PaymentCash {
-				totalIncomeCash = totalIncomeCash.Add(v.Amount)
+		if v.DeletedAt != nil {
+			if v.TransactionType == entity.TransactionIncome {
+				totalVoidIncome = totalVoidIncome.Add(v.Amount)
 			} else {
-				totalIncomeCashless = totalIncomeCashless.Add(v.Amount)
+				totalVoidOutcome = totalVoidOutcome.Add(v.Amount)
 			}
 		} else {
-			totalOutcome = totalOutcome.Add(v.Amount)
+			if v.TransactionType == entity.TransactionIncome {
+				if v.PaymentType == entity.PaymentCash {
+					totalIncomeCash = totalIncomeCash.Add(v.Amount)
+				} else {
+					totalIncomeCashless = totalIncomeCashless.Add(v.Amount)
+				}
+			} else {
+				totalOutcome = totalOutcome.Add(v.Amount)
+			}
 		}
 
 		transactions = append(transactions, dto.TransactionResponse{
@@ -253,6 +262,7 @@ func (s *cashSessionService) GetToday(claims *lib.CustomClaims) (dto.GetCashSess
 			TransactionType: v.TransactionType,
 			Description:     v.Description,
 			CreatedAt:       v.CreatedAt,
+			DeletedAt:       v.DeletedAt,
 		})
 	}
 
@@ -263,6 +273,8 @@ func (s *cashSessionService) GetToday(claims *lib.CustomClaims) (dto.GetCashSess
 		TotalIncomeCashless: totalIncomeCashless,
 		TotalOutcome:        totalOutcome,
 		Transactions:        transactions,
+		TotalVoidIncome:     totalVoidIncome,
+		TotalVoidOutcome:    totalVoidOutcome,
 	}, nil
 }
 
