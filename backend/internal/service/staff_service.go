@@ -899,18 +899,6 @@ func (s *staffService) AddItemBooking(req dto.BookingItemReq) error {
 		return errors.New(BASE_MESSAGE)
 	}
 
-	isBookingItemRegist := false
-	for _, v := range dataBooking.BookingItems {
-		if v.IDService == idService && dataBooking.ID == idBooking {
-			isBookingItemRegist = true
-			break
-		}
-	}
-
-	if isBookingItemRegist {
-		return errors.New("Service ini telah ditambahkan.")
-	}
-
 	dataBookingItem := entity.BookingItem{
 		ID:          uuid.New(),
 		IDBooking:   idBooking,

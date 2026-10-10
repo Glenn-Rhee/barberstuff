@@ -12,3 +12,8 @@ type CreateTransactionReq struct {
 	Description     *string                `json:"description" binding:"omitempty"`
 	DiscountAmount  *float64               `json:"discount_amount" binding:"omitempty"`
 }
+
+type VoidTransactionReq struct {
+	IdTransaction string `json:"id_transaction" binding:"required"`
+	Description   string `json:"description" binding:"required"`
+}

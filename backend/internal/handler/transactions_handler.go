@@ -84,3 +84,72 @@ func (h *TransactionsHandler) CreateTransaction(ctx *gin.Context) {
 		StatusCode: http.StatusCreated,
 	})
 }
+
+// VoidTransaction godoc
+//
+// @Summary      Kasir melakukan void transaksi
+// @Description  Kasir dapat melakukan void transaksi dengan menyertakan ID transaksi dan deskripsi alasan void. Hanya dapat diakses oleh kasir.
+//
+// @Tags         Transactions
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        request body dto.VoidTransactionReq true "Data void transaksi"
+//
+// @Success      201 {object} dto.SwaggerResponse "Berhasil void transaksi"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal melakukan void transaksi"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+//
+// @Router       /transactions/void [patch]
+func (h *TransactionsHandler) VoidTransaction(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleCashier {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	var dataBody dto.VoidTransactionReq
+	if err := ctx.ShouldBindJSON(&dataBody); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	err := h.service.VoidTransaction(claimsResult, dataBody)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
+		Data:       nil,
+		Message:    "Berhasil void transaksi",
+		StatusCode: http.StatusCreated,
+	})
+}

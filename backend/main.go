@@ -151,6 +151,7 @@ func main() {
 	{
 		transactions.Use(h.AuthMiddleware)
 		transactions.POST("/", h.TransactionsHandler.CreateTransaction)
+		transactions.PATCH("/void", h.TransactionsHandler.VoidTransaction)
 	}
 
 	upload := r.Group("/upload")

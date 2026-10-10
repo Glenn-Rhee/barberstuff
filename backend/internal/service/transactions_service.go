@@ -4,10 +4,12 @@ import (
 	"barberstuff_backend/internal/dto"
 	"barberstuff_backend/internal/entity"
 	"barberstuff_backend/internal/helper"
+	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"errors"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
@@ -16,6 +18,7 @@ import (
 
 type TransactionsService interface {
 	CreateTransaction(req dto.CreateTransactionReq) error
+	VoidTransaction(claims *lib.CustomClaims, req dto.VoidTransactionReq) error
 }
 
 type transactionsService struct {
@@ -23,6 +26,7 @@ type transactionsService struct {
 	transactionRepo repository.TransactionsRepository
 	bookingRepo     repository.BookingRepository
 	customerRepo    repository.CustomerRepository
+	staffRepo       repository.StaffRepository
 	db              *gorm.DB
 }
 
@@ -31,9 +35,17 @@ func NewTransactionsService(
 	tr repository.TransactionsRepository,
 	br repository.BookingRepository,
 	cr repository.CustomerRepository,
+	sr repository.StaffRepository,
 	db *gorm.DB,
 ) TransactionsService {
-	return &transactionsService{cashSessionRepo: csr, transactionRepo: tr, bookingRepo: br, db: db, customerRepo: cr}
+	return &transactionsService{
+		cashSessionRepo: csr,
+		transactionRepo: tr,
+		bookingRepo:     br,
+		db:              db,
+		customerRepo:    cr,
+		staffRepo:       sr,
+	}
 }
 
 func (s *transactionsService) CreateTransaction(req dto.CreateTransactionReq) error {
@@ -60,6 +72,130 @@ func (s *transactionsService) CreateTransaction(req dto.CreateTransactionReq) er
 	} else {
 		return s.createOutcome(req, idCashSession)
 	}
+}
+
+func (s *transactionsService) VoidTransaction(claims *lib.CustomClaims, req dto.VoidTransactionReq) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat saldo awal!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idStaff, err := uuid.Parse(claims.UserId)
+	if err != nil {
+		return errors.New("Data akun anda tidak valid. Mohon login ulang.")
+	}
+
+	dataStaff, err := s.staffRepo.FindOne("id = ? AND id_store IS NOT NULL", idStaff)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Data anda tidak valid. Mohon login ulang.")
+		}
+
+		helper.Logger("find one staff", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if dataStaff.IdStore == nil {
+		return errors.New("Anda tidak memiliki akses.")
+	}
+
+	idTransaction, err := uuid.Parse(req.IdTransaction)
+	if err != nil {
+		return errors.New("Id transaksi tidak valid.")
+	}
+
+	dataTransaction, err := s.transactionRepo.FindOne("id = ?", idTransaction)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Transaksi tidak ditemukan atau telah di batalkan.")
+		}
+
+		helper.Logger("find one transaksi", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	dataCashSession, err := s.cashSessionRepo.FindOne("id = ?", dataTransaction.IDCashSession)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Pembukuan tidak ditemukan.")
+		}
+
+		helper.Logger("find one cash session", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if dataCashSession.IDStore != *dataStaff.IdStore {
+		return errors.New("Anda tidak dapat membatalkan pesanan milik toko lain.")
+	}
+
+	var (
+		errTransactionNotFound = errors.New("Transaksi tidak ditemukan.")
+		errBookingNotFound     = errors.New("Booking not found.")
+	)
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		updatesTransactions := map[string]interface{}{
+			"deleted_at":  time.Now(),
+			"description": req.Description,
+		}
+
+		var scopesTransactions []func(*gorm.DB) *gorm.DB
+		scopesTransactions = append(scopesTransactions, func(d *gorm.DB) *gorm.DB {
+			return d.
+				Where("id = ?", idTransaction).
+				Where("id_cash_session = ?", dataCashSession.ID).
+				Where("deleted_at IS NULL")
+		})
+
+		rowsAffected, err := s.transactionRepo.Updates(tx, updatesTransactions, scopesTransactions...)
+		if err != nil {
+			return err
+		}
+
+		if rowsAffected == 0 {
+			return errTransactionNotFound
+		}
+
+		if dataTransaction.IDBooking == nil {
+			return nil
+		}
+
+		updatesBooking := map[string]interface{}{
+			"status_booking": entity.BookingStatusCanceled,
+			"notes":          req.Description,
+		}
+
+		var scopesBooking []func(*gorm.DB) *gorm.DB
+		scopesBooking = append(scopesBooking, func(d *gorm.DB) *gorm.DB {
+			return d.
+				Where("id = ?", dataTransaction.IDBooking).
+				Where("id_store = ?", dataStaff.IdStore).
+				Where("status_booking = ?", entity.BookingStatusCompleted)
+		})
+
+		rowsAffected, err = s.bookingRepo.Updates(tx, updatesBooking, scopesBooking...)
+		if err != nil {
+			return err
+		}
+
+		if rowsAffected == 0 {
+			return errBookingNotFound
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		if errors.Is(err, errTransactionNotFound) {
+			return errors.New("Transaksi tidak ditemukan atau telah di cancel.")
+		}
+
+		if errors.Is(err, errBookingNotFound) {
+			return errors.New("Booking tidak ditemukan atau telah di cancel")
+		}
+
+		helper.Logger("soft delete transaction", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
 }
 
 func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashSession uuid.UUID) error {
@@ -108,7 +244,6 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 			return errors.New("Diskon tidak dapat melebihi sub total transaksi.")
 		}
 
-		
 		updatesVal["discount_amount"] = disCountAmount
 		newTotalPrice := gorm.Expr("total_price - ?", disCountAmount)
 		updatesVal["total_price"] = newTotalPrice
