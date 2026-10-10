@@ -194,16 +194,6 @@ class _BookingPanelState extends State<BookingPanel> {
     AppToast.show(context, 'Pesanan ${booking.customer.name} dibatalkan');
   }
 
-  // Batalkan booking (Completed)
-  Future<void> _cancelWhenCompleted(Booking booking) async {
-    final bookings = null;
-    final cancelled = null;
-    showCancelBookingDialog(
-      context,
-      onSubmit: (reason) => bookings.cancel(booking: reason),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final booking = context.watch<BookingsController>().selected;
@@ -336,12 +326,12 @@ class _BookingPanelState extends State<BookingPanel> {
         ...switch (status) {
           // INI KALO BOOKINGNYA MASIH BOOKED
           BookingStatus.booked => [
+            _cancelButton(booking),
+            const SizedBox(height: 8),
             FilledButton(
               onPressed: _busy ? null : () => _checkIn(booking),
               child: const Text('Ubah Status Progress'),
             ),
-            const SizedBox(height: 8),
-            _cancelButton(booking),
           ],
 
           // INI KALO BOOKINGNYA PRGORESS
@@ -394,8 +384,6 @@ class _BookingPanelState extends State<BookingPanel> {
           // INI KALO COMPLETED BOOKINGNYA
           BookingStatus.completed => [
             // TUNGGU API
-            _cancelButtonWhenCompleted(booking),
-            const SizedBox(height: 8),
             FilledButton.icon(
               onPressed: () => _reprint(booking),
               icon: const Icon(Icons.print_outlined, size: 18),
@@ -412,11 +400,5 @@ class _BookingPanelState extends State<BookingPanel> {
     style: AppButtonStyle.dangerFilled,
     onPressed: _busy ? null : () => _cancel(booking),
     child: const Text('Cancel Pesanan'),
-  );
-
-  Widget _cancelButtonWhenCompleted(Booking booking) => OutlinedButton(
-    style: AppButtonStyle.dangerFilled,
-    onPressed: _busy ? null : () => _cancelWhenCompleted(booking),
-    child: const Text("Cancel Pesanan"),
   );
 }
