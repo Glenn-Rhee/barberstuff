@@ -433,6 +433,14 @@ func (h *StaffHandler) CreateBooking(ctx *gin.Context) {
 		return
 	}
 
+	if dataBody.Customer.PhoneNumber != nil && !helper.ValidatePhoneNumber(*dataBody.Customer.PhoneNumber) {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "No telepon tidak valid, gunakan format +62xxxx atau 08xxxx",
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
 	err := h.service.CreateBooking(claimsResult, dataBody)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
