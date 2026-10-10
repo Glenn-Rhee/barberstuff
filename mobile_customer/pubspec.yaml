@@ -43,9 +43,7 @@ flutter:
     - assets/icons/book/
     - assets/icons/detail_store/
     - assets/icons/general/
-    - assets/icons/history/
     - assets/icons/home/
-    - assets/icons/loading/
     - assets/icons/nav_bottom/
     - assets/icons/notify/
     - assets/icons/profile/
