@@ -159,6 +159,7 @@ type DataBooking struct {
 	TotalPrice     decimal.Decimal          `json:"total_price"`
 	Status         entity.BookingStatusEnum `json:"status_booking"`
 	Services       []DataServiceBooking     `json:"services"`
+	Notes          *string                  `json:"notes"`
 }
 
 // Untuk kasir
@@ -166,4 +167,3 @@ type CapsterBookings struct {
 	AvgRating float32 `json:"avg_rating"`
 	DataCapsterBooking
 }
-

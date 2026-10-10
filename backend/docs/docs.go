@@ -3655,6 +3655,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "notes": {
+                    "type": "string"
+                },
                 "scheduled_at": {
                     "type": "string"
                 },

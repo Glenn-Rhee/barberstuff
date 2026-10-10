@@ -1343,6 +1343,7 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 				DiscountAmount: b.DiscountAmount,
 				TotalPrice:     b.TotalPrice,
 				Status:         b.StatusBooking,
+				Notes:          b.Notes,
 				Services:       services,
 			},
 		})
