@@ -202,107 +202,119 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat transaksi!"
 	_, filePath, _, _ := runtime.Caller(0)
 
-	// Handle Income
-	if req.IdBooking == nil || req.PaymentType == nil {
-		return errors.New("Id booking dan tipe pembayaran wajib diisi.")
+	if req.PaymentType == nil {
+		return errors.New("Tipe pembayaran wajib diisi.")
 	}
 
-	idBooking, err := uuid.Parse(*req.IdBooking)
-	if err != nil {
-		return errors.New("Id booking tidak valid.")
-	}
-
-	dataBooking, err := s.bookingRepo.FindOne("id = ? AND status_booking = ?", idBooking, entity.BookingStatusProgress)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("Booking telah selesai atau belum melakukan checkin.")
-		}
-
-		helper.Logger("find one booking", filePath, err)
-		return errors.New(BASE_MESSAGE)
-	}
-
-	names := make([]string, len(dataBooking.BookingItems))
-	for i, v := range dataBooking.BookingItems {
-		names[i] = v.Service.Name
-	}
-	title := strings.Join(names, " + ")
-
+	var titleTransactions string
+	var transactionsAmount decimal.Decimal
+	var transactionsIdBooking *uuid.UUID
+	var dataBooking entity.Booking
 	updatesVal := map[string]interface{}{
 		"status_booking": entity.BookingStatusCompleted,
 	}
 
-	transactionAmount := dataBooking.TotalPrice
-
-	if req.DiscountAmount != nil {
-		if *req.DiscountAmount < 0 {
-			return errors.New("Diskon tidak dapat berupa minus")
+	if req.IdBooking == nil {
+		if req.Title == nil || req.Amount == nil {
+			return errors.New("Judul dan jumlah uang masuk wajib diisi.")
+		}
+		if *req.Amount <= 0 {
+			return errors.New("Jumlah uang masuk harus lebih dari 0.")
 		}
 
-		disCountAmount := decimal.NewFromFloat(*req.DiscountAmount)
-		if disCountAmount.GreaterThan(dataBooking.TotalPrice) {
-			return errors.New("Diskon tidak dapat melebihi sub total transaksi.")
+		titleTransactions = *req.Title
+		transactionsAmount = decimal.NewFromFloat(*req.Amount)
+	} else {
+		idBooking, err := uuid.Parse(*req.IdBooking)
+		if err != nil {
+			return errors.New("Id booking tidak valid.")
+		}
+		transactionsIdBooking = &idBooking
+
+		dataBooking, err = s.bookingRepo.FindOne("id = ? AND status_booking = ?", idBooking, entity.BookingStatusProgress)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("Booking telah selesai atau belum melakukan checkin.")
+			}
+			helper.Logger("find one booking", filePath, err)
+			return errors.New(BASE_MESSAGE)
 		}
 
-		updatesVal["discount_amount"] = disCountAmount
-		newTotalPrice := gorm.Expr("total_price - ?", disCountAmount)
-		updatesVal["total_price"] = newTotalPrice
+		names := make([]string, len(dataBooking.BookingItems))
+		for i, v := range dataBooking.BookingItems {
+			names[i] = v.Service.Name
+		}
+		titleTransactions = strings.Join(names, " + ")
+		transactionsAmount = dataBooking.TotalPrice
 
-		transactionAmount = dataBooking.TotalPrice.Sub(disCountAmount)
+		if req.DiscountAmount != nil {
+			if *req.DiscountAmount < 0 {
+				return errors.New("Diskon tidak dapat berupa minus")
+			}
+			discount := decimal.NewFromFloat(*req.DiscountAmount)
+			if discount.GreaterThan(dataBooking.TotalPrice) {
+				return errors.New("Diskon tidak dapat melebihi sub total transaksi.")
+			}
+			updatesVal["discount_amount"] = discount
+			updatesVal["total_price"] = gorm.Expr("total_price - ?", discount)
+			transactionsAmount = dataBooking.TotalPrice.Sub(discount)
+		}
 	}
 
 	newTransaction := entity.Transactions{
 		ID:              uuid.New(),
 		IDCashSession:   idCashSession,
-		Title:           title,
+		Title:           titleTransactions,
 		PaymentType:     *req.PaymentType,
-		Amount:          transactionAmount,
+		Amount:          transactionsAmount,
 		TransactionType: entity.TransactionIncome,
 		Description:     req.Description,
-		IDBooking:       &idBooking,
+		IDBooking:       transactionsIdBooking,
 	}
 
-	err = s.db.Transaction(func(tx *gorm.DB) error {
-		pointCustomer := newTransaction.Amount.
-			Div(decimal.NewFromInt(10000)).
-			Floor().
-			IntPart()
+	var errBookingNotFound = errors.New("Booking tidak ditemukan atau telah selesai.")
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		// Hanya untuk transaksi yang berasal dari booking
+		if transactionsIdBooking != nil {
+			rowsAffected, err := s.bookingRepo.Updates(tx, updatesVal, func(d *gorm.DB) *gorm.DB {
+				return d.Where("id = ? AND status_booking = ?", *transactionsIdBooking, entity.BookingStatusProgress)
+			})
+			if err != nil {
+				helper.Logger("update booking", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+			if rowsAffected == 0 {
+				return errBookingNotFound
+			}
 
-		rowsAffected, err := s.customerRepo.AddMemberPoints(tx, dataBooking.IDCustomer, int(pointCustomer))
-		if err != nil {
-			return errors.New(BASE_MESSAGE)
-		}
-
-		var scopes []func(*gorm.DB) *gorm.DB
-		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-			return d.Where("id = ? AND status_booking = ?", idBooking, entity.BookingStatusProgress)
-		})
-
-		rowsAffected, err = s.bookingRepo.Updates(tx, updatesVal, scopes...)
-		if err != nil {
-			helper.Logger("update booking", filePath, err)
-			return errors.New(BASE_MESSAGE)
-		}
-		if rowsAffected == 0 {
-			return errors.New("Booking tidak ditemukan atau telah selesai.")
+			points := newTransaction.Amount.Div(decimal.NewFromInt(10000)).Floor().IntPart()
+			rows, err := s.customerRepo.AddMemberPoints(tx, dataBooking.IDCustomer, int(points))
+			if err != nil {
+				helper.Logger("add member points", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+			if rows == 0 {
+				return errors.New("Customer tidak ditemukan.")
+			}
 		}
 
 		if err := s.transactionRepo.Create(tx, &newTransaction); err != nil {
-			helper.Logger("Create transactions", filePath, err)
+			helper.Logger("create transactions", filePath, err)
 			return errors.New(BASE_MESSAGE)
 		}
-
 		return nil
 	})
 
 	if err != nil {
-		helper.Logger("commit transaction", filePath, err)
+		// Error bisnis diteruskan apa adanya, selain itu pakai pesan umum
+		if errors.Is(err, errBookingNotFound) {
+			return err
+		}
 		return errors.New(BASE_MESSAGE)
 	}
-
-	return err
+	
+	return nil
 }
-
 func (s *transactionsService) createOutcome(req dto.CreateTransactionReq, idCashSession uuid.UUID) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat saldo awal!"
 	_, filePath, _, _ := runtime.Caller(0)
