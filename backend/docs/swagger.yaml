@@ -261,6 +261,7 @@ definitions:
         enum:
         - service
         - package
+        - product
     required:
     - id_store
     - name
@@ -1195,10 +1196,12 @@ definitions:
     enum:
     - service
     - package
+    - product
     type: string
     x-enum-varnames:
     - TypeService
     - TypePackage
+    - TypeProduct
   entity.RoleEnum:
     enum:
     - customer
@@ -2412,9 +2415,9 @@ paths:
         enum:
         - service
         - package
+        - product
         in: query
         name: type
-        required: true
         type: string
       - description: Nama service
         in: query
@@ -2448,7 +2451,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Succes get data services!
+          description: Succes get data products!
           schema:
             allOf:
             - $ref: '#/definitions/dto.SwaggerResponse'

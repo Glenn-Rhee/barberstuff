@@ -1826,13 +1826,13 @@ const docTemplate = `{
                     {
                         "enum": [
                             "service",
-                            "package"
+                            "package",
+                            "product"
                         ],
                         "type": "string",
                         "description": "Service Type",
                         "name": "type",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
@@ -1877,7 +1877,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Succes get data services!",
+                        "description": "Succes get data products!",
                         "schema": {
                             "allOf": [
                                 {
@@ -3452,7 +3452,8 @@ const docTemplate = `{
                 "type": {
                     "enum": [
                         "service",
-                        "package"
+                        "package",
+                        "product"
                     ],
                     "allOf": [
                         {
@@ -4852,11 +4853,13 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "service",
-                "package"
+                "package",
+                "product"
             ],
             "x-enum-varnames": [
                 "TypeService",
-                "TypePackage"
+                "TypePackage",
+                "TypeProduct"
             ]
         },
         "entity.RoleEnum": {
