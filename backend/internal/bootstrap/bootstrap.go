@@ -23,6 +23,7 @@ type Handlers struct {
 	UploadHandler       *handler.UploadHandler
 	CashSessionHandler  *handler.CashSessionHandler
 	TransactionsHandler *handler.TransactionsHandler
+	PositionHandler     *handler.PositionHandler
 	AuthMiddleware      gin.HandlerFunc
 	BookingService      service.BookingService
 }
@@ -42,6 +43,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	bookingItemRepo := repository.NewBookingItemRepository(db)
 	cashSessionRepo := repository.NewCashSessionRepository(db)
 	transactionsRepo := repository.NewTransactionsRepository(db)
+	positionRepo := repository.NewPositionRepository(db)
 
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis, premiumTypeRepo, staffRepo)
@@ -54,6 +56,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	ratingService := service.NewRatingService(ratingRepo, bookingRepo, capsterRepo, staffRepo, storeRepo, db)
 	cashSessionService := service.NewCashSessionService(cashSessionRepo, storeRepo, staffRepo, serviceRepo, capsterRepo, db)
 	transactionsService := service.NewTransactionsService(cashSessionRepo, transactionsRepo, bookingRepo, customerRepo, staffRepo, db)
+	positionService := service.NewPositionService(positionRepo)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
@@ -67,6 +70,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	cashSessionHandler := handler.NewCashSessionHandler(cashSessionService)
 	transactionsHandler := handler.NewTransactionsHandler(transactionsService)
 	uploadHandler := handler.NewUploadHandler()
+	positionHandler := handler.NewPositionHandler(positionService)
 
 	// middleware
 	authMiddleware := middleware.AuthMiddleware(authRepo, staffRepo, customerRepo)
@@ -85,5 +89,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 		CashSessionHandler:  cashSessionHandler,
 		TransactionsHandler: transactionsHandler,
 		UploadHandler:       uploadHandler,
+		PositionHandler:     positionHandler,
 	}
 }

@@ -154,6 +154,12 @@ func main() {
 		transactions.PATCH("/void", h.TransactionsHandler.VoidTransaction)
 	}
 
+	position := r.Group("/position")
+	{
+		position.Use(h.AuthMiddleware)
+		position.POST("/", h.PositionHandler.CreatePosition)
+	}
+
 	upload := r.Group("/upload")
 	{
 		upload.Use(h.AuthMiddleware)
