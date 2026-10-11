@@ -28,10 +28,10 @@ const (
 )
 
 type QueryParamsService struct {
-	IdStore     *string                `form:"id_store" binding:"omitempty"`
-	Type        entity.ProductTypeEnum `form:"type" binding:"required,oneof=service package product"`
-	ServiceName *string                `form:"name"`
-	SortBy      *SortService           `form:"sort_by" binding:"omitempty,oneof=name price created_at"`
+	IdStore     *string                 `form:"id_store" binding:"omitempty"`
+	Type        *entity.ProductTypeEnum `form:"type" binding:"omitempty,oneof=service package product"`
+	ServiceName *string                 `form:"name" binding:"omitempty"`
+	SortBy      *SortService            `form:"sort_by" binding:"omitempty,oneof=name price created_at"`
 	RequestParamsPagination
 }
 

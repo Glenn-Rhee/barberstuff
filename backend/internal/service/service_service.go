@@ -90,9 +90,13 @@ func (s *serviceService) GetServices(query dto.QueryParamsService, claims *lib.C
 	}
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		d = d.Where("deleted_at IS NULL").Where("type = ?", query.Type)
+		d = d.Where("deleted_at IS NULL")
 		if idStore != nil {
 			d = d.Where("id_store = ?", *idStore)
+		}
+
+		if query.Type != nil {
+			d = d.Where("type = ?", query.Type)
 		}
 		return d
 	})
