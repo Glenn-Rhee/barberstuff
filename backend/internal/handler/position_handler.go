@@ -229,6 +229,23 @@ func (h *PositionHandler) UpdatePosition(ctx *gin.Context) {
 	})
 }
 
+// DeletePosition godoc
+//
+// @Summary      Admin menghapus jabatan
+// @Description  Admin dapat menghapus jabatan berdasarkan ID melalui mekanisme soft delete, sehingga data jabatan tidak dihapus secara permanen dari database. Hanya dapat diakses oleh admin.
+//
+// @Tags         Position
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        id path string true "ID Jabatan"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menghapus jabatan"
+// @Failure      400 {object} dto.SwaggerResponse "Gagal menghapus jabatan"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+//
+// @Router       /position/{id} [delete]
 func (h *PositionHandler) DeletePosition(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

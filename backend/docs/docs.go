@@ -1722,6 +1722,53 @@ const docTemplate = `{
             }
         },
         "/position/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat menghapus jabatan berdasarkan ID melalui mekanisme soft delete, sehingga data jabatan tidak dihapus secara permanen dari database. Hanya dapat diakses oleh admin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Position"
+                ],
+                "summary": "Admin menghapus jabatan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Jabatan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menghapus jabatan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Gagal menghapus jabatan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
             "patch": {
                 "security": [
                     {

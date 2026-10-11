@@ -2384,6 +2384,38 @@ paths:
       tags:
       - Position
   /position/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Admin dapat menghapus jabatan berdasarkan ID melalui mekanisme
+        soft delete, sehingga data jabatan tidak dihapus secara permanen dari database.
+        Hanya dapat diakses oleh admin.
+      parameters:
+      - description: ID Jabatan
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menghapus jabatan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Gagal menghapus jabatan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Admin menghapus jabatan
+      tags:
+      - Position
     patch:
       consumes:
       - application/json
