@@ -288,13 +288,10 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 			}
 
 			points := newTransaction.Amount.Div(decimal.NewFromInt(10000)).Floor().IntPart()
-			rows, err := s.customerRepo.AddMemberPoints(tx, dataBooking.IDCustomer, int(points))
+			_, err = s.customerRepo.AddMemberPoints(tx, dataBooking.IDCustomer, int(points))
 			if err != nil {
 				helper.Logger("add member points", filePath, err)
 				return errors.New(BASE_MESSAGE)
-			}
-			if rows == 0 {
-				return errors.New("Customer tidak ditemukan.")
 			}
 		}
 
@@ -310,9 +307,10 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 		if errors.Is(err, errBookingNotFound) {
 			return err
 		}
+		helper.Logger("Create transaksi", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
-	
+
 	return nil
 }
 func (s *transactionsService) createOutcome(req dto.CreateTransactionReq, idCashSession uuid.UUID) error {

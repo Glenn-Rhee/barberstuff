@@ -780,9 +780,11 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest, claims *
 		return d.Clauses(clause.OrderBy{
 			Columns: []clause.OrderByColumn{
 				{
-					Column: clause.Column{Name: string(sortBy)},
+					Column: clause.Column{Table: "customer", Name: string(sortBy)},
 					Desc:   dto.SortCustomer(orderBy) == "desc",
 				},
+				// tie-breaker supaya pagination stabil
+				{Column: clause.Column{Table: "customer", Name: "id"}},
 			},
 		}).Offset((page - 1) * limit).Limit(limit)
 	})
