@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/features/cashier/shift/data/cash_session_api.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_history_entry.dart';
 
 // History Harian pembukuan: shift yang sudah ditutup per bulan
 class CashHistoryController extends ChangeNotifier {
-  CashHistoryController(this._api);
+  CashHistoryController(this._api, this._clock);
 
   static const pageSize = 10;
 
@@ -16,9 +17,10 @@ class CashHistoryController extends ChangeNotifier {
   static const _maxPages = 4;
 
   final CashSessionApi _api;
+  final ServerClock _clock;
 
   String storeId = '';
-  DateTime month = DateTime(DateTime.now().year, DateTime.now().month);
+  late DateTime month = DateTime(_clock.now().year, _clock.now().month);
   String query = '';
   int page = 1;
   int totalPages = 1;
@@ -37,7 +39,7 @@ class CashHistoryController extends ChangeNotifier {
 
   // 12 bulan terakhir untuk pilihan filter
   List<DateTime> get months {
-    final now = DateTime.now();
+    final now = _clock.now();
     return [for (var i = 0; i < 12; i++) DateTime(now.year, now.month - i)];
   }
 

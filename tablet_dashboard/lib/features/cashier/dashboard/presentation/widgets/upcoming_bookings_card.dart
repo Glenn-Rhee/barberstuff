@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
@@ -23,7 +24,7 @@ class UpcomingBookingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dashboard = context.watch<DashboardController>();
     final upcoming = dashboard.upcoming.take(5).toList();
-    final now = DateTime.now();
+    final now = context.watch<ServerClock>().now();
 
     Widget cells(List<Widget> children) => Row(
       children: [

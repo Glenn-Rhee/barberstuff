@@ -22,7 +22,7 @@ class StoreApi {
 
   // Kasir: nama & jam toko dari riwayat shift tertutup, mundur maks 3 bulan
   Future<StoreInfo?> storeFromCashHistory() async {
-    final now = DateTime.now();
+    final now = _client.clock.now();
     for (var back = 0; back < 3; back++) {
       final month = DateTime.utc(now.year, now.month - back, 15);
       final res = await _client.get(

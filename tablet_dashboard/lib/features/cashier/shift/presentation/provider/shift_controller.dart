@@ -141,6 +141,21 @@ class ShiftController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<String?> cancel(
+    CashTransaction transaction,
+    String description,
+  ) async {
+    try {
+      await _api.cancelTransaction(
+        description: description,
+        transactionId: transaction.id,
+      );
+      return null;
+    } on ApiException catch (e) {
+      return e.message;
+    }
+  }
 }
 
 // Hasil tutup shift: selisih uang dari server, atau alasan ditolak

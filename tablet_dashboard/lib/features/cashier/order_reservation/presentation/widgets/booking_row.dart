@@ -181,6 +181,8 @@ class BookingRow extends StatelessWidget {
               ],
             ),
           ),
+
+          // if (status == StatusBadge.)
         ],
       ),
     );

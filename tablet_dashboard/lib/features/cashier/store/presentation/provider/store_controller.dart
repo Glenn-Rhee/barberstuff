@@ -1,14 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/features/auth/login/domain/entities/staff_profile.dart';
 import 'package:tablet_dashboard/features/cashier/store/data/store_api.dart';
 import 'package:tablet_dashboard/features/cashier/store/domain/entities/store_info.dart';
 
 // Toko yang dipakai. Kasir & mitra ikut akun, admin bisa ganti
 class StoreController extends ChangeNotifier {
-  StoreController(this._api);
+  StoreController(this._api, this._clock);
 
   final StoreApi _api;
+  final ServerClock _clock;
 
   StoreInfo? current;
   List<StoreInfo> options = const [];
@@ -61,7 +63,7 @@ class StoreController extends ChangeNotifier {
     }
     if (store.hours == null) {
       try {
-        final hours = await _api.hoursFromSlots(storeId, DateTime.now());
+        final hours = await _api.hoursFromSlots(storeId, _clock.now());
         if (hours != null) {
           store = store.copyWith(openHour: hours.open, closeHour: hours.close);
         }

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/data/attendance_storage.dart';
 import 'package:tablet_dashboard/features/cashier/attendance/domain/entities/attendance_entry.dart';
@@ -10,15 +11,17 @@ import 'package:tablet_dashboard/features/cashier/catalog/presentation/provider/
 // buka shift = belum absen nonaktif, Hadir = aktif, Tidak Hadir = nonaktif
 class AttendanceController extends ChangeNotifier {
   AttendanceController(
-    this._catalog, [
+    this._catalog,
+    this._clock, [
     this._storage = const AttendanceStorage(),
   ]);
 
   final CatalogController _catalog;
+  final ServerClock _clock;
   final AttendanceStorage _storage;
 
   String storeId = '';
-  DateTime day = DateTime.now();
+  late DateTime day = _clock.now();
   Map<String, AttendanceEntry> entries = const {};
 
   // Capster yang statusnya sedang dikirim ke server
@@ -26,7 +29,7 @@ class AttendanceController extends ChangeNotifier {
 
   Future<void> load(String storeId) async {
     this.storeId = storeId;
-    day = DateTime.now();
+    day = _clock.now();
     entries = storeId.isEmpty ? const {} : await _storage.read(storeId, day);
     notifyListeners();
   }
@@ -80,7 +83,7 @@ class AttendanceController extends ChangeNotifier {
   ) async {
     if (storeId.isEmpty) return null;
     // Ganti hari selagi aplikasi terbuka, mulai absensi baru
-    if (!DateFormatId.isSameDay(day, DateTime.now())) await load(storeId);
+    if (!DateFormatId.isSameDay(day, _clock.now())) await load(storeId);
 
     final targets = [...capsters];
     busyIds = {...busyIds, for (final c in targets) c.id};
@@ -94,7 +97,7 @@ class AttendanceController extends ChangeNotifier {
       if (problem.message != null) problems.add(problem.message!);
     }
 
-    final now = DateTime.now();
+    final now = _clock.now();
     entries = {
       ...entries,
       for (final id in saved) id: AttendanceEntry(status: status, at: now),
@@ -108,7 +111,7 @@ class AttendanceController extends ChangeNotifier {
   // Setelah buka shift: capster yang belum absen dinonaktifkan
   Future<String?> resetForShift(List<Capster> capsters) async {
     if (storeId.isEmpty) return null;
-    if (!DateFormatId.isSameDay(day, DateTime.now())) await load(storeId);
+    if (!DateFormatId.isSameDay(day, _clock.now())) await load(storeId);
 
     final targets = [
       for (final capster in capsters)

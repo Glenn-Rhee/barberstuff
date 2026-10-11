@@ -10,6 +10,8 @@ class CashSession {
     required this.incomeCashless,
     required this.outcome,
     required this.transactions,
+    required this.voidIncome,
+    required this.voidOutcome,
   });
 
   factory CashSession.fromJson(Map<String, dynamic> json) => CashSession(
@@ -18,6 +20,8 @@ class CashSession {
     incomeCash: parseAmount(json['total_income_cash']),
     incomeCashless: parseAmount(json['total_income_cashless']),
     outcome: parseAmount(json['total_outcome']),
+    voidIncome: parseAmount(json['total_void_income']),
+    voidOutcome: parseAmount(json['total_void_outcome']),
     transactions: [
       for (final item in (json['transactions'] as List? ?? const []))
         if (item is Map) CashTransaction.fromJson(item.cast<String, dynamic>()),
@@ -29,6 +33,8 @@ class CashSession {
   final int incomeCash;
   final int incomeCashless;
   final int outcome;
+  final int voidIncome;
+  final int voidOutcome;
   final List<CashTransaction> transactions;
 
   int get income => incomeCash + incomeCashless;

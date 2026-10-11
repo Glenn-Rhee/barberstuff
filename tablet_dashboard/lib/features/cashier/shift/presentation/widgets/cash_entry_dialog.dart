@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
@@ -76,7 +77,7 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
   late CashCategory _category = widget.initial;
   final _amount = TextEditingController();
   final _note = TextEditingController();
-  final _now = DateTime.now();
+  late final DateTime _now;
 
   // Pemasukan
   List<Booking> _bookings = const [];
@@ -90,6 +91,7 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
   @override
   void initState() {
     super.initState();
+    _now = context.read<ServerClock>().now();
     if (_category == CashCategory.income) _loadBookings();
   }
 

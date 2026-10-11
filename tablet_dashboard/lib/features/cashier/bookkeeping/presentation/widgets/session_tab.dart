@@ -14,6 +14,7 @@ import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/cas
 import 'package:tablet_dashboard/features/cashier/shift/presentation/widgets/shift_dialogs.dart';
 import 'package:tablet_dashboard/shared/widgets/display/app_icon.dart';
 import 'package:tablet_dashboard/shared/widgets/display/status_badge.dart';
+import 'package:tablet_dashboard/shared/widgets/feedback/app_toast.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/empty_state.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/error_bar.dart';
 import 'package:tablet_dashboard/shared/widgets/feedback/skeleton.dart';
@@ -391,20 +392,16 @@ class _SaleTile extends StatefulWidget {
 class __SaleTileState extends State<_SaleTile> {
   // Batalkan booking (Completed)
   Future<void> _cancelWhenCompleted(CashTransaction transaction) async {
-    final transaction = null;
-    final cancelled = null;
-    showCancelBookingDialog(
+    final transactions = context.read<ShiftController>();
+    final cancelled = await showCancelBookingDialog(
       context,
-      onSubmit: (reason) => transaction.cancel(transaction: reason),
+      onSubmit: (reason) => transactions.cancel(transaction, reason),
     );
-  }
 
-  Widget _cancelButtonWhenCompleted(CashTransaction transaction) =>
-      OutlinedButton(
-        style: AppButtonStyle.dangerFilled,
-        onPressed: () => _cancelWhenCompleted(transaction),
-        child: const Text("Cancel Pesanan"),
-      );
+    if (!cancelled || !mounted) return;
+
+    AppToast.show(context, 'Pesanan dibatalkan');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -435,6 +432,7 @@ class __SaleTileState extends State<_SaleTile> {
               ],
             ),
           ),
+          // if (widget.transaction.deletedAt)
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [

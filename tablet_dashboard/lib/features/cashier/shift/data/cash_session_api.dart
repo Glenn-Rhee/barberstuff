@@ -99,4 +99,15 @@ class CashSessionApi {
       },
     );
   }
+
+  // Cacnel buat yang completed
+  Future<void> cancelTransaction({
+    required String description,
+    required String transactionId,
+  }) {
+    return _client.patch(
+      '/transactions/void',
+      data: {'description': description, 'id_transaction': transactionId},
+    );
+  }
 }

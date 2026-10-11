@@ -91,7 +91,8 @@ class CatalogController extends ChangeNotifier {
     }
     try {
       final results = await Future.wait([
-        for (final type in ServiceType.values) _loadType(type),
+        for (final type in ServiceType.values)
+          if (type.fetchable) _loadType(type),
       ]);
       all = [for (final items in results) ...items];
       page = page.clamp(1, totalPages);

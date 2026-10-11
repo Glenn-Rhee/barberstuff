@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/services/printer/bluetooth_printer.dart';
 import 'package:tablet_dashboard/core/services/printer/printer_controller.dart';
 import 'package:tablet_dashboard/core/services/printer/receipt_logo.dart';
@@ -40,7 +41,7 @@ class SettingsScreen extends StatelessWidget {
     final name = context.read<PrinterController>().selected?.name ?? '-';
     final page = buildTestPrint(
       printerName: name,
-      now: DateTime.now(),
+      now: context.read<ServerClock>().now(),
       logo: ReceiptLogo.cached,
     );
     final printed = await printWithRetry(context, page);

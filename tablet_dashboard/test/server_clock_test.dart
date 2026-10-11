@@ -2,7 +2,12 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tablet_dashboard/core/network/server_clock.dart';
+import 'package:tablet_dashboard/core/utils/date_format.dart';
+import 'package:tablet_dashboard/features/cashier/bookkeeping/presentation/provider/cash_history_controller.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/home/shell/presentation/widgets/clock_drift_banner.dart';
+
+import 'fake_api.dart';
 
 void main() {
   // Header Date server yang selisih [offset] dari jam tablet
@@ -46,6 +51,20 @@ void main() {
       ..sync(null)
       ..sync('bukan tanggal');
     expect(clock.offset, Duration.zero);
+  });
+
+  test('hari ini booking & bulan pembukuan ikut jam server', () {
+    // Tablet ketinggalan 40 hari: hari & bulan jelas beda dari jam tablet
+    const behind = Duration(days: 40);
+    final clock = ServerClock()..sync(headerAt(behind));
+    final server = DateTime.now().add(behind);
+
+    final bookings = BookingsController(FakeApi(), clock);
+    expect(DateFormatId.isSameDay(bookings.day, server), isTrue);
+
+    final history = CashHistoryController(FakeApi(), clock);
+    expect(history.month, DateTime(server.year, server.month));
+    expect(history.months.first, DateTime(server.year, server.month));
   });
 
   test('lama selisih di banner', () {

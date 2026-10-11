@@ -3,13 +3,17 @@ import 'package:tablet_dashboard/core/utils/json_value.dart';
 enum ServiceType {
   service('service', 'Service'),
   package('package', 'Paket'),
-  produk('produk', 'Produk');
+  // Backend belum kenal "produk", GET /service balas "Type tidak valid"
+  produk('produk', 'Produk', fetchable: false);
 
-  const ServiceType(this.api, this.label);
+  const ServiceType(this.api, this.label, {this.fetchable = true});
 
   // Nilai service.type di backend
   final String api;
   final String label;
+
+  // Boleh diminta ke GET /service
+  final bool fetchable;
 
   static ServiceType parse(String? value) =>
       values.where((t) => t.api == value).firstOrNull ?? ServiceType.service;

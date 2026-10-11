@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/data/booking_api.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/domain/entities/booking.dart';
 
 // Booking toko (GET /booking), filter dan halaman diproses di server
 class BookingsController extends ChangeNotifier {
-  BookingsController(this._api);
+  BookingsController(this._api, this._clock);
 
   static const pageSize = 5;
 
@@ -17,6 +18,7 @@ class BookingsController extends ChangeNotifier {
   static const _qrNotFound = 'Booking tidak ditemukan.';
 
   final BookingApi _api;
+  final ServerClock _clock;
 
   BookingStatus? status;
   String query = '';
@@ -40,7 +42,7 @@ class BookingsController extends ChangeNotifier {
   Booking? get selected =>
       bookings.where((b) => b.id == selectedId).firstOrNull;
 
-  DateTime get day => date ?? DateTime.now();
+  DateTime get day => date ?? _clock.now();
   bool get isToday => date == null;
 
   // Booking yang belum selesai, urut dari jadwal terdekat
@@ -101,8 +103,8 @@ class BookingsController extends ChangeNotifier {
     refresh();
   }
 
-  static DateTime? _dayOf(DateTime? value) =>
-      value == null || DateFormatId.isSameDay(value, DateTime.now())
+  DateTime? _dayOf(DateTime? value) =>
+      value == null || DateFormatId.isSameDay(value, _clock.now())
       ? null
       : DateTime(value.year, value.month, value.day);
 
