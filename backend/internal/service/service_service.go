@@ -6,8 +6,10 @@ import (
 	"barberstuff_backend/internal/helper"
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
+	"context"
 	"errors"
 	"runtime"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
@@ -17,8 +19,8 @@ import (
 
 type ServiceService interface {
 	GetServices(query dto.QueryParamsService, claims *lib.CustomClaims) ([]dto.GetServiceResponse, dto.ResponsePagination, error)
-	CreateService(req dto.CreateServiceRequest) error
-	UpdateService(req dto.UpdateServiceRequest, id string) error
+	CreateService(ctx context.Context, req dto.CreateServiceRequest) error
+	UpdateService(ctx context.Context, req dto.UpdateServiceRequest, id string) error
 	DeleteService(id string) error
 }
 
@@ -145,6 +147,16 @@ func (s *serviceService) GetServices(query dto.QueryParamsService, claims *lib.C
 
 	dataServices := make([]dto.GetServiceResponse, 0, len(services))
 	for _, v := range services {
+		var imageUrl *string
+		if v.ImgUrl != nil {
+			pressignedURL, err := lib.GeneratePressignedGetURL(*v.ImgUrl)
+			if err != nil {
+				helper.Logger("Generate presigned url", filePath, err)
+				imageUrl = nil
+			} else {
+				imageUrl = &pressignedURL
+			}
+		}
 		dataServices = append(dataServices, dto.GetServiceResponse{
 			Id:          v.ID,
 			Name:        v.Name,
@@ -154,13 +166,14 @@ func (s *serviceService) GetServices(query dto.QueryParamsService, claims *lib.C
 			IdStore:     v.IdStore,
 			Type:        v.Type,
 			CreatedAt:   v.CreatedAt,
+			ImgUrl:      imageUrl,
 		})
 	}
 
 	return dataServices, paginationData, nil
 }
 
-func (s *serviceService) CreateService(req dto.CreateServiceRequest) error {
+func (s *serviceService) CreateService(ctx context.Context, req dto.CreateServiceRequest) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -189,6 +202,17 @@ func (s *serviceService) CreateService(req dto.CreateServiceRequest) error {
 		return errors.New(BASE_MESSAGE)
 	}
 
+	var imgUrl *string
+
+	if req.ImgUrl != nil {
+		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImgUrl)
+		if err != nil {
+			return err
+		}
+
+		imgUrl = &permanentKey
+	}
+
 	newProduct := entity.Service{
 		ID:          uuid.New(),
 		Name:        req.Name,
@@ -197,6 +221,7 @@ func (s *serviceService) CreateService(req dto.CreateServiceRequest) error {
 		Status:      entity.ProductStatusActive,
 		IdStore:     idStore,
 		Type:        req.Type,
+		ImgUrl:      imgUrl,
 	}
 
 	err = s.serviceRepo.Create(&newProduct)
@@ -208,7 +233,7 @@ func (s *serviceService) CreateService(req dto.CreateServiceRequest) error {
 	return nil
 }
 
-func (s *serviceService) UpdateService(req dto.UpdateServiceRequest, id string) error {
+func (s *serviceService) UpdateService(ctx context.Context, req dto.UpdateServiceRequest, id string) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengubah data!"
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -236,6 +261,32 @@ func (s *serviceService) UpdateService(req dto.UpdateServiceRequest, id string) 
 
 	if req.Status != nil {
 		updates["status"] = req.Status
+	}
+
+	if req.ImgUrl != nil {
+		dataService, err := s.serviceRepo.FindOne("id = ?", idService)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("Data service tidak ditemukan.")
+			}
+			helper.Logger("Find one service", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+
+		if dataService.ImgUrl != nil && strings.Split(*dataService.ImgUrl, "/")[0] == "uploads" {
+			err = lib.DeleteObject(ctx, *dataService.ImgUrl)
+			if err != nil {
+				helper.Logger("Delete image store", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+		}
+
+		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImgUrl)
+		if err != nil {
+			return err
+		}
+
+		updates["image_url"] = permanentKey
 	}
 
 	rowsAffected, err := s.serviceRepo.Updates(updates, idService)

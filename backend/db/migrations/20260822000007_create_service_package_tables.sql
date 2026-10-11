@@ -5,12 +5,13 @@ CREATE TYPE product_status_enum AS ENUM ('active', 'inactive');
 CREATE TYPE product_type_enum AS ENUM ('service', 'package', 'product');
 CREATE TABLE service (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_store UUID NOT NULL REFERENCES store(id),
     name VARCHAR(255) NOT NULL,
     price NUMERIC(12,2) NOT NULL DEFAULT 0,
     description TEXT,
     status product_status_enum NOT NULL DEFAULT 'active',
     type product_type_enum NOT NULL,
-    id_store UUID NOT NULL REFERENCES store(id),
+    image_url TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP

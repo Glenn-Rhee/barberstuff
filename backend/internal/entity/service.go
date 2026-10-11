@@ -30,6 +30,7 @@ type Service struct {
 	Status      ProductStatusEnum `gorm:"column:status;not null"`
 	IdStore     uuid.UUID         `gorm:"column:id_store;not null"`
 	Type        ProductTypeEnum   `gorm:"column:type;not null"`
+	ImgUrl      *string           `gorm:"column:image_url"`
 	CreatedAt   time.Time         `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt   time.Time         `gorm:"column:updated_at;not null;autoUpdateTime"`
 	DeletedAt   *time.Time        `gorm:"column:deleted_at"`

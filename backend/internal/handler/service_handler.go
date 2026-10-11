@@ -130,7 +130,7 @@ func (h *ServiceHandler) CreateService(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.CreateService(dataBody)
+	err := h.service.CreateService(ctx.Request.Context(), dataBody)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),
@@ -199,7 +199,7 @@ func (h *ServiceHandler) UpdateService(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 
-	err := h.service.UpdateService(dataBody, id)
+	err := h.service.UpdateService(ctx.Request.Context(), dataBody, id)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),

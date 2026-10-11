@@ -17,6 +17,7 @@ type GetServiceResponse struct {
 	IdStore     uuid.UUID                `json:"id_store"`
 	Type        entity.ProductTypeEnum   `json:"type"`
 	CreatedAt   time.Time                `json:"created_at"`
+	ImgUrl      *string                  `json:"image_url"`
 }
 
 type SortService string
@@ -41,6 +42,7 @@ type CreateServiceRequest struct {
 	Description *string                `json:"description" binding:"omitempty"`
 	IdStore     string                 `json:"id_store" binding:"required"`
 	Type        entity.ProductTypeEnum `json:"type" binding:"required,oneof=service package product"`
+	ImgUrl      *string                `json:"image_url" binding:"omitempty"`
 }
 
 type UpdateServiceRequest struct {
@@ -48,4 +50,5 @@ type UpdateServiceRequest struct {
 	Price       *float64                  `json:"price" binding:"omitempty,min=1000"`
 	Description *string                   `json:"description" binding:"omitempty"`
 	Status      *entity.ProductStatusEnum `json:"status" binding:"omitempty,oneof=active inactive"`
+	ImgUrl      *string                   `json:"image_url" binding:"omitempty"`
 }

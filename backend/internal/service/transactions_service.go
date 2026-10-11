@@ -259,6 +259,7 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 		Amount:          transactionAmount,
 		TransactionType: entity.TransactionIncome,
 		Description:     req.Description,
+		IDBooking:       &idBooking,
 	}
 
 	err = s.db.Transaction(func(tx *gorm.DB) error {
