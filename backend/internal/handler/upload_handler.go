@@ -30,8 +30,8 @@ func NewUploadHandler() *UploadHandler {
 //
 // @Success      201 {object} dto.SwaggerResponse{data=dto.PresignResponse} "Success create presign URL"
 // @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal generate presigned URL"
-// @Router       /upload/presign [post]
-func (h *UploadHandler) GetPresignedURL(ctx *gin.Context) {
+// @Router       /upload/img/presign [post]
+func (h *UploadHandler) GetImgPresignedURL(ctx *gin.Context) {
 	var req dto.PresignRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{

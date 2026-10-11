@@ -166,7 +166,7 @@ func main() {
 	upload := r.Group("/upload")
 	{
 		upload.Use(h.AuthMiddleware)
-		upload.POST("/presign", h.UploadHandler.GetPresignedURL)
+		upload.POST("/img/presign", h.UploadHandler.GetImgPresignedURL)
 	}
 
 	c.AddFunc("*/5 * * * *", func() {

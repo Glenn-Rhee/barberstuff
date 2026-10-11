@@ -3348,7 +3348,7 @@ paths:
       summary: Kasir melakukan void transaksi
       tags:
       - Transactions
-  /upload/presign:
+  /upload/img/presign:
     post:
       consumes:
       - application/json

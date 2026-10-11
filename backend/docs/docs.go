@@ -3220,7 +3220,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/upload/presign": {
+        "/upload/img/presign": {
             "post": {
                 "description": "Menghasilkan presigned URL untuk mengunggah gambar secara langsung ke object storage. File yang diperbolehkan adalah JPG, JPEG, PNG, WEBP, dan GIF dengan ukuran maksimal 5 MB. Extension file harus sesuai dengan content type yang dikirimkan. Field file_size satuannya adalah byte.",
                 "consumes": [
