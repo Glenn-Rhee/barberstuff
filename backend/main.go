@@ -159,6 +159,7 @@ func main() {
 		position.Use(h.AuthMiddleware)
 		position.POST("/", h.PositionHandler.CreatePosition)
 		position.GET("/", h.PositionHandler.GetPosition)
+		position.PATCH("/:id", h.PositionHandler.UpdatePosition)
 	}
 
 	upload := r.Group("/upload")

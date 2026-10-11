@@ -3,12 +3,14 @@ package repository
 import (
 	"barberstuff_backend/internal/entity"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type PositionRepository interface {
 	Create(p *entity.Position) error
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Position, error)
+	Updates(v interface{}, id uuid.UUID) (int64, error)
 }
 
 type positionRepository struct {
@@ -33,4 +35,13 @@ func (r *positionRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entit
 		Find(&positions)
 
 	return positions, result.Error
+}
+
+func (r *positionRepository) Updates(v interface{}, id uuid.UUID) (int64, error) {
+	result := r.db.
+		Model(&entity.Position{}).
+		Where("deleted_at IS NULL").
+		Updates(v)
+
+	return result.RowsAffected, result.Error
 }

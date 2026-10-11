@@ -13,6 +13,7 @@ type Position struct {
 	BasicSalary decimal.Decimal `gorm:"column:basic_salary;not null"`
 	CreatedAt   time.Time       `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt   time.Time       `gorm:"column:updated_at;not null;autoUpdateTime"`
+	DeletedAt   *time.Time      `gorm:"column:deleted_at"`
 }
 
 func (Position) TableName() string {
