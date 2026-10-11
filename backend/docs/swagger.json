@@ -1714,6 +1714,64 @@
                 }
             }
         },
+        "/position/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat mengubah nama jabatan dan/atau gaji pokok berdasarkan ID jabatan. Hanya dapat diakses oleh admin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Position"
+                ],
+                "summary": "Admin mengubah data jabatan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Jabatan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data jabatan yang akan diubah",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdatePositionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengubah jabatan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal mengubah jabatan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/profile/customer": {
             "get": {
                 "security": [
@@ -4749,6 +4807,18 @@
                             "$ref": "#/definitions/entity.CapsterStatusEnum"
                         }
                     ]
+                }
+            }
+        },
+        "dto.UpdatePositionReq": {
+            "type": "object",
+            "properties": {
+                "basic_salary": {
+                    "type": "number",
+                    "minimum": 1000
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

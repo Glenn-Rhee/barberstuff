@@ -1056,6 +1056,14 @@ definitions:
         - active
         - inactive
     type: object
+  dto.UpdatePositionReq:
+    properties:
+      basic_salary:
+        minimum: 1000
+        type: number
+      name:
+        type: string
+    type: object
   dto.UpdateProfileRequest:
     properties:
       image_url:
@@ -2373,6 +2381,44 @@ paths:
       security:
       - BearerAuth: []
       summary: Admin membuat jabatan baru
+      tags:
+      - Position
+  /position/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Admin dapat mengubah nama jabatan dan/atau gaji pokok berdasarkan
+        ID jabatan. Hanya dapat diakses oleh admin.
+      parameters:
+      - description: ID Jabatan
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data jabatan yang akan diubah
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePositionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengubah jabatan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau gagal mengubah jabatan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Admin mengubah data jabatan
       tags:
       - Position
   /profile/customer:

@@ -157,6 +157,24 @@ func (h *PositionHandler) GetPosition(ctx *gin.Context) {
 	})
 }
 
+// UpdatePosition godoc
+//
+// @Summary      Admin mengubah data jabatan
+// @Description  Admin dapat mengubah nama jabatan dan/atau gaji pokok berdasarkan ID jabatan. Hanya dapat diakses oleh admin.
+//
+// @Tags         Position
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        id path string true "ID Jabatan"
+// @Param        request body dto.UpdatePositionReq true "Data jabatan yang akan diubah"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil mengubah jabatan"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal mengubah jabatan"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+//
+// @Router       /position/{id} [patch]
 func (h *PositionHandler) UpdatePosition(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
