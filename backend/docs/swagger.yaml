@@ -583,6 +583,17 @@ definitions:
           $ref: '#/definitions/dto.TransactionResponse'
         type: array
     type: object
+  dto.GetPositionRes:
+    properties:
+      basic_salary:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   dto.GetServiceResponse:
     properties:
       created_at:
@@ -2295,6 +2306,43 @@ paths:
       tags:
       - Customer
   /position:
+    get:
+      consumes:
+      - application/json
+      description: Admin dapat mengambil daftar jabatan dengan pencarian berdasarkan
+        query (q). Hanya dapat diakses oleh admin.
+      parameters:
+      - description: Kata kunci pencarian jabatan
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil jabatan
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GetPositionRes'
+                  type: array
+              type: object
+        "400":
+          description: Parameter tidak valid atau gagal mengambil jabatan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Admin mengambil daftar jabatan
+      tags:
+      - Position
     post:
       consumes:
       - application/json

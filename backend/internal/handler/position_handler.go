@@ -88,6 +88,23 @@ func (h *PositionHandler) CreatePosition(ctx *gin.Context) {
 	})
 }
 
+// GetPosition godoc
+//
+// @Summary      Admin mengambil daftar jabatan
+// @Description  Admin dapat mengambil daftar jabatan dengan pencarian berdasarkan query (q). Hanya dapat diakses oleh admin.
+//
+// @Tags         Position
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        q query string false "Kata kunci pencarian jabatan"
+//
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.GetPositionRes} "Berhasil mengambil jabatan"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal mengambil jabatan"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+//
+// @Router       /position [get]
 func (h *PositionHandler) GetPosition(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
