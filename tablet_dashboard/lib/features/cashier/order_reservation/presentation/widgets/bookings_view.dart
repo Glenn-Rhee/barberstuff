@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
@@ -148,10 +149,11 @@ class _DateChip extends StatelessWidget {
 
   Future<void> _pick(BuildContext context) async {
     final bookings = context.read<BookingsController>();
-    final today = DateTime.now();
+    final today = context.read<ServerClock>().now();
     final picked = await showDatePicker(
       context: context,
       initialDate: bookings.day,
+      currentDate: today,
       firstDate: today.subtract(const Duration(days: _maxDaysBack)),
       lastDate: today,
       helpText: 'Pilih tanggal booking',
@@ -194,7 +196,7 @@ class _DateChip extends StatelessWidget {
               if (!today)
                 IconButton(
                   tooltip: 'Kembali ke hari ini',
-                  onPressed: () => bookings.setDate(DateTime.now()),
+                  onPressed: () => bookings.setDate(context.read<ServerClock>().now()),
                   icon: const Icon(Icons.close, size: 16),
                   color: AppColor.inkSoft,
                   visualDensity: VisualDensity.compact,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/theme/app_button_style.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
@@ -29,7 +30,7 @@ class ShiftCard extends StatelessWidget {
       (s) => s.current?.hours,
     );
     final session = shift.session;
-    final name = shiftName(DateTime.now());
+    final name = shiftName(context.watch<ServerClock>().now());
 
     return AppCard(
       padding: const EdgeInsets.all(20),

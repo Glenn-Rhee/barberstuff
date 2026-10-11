@@ -1205,7 +1205,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Iqbal Apriand ·').last);
       await tester.pumpAndSettle();
-      expect(find.text('45.000'), findsOneWidget); // ikut total booking
+      expect(find.text('Rp 45.000'), findsOneWidget); // ikut total booking
+      expect(find.text('Otomatis dari total pesanan'), findsOneWidget);
       await tester.tap(find.text('Transfer'));
       await tester.pump();
       await confirmAndSubmit(tester, 'Simpan');
@@ -1214,7 +1215,7 @@ void main() {
       expect(api.lastSale?.amount, 45000);
       expect(api.lastSale?.payment, PaymentType.cashless);
       expect(api.bookingList.single.status, BookingStatus.completed);
-      expect(find.text('Booking Iqbal Apriand'), findsOneWidget);
+      expect(find.text('Classic Hair Cut'), findsOneWidget);
       expect(find.text('Non Tunai'), findsOneWidget);
 
       // Seharusnya: 100.000 + 0 tunai - 20.000 = 80.000
@@ -1235,6 +1236,91 @@ void main() {
 
       expect(api.closedWith, 80000);
       expect(find.text('Shift belum dibuka'), findsWidgets);
+    });
+
+    testWidgets('pemasukan tanpa pesanan progress: dijelaskan, tidak bisa simpan', (
+      tester,
+    ) async {
+      api.session = _openSession;
+      await pumpApp(tester);
+      await signIn(tester);
+      await openBookkeeping(tester);
+
+      await tester.tap(find.widgetWithText(FilledButton, 'Tambah'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pengeluaran').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pemasukan').last);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('Buat pesanan dulu di menu Kasir'),
+        findsOneWidget,
+      );
+      expect(find.text('Pilih pesanan dulu'), findsOneWidget);
+      await tester.tap(find.text('Saya memastikan data sudah benar'));
+      await tester.pump();
+      final save = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Simpan'),
+      );
+      expect(save.onPressed, isNull);
+    });
+
+    testWidgets('void transaksi: dicoret, alasan tampil, booking jadi cancel', (
+      tester,
+    ) async {
+      api.session = _openSession;
+      api.bookingList = [fakeBooking(status: BookingStatus.progress)];
+      await api.createTransaction(
+        sessionId: 'CS-1',
+        type: TransactionType.income,
+        amount: 45000,
+        paymentType: PaymentType.cash,
+        title: 'Classic Hair Cut',
+        bookingId: 'BK-1',
+      );
+      await pumpApp(tester);
+      await signIn(tester);
+      await openBookkeeping(tester);
+
+      final trash = find.image(const AssetImage(AppAsset.trashIcon));
+      expect(trash, findsOneWidget);
+      // Lebar gambar 0 sebelum asset dimuat, jadi onTap dipanggil langsung
+      tester
+          .widget<GestureDetector>(
+            find.ancestor(of: trash, matching: find.byType(GestureDetector)),
+          )
+          .onTap!();
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Contoh: customer tidak jadi datang'),
+        'Salah input layanan',
+      );
+      await tester.pump();
+      await confirmAndSubmit(tester, 'Simpan');
+
+      expect(api.calls, contains('void:TRX-1'));
+      expect(find.text('Dibatalkan'), findsOneWidget);
+      expect(find.text('Alasan: Salah input layanan'), findsOneWidget);
+      expect(trash, findsNothing); // tidak bisa di-void dua kali
+      // Pendapatan tunai kembali 0 (angka dari server)
+      expect(find.text('Rp 0'), findsWidgets);
+      expect(api.bookingList.single.status, BookingStatus.canceled);
+      expect(api.bookingList.single.notes, 'Salah input layanan');
+
+      // Alasan ikut tampil di Progress Pesanan. Font tes (kotak 1em) jauh
+      // lebih lebar dari Inter, baris cari + filter + tanggal baru muat di
+      // layar tes yang lebih lebar
+      tester.view.physicalSize = const Size(3200, 1600);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Kasir').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Progress Pesanan'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Iqbal Apriand').first);
+      await tester.pumpAndSettle();
+      expect(find.text('Alasan: Salah input layanan'), findsOneWidget);
+      expect(find.text('Salah input layanan'), findsOneWidget); // baris tabel
     });
 
     testWidgets('history harian: detail, cari kasir, dan cetak ringkasan', (

@@ -22,6 +22,7 @@ class CashTransaction {
     this.paymentType,
     this.description,
     this.createdAt,
+    this.deletedAt,
   });
 
   factory CashTransaction.fromJson(Map<String, dynamic> json) =>
@@ -38,6 +39,8 @@ class CashTransaction {
         description: json['description'] as String?,
         createdAt: DateTime.tryParse(json['created_at'] as String? ?? '')
             ?.toLocal(),
+        deletedAt: DateTime.tryParse(json['deleted_at'] as String? ?? '')
+            ?.toLocal(),
       );
 
   final String id;
@@ -47,4 +50,10 @@ class CashTransaction {
   final PaymentType? paymentType;
   final String? description;
   final DateTime? createdAt;
+
+  // Waktu void, null = transaksi masih berlaku
+  final DateTime? deletedAt;
+
+  // Sudah di-void, tidak dihitung di total. [description] berisi alasannya
+  bool get voided => deletedAt != null;
 }

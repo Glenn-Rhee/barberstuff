@@ -52,14 +52,19 @@ List<SingleChildWidget> appProviders({
     ),
     ChangeNotifierProvider(create: (_) => ShiftController(cashSessionApi)),
     ChangeNotifierProvider(
-      create: (_) => CashHistoryController(cashSessionApi),
+      create: (_) => CashHistoryController(cashSessionApi, client.clock),
     ),
     ChangeNotifierProvider(create: (_) => CatalogController(catalogApi)),
     ChangeNotifierProvider(create: (_) => OrderController()),
-    ChangeNotifierProvider(create: (_) => BookingsController(bookingApi)),
-    ChangeNotifierProvider(create: (_) => StoreController(storeApi)),
     ChangeNotifierProvider(
-      create: (ctx) => AttendanceController(ctx.read<CatalogController>()),
+      create: (_) => BookingsController(bookingApi, client.clock),
+    ),
+    ChangeNotifierProvider(
+      create: (_) => StoreController(storeApi, client.clock),
+    ),
+    ChangeNotifierProvider(
+      create: (ctx) =>
+          AttendanceController(ctx.read<CatalogController>(), client.clock),
     ),
     ChangeNotifierProvider(create: (_) => DashboardController(bookingApi)),
     ChangeNotifierProvider(

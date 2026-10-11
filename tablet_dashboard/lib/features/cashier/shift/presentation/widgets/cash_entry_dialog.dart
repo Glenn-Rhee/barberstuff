@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/constants/app_asset.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
@@ -76,7 +77,7 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
   late CashCategory _category = widget.initial;
   final _amount = TextEditingController();
   final _note = TextEditingController();
-  final _now = DateTime.now();
+  late final DateTime _now;
 
   // Pemasukan
   List<Booking> _bookings = const [];
@@ -90,6 +91,7 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
   @override
   void initState() {
     super.initState();
+    _now = context.read<ServerClock>().now();
     if (_category == CashCategory.income) _loadBookings();
   }
 
@@ -266,10 +268,13 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
     ),
   ];
 
+  // Server hanya terima pemasukan dari pembayaran pesanan yang sudah
+  // check-in (Progress), nominalnya dihitung server dari total pesanan
   List<Widget> _incomeFields() {
     final booking = _booking;
+    final hint = AppTextStyle.caption.copyWith(color: AppColor.inkSoft);
     return [
-      const FieldLabel('Booking yang dibayar', required: true),
+      const FieldLabel('Pesanan yang dibayar', required: true),
       if (_loadingBookings)
         const Skeleton(child: SkeletonBox(height: 48, radius: 10))
       else if (_bookingError != null)
@@ -278,9 +283,19 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
           style: AppTextStyle.caption.copyWith(color: AppColor.danger),
         )
       else if (_bookings.isEmpty)
-        Text(
-          'Belum ada booking yang sedang dilayani.',
-          style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColor.surfaceSubtle,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColor.border),
+          ),
+          child: Text(
+            'Belum ada pesanan yang sedang dilayani (status Progress).\n'
+            'Pemasukan hanya bisa dicatat dari pembayaran pesanan. '
+            'Buat pesanan dulu di menu Kasir, lalu bayar di sana.',
+            style: hint,
+          ),
         )
       else
         DropdownButtonFormField<Booking>(
@@ -301,20 +316,35 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
           ],
           onChanged: (value) => setState(() => _booking = value),
         ),
+      const SizedBox(height: 6),
+      Text(
+        'Pemasukan di luar pesanan (misal tambah modal) belum didukung server.',
+        style: hint,
+      ),
       const SizedBox(height: 14),
       _pair(
         [
           const FieldLabel('Nominal'),
-          InputDecorator(
-            decoration: const InputDecoration(
-              prefixText: 'Rp ',
-              suffixText: 'Total booking',
+          // Bukan kolom isian: server pakai total pesanan, nominal lain diabaikan
+          Container(
+            height: 48,
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: AppColor.surfaceMuted,
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              booking == null ? '-' : PriceFormat.plain(booking.total),
-              style: AppTextStyle.bodyBold,
+              booking == null
+                  ? 'Pilih pesanan dulu'
+                  : PriceFormat.full(booking.total),
+              style: booking == null
+                  ? AppTextStyle.body.copyWith(color: AppColor.inkFaint)
+                  : AppTextStyle.bodyBold,
             ),
           ),
+          const SizedBox(height: 6),
+          Text('Otomatis dari total pesanan', style: hint),
         ],
         [
           const FieldLabel('Metode Pembayaran', required: true),

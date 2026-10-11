@@ -69,6 +69,9 @@ class FakeApi
   List<Booking> bookingList = [];
   CashSession? session;
 
+  // id transaksi pemasukan -> id booking yang dibayar
+  final Map<String, String> _bookingOfTransaction = {};
+
   // Histori pelanggan: Iqbal pakai aplikasi (member), Budi reguler
   List<CustomerProfile> customerList = [
     CustomerProfile(
@@ -375,7 +378,7 @@ class FakeApi
   }) async {
     calls.add('cancel:$bookingId');
     final booking = bookingList.firstWhere((b) => b.id == bookingId);
-    _replace(booking, status: BookingStatus.canceled);
+    _replace(booking, status: BookingStatus.canceled, notes: notes);
   }
 
   // Tiga slot, semua capster kosong
@@ -431,6 +434,7 @@ class FakeApi
     BookingStatus? status,
     List<CartLine>? services,
     int? cashierDiscount,
+    String? notes,
   }) {
     final lines = services ?? booking.services;
     final subtotal = lines.fold(0, (sum, line) => sum + line.subtotal);
@@ -444,6 +448,7 @@ class FakeApi
       discount: cashierDiscount ?? booking.discount,
       total: subtotal - booking.discount - (cashierDiscount ?? 0),
       status: status ?? booking.status,
+      notes: notes ?? booking.notes,
     );
     bookingList = [for (final b in bookingList) b.id == booking.id ? copy : b];
   }
@@ -543,6 +548,11 @@ class FakeApi
       lastOutcome = (amount: amount, title: title);
     }
     final current = session!;
+    final id = 'TRX-${current.transactions.length + 1}';
+    // Tiru backend: judul pemasukan = nama layanan booking
+    final paid = bookingList.where((b) => b.id == bookingId).firstOrNull;
+    final saleTitle = paid?.services.map((s) => s.item.name).join(' + ');
+    if (bookingId != null) _bookingOfTransaction[id] = bookingId;
     session = CashSession(
       id: current.id,
       openingBalance: current.openingBalance,
@@ -560,8 +570,8 @@ class FakeApi
       transactions: [
         ...current.transactions,
         CashTransaction(
-          id: 'TRX-${current.transactions.length + 1}',
-          title: title ?? '-',
+          id: id,
+          title: (type == TransactionType.income ? saleTitle : title) ?? '-',
           amount: amount,
           type: type,
           paymentType: paymentType,
@@ -570,6 +580,58 @@ class FakeApi
         ),
       ],
     );
+  }
+
+  // Tiru backend: transaksi diberi deleted_at + alasan, keluar dari total,
+  // booking yang dibayar jadi canceled dengan notes = alasan
+  @override
+  Future<void> cancelTransaction({
+    required String description,
+    required String transactionId,
+  }) async {
+    calls.add('void:$transactionId');
+    final current = session!;
+    final target = current.transactions
+        .where((t) => t.id == transactionId && !t.voided)
+        .firstOrNull;
+    if (target == null) {
+      throw const ApiException(
+        'Transaksi tidak ditemukan atau telah di cancel.',
+        statusCode: 400,
+      );
+    }
+    final income = target.type == TransactionType.income;
+    final cash = income && target.paymentType == PaymentType.cash;
+    session = CashSession(
+      id: current.id,
+      openingBalance: current.openingBalance,
+      incomeCash: current.incomeCash - (cash ? target.amount : 0),
+      incomeCashless:
+          current.incomeCashless - (income && !cash ? target.amount : 0),
+      outcome: current.outcome - (income ? 0 : target.amount),
+      voidIncome: current.voidIncome + (income ? target.amount : 0),
+      voidOutcome: current.voidOutcome + (income ? 0 : target.amount),
+      transactions: [
+        for (final t in current.transactions)
+          t.id == transactionId
+              ? CashTransaction(
+                  id: t.id,
+                  title: t.title,
+                  amount: t.amount,
+                  type: t.type,
+                  paymentType: t.paymentType,
+                  description: description,
+                  createdAt: t.createdAt,
+                  deletedAt: DateTime.now(),
+                )
+              : t,
+      ],
+    );
+    final bookingId = _bookingOfTransaction[transactionId];
+    final booking = bookingList.where((b) => b.id == bookingId).firstOrNull;
+    if (booking != null) {
+      _replace(booking, status: BookingStatus.canceled, notes: description);
+    }
   }
 }
 

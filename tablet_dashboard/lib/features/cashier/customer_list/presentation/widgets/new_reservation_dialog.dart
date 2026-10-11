@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_dashboard/core/network/api_exception.dart';
+import 'package:tablet_dashboard/core/network/server_clock.dart';
 import 'package:tablet_dashboard/core/theme/app_button_style.dart';
 import 'package:tablet_dashboard/core/theme/app_color.dart';
 import 'package:tablet_dashboard/core/theme/app_text_style.dart';
@@ -58,7 +59,9 @@ class _NewReservationDialogState extends State<_NewReservationDialog> {
   // Pilihan tanggal: hari ini sampai 6 hari ke depan
   static const _days = 7;
 
-  late DateTime _date = _today;
+  // Hari ini menurut jam server, jam tablet bisa salah
+  late final DateTime _today;
+  late DateTime _date;
   List<BookingSlot> _slots = const [];
   bool _loading = false;
   String? _error;
@@ -66,14 +69,12 @@ class _NewReservationDialogState extends State<_NewReservationDialog> {
   String? _capsterId;
   final List<ServiceItem> _services = [];
 
-  DateTime get _today {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
-  }
-
   @override
   void initState() {
     super.initState();
+    final now = context.read<ServerClock>().now();
+    _today = DateTime(now.year, now.month, now.day);
+    _date = _today;
     _loadSlots();
   }
 

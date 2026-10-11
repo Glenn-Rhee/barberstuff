@@ -299,7 +299,7 @@ class CheckoutController {
   }) {
     return Receipt(
       number: Receipt.numberFor(booking.id),
-      createdAt: booking.scheduledAt ?? DateTime.now(),
+      createdAt: booking.scheduledAt ?? _clock.now(),
       cashier: _cashierName,
       customer: booking.customer.name,
       capster: booking.capster.name,

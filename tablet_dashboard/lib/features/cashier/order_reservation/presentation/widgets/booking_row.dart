@@ -181,6 +181,19 @@ class BookingRow extends StatelessWidget {
               ],
             ),
           ),
+          if (booking.status == BookingStatus.canceled)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              child: Row(
+                children: [
+                  detail(
+                    'ALASAN CANCEL',
+                    booking.cancelReason,
+                    color: AppColor.danger,
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );

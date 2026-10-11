@@ -34,6 +34,7 @@ class Booking {
     required this.discount,
     required this.total,
     required this.status,
+    this.notes,
   });
 
   factory Booking.fromJson(Map<String, dynamic> json) {
@@ -68,6 +69,7 @@ class Booking {
       discount: parseAmount(booking['discount_amount']),
       total: parseAmount(booking['total_price']),
       status: BookingStatus.parse(booking['status_booking'] as String?),
+      notes: booking['notes'] as String?,
     );
   }
 
@@ -80,6 +82,17 @@ class Booking {
   final int discount;
   final int total;
   final BookingStatus status;
+
+  // Alasan cancel dari kasir / void transaksi, null kalau batal otomatis
+  final String? notes;
+
+  // Alasan batal yang siap ditampilkan
+  String get cancelReason {
+    final reason = notes?.trim() ?? '';
+    return reason.isNotEmpty
+        ? reason
+        : 'Dibatalkan otomatis: belum check-in 10 menit setelah jadwal';
+  }
 
   // Jadwal booking jatuh di hari [day] (jam lokal tablet)
   bool isOn(DateTime day) {

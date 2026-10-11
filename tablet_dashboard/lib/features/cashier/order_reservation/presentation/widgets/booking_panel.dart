@@ -205,11 +205,10 @@ class _BookingPanelState extends State<BookingPanel> {
           title: 'Pilih booking',
           message: 'Tap salah satu booking untuk melihat keranjang.',
         ),
-        Booking(status: BookingStatus.canceled) => const EmptyState(
+        Booking(status: BookingStatus.canceled) => EmptyState(
           icon: Icons.event_busy_outlined,
           title: 'Pesanan dibatalkan',
-          message:
-              'Booking ini sudah dibatalkan, tidak ada yang perlu dibayar.',
+          message: 'Alasan: ${booking.cancelReason}',
         ),
         _ => _body(booking),
       },
