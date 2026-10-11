@@ -268,10 +268,13 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
     ),
   ];
 
+  // Server hanya terima pemasukan dari pembayaran pesanan yang sudah
+  // check-in (Progress), nominalnya dihitung server dari total pesanan
   List<Widget> _incomeFields() {
     final booking = _booking;
+    final hint = AppTextStyle.caption.copyWith(color: AppColor.inkSoft);
     return [
-      const FieldLabel('Booking yang dibayar', required: true),
+      const FieldLabel('Pesanan yang dibayar', required: true),
       if (_loadingBookings)
         const Skeleton(child: SkeletonBox(height: 48, radius: 10))
       else if (_bookingError != null)
@@ -280,9 +283,19 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
           style: AppTextStyle.caption.copyWith(color: AppColor.danger),
         )
       else if (_bookings.isEmpty)
-        Text(
-          'Belum ada booking yang sedang dilayani.',
-          style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColor.surfaceSubtle,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColor.border),
+          ),
+          child: Text(
+            'Belum ada pesanan yang sedang dilayani (status Progress).\n'
+            'Pemasukan hanya bisa dicatat dari pembayaran pesanan. '
+            'Buat pesanan dulu di menu Kasir, lalu bayar di sana.',
+            style: hint,
+          ),
         )
       else
         DropdownButtonFormField<Booking>(
@@ -303,20 +316,35 @@ class _CashEntryDialogState extends State<_CashEntryDialog> {
           ],
           onChanged: (value) => setState(() => _booking = value),
         ),
+      const SizedBox(height: 6),
+      Text(
+        'Pemasukan di luar pesanan (misal tambah modal) belum didukung server.',
+        style: hint,
+      ),
       const SizedBox(height: 14),
       _pair(
         [
           const FieldLabel('Nominal'),
-          InputDecorator(
-            decoration: const InputDecoration(
-              prefixText: 'Rp ',
-              suffixText: 'Total booking',
+          // Bukan kolom isian: server pakai total pesanan, nominal lain diabaikan
+          Container(
+            height: 48,
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: AppColor.surfaceMuted,
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              booking == null ? '-' : PriceFormat.plain(booking.total),
-              style: AppTextStyle.bodyBold,
+              booking == null
+                  ? 'Pilih pesanan dulu'
+                  : PriceFormat.full(booking.total),
+              style: booking == null
+                  ? AppTextStyle.body.copyWith(color: AppColor.inkFaint)
+                  : AppTextStyle.bodyBold,
             ),
           ),
+          const SizedBox(height: 6),
+          Text('Otomatis dari total pesanan', style: hint),
         ],
         [
           const FieldLabel('Metode Pembayaran', required: true),

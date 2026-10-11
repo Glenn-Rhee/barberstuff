@@ -7,6 +7,8 @@ import 'package:tablet_dashboard/core/theme/app_text_style.dart';
 import 'package:tablet_dashboard/core/utils/date_format.dart';
 import 'package:tablet_dashboard/core/utils/price_format.dart';
 import 'package:tablet_dashboard/features/cashier/bookkeeping/presentation/widgets/reconciliation_card.dart';
+import 'package:tablet_dashboard/features/cashier/dashboard/presentation/provider/dashboard_controller.dart';
+import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/provider/bookings_controller.dart';
 import 'package:tablet_dashboard/features/cashier/order_reservation/presentation/widgets/cancel_booking_dialog.dart';
 import 'package:tablet_dashboard/features/cashier/shift/domain/entities/cash_transaction.dart';
 import 'package:tablet_dashboard/features/cashier/shift/presentation/provider/shift_controller.dart';
@@ -80,7 +82,11 @@ class _SessionTabState extends State<SessionTab> {
       for (final t in session.transactions)
         if (t.type == TransactionType.outcome) t,
     ];
-    final sales = session.sales.toList();
+    // Yang sudah di-void tetap tampil (dicoret) biar jejaknya kelihatan
+    final sales = [
+      for (final t in session.transactions)
+        if (t.type == TransactionType.income) t,
+    ];
 
     return RefreshIndicator(
       onRefresh: shift.refresh,
@@ -215,6 +221,12 @@ class _MoneyCard extends StatelessWidget {
   }
 }
 
+// Nominal transaksi yang sudah di-void: dicoret dan pudar
+final _voidedStyle = AppTextStyle.body.copyWith(
+  color: AppColor.inkFaint,
+  decoration: TextDecoration.lineThrough,
+);
+
 // Tabel "Pengeluaran Harian" + tombol tambah (modal Catat Kas)
 class _ExpenseCard extends StatelessWidget {
   const _ExpenseCard({required this.expenses});
@@ -235,7 +247,7 @@ class _ExpenseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = expenses.fold(0, (sum, t) => sum + t.amount);
+    final total = expenses.fold(0, (sum, t) => t.voided ? sum : sum + t.amount);
     final head = AppTextStyle.label.copyWith(
       fontSize: 11,
       color: AppColor.inkSoft,
@@ -292,12 +304,19 @@ class _ExpenseCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.body,
                 ),
-                Text(PriceFormat.full(t.amount), style: AppTextStyle.body),
                 Text(
-                  t.description ?? '-',
+                  PriceFormat.full(t.amount),
+                  style: t.voided ? _voidedStyle : AppTextStyle.body,
+                ),
+                Text(
+                  t.voided
+                      ? 'Dibatalkan: ${t.description ?? '-'}'
+                      : t.description ?? '-',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.body.copyWith(color: AppColor.inkSoft),
+                  style: AppTextStyle.body.copyWith(
+                    color: t.voided ? AppColor.danger : AppColor.inkSoft,
+                  ),
                 ),
               ]),
             ),
@@ -399,14 +418,17 @@ class __SaleTileState extends State<_SaleTile> {
     );
 
     if (!cancelled || !mounted) return;
-
+    // Booking-nya ikut jadi Cancel di server
+    context.read<BookingsController>().refresh();
+    context.read<DashboardController>().refresh();
     AppToast.show(context, 'Pesanan dibatalkan');
   }
 
   @override
   Widget build(BuildContext context) {
-    final cash = widget.transaction.paymentType == PaymentType.cash;
-    final at = widget.transaction.createdAt;
+    final transaction = widget.transaction;
+    final cash = transaction.paymentType == PaymentType.cash;
+    final at = transaction.createdAt;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: const BoxDecoration(
@@ -429,29 +451,50 @@ class __SaleTileState extends State<_SaleTile> {
                   at == null ? '-' : DateFormatId.time(at),
                   style: AppTextStyle.caption.copyWith(color: AppColor.inkSoft),
                 ),
+                if (transaction.voided)
+                  Text(
+                    'Alasan: ${transaction.description ?? '-'}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.caption.copyWith(
+                      color: AppColor.danger,
+                    ),
+                  ),
               ],
             ),
           ),
-          // if (widget.transaction.deletedAt)
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                PriceFormat.full(widget.transaction.amount),
-                style: AppTextStyle.bodyBold,
+                PriceFormat.full(transaction.amount),
+                style: transaction.voided
+                    ? _voidedStyle.copyWith(fontWeight: FontWeight.w600)
+                    : AppTextStyle.bodyBold,
               ),
-              StatusBadge(
-                label: cash ? 'Tunai' : 'Non Tunai',
-                color: cash ? AppColor.success : AppColor.info,
-                background: cash ? AppColor.successSoft : AppColor.infoSoft,
-              ),
+              if (transaction.voided)
+                const StatusBadge(
+                  label: 'Dibatalkan',
+                  color: AppColor.danger,
+                  background: AppColor.dangerSoft,
+                )
+              else
+                StatusBadge(
+                  label: cash ? 'Tunai' : 'Non Tunai',
+                  color: cash ? AppColor.success : AppColor.info,
+                  background: cash ? AppColor.successSoft : AppColor.infoSoft,
+                ),
             ],
           ),
-          const SizedBox(width: 15),
-          GestureDetector(
-            onTap: () => _cancelWhenCompleted(widget.transaction),
-            child: Image.asset(AppAsset.trashIcon, height: 20),
-          ),
+          // Yang sudah di-void tidak bisa dibatalkan lagi
+          if (!transaction.voided) ...[
+            const SizedBox(width: 15),
+            GestureDetector(
+              onTap: () => _cancelWhenCompleted(transaction),
+              child: Image.asset(AppAsset.trashIcon, height: 20),
+            ),
+          ] else
+            const SizedBox(width: 35),
         ],
       ),
     );

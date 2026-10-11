@@ -142,19 +142,19 @@ class ShiftController extends ChangeNotifier {
     }
   }
 
+  // Void transaksi, lalu muat ulang biar total & daftar ikut berubah
   Future<String?> cancel(
     CashTransaction transaction,
     String description,
   ) async {
-    try {
-      await _api.cancelTransaction(
+    final error = await _run(
+      () => _api.cancelTransaction(
         description: description,
         transactionId: transaction.id,
-      );
-      return null;
-    } on ApiException catch (e) {
-      return e.message;
-    }
+      ),
+    );
+    if (error == null) await refresh(silent: true);
+    return error;
   }
 }
 
