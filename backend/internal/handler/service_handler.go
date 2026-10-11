@@ -32,7 +32,7 @@ func NewServiceHandler(service service.ServiceService) *ServiceHandler {
 // @Param        limit  	query int    false "Limit"
 // @Param        sortBy  	query string false "Sort By"  Enums(name, created_at) default(name)
 // @Param        orderBy 	query string false "Order By" Enums(asc, desc)        default(asc)
-// @Success      200 {object} dto.SwaggerResponse{data=[]dto.GetServiceResponse,meta=dto.ResponsePagination} "Succes get data services!"
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.GetServiceResponse,meta=dto.ResponsePagination} "Succes get data products!"
 // @Failure      400 {object} dto.SwaggerResponse "Data tidak valid"
 // @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
 // @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data"
@@ -76,7 +76,7 @@ func (h *ServiceHandler) GetServices(ctx *gin.Context) {
 
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[[]dto.GetServiceResponse]{
 		Data:       result,
-		Message:    "Succes get data stores!",
+		Message:    "Succes get data products!",
 		StatusCode: http.StatusOK,
 		Meta:       &paginationData,
 	})

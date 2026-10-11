@@ -19,6 +19,7 @@ type ProductTypeEnum string
 const (
 	TypeService ProductTypeEnum = "service"
 	TypePackage ProductTypeEnum = "package"
+	TypeProduct ProductTypeEnum = "product"
 )
 
 type Service struct {

@@ -263,7 +263,7 @@ func (s *serviceService) DeleteService(id string) error {
 	}
 
 	if rowsAffected == 0 {
-		return errors.New("Data service tidak dapata ditemukan atau telah dihapu.")
+		return errors.New("Data service tidak dapat ditemukan atau telah dihapu.")
 	}
 
 	return nil

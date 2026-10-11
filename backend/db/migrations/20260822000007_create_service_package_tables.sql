@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 
 CREATE TYPE product_status_enum AS ENUM ('active', 'inactive');
-CREATE TYPE product_type_enum AS ENUM ('service', 'package');
+CREATE TYPE product_type_enum AS ENUM ('service', 'package', 'product');
 CREATE TABLE service (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,

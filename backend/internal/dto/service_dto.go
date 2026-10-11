@@ -29,7 +29,7 @@ const (
 
 type QueryParamsService struct {
 	IdStore     *string                `form:"id_store" binding:"omitempty"`
-	Type        entity.ProductTypeEnum `form:"type" binding:"required,oneof=service package"`
+	Type        entity.ProductTypeEnum `form:"type" binding:"required,oneof=service package product"`
 	ServiceName *string                `form:"name"`
 	SortBy      *SortService           `form:"sort_by" binding:"omitempty,oneof=name price created_at"`
 	RequestParamsPagination
@@ -40,7 +40,7 @@ type CreateServiceRequest struct {
 	Price       float64                `json:"price" binding:"required,min=1000"`
 	Description *string                `json:"description" binding:"omitempty"`
 	IdStore     string                 `json:"id_store" binding:"required"`
-	Type        entity.ProductTypeEnum `json:"type" binding:"required,oneof=service package"`
+	Type        entity.ProductTypeEnum `json:"type" binding:"required,oneof=service package product"`
 }
 
 type UpdateServiceRequest struct {
