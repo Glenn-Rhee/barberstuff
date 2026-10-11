@@ -7,7 +7,8 @@ CREATE TABLE position (
     name VARCHAR(255) NOT NULL UNIQUE,
     basic_salary NUMERIC(12,2) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP
 );
 
 CREATE TABLE employee (
