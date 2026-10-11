@@ -1609,6 +1609,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/position": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat membuat jabatan baru dengan mengisi nama jabatan dan gaji pokok. Hanya dapat diakses oleh admin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Position"
+                ],
+                "summary": "Admin membuat jabatan baru",
+                "parameters": [
+                    {
+                        "description": "Data jabatan baru",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatePositionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membuat jabatan baru",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal membuat jabatan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/profile/customer": {
             "get": {
                 "security": [
@@ -3409,6 +3460,22 @@ const docTemplate = `{
                 },
                 "is_booking": {
                     "$ref": "#/definitions/dto.BookingTypeCashier"
+                }
+            }
+        },
+        "dto.CreatePositionReq": {
+            "type": "object",
+            "required": [
+                "basic_salary",
+                "name"
+            ],
+            "properties": {
+                "basic_salary": {
+                    "type": "number",
+                    "minimum": 1000
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

@@ -19,6 +19,23 @@ func NewPositionHandler(service service.PositionService) *PositionHandler {
 	return &PositionHandler{service: service}
 }
 
+// CreatePosition godoc
+//
+// @Summary      Admin membuat jabatan baru
+// @Description  Admin dapat membuat jabatan baru dengan mengisi nama jabatan dan gaji pokok. Hanya dapat diakses oleh admin.
+//
+// @Tags         Position
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        request body dto.CreatePositionReq true "Data jabatan baru"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membuat jabatan baru"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal membuat jabatan"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+//
+// @Router       /position [post]
 func (h *PositionHandler) CreatePosition(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
