@@ -17,6 +17,7 @@ type PositionService interface {
 	CreatePosition(req dto.CreatePositionReq) error
 	GetPositions(req dto.GetPositionReq) ([]dto.GetPositionRes, error)
 	UpdatePosition(req dto.UpdatePositionReq, id string) error
+	DeletePosition(id string) error
 }
 
 type positionService struct {
@@ -76,10 +77,10 @@ func (s *positionService) GetPositions(req dto.GetPositionReq) ([]dto.GetPositio
 	dataPositions := make([]dto.GetPositionRes, 0, len(positins))
 	for _, v := range positins {
 		dataPositions = append(dataPositions, dto.GetPositionRes{
-			ID:           v.ID,
-			Name:         v.Name,
+			ID:          v.ID,
+			Name:        v.Name,
 			BasicSalary: v.BasicSalary,
-			CreatedAt:    v.CreatedAt,
+			CreatedAt:   v.CreatedAt,
 		})
 	}
 
@@ -120,6 +121,28 @@ func (s *positionService) UpdatePosition(req dto.UpdatePositionReq, id string) e
 
 	if rowsAffected == 0 {
 		return errors.New("Jabatan tidak ditemukkan atau telah dihapus.")
+	}
+
+	return nil
+}
+
+func (s *positionService) DeletePosition(id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data jabatan."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idPosition, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id jabatan tidak valid.")
+	}
+
+	rowsAffected, err := s.positionRepo.SoftDelete(idPosition)
+	if err != nil {
+		helper.Logger("delete position", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Jabatan tidak ditemukan atau telah dihapus.")
 	}
 
 	return nil

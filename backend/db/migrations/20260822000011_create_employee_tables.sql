@@ -33,8 +33,9 @@ CREATE TABLE employee (
 
 CREATE INDEX idx_employee_position ON employee (id_position);
 CREATE INDEX idx_employee_store ON employee (id_store);
-CREATE UNIQUE INDEX idx_position_name_lower
-ON position (LOWER(name));
+CREATE UNIQUE INDEX idx_position_name_unique_active
+ON position (LOWER(name))
+WHERE deleted_at IS NULL;
 
 -- +goose StatementEnd
 

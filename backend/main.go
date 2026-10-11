@@ -160,6 +160,7 @@ func main() {
 		position.POST("/", h.PositionHandler.CreatePosition)
 		position.GET("/", h.PositionHandler.GetPosition)
 		position.PATCH("/:id", h.PositionHandler.UpdatePosition)
+		position.DELETE("/:id", h.PositionHandler.DeletePosition)
 	}
 
 	upload := r.Group("/upload")
