@@ -784,17 +784,6 @@ func (s *staffService) CheckinBooking(qrCode string, claims *lib.CustomClaims) e
 	}
 
 	now := time.Now().In(loc)
-	closeToday := time.Date(
-		now.Year(), now.Month(), now.Day(),
-		dataStore.CloseHour.Hour(), dataStore.CloseHour.Minute(), 0, 0,
-		loc,
-	)
-
-	checkinDeadline := closeToday.Add(-30 * time.Minute)
-
-	if now.After(checkinDeadline) {
-		return errors.New("Checkin tidak dapat dilakukan, waktu sudah mendekati jam tutup toko.")
-	}
 
 	var scopesGetAll []func(*gorm.DB) *gorm.DB
 	scopesGetAll = append(scopesGetAll, func(d *gorm.DB) *gorm.DB {
