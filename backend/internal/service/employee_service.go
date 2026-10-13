@@ -9,7 +9,9 @@ import (
 	"context"
 	"errors"
 	"log"
+	"regexp"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -56,6 +58,12 @@ func (s *employeeService) validateAgeEmployee(dateOfBirth time.Time) bool {
 	return age >= 20 && age <= 35
 }
 
+var accRe = regexp.MustCompile(`^\d{8,20}$`)
+
+func (s *employeeService) isValidAccountNumber(str string) bool {
+	return accRe.MatchString(strings.TrimSpace(str))
+}
+
 func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmployeeReq) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat karyawan baru."
 	_, filePath, _, _ := runtime.Caller(0)
@@ -66,6 +74,10 @@ func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmpl
 
 	if _, err := helper.ValidateIdentityNumber(req.NationalIdNumber); err != nil {
 		return err
+	}
+
+	if ok := s.isValidAccountNumber(req.AccountNumber); !ok {
+		return errors.New("Periksa no rekening yang benar.")
 	}
 
 	idPosition, err := uuid.Parse(req.IdPosition)
@@ -145,6 +157,8 @@ func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmpl
 			NationalIDNumber:    &req.NationalIdNumber,
 			ImageUrl:            imageUrl,
 			IdentityDocumentUrl: &identityKeyUrl,
+			AccountNumber:       &req.AccountNumber,
+			BankName:            &req.BankName,
 		}
 
 		err = s.employeeRepo.Create(tx, &newEmployee)

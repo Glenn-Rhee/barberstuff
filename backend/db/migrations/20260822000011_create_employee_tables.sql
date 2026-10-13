@@ -26,6 +26,8 @@ CREATE TABLE employee (
     national_id_number VARCHAR(32) UNIQUE,
     image_url TEXT,
     identity_document_url TEXT,
+    account_number VARCHAR(20),
+    bank_name VARCHAR(50),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP

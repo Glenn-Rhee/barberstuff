@@ -36,6 +36,8 @@ type Employee struct {
 	NationalIDNumber    *string             `gorm:"column:national_id_number"`
 	ImageUrl            *string             `gorm:"column:image_url"`
 	IdentityDocumentUrl *string             `gorm:"column:identity_document_url"`
+	AccountNumber       *string             `gorm:"account_number"`
+	BankName            *string             `gorm:"bank_name"`
 	CreatedAt           time.Time           `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt           time.Time           `gorm:"column:updated_at;not null;autoUpdateTime"`
 	DeletedAt           *time.Time          `gorm:"column:deleted_at"`

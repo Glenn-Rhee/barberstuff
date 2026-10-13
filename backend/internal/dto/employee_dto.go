@@ -18,4 +18,6 @@ type CreateEmployeeReq struct {
 	IdentityDocumentUrl string                    `json:"identity_document_url" binding:"required"`
 	IdPosition          string                    `json:"id_position" binding:"required"`
 	IdStore             string                    `json:"id_store" binding:"required"`
+	AccountNumber       string                    `json:"account_number" binding:"required"`
+	BankName            string                    `json:"bank_name" binding:"required,min=2,max=50"`
 }
