@@ -12,7 +12,7 @@ CREATE TABLE payroll (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     period_start DATE NOT NULL,
     period_end DATE NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'draft',
+    status status_payroll_enum NOT NULL DEFAULT 'draft',
     employee_count INTEGER NOT NULL DEFAULT 0,
     total_salary NUMERIC(14,2) NOT NULL DEFAULT 0,
     sent_at TIMESTAMP,
