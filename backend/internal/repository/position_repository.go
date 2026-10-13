@@ -13,6 +13,7 @@ type PositionRepository interface {
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Position, error)
 	Updates(v interface{}, id uuid.UUID) (int64, error)
 	SoftDelete(id uuid.UUID) (int64, error)
+	FindOne(where interface{}, args ...interface{}) (entity.Position, error)
 }
 
 type positionRepository struct {
@@ -57,4 +58,13 @@ func (r *positionRepository) SoftDelete(id uuid.UUID) (int64, error) {
 		Update("deleted_at", time.Now())
 
 	return result.RowsAffected, result.Error
+}
+
+func (r *positionRepository) FindOne(where interface{}, args ...interface{}) (entity.Position, error) {
+	var position entity.Position
+	result := r.db.
+		Where(where, args...).
+		Where("deleted_at IS NULL").
+		First(&position)
+	return position, result.Error
 }

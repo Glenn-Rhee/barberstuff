@@ -163,6 +163,12 @@ func main() {
 		position.DELETE("/:id", h.PositionHandler.DeletePosition)
 	}
 
+	employee := r.Group("/employee")
+	{
+		employee.Use(h.AuthMiddleware)
+		employee.POST("/", h.EmployeeHandler.CreateEmployee)
+	}
+
 	upload := r.Group("/upload")
 	{
 		upload.Use(h.AuthMiddleware)

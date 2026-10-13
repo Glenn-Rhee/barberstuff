@@ -99,7 +99,7 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 	})
 	if err != nil {
 		helper.Logger("failed move object", "move to object permanent", err)
-		return "", errors.New("Gagal membuat data, periksa image url.")
+		return "", errors.New("Gagal membuat data, mohon upload gambar ulang.")
 	}
 
 	size := *head.ContentLength
@@ -110,7 +110,7 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 			Key:    aws.String(tempKey),
 		})
 		helper.Logger("failed move object", "move to object permanent", err)
-		return "", errors.New("Gagal membuat data, periksa image url.")
+		return "", errors.New("Gagal membuat data, mohon upload gambar ulang.")
 	}
 
 	permanentKey := strings.Replace(tempKey, "temp/", "uploads/", 1)
@@ -123,13 +123,13 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 	})
 	if err != nil {
 		helper.Logger("failed move object", "move to object permanent", err)
-		return "", errors.New("Gagal membuat data, periksa image url.")
+		return "", errors.New("Gagal membuat data, mohon upload gambar ulang.")
 	}
 
 	err = DeleteObject(ctx, tempKey)
 	if err != nil {
 		helper.Logger("failed move object", "move to object permanent", err)
-		return "", errors.New("Gagal membuat data, periksa image url.")
+		return "", errors.New("Gagal membuat data, mohon upload gambar ulang.")
 	}
 
 	return permanentKey, nil
