@@ -242,6 +242,17 @@ func (h *EmployeeHandler) PatchEmployee(ctx *gin.Context) {
 	})
 }
 
+// DeleteEmployee godoc
+// @Summary      Menghapus data karyawan
+// @Description  Admin dapat menghapus data karyawan berdasarkan ID menggunakan mekanisme soft delete, sehingga data tidak dihapus secara permanen dari database. Hanya dapat diakses oleh admin.
+// @Tags         Employee
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path string true "ID Karyawan"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menghapus karyawan"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal menghapus data karyawan"
+// @Router       /employee/{id} [delete]
 func (h *EmployeeHandler) DeleteEmployee(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
