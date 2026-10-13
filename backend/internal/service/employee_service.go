@@ -24,6 +24,7 @@ type EmployeeService interface {
 	CreateEmployee(ctx context.Context, req dto.CreateEmployeeReq) error
 	GetEmployees(req dto.GetEmployeeReq) (dto.GetEmployeeRes, dto.ResponsePagination, error)
 	PatchEmployee(ctx context.Context, req dto.PatchEmployeeReq, id string) error
+	SoftDeleteEmployee(id string) error
 }
 
 type employeeService struct {
@@ -547,6 +548,41 @@ func (s *employeeService) PatchEmployee(ctx context.Context, req dto.PatchEmploy
 		}
 
 		helper.Logger("Update employee", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *employeeService) SoftDeleteEmployee(id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat menghapus karyawan."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idEmployee, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id karyawan tidak valid")
+	}
+
+	var errEmployeeNotFound = errors.New("Karyawan tidak ditemukan")
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		rowsAffected, err := s.employeeRepo.SoftDelete(tx, idEmployee)
+		if err != nil {
+			return err
+		}
+
+		if rowsAffected == 0 {
+			return errEmployeeNotFound
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		if errors.Is(err, errEmployeeNotFound) {
+			return errors.New("Karyawan tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("delete employee", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 

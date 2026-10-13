@@ -169,6 +169,7 @@ func main() {
 		employee.POST("/", h.EmployeeHandler.CreateEmployee)
 		employee.GET("/", h.EmployeeHandler.GetEmployee)
 		employee.PATCH("/:id", h.EmployeeHandler.PatchEmployee)
+		employee.DELETE("/:id", h.EmployeeHandler.DeleteEmployee)
 	}
 
 	upload := r.Group("/upload")
