@@ -33,7 +33,7 @@ func NewEmployeeRepository(db *gorm.DB) EmployeeRepository {
 
 func (r *employeeRepository) FindOne(query interface{}, args ...interface{}) (entity.Employee, error) {
 	var employee entity.Employee
-	result := r.db.Where(query, args...).First(&employee)
+	result := r.db.Where(query, args...).Where("deleted_at IS NULL").First(&employee)
 	return employee, result.Error
 }
 
@@ -86,6 +86,6 @@ func (r *employeeRepository) CountByStatus(scopes ...func(*gorm.DB) *gorm.DB) ([
 		Select("status, COUNT(*) AS total").
 		Group("status").
 		Scan(&rows).Error
-	
+
 	return rows, err
 }

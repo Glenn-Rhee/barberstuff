@@ -168,6 +168,7 @@ func main() {
 		employee.Use(h.AuthMiddleware)
 		employee.POST("/", h.EmployeeHandler.CreateEmployee)
 		employee.GET("/", h.EmployeeHandler.GetEmployee)
+		employee.PATCH("/:id", h.EmployeeHandler.PatchEmployee)
 	}
 
 	upload := r.Group("/upload")

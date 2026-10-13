@@ -395,15 +395,15 @@ func (s *storeService) UpdateStore(ctx context.Context, req dto.UpdateStoreReque
 		updates["status"] = req.Status
 	}
 
+	var errStoreNotFound = errors.New("Toko tidak ditemukan")
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		rowsAffected, err := s.storeRepo.Updates(tx, updates, id)
 		if err != nil {
-			helper.Logger("Find data store", filePath, err)
 			return errors.New(BASE_MESSAGE)
 		}
 
 		if rowsAffected == 0 {
-			return errors.New("Toko tidak ditemukan")
+			return errStoreNotFound
 		}
 
 		return nil
@@ -411,9 +411,9 @@ func (s *storeService) UpdateStore(ctx context.Context, req dto.UpdateStoreReque
 
 	if err != nil {
 		if errors.Is(err, errors.New("Toko tidak ditemukan")) {
-			return err
+			return errors.New("Toko tidak ditemukan atau telah dihapus")
 		}
-
+		helper.Logger("update data store", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
