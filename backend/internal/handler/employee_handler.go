@@ -167,6 +167,20 @@ func (h *EmployeeHandler) GetEmployee(ctx *gin.Context) {
 	})
 }
 
+// PatchEmployee godoc
+// @Summary      Mengubah data karyawan
+// @Description  Admin dapat mengubah sebagian atau seluruh data karyawan berdasarkan ID, termasuk informasi pribadi, kontak, gaji, jabatan, toko, rekening bank, dan status karyawan. Nomor telepon harus menggunakan format +62xxxx atau 08xxxx. Hanya dapat diakses oleh admin.
+// @Tags         Employee
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path string true "ID Karyawan"
+// @Param        request body dto.PatchEmployeeReq true "Data karyawan yang akan diubah"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil mengubah karyawan"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau nomor telepon tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengubah data karyawan"
+// @Router       /employee/{id} [patch]
 func (h *EmployeeHandler) PatchEmployee(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

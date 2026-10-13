@@ -1777,6 +1777,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat mengubah sebagian atau seluruh data karyawan berdasarkan ID, termasuk informasi pribadi, kontak, gaji, jabatan, toko, rekening bank, dan status karyawan. Nomor telepon harus menggunakan format +62xxxx atau 08xxxx. Hanya dapat diakses oleh admin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "Mengubah data karyawan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Karyawan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data karyawan yang akan diubah",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatchEmployeeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengubah karyawan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau nomor telepon tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal mengubah data karyawan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/position": {
             "get": {
                 "security": [
@@ -4705,6 +4769,79 @@ const docTemplate = `{
                 },
                 "temp_token": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.PatchEmployeeReq": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "bank_name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "basic_salary": {
+                    "type": "number",
+                    "minimum": 1000
+                },
+                "date_of_birth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "enum": [
+                        "male",
+                        "female"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.EmployeeGenderEnum"
+                        }
+                    ]
+                },
+                "id_position": {
+                    "type": "string"
+                },
+                "id_store": {
+                    "type": "string"
+                },
+                "identity_document_url": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
+                },
+                "national_id_number": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string",
+                    "maxLength": 15,
+                    "minLength": 9
+                },
+                "status": {
+                    "enum": [
+                        "active",
+                        "inactive"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.EmployeeStatusEnum"
+                        }
+                    ]
                 }
             }
         },

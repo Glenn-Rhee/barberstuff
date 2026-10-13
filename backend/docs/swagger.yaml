@@ -840,6 +840,54 @@ definitions:
     - phoneNumber
     - temp_token
     type: object
+  dto.PatchEmployeeReq:
+    properties:
+      account_number:
+        type: string
+      address:
+        type: string
+      bank_name:
+        maxLength: 50
+        minLength: 2
+        type: string
+      basic_salary:
+        minimum: 1000
+        type: number
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      gender:
+        allOf:
+        - $ref: '#/definitions/entity.EmployeeGenderEnum'
+        enum:
+        - male
+        - female
+      id_position:
+        type: string
+      id_store:
+        type: string
+      identity_document_url:
+        type: string
+      image_url:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+      national_id_number:
+        type: string
+      phone_number:
+        maxLength: 15
+        minLength: 9
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/entity.EmployeeStatusEnum'
+        enum:
+        - active
+        - inactive
+    type: object
   dto.PresignRequest:
     properties:
       content_type:
@@ -2560,6 +2608,50 @@ paths:
       security:
       - BearerAuth: []
       summary: Admin membuat karyawan baru
+      tags:
+      - Employee
+  /employee/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Admin dapat mengubah sebagian atau seluruh data karyawan berdasarkan
+        ID, termasuk informasi pribadi, kontak, gaji, jabatan, toko, rekening bank,
+        dan status karyawan. Nomor telepon harus menggunakan format +62xxxx atau 08xxxx.
+        Hanya dapat diakses oleh admin.
+      parameters:
+      - description: ID Karyawan
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data karyawan yang akan diubah
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatchEmployeeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengubah karyawan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau nomor telepon tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengubah data karyawan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mengubah data karyawan
       tags:
       - Employee
   /position:
