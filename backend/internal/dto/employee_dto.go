@@ -3,6 +3,8 @@ package dto
 import (
 	"barberstuff_backend/internal/entity"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type CreateEmployeeReq struct {
@@ -20,4 +22,47 @@ type CreateEmployeeReq struct {
 	IdStore             string                    `json:"id_store" binding:"required"`
 	AccountNumber       string                    `json:"account_number" binding:"required"`
 	BankName            string                    `json:"bank_name" binding:"required,min=2,max=50"`
+}
+
+type GetEmployeeReq struct {
+	Query      *string                    `form:"q" binding:"omitempty"`
+	IdStore    *string                    `form:"id_store" binding:"omitempty"`
+	IdPosition *string                    `form:"id_position" binding:"omitempty"`
+	Status     *entity.EmployeeStatusEnum `form:"status" binding:"omitempty,oneof=active inactive"`
+	RequestParamsPagination
+}
+
+type EmployeeKPI struct {
+	TotalEmployees         int64 `json:"total_employees"`
+	TotalActiveEmployees   int64 `json:"total_active_employees"`
+	TotalInactiveEmployees int64 `json:"total_inactive_employees"`
+	TotalStores            int64 `json:"total_stores"`
+}
+
+type StoreEmployee struct {
+	Id   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
+type EmployeeData struct {
+	Id                  uuid.UUID                 `json:"id"`
+	Name                string                    `json:"name"`
+	Position            GetPositionRes            `json:"position"`
+	Store               StoreEmployee             `json:"store"`
+	PhoneNumber         string                    `json:"phone_number"`
+	Status              entity.EmployeeStatusEnum `json:"status"`
+	Gender              entity.EmployeeGenderEnum `json:"gender"`
+	Email               string                    `json:"email"`
+	Address             *string                   `json:"address"`
+	NationalIdNumber    string                    `json:"national_id_number"`
+	ImageUrl            *string                   `json:"image_url"`
+	IdentityDocumentUrl string                    `json:"identity_document_url"`
+	AccountNumber       string                    `json:"account_number"`
+	BankName            string                    `json:"bank_name"`
+	CreatedAt           time.Time                 `json:"created_at"`
+}
+
+type GetEmployeeRes struct {
+	KPI       EmployeeKPI    `json:"kpi"`
+	Employees []EmployeeData `json:"employees"`
 }

@@ -17,10 +17,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type EmployeeService interface {
 	CreateEmployee(ctx context.Context, req dto.CreateEmployeeReq) error
+	GetEmployees(ctx context.Context, req dto.GetEmployeeReq) (dto.GetEmployeeRes, dto.ResponsePagination, error)
 }
 
 type employeeService struct {
@@ -58,9 +60,9 @@ func (s *employeeService) validateAgeEmployee(dateOfBirth time.Time) bool {
 	return age >= 20 && age <= 35
 }
 
-var accRe = regexp.MustCompile(`^\d{8,20}$`)
-
 func (s *employeeService) isValidAccountNumber(str string) bool {
+	var accRe = regexp.MustCompile(`^\d{8,20}$`)
+
 	return accRe.MatchString(strings.TrimSpace(str))
 }
 
@@ -197,4 +199,134 @@ func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmpl
 	}
 
 	return nil
+}
+
+func (s *employeeService) GetEmployees(ctx context.Context, req dto.GetEmployeeReq) (dto.GetEmployeeRes, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat karyawan baru."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	var page = 1
+	var limit = 20
+	var orderBy = dto.OrderAsc
+
+	if req.Page != nil {
+		page = *req.Page
+	}
+
+	if req.Limit != nil {
+		limit = *req.Limit
+	}
+
+	if req.OrderBy != nil {
+		orderBy = *req.OrderBy
+	}
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	if req.Query != nil {
+		q := "%" + *req.Query + "%"
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("employee.name ILIKE ? OR employee.phone_number = ?", q, q)
+		})
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Where("employee.deleted_at IS NULL")
+	})
+
+	totalData, err := s.employeeRepo.Count(scopes...)
+	if err != nil {
+		helper.Logger("Count total employee", filePath, err)
+		return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{
+					Column: clause.Column{Name: "name"},
+					Desc:   orderBy == dto.OrderDesc,
+				},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
+	employees, err := s.employeeRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("Find all data employee", filePath, err)
+		return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataEmployees := make([]dto.EmployeeData, 0, len(employees))
+	for _, v := range employees {
+		var store dto.StoreEmployee
+		if v.IdStore != nil {
+			store = dto.StoreEmployee{
+				Id:   *v.IdStore,
+				Name: v.Store.Name,
+			}
+		}
+		dataEmployees = append(dataEmployees, dto.EmployeeData{
+			Id:   v.ID,
+			Name: v.Name,
+			Position: dto.GetPositionRes{
+				ID:          v.Position.ID,
+				Name:        v.Position.Name,
+				BasicSalary: v.Position.BasicSalary,
+				CreatedAt:   v.Position.CreatedAt,
+			},
+			Store:               store,
+			PhoneNumber:         *v.PhoneNumber,
+			Status:              v.Status,
+			Gender:              *v.Gender,
+			Email:               *v.Email,
+			Address:             v.Address,
+			NationalIdNumber:    *v.NationalIDNumber,
+			ImageUrl:            v.ImageUrl,
+			IdentityDocumentUrl: *v.IdentityDocumentUrl,
+			AccountNumber:       *v.AccountNumber,
+			BankName:            *v.BankName,
+			CreatedAt:           v.CreatedAt,
+		})
+	}
+
+	totalEmployeeBystatus, err := s.employeeRepo.CountByStatus(func(d *gorm.DB) *gorm.DB {
+		return d.Where("deleted_at IS NULL")
+	})
+
+	if err != nil {
+		helper.Logger("count employee by status", filePath, err)
+		return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	result := make(map[string]int64, len(totalEmployeeBystatus))
+	for _, row := range totalEmployeeBystatus {
+		result[row.Status] = row.Total
+	}
+
+	active := result[string(entity.EmployeeStatusActive)]
+	inactive := result[string(entity.EmployeeStatusInactive)]
+
+	var total int64
+	for _, n := range result {
+		total += n
+	}
+
+	totalStore, err := s.storeRepo.Count()
+	if err != nil {
+		helper.Logger("count store", filePath, err)
+		return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataKPI := dto.EmployeeKPI{
+		TotalEmployees:         total,
+		TotalActiveEmployees:   active,
+		TotalInactiveEmployees: inactive,
+		TotalStores:            totalStore,
+	}
+
+	return dto.GetEmployeeRes{
+		KPI:       dataKPI,
+		Employees: dataEmployees,
+	}, paginationData, nil
 }
