@@ -1610,6 +1610,117 @@ const docTemplate = `{
             }
         },
         "/employee": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil daftar karyawan yang dapat difilter berdasarkan kata kunci, toko, jabatan, dan status karyawan. Mendukung pagination serta pengurutan data. Hanya dapat diakses oleh admin.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "Daftar karyawan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kata kunci pencarian karyawan",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID toko",
+                        "name": "id_store",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID jabatan",
+                        "name": "id_position",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "type": "string",
+                        "description": "Status karyawan",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "Halaman",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "Jumlah data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "Urutan data",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data karyawan",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.GetEmployeeRes"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.ResponsePagination"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal mengambil data karyawan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -4172,6 +4283,73 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.EmployeeData": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "bank_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "$ref": "#/definitions/entity.EmployeeGenderEnum"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "identity_document_url": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "national_id_number": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "position": {
+                    "$ref": "#/definitions/dto.GetPositionRes"
+                },
+                "status": {
+                    "$ref": "#/definitions/entity.EmployeeStatusEnum"
+                },
+                "store": {
+                    "$ref": "#/definitions/dto.StoreEmployee"
+                }
+            }
+        },
+        "dto.EmployeeKPI": {
+            "type": "object",
+            "properties": {
+                "total_active_employees": {
+                    "type": "integer"
+                },
+                "total_employees": {
+                    "type": "integer"
+                },
+                "total_inactive_employees": {
+                    "type": "integer"
+                },
+                "total_stores": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.FindCustomerResponse": {
             "type": "object",
             "properties": {
@@ -4294,6 +4472,20 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.TransactionResponse"
                     }
+                }
+            }
+        },
+        "dto.GetEmployeeRes": {
+            "type": "object",
+            "properties": {
+                "employees": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.EmployeeData"
+                    }
+                },
+                "kpi": {
+                    "$ref": "#/definitions/dto.EmployeeKPI"
                 }
             }
         },
@@ -4905,6 +5097,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.StoreEmployee": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.SwaggerResponse": {
             "type": "object",
             "properties": {
@@ -5216,6 +5419,17 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "EmployeeGenderMale",
                 "EmployeeGenderFemale"
+            ]
+        },
+        "entity.EmployeeStatusEnum": {
+            "type": "string",
+            "enum": [
+                "active",
+                "inactive"
+            ],
+            "x-enum-varnames": [
+                "EmployeeStatusActive",
+                "EmployeeStatusInactive"
             ]
         },
         "entity.Gender": {

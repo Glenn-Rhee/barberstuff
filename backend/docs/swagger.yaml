@@ -559,6 +559,50 @@ definitions:
       total_visited:
         type: integer
     type: object
+  dto.EmployeeData:
+    properties:
+      account_number:
+        type: string
+      address:
+        type: string
+      bank_name:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      gender:
+        $ref: '#/definitions/entity.EmployeeGenderEnum'
+      id:
+        type: string
+      identity_document_url:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      national_id_number:
+        type: string
+      phone_number:
+        type: string
+      position:
+        $ref: '#/definitions/dto.GetPositionRes'
+      status:
+        $ref: '#/definitions/entity.EmployeeStatusEnum'
+      store:
+        $ref: '#/definitions/dto.StoreEmployee'
+    type: object
+  dto.EmployeeKPI:
+    properties:
+      total_active_employees:
+        type: integer
+      total_employees:
+        type: integer
+      total_inactive_employees:
+        type: integer
+      total_stores:
+        type: integer
+    type: object
   dto.FindCustomerResponse:
     properties:
       customers:
@@ -639,6 +683,15 @@ definitions:
         items:
           $ref: '#/definitions/dto.TransactionResponse'
         type: array
+    type: object
+  dto.GetEmployeeRes:
+    properties:
+      employees:
+        items:
+          $ref: '#/definitions/dto.EmployeeData'
+        type: array
+      kpi:
+        $ref: '#/definitions/dto.EmployeeKPI'
     type: object
   dto.GetPositionRes:
     properties:
@@ -1051,6 +1104,13 @@ definitions:
       total_service:
         type: integer
     type: object
+  dto.StoreEmployee:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   dto.SwaggerResponse:
     properties:
       data: {}
@@ -1257,6 +1317,14 @@ definitions:
     x-enum-varnames:
     - EmployeeGenderMale
     - EmployeeGenderFemale
+  entity.EmployeeStatusEnum:
+    enum:
+    - active
+    - inactive
+    type: string
+    x-enum-varnames:
+    - EmployeeStatusActive
+    - EmployeeStatusInactive
   entity.Gender:
     enum:
     - male
@@ -2383,6 +2451,79 @@ paths:
       tags:
       - Customer
   /employee:
+    get:
+      description: Mengambil daftar karyawan yang dapat difilter berdasarkan kata
+        kunci, toko, jabatan, dan status karyawan. Mendukung pagination serta pengurutan
+        data. Hanya dapat diakses oleh admin.
+      parameters:
+      - description: Kata kunci pencarian karyawan
+        in: query
+        name: q
+        type: string
+      - description: ID toko
+        in: query
+        name: id_store
+        type: string
+      - description: ID jabatan
+        in: query
+        name: id_position
+        type: string
+      - description: Status karyawan
+        enum:
+        - active
+        - inactive
+        in: query
+        name: status
+        type: string
+      - description: Halaman
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - description: Jumlah data per halaman
+        in: query
+        maximum: 50
+        minimum: 1
+        name: limit
+        type: integer
+      - description: Urutan data
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil data karyawan
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GetEmployeeRes'
+                meta:
+                  $ref: '#/definitions/dto.ResponsePagination'
+              type: object
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengambil data karyawan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Daftar karyawan
+      tags:
+      - Employee
     post:
       consumes:
       - application/json

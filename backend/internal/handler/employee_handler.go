@@ -96,6 +96,24 @@ func (h *EmployeeHandler) CreateEmployee(ctx *gin.Context) {
 	})
 }
 
+// GetEmployee godoc
+// @Summary      Daftar karyawan
+// @Description  Mengambil daftar karyawan yang dapat difilter berdasarkan kata kunci, toko, jabatan, dan status karyawan. Mendukung pagination serta pengurutan data. Hanya dapat diakses oleh admin.
+// @Tags         Employee
+// @Produce      json
+// @Security     BearerAuth
+// @Param        q query string false "Kata kunci pencarian karyawan"
+// @Param        id_store query string false "ID toko"
+// @Param        id_position query string false "ID jabatan"
+// @Param        status query string false "Status karyawan" Enums(active, inactive)
+// @Param        page query int false "Halaman" minimum(1)
+// @Param        limit query int false "Jumlah data per halaman" minimum(1) maximum(50)
+// @Param        order query string false "Urutan data" Enums(asc, desc)
+// @Success      200 {object} dto.SwaggerResponse{data=dto.GetEmployeeRes,meta=dto.ResponsePagination} "Berhasil mengambil data karyawan"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengambil data karyawan"
+// @Router       /employee [get]
 func (h *EmployeeHandler) GetEmployee(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
