@@ -1609,6 +1609,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat membuat data karyawan baru dengan mengisi informasi pribadi, kontak, jabatan, toko, gaji, dokumen identitas, dan rekening bank. Nomor telepon harus menggunakan format +62xxxx atau 08xxxx. Hanya dapat diakses oleh admin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "Admin membuat karyawan baru",
+                "parameters": [
+                    {
+                        "description": "Data karyawan baru",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateEmployeeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membuat karyawan baru",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau nomor telepon tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal membuat karyawan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/position": {
             "get": {
                 "security": [
@@ -3629,6 +3686,82 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateEmployeeReq": {
+            "type": "object",
+            "required": [
+                "account_number",
+                "bank_name",
+                "basic_salary",
+                "date_of_birth",
+                "email",
+                "gender",
+                "id_position",
+                "id_store",
+                "identity_document_url",
+                "name",
+                "national_id_number",
+                "phone_number"
+            ],
+            "properties": {
+                "account_number": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "bank_name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "basic_salary": {
+                    "type": "number",
+                    "minimum": 1000
+                },
+                "date_of_birth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "enum": [
+                        "male",
+                        "female"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.EmployeeGenderEnum"
+                        }
+                    ]
+                },
+                "id_position": {
+                    "type": "string"
+                },
+                "id_store": {
+                    "type": "string"
+                },
+                "identity_document_url": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
+                },
+                "national_id_number": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string",
+                    "maxLength": 15,
+                    "minLength": 9
+                }
+            }
+        },
         "dto.CreatePositionReq": {
             "type": "object",
             "required": [
@@ -3673,6 +3806,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id_store": {
+                    "type": "string"
+                },
+                "image_url": {
                     "type": "string"
                 },
                 "name": {
@@ -4191,6 +4327,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id_store": {
+                    "type": "string"
+                },
+                "image_url": {
                     "type": "string"
                 },
                 "name": {
@@ -4899,6 +5038,9 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "image_url": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -5063,6 +5205,17 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "CapsterStatusActive",
                 "CapsterStatusInactive"
+            ]
+        },
+        "entity.EmployeeGenderEnum": {
+            "type": "string",
+            "enum": [
+                "male",
+                "female"
+            ],
+            "x-enum-varnames": [
+                "EmployeeGenderMale",
+                "EmployeeGenderFemale"
             ]
         },
         "entity.Gender": {

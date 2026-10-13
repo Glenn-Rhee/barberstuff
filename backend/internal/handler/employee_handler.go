@@ -19,6 +19,24 @@ func NewEmployeeHandler(service service.EmployeeService) *EmployeeHandler {
 	return &EmployeeHandler{service: service}
 }
 
+// CreateEmployee godoc
+//
+// @Summary      Admin membuat karyawan baru
+// @Description  Admin dapat membuat data karyawan baru dengan mengisi informasi pribadi, kontak, jabatan, toko, gaji, dokumen identitas, dan rekening bank. Nomor telepon harus menggunakan format +62xxxx atau 08xxxx. Hanya dapat diakses oleh admin.
+//
+// @Tags         Employee
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+//
+// @Param        request body dto.CreateEmployeeReq true "Data karyawan baru"
+//
+// @Success      200 {object} dto.SwaggerResponse "Berhasil membuat karyawan baru"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau nomor telepon tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal membuat karyawan"
+//
+// @Router       /employee [post]
 func (h *EmployeeHandler) CreateEmployee(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
