@@ -16,7 +16,6 @@ type Handlers struct {
 	AuthHandler         *handler.AuthHandler
 	StaffHandler        *handler.StaffHandler
 	StoreHandler        *handler.StoreHandler
-	CapsterHandler      *handler.CapsterHandler
 	Servicehandler      *handler.ServiceHandler
 	BookingHandler      *handler.BookingHandler
 	RatingHandler       *handler.RatingHandler
@@ -37,7 +36,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	storeRepo := repository.NewStoreRepository(db)
 	serviceRepo := repository.NewServiceRepository(db)
 	ratingRepo := repository.NewRatingRepository(db)
-	capsterRepo := repository.NewCapsterRepository(db)
 	premiumTypeRepo := repository.NewPremiumTypeRepository(db)
 	bookingRepo := repository.NewBookingRepository(db)
 	promoRepo := repository.NewPromoRepository(db)
@@ -53,7 +51,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	authService := service.NewAuthService(authRepo, lib.ClientRedis)
 	staffService := service.NewStaffService(storeRepo, staffRepo, authRepo, customerRepo, capsterRepo, bookingRepo, serviceRepo, bookingItemRepo, db)
 	storeService := service.NewStoreService(storeRepo, serviceRepo, ratingRepo, staffRepo, db)
-	capsterService := service.NewCapsterService(capsterRepo, storeRepo)
 	serviceService := service.NewServiceService(serviceRepo, storeRepo, bookingRepo)
 	bookingService := service.NewBookingService(bookingRepo, lib.ClientRedis, capsterRepo, storeRepo, serviceRepo, promoRepo, staffRepo, db)
 	ratingService := service.NewRatingService(ratingRepo, bookingRepo, capsterRepo, staffRepo, storeRepo, db)
@@ -67,7 +64,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	authHandler := handler.NewAuthHandler(authService)
 	staffHandler := handler.NewStaffHandler(staffService)
 	storeHandler := handler.NewStoreHandler(storeService)
-	capsterHandler := handler.NewCapsterHandler(capsterService)
 	serviceHandler := handler.NewServiceHandler(serviceService)
 	bookingHandler := handler.NewBookingHandler(bookingService)
 	ratingHandler := handler.NewRatingHandler(ratingService)
@@ -86,7 +82,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 		StaffHandler:        staffHandler,
 		StoreHandler:        storeHandler,
 		AuthMiddleware:      authMiddleware,
-		CapsterHandler:      capsterHandler,
 		Servicehandler:      serviceHandler,
 		BookingHandler:      bookingHandler,
 		RatingHandler:       ratingHandler,

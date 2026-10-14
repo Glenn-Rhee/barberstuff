@@ -39,15 +39,27 @@ func (r *bookingRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 	var dataBooking []entity.Booking
 	result := r.db.
 		Preload("Store").
-		Preload("Capster").
+		Preload("Employee", func(d *gorm.DB) *gorm.DB {
+			return d.
+				Joins("JOIN position ON position.id = employee.id_position").
+				Where("employee.deleted_at IS NULL").
+				Where("position.deleted_at IS NULL").
+				Where("position.name ILIKE ?", "%capster%")
+		}).
 		Preload("Staff").
 		Preload("Customer", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("PremiumType")
 		}).
 		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Store").
-				Preload("Capster").
-				Preload("Staff")
+				Preload("Employee").
+				Preload("Staff", func(d *gorm.DB) *gorm.DB {
+					return d.
+						Joins("JOIN position ON position.id = employee.id_position").
+						Where("employee.deleted_at IS NULL").
+						Where("position.deleted_at IS NULL").
+						Where("position.name ILIKE ?", "%capster%")
+				})
 		}).
 		Preload("BookingItems", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Service")

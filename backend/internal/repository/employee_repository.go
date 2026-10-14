@@ -25,12 +25,14 @@ type EmployeeAbsentRow struct {
 type EmployeeRepository interface {
 	FindOne(query interface{}, args ...interface{}) (entity.Employee, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Employee, error)
+	FindAllCapster(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Employee, error)
 	Create(tx *gorm.DB, e *entity.Employee) error
 	Updates(tx *gorm.DB, v interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	SoftDelete(tx *gorm.DB, id uuid.UUID) (int64, error)
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	CountByStatus(scopes ...func(*gorm.DB) *gorm.DB) ([]countByStatus, error)
 	FindWithPresence(idStore uuid.UUID, start, end time.Time) ([]EmployeeAbsentRow, error)
+	FindOneCapster(query interface{}, args ...interface{}) (entity.Employee, error)
 }
 
 type employeeRepository struct {
@@ -57,6 +59,19 @@ func (r *employeeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entit
 		}).
 		Scopes(scopes...).
 		Find(&employees)
+	return employees, result.Error
+}
+
+func (r *employeeRepository) FindAllCapster(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Employee, error) {
+	var employees []entity.Employee
+	result := r.db.
+		Joins("JOIN position ON position.id = employee.id_position").
+		Scopes(scopes...).
+		Where("employee.deleted_at IS NULL").
+		Where("position.deleted_at IS NULL").
+		Where("LOWER(position.name) = ?", "capster").
+		Find(&employees)
+
 	return employees, result.Error
 }
 
@@ -118,4 +133,18 @@ func (r *employeeRepository) FindWithPresence(idStore uuid.UUID, start, end time
 		Scan(&rows).Error
 
 	return rows, err
+}
+
+func (r *employeeRepository) FindOneCapster(query interface{}, args ...interface{}) (entity.Employee, error) {
+	var employee entity.Employee
+
+	result := r.db.
+		Joins("JOIN position ON position.id = employee.id_position").
+		Where(query, args...).
+		Where("employee.deleted_at IS NULL").
+		Where("position.deleted_at IS NULL").
+		Where("LOWER(position.name) = ?", "capster").
+		First(&employee)
+
+	return employee, result.Error
 }

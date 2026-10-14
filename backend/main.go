@@ -97,15 +97,6 @@ func main() {
 		profile.GET("/staff", h.StaffHandler.GetProfile)
 	}
 
-	capster := r.Group("/capster")
-	{
-		capster.Use(h.AuthMiddleware)
-		capster.POST("/", h.CapsterHandler.Create)
-		capster.GET("/", h.CapsterHandler.GetCapsters)
-		capster.PATCH("/:id", h.CapsterHandler.UpdateCapster)
-		capster.DELETE("/:id", h.CapsterHandler.DeleteCapster)
-	}
-
 	service := r.Group("/service")
 	{
 		service.Use(h.AuthMiddleware)

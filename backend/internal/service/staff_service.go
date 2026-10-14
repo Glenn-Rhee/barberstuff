@@ -38,7 +38,7 @@ type staffService struct {
 	authRepo        repository.AuthenticationRepository
 	storeRepo       repository.StoreRepository
 	customerRepo    repository.CustomerRepository
-	capsterRepo     repository.CapsterRepository
+	employeeRepo    repository.EmployeeRepository
 	bookingRepo     repository.BookingRepository
 	serviceRepo     repository.ServiceRepository
 	bookingItemRepo repository.BookingItemRepository
@@ -50,7 +50,7 @@ func NewStaffService(
 	sr repository.StaffRepository,
 	ar repository.AuthenticationRepository,
 	cr repository.CustomerRepository,
-	cpr repository.CapsterRepository,
+	er repository.EmployeeRepository,
 	br repository.BookingRepository,
 	svr repository.ServiceRepository,
 	bi repository.BookingItemRepository,
@@ -62,7 +62,7 @@ func NewStaffService(
 		db:              db,
 		storeRepo:       str,
 		customerRepo:    cr,
-		capsterRepo:     cpr,
+		employeeRepo:    er,
 		bookingRepo:     br,
 		serviceRepo:     svr,
 		bookingItemRepo: bi,
@@ -243,7 +243,7 @@ func (s *staffService) CreateAccout(req dto.CreateAccountStaffRequest) error {
 	})
 
 	if err != nil {
-		helper.Logger("Creattae staff and auth", filePath, err)
+		helper.Logger("Create staff and auth", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
@@ -588,7 +588,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 		return errors.New("Tanggal dan jam booking tidak boleh kurang dari waktu sekarang")
 	}
 
-	_, err = s.capsterRepo.FindOne(&entity.Capster{ID: idCapster, Status: entity.CapsterStatusActive, IDStore: idStore})
+	_, err = s.employeeRepo.FindOneCapster("id = ? AND status = ? AND id_store = ?", idCapster, entity.EmployeeStatusActive, idStore)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Capster tidak ditemukan atau telah dihapus!")
@@ -638,7 +638,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 		}
 
 		if diff < BUSY_WINDOW {
-			busyCapsterSet[v.IDCapster] = true
+			busyCapsterSet[v.IDEmployee] = true
 		}
 	}
 
@@ -646,12 +646,12 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 	scopesActiveCapster = append(scopesActiveCapster, func(d *gorm.DB) *gorm.DB {
 		return d.
 			Where("id_store = ?", idStore).
-			Where("status = ?", entity.CapsterStatusActive)
+			Where("status = ?", entity.EmployeeStatusActive)
 	})
 
-	dataCapsters, err := s.capsterRepo.FindAll(scopesActiveCapster...)
+	dataCapsters, err := s.employeeRepo.FindAllCapster(scopesActiveCapster...)
 	if err != nil {
-		helper.Logger("find all capsters", filePath, err)
+		helper.Logger("find all employee", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
@@ -714,7 +714,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 		StatusBooking:  statusBooking,
 		IDStore:        idStore,
 		IDCustomer:     idCustomer,
-		IDCapster:      idCapster,
+		IDEmployee:     idCapster,
 		IDStaff:        idStaff,
 		SubTotal:       subTotal,
 		DiscountAmount: decimal.Zero,
@@ -793,8 +793,8 @@ func (s *staffService) CheckinBooking(qrCode string, claims *lib.CustomClaims) e
 		}
 
 		oneHourLater := now.Add(1 * time.Hour)
-		return d.Where("id_capster = ? AND status_booking IN ? AND id_store = ? AND scheduled_at >= ? AND scheduled_at <= ? AND id != ?",
-			dataBooking.IDCapster,
+		return d.Where("id_employee = ? AND status_booking IN ? AND id_store = ? AND scheduled_at >= ? AND scheduled_at <= ? AND id != ?",
+			dataBooking.IDEmployee,
 			statusBooking,
 			dataBooking.IDStore,
 			now,

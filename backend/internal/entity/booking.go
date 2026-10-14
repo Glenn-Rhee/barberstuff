@@ -27,7 +27,7 @@ type Booking struct {
 	ID             uuid.UUID         `gorm:"column:id;primaryKey"`
 	IDStore        uuid.UUID         `gorm:"column:id_store;not null"`
 	IDCustomer     uuid.UUID         `gorm:"column:id_user;not null"`
-	IDCapster      uuid.UUID         `gorm:"column:id_capster"`
+	IDEmployee     uuid.UUID         `gorm:"column:id_employee"`
 	IDStaff        uuid.UUID         `gorm:"column:id_staff;not null"`
 	IDPromoClaimed *uuid.UUID        `gorm:"column:id_promo_claimed"`
 	StatusBooking  BookingStatusEnum `gorm:"column:status_booking;not null"`
@@ -42,7 +42,7 @@ type Booking struct {
 	UpdatedAt      time.Time         `gorm:"column:updated_at;not null;autoUpdateTime"`
 	BookingItems   []BookingItem     `gorm:"foreignKey:IDBooking"`
 	Store          Store             `gorm:"foreignKey:IDStore"`
-	Capster        Capster           `gorm:"foreignKey:IDCapster"`
+	Employee       Employee          `gorm:"foreignKey:IDEmployee"`
 	Staff          Staff             `gorm:"foreignKey:IDStaff"`
 	Ratings        []Rating          `gorm:"foreignKey:IDBooking"`
 	Customer       Customer          `gorm:"foreignKey:IDCustomer"`
