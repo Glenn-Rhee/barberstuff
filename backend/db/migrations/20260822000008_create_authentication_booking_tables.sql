@@ -30,24 +30,36 @@ CREATE INDEX idx_authentication_id_customer ON authentication(id_customer);
 CREATE INDEX idx_authentication_id_staff ON authentication(id_staff);
 -- index email dihapus, sudah otomatis ada dari UNIQUE
 
-CREATE TYPE booking_status_enum AS ENUM ('booked', 'progress' ,'completed', 'canceled');
-CREATE TYPE booking_type AS ENUM ('scheduled', 'walk_in');
--- id_product polymorphic sebelumnya diganti 2 kolom nullable + CHECK:
+CREATE TYPE booking_status_enum AS ENUM (
+    'booked',
+    'progress',
+    'completed',
+    'canceled'
+);
+
+CREATE TYPE booking_type AS ENUM (
+    'scheduled',
+    'walk_in'
+);
+
 CREATE TABLE booking (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     status_booking booking_status_enum NOT NULL DEFAULT 'booked',
     id_store UUID NOT NULL REFERENCES store(id),
     id_user UUID NOT NULL REFERENCES customer(id),
-    id_capster UUID NOT NULL REFERENCES capster(id),
+    id_employee UUID NOT NULL REFERENCES employee(id),
     id_staff UUID NOT NULL REFERENCES staff(id),
     id_promo_claimed UUID REFERENCES promo_claimed(id),
+
     subtotal NUMERIC(12,2) NOT NULL DEFAULT 0,
     discount_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
-    total_price NUMERIC(12,2) NOT NULL DEFAULT 0,  -- sekarang = SUM dari booking_item
+    total_price NUMERIC(12,2) NOT NULL DEFAULT 0,
+
     scheduled_at TIMESTAMP,
     qr_code VARCHAR(255),
     notes TEXT,
     booking_type booking_type NOT NULL,
+
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -56,7 +68,7 @@ CREATE TABLE booking_item (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     id_booking UUID NOT NULL REFERENCES booking(id),
     id_service UUID NOT NULL REFERENCES service(id),
-    price NUMERIC(12,2) NOT NULL,          -- snapshot harga saat itu
+    price NUMERIC(12,2) NOT NULL,
     added_on_spot BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -65,10 +77,14 @@ CREATE TRIGGER trg_booking_updated_at
     BEFORE UPDATE ON booking
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
-CREATE INDEX idx_booking_id_store ON booking(id_store);
-CREATE INDEX idx_booking_id_user ON booking(id_user);
-CREATE INDEX idx_booking_id_capster ON booking(id_capster);
+CREATE INDEX idx_booking_id_store
+    ON booking(id_store);
 
+CREATE INDEX idx_booking_id_user
+    ON booking(id_user);
+
+CREATE INDEX idx_booking_id_employee
+    ON booking(id_employee);
 -- +goose StatementEnd
 
 -- +goose Down

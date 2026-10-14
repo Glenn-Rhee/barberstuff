@@ -400,11 +400,11 @@ func (s *employeeService) GetEmployees(req dto.GetEmployeeReq, claims *lib.Custo
 
 		// field sensitif: hanya non-customer
 		if !isCustomer {
-			salary := v.Position.BasicSalary
+			salary := v.BasicSalary
 			posCreatedAt := v.Position.CreatedAt
 			createdAt := v.CreatedAt
 
-			item.Position.BasicSalary = &salary
+			item.Position.BasicSalary = salary
 			item.Position.CreatedAt = &posCreatedAt
 			item.PhoneNumber = v.PhoneNumber
 			item.Email = v.Email
