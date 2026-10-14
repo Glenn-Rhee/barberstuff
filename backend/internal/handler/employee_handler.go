@@ -289,6 +289,19 @@ func (h *EmployeeHandler) DeleteEmployee(ctx *gin.Context) {
 	})
 }
 
+// Absent godoc
+// @Summary      Mencatat absensi karyawan
+// @Description  Mencatat absensi karyawan berdasarkan ID karyawan dan ID toko. Hanya dapat diakses oleh pengguna selain customer dan mitra.
+// @Tags         Employee
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.CreateAbsentReq true "Data absensi karyawan"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil absen"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mencatat absensi"
+// @Router       /employee/absent [post]
 func (h *EmployeeHandler) Absent(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

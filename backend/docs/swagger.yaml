@@ -122,6 +122,16 @@ definitions:
       status:
         $ref: '#/definitions/dto.StatusCloseCash'
     type: object
+  dto.CreateAbsentReq:
+    properties:
+      id_employee:
+        type: string
+      id_store:
+        type: string
+    required:
+    - id_employee
+    - id_store
+    type: object
   dto.CreateAccountStaffRequest:
     properties:
       email:
@@ -574,6 +584,7 @@ definitions:
       gender:
         $ref: '#/definitions/entity.EmployeeGenderEnum'
       id:
+        description: dilihat semua role (termasuk customer)
         type: string
       identity_document_url:
         type: string
@@ -584,9 +595,10 @@ definitions:
       national_id_number:
         type: string
       phone_number:
+        description: hanya admin, kasir, mitra
         type: string
       position:
-        $ref: '#/definitions/dto.GetPositionRes'
+        $ref: '#/definitions/dto.EmployeePosition'
       status:
         $ref: '#/definitions/entity.EmployeeStatusEnum'
       store:
@@ -602,6 +614,17 @@ definitions:
         type: integer
       total_stores:
         type: integer
+    type: object
+  dto.EmployeePosition:
+    properties:
+      basic_salary:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
     type: object
   dto.FindCustomerResponse:
     properties:
@@ -691,7 +714,9 @@ definitions:
           $ref: '#/definitions/dto.EmployeeData'
         type: array
       kpi:
-        $ref: '#/definitions/dto.EmployeeKPI'
+        allOf:
+        - $ref: '#/definitions/dto.EmployeeKPI'
+        description: nil untuk customer
     type: object
   dto.GetPositionRes:
     properties:
@@ -2501,8 +2526,8 @@ paths:
   /employee:
     get:
       description: Mengambil daftar karyawan yang dapat difilter berdasarkan kata
-        kunci, toko, jabatan, dan status karyawan. Mendukung pagination serta pengurutan
-        data. Hanya dapat diakses oleh admin.
+        kunci, toko, jabatan, status karyawan, serta jabatan tertentu. Mendukung pagination
+        serta pengurutan data. Dapat diakses oleh semua pengguna yang telah terauhtentikasi.
       parameters:
       - description: Kata kunci pencarian karyawan
         in: query
@@ -2611,6 +2636,36 @@ paths:
       tags:
       - Employee
   /employee/{id}:
+    delete:
+      description: Admin dapat menghapus data karyawan berdasarkan ID menggunakan
+        mekanisme soft delete, sehingga data tidak dihapus secara permanen dari database.
+        Hanya dapat diakses oleh admin.
+      parameters:
+      - description: ID Karyawan
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menghapus karyawan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal menghapus data karyawan
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Menghapus data karyawan
+      tags:
+      - Employee
     patch:
       consumes:
       - application/json
@@ -2652,6 +2707,43 @@ paths:
       security:
       - BearerAuth: []
       summary: Mengubah data karyawan
+      tags:
+      - Employee
+  /employee/absent:
+    post:
+      consumes:
+      - application/json
+      description: Mencatat absensi karyawan berdasarkan ID karyawan dan ID toko.
+        Hanya dapat diakses oleh pengguna selain customer dan mitra.
+      parameters:
+      - description: Data absensi karyawan
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAbsentReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil absen
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mencatat absensi
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mencatat absensi karyawan
       tags:
       - Employee
   /position:

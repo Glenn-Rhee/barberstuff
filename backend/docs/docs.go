@@ -1616,7 +1616,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Mengambil daftar karyawan yang dapat difilter berdasarkan kata kunci, toko, jabatan, dan status karyawan. Mendukung pagination serta pengurutan data. Hanya dapat diakses oleh admin.",
+                "description": "Mengambil daftar karyawan yang dapat difilter berdasarkan kata kunci, toko, jabatan, status karyawan, serta jabatan tertentu. Mendukung pagination serta pengurutan data. Dapat diakses oleh semua pengguna yang telah terauhtentikasi.",
                 "produces": [
                     "application/json"
                 ],
@@ -1777,7 +1777,108 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/absent": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mencatat absensi karyawan berdasarkan ID karyawan dan ID toko. Hanya dapat diakses oleh pengguna selain customer dan mitra.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "Mencatat absensi karyawan",
+                "parameters": [
+                    {
+                        "description": "Data absensi karyawan",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateAbsentReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil absen",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal mencatat absensi",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat menghapus data karyawan berdasarkan ID menggunakan mekanisme soft delete, sehingga data tidak dihapus secara permanen dari database. Hanya dapat diakses oleh admin.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "Menghapus data karyawan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Karyawan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menghapus karyawan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal menghapus data karyawan",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
             "patch": {
                 "security": [
                     {
@@ -3695,6 +3796,21 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateAbsentReq": {
+            "type": "object",
+            "required": [
+                "id_employee",
+                "id_store"
+            ],
+            "properties": {
+                "id_employee": {
+                    "type": "string"
+                },
+                "id_store": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateAccountStaffRequest": {
             "type": "object",
             "required": [
@@ -4369,6 +4485,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/entity.EmployeeGenderEnum"
                 },
                 "id": {
+                    "description": "dilihat semua role (termasuk customer)",
                     "type": "string"
                 },
                 "identity_document_url": {
@@ -4384,10 +4501,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone_number": {
+                    "description": "hanya admin, kasir, mitra",
                     "type": "string"
                 },
                 "position": {
-                    "$ref": "#/definitions/dto.GetPositionRes"
+                    "$ref": "#/definitions/dto.EmployeePosition"
                 },
                 "status": {
                     "$ref": "#/definitions/entity.EmployeeStatusEnum"
@@ -4411,6 +4529,23 @@ const docTemplate = `{
                 },
                 "total_stores": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.EmployeePosition": {
+            "type": "object",
+            "properties": {
+                "basic_salary": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -4549,7 +4684,12 @@ const docTemplate = `{
                     }
                 },
                 "kpi": {
-                    "$ref": "#/definitions/dto.EmployeeKPI"
+                    "description": "nil untuk customer",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/dto.EmployeeKPI"
+                        }
+                    ]
                 }
             }
         },
