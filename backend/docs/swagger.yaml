@@ -707,6 +707,21 @@ definitions:
           $ref: '#/definitions/dto.TransactionResponse'
         type: array
     type: object
+  dto.GetEmployeeAbsentRes:
+    properties:
+      id_employee:
+        type: string
+      image_url:
+        type: string
+      is_present:
+        type: boolean
+      name:
+        type: string
+      position_name:
+        type: string
+      status:
+        $ref: '#/definitions/entity.EmployeeStatusEnum'
+    type: object
   dto.GetEmployeeRes:
     properties:
       employees:
@@ -2710,6 +2725,46 @@ paths:
       tags:
       - Employee
   /employee/absent:
+    get:
+      description: Mengambil data absensi karyawan pada hari ini berdasarkan ID toko.
+        Hanya dapat diakses oleh pengguna selain customer dan mitra.
+      parameters:
+      - description: ID toko
+        in: query
+        name: id_store
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil data absensi
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GetEmployeeAbsentRes'
+                  type: array
+              type: object
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengambil data absensi
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mengambil data absensi karyawan
+      tags:
+      - Employee
     post:
       consumes:
       - application/json

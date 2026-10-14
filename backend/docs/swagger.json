@@ -1771,6 +1771,71 @@
             }
         },
         "/employee/absent": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil data absensi karyawan pada hari ini berdasarkan ID toko. Hanya dapat diakses oleh pengguna selain customer dan mitra.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "Mengambil data absensi karyawan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID toko",
+                        "name": "id_store",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data absensi",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.GetEmployeeAbsentRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal mengambil data absensi",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -4664,6 +4729,29 @@
                     "items": {
                         "$ref": "#/definitions/dto.TransactionResponse"
                     }
+                }
+            }
+        },
+        "dto.GetEmployeeAbsentRes": {
+            "type": "object",
+            "properties": {
+                "id_employee": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "is_present": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "position_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/entity.EmployeeStatusEnum"
                 }
             }
         },
