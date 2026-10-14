@@ -171,6 +171,7 @@ func main() {
 		employee.PATCH("/:id", h.EmployeeHandler.PatchEmployee)
 		employee.DELETE("/:id", h.EmployeeHandler.DeleteEmployee)
 		employee.POST("/absent", h.EmployeeHandler.Absent)
+		employee.GET("/absent", h.EmployeeHandler.GetEmployeeAbsent)
 	}
 
 	upload := r.Group("/upload")

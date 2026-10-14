@@ -26,6 +26,7 @@ type EmployeeService interface {
 	PatchEmployee(ctx context.Context, req dto.PatchEmployeeReq, id string) error
 	SoftDeleteEmployee(id string) error
 	Absent(req dto.CreateAbsentReq) error
+	GetEmployeeAbsent(req dto.GetEmployeeAbsentReq) ([]dto.GetEmployeeAbsentRes, error)
 }
 
 type employeeService struct {
@@ -647,7 +648,7 @@ func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
 		FindOne("id_employee = ? AND created_at >= ? AND created_at < ?", idEmployee, startOfDay, startOfNextDay)
 
 	if err == nil {
-		return errors.New("Karyawan telah absent.")
+		return errors.New("Karyawan telah absen.")
 	}
 
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -655,11 +656,11 @@ func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
 		return errors.New(BASE_MESSAGE)
 	}
 
-	 absent := entity.Absent{
-		ID: uuid.New(),
+	absent := entity.Absent{
+		ID:         uuid.New(),
 		IdEmployee: idEmployee,
-		IdStore: idStore,
-	 }
+		IdStore:    idStore,
+	}
 
 	err = s.absentRepo.Create(&absent)
 	if err != nil {
@@ -672,4 +673,59 @@ func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
 	}
 
 	return nil
+}
+
+func (s *employeeService) GetEmployeeAbsent(req dto.GetEmployeeAbsentReq) ([]dto.GetEmployeeAbsentRes, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengabsen karyawan."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idStore, err := uuid.Parse(req.IdStore)
+	if err != nil {
+		return []dto.GetEmployeeAbsentRes{}, errors.New("Id toko tidak valid.")
+	}
+
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []dto.GetEmployeeAbsentRes{}, errors.New("Toko tidak ditemukan")
+		}
+
+		helper.Logger("find one store", filePath, err)
+		return []dto.GetEmployeeAbsentRes{}, errors.New(BASE_MESSAGE)
+	}
+
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load location", filePath, err)
+		return []dto.GetEmployeeAbsentRes{}, errors.New(BASE_MESSAGE)
+	}
+
+	now := time.Now().In(loc)
+	startOfDay := time.Date(
+		now.Year(),
+		now.Month(),
+		now.Day(),
+		0, 0, 0, 0, loc,
+	)
+	startOfNextDay := startOfDay.AddDate(0, 0, 1)
+
+	rows, err := s.employeeRepo.FindWithPresence(idStore, startOfDay, startOfNextDay)
+	if err != nil {
+		helper.Logger("find employee with presence", filePath, err)
+		return nil, errors.New(BASE_MESSAGE)
+	}
+
+	res := make([]dto.GetEmployeeAbsentRes, 0, len(rows))
+	for _, v := range rows {
+		res = append(res, dto.GetEmployeeAbsentRes{
+			Id:           v.ID,
+			Name:         v.Name,
+			ImageUrl:     v.ImageUrl,
+			Status:       v.Status,
+			PositionName: v.PositionName,
+			IsPresent:    v.IsPresent,
+		})
+	}
+
+	return res, nil
 }

@@ -347,3 +347,55 @@ func (h *EmployeeHandler) Absent(ctx *gin.Context) {
 		StatusCode: http.StatusOK,
 	})
 }
+
+func (h *EmployeeHandler) GetEmployeeAbsent(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role == entity.RoleCustomer || claimsResult.Role == entity.RoleMitra {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	var query dto.GetEmployeeAbsentReq
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, err := h.service.GetEmployeeAbsent(query)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[[]dto.GetEmployeeAbsentRes]{
+		Data:       result,
+		Message:    "Berhasil mengambil data absen!",
+		StatusCode: http.StatusOK,
+	})
+}

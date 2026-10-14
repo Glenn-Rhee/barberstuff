@@ -13,6 +13,15 @@ type countByStatus struct {
 	Total  int64
 }
 
+type EmployeeAbsentRow struct {
+	ID           uuid.UUID
+	Name         string
+	ImageUrl     *string
+	Status       entity.EmployeeStatusEnum
+	PositionName string
+	IsPresent    bool
+}
+
 type EmployeeRepository interface {
 	FindOne(query interface{}, args ...interface{}) (entity.Employee, error)
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Employee, error)
@@ -21,6 +30,7 @@ type EmployeeRepository interface {
 	SoftDelete(tx *gorm.DB, id uuid.UUID) (int64, error)
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	CountByStatus(scopes ...func(*gorm.DB) *gorm.DB) ([]countByStatus, error)
+	FindWithPresence(idStore uuid.UUID, start, end time.Time) ([]EmployeeAbsentRow, error)
 }
 
 type employeeRepository struct {
@@ -85,6 +95,26 @@ func (r *employeeRepository) CountByStatus(scopes ...func(*gorm.DB) *gorm.DB) ([
 		Scopes(scopes...).
 		Select("status, COUNT(*) AS total").
 		Group("status").
+		Scan(&rows).Error
+
+	return rows, err
+}
+
+func (r *employeeRepository) FindWithPresence(idStore uuid.UUID, start, end time.Time) ([]EmployeeAbsentRow, error) {
+	var rows []EmployeeAbsentRow
+
+	err := r.db.Table("employee e").
+		Select(`e.id, e.name, e.image_url, e.status,
+			p.name AS position_name,
+			EXISTS (
+				SELECT 1 FROM absent a
+				WHERE a.id_employee = e.id
+				  AND a.created_at >= ? AND a.created_at < ?
+			) AS is_present`, start, end).
+		Joins("JOIN position p ON p.id = e.id_position").
+		Where("e.deleted_at IS NULL").
+		Where("e.id_store = ?", idStore).
+		Order("e.name ASC").
 		Scan(&rows).Error
 
 	return rows, err

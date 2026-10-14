@@ -84,3 +84,16 @@ type PatchEmployeeReq struct {
 	BankName            *string                    `json:"bank_name" binding:"omitempty,min=2,max=50"`
 	Status              *entity.EmployeeStatusEnum `json:"status" binding:"omitempty,oneof=active inactive"`
 }
+
+type GetEmployeeAbsentRes struct {
+	Id           uuid.UUID                 `json:"id_employee"`
+	Name         string                    `json:"name"`
+	ImageUrl     *string                   `json:"image_url"`
+	Status       entity.EmployeeStatusEnum `json:"status"`
+	PositionName string                    `json:"position_name"`
+	IsPresent    bool                      `json:"is_present"`
+}
+
+type GetEmployeeAbsentReq struct {
+	IdStore string `form:"id_store"`
+}
