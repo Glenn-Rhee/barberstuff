@@ -36,7 +36,15 @@ func (r *storeRepository) FindOne(where string, args ...interface{}) (entity.Sto
 		Select(`store.*,
             (SELECT COUNT(*) FROM service WHERE service.id_store = store.id AND service.type = 'service') AS total_service,
             (SELECT COUNT(*) FROM service WHERE service.id_store = store.id AND service.type = 'package') AS total_package,
-            (SELECT COUNT(*) FROM capster WHERE capster.id_store = store.id AND capster.deleted_at IS NULL) AS total_capster
+			(
+				SELECT COUNT(*)
+				FROM employee
+				JOIN position ON position.id = employee.id_position
+				WHERE employee.id_store = store.id
+				AND employee.deleted_at IS NULL
+				AND position.deleted_at IS NULL
+				AND LOWER(position.name) = 'capster'
+			) AS total_capster
         `).
 		Where(where, args...).
 		Where("deleted_at IS NULL").
@@ -52,7 +60,15 @@ func (r *storeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.S
 		Select(`store.*,
             (SELECT COUNT(*) FROM service WHERE service.id_store = store.id AND service.type = 'service') AS total_service,
             (SELECT COUNT(*) FROM service WHERE service.id_store = store.id AND service.type = 'package') AS total_package,
-            (SELECT COUNT(*) FROM capster WHERE capster.id_store = store.id AND capster.deleted_at IS NULL) AS total_capster
+            (
+				SELECT COUNT(*)
+				FROM employee
+				JOIN position ON position.id = employee.id_position
+				WHERE employee.id_store = store.id
+				AND employee.deleted_at IS NULL
+				AND position.deleted_at IS NULL
+				AND LOWER(position.name) = 'capster'
+			) AS total_capster
         `).
 		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
 			return db.

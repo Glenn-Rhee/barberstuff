@@ -30,7 +30,6 @@ type storeService struct {
 	storeRepo   repository.StoreRepository
 	serviceRepo repository.ServiceRepository
 	ratingRepo  repository.RatingRepository
-	capsterRepo repository.CapsterRepository
 	staffRepo   repository.StaffRepository
 	db          *gorm.DB
 }
@@ -39,7 +38,6 @@ func NewStoreService(
 	storeRepo repository.StoreRepository,
 	sr repository.ServiceRepository,
 	rr repository.RatingRepository,
-	cr repository.CapsterRepository,
 	str repository.StaffRepository,
 	db *gorm.DB,
 
@@ -48,7 +46,6 @@ func NewStoreService(
 		storeRepo:   storeRepo,
 		serviceRepo: sr,
 		ratingRepo:  rr,
-		capsterRepo: cr,
 		staffRepo:   str,
 		db:          db,
 	}
