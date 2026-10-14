@@ -64,7 +64,7 @@ func (s *positionService) GetPositions(req dto.GetPositionReq) ([]dto.GetPositio
 	if req.Query != nil {
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 			q := "%" + *req.Query + "%"
-			return d.Where("name ILIKE ?", q)
+			return d.Where("name ILIKE ? OR id::text ILIKE ?", q, q	)
 		})
 	}
 

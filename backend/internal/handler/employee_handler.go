@@ -98,7 +98,7 @@ func (h *EmployeeHandler) CreateEmployee(ctx *gin.Context) {
 
 // GetEmployee godoc
 // @Summary      Daftar karyawan
-// @Description  Mengambil daftar karyawan yang dapat difilter berdasarkan kata kunci, toko, jabatan, dan status karyawan. Mendukung pagination serta pengurutan data. Hanya dapat diakses oleh admin.
+// @Description  Mengambil daftar karyawan yang dapat difilter berdasarkan kata kunci, toko, jabatan, status karyawan, serta jabatan tertentu. Mendukung pagination serta pengurutan data. Dapat diakses oleh semua pengguna yang telah terauhtentikasi.
 // @Tags         Employee
 // @Produce      json
 // @Security     BearerAuth
@@ -133,14 +133,6 @@ func (h *EmployeeHandler) GetEmployee(ctx *gin.Context) {
 		return
 	}
 
-	if claimsResult.Role != entity.RoleAdmin {
-		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
-			Message:    "Anda tidak memiliki akses!",
-			StatusCode: http.StatusUnauthorized,
-		})
-		return
-	}
-
 	var query dto.GetEmployeeReq
 	if err := ctx.ShouldBindQuery(&query); err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
@@ -150,7 +142,7 @@ func (h *EmployeeHandler) GetEmployee(ctx *gin.Context) {
 		return
 	}
 
-	data, meta, err := h.service.GetEmployees(query)
+	data, meta, err := h.service.GetEmployees(query, claimsResult)
 	if err != nil {
 		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
 			Message:    err.Error(),

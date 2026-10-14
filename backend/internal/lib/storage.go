@@ -135,6 +135,38 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 	return permanentKey, nil
 }
 
+func MoveObjectToTemp(ctx context.Context, permanentKey string) error {
+	if _, err := os.Stat(".env"); err == nil {
+		if err := godotenv.Load(); err != nil {
+			log.Println("Error load dotenv file:", err.Error())
+		}
+	}
+	bucket := os.Getenv("WASABI_BUCKET")
+
+	if !strings.HasPrefix(permanentKey, "uploads/") {
+		return errors.New("Image url harus berupa object key.")
+	}
+
+	tempKey := "temp/" + strings.TrimPrefix(permanentKey, "uploads/")
+
+	_, err := S3Client.CopyObject(ctx, &s3.CopyObjectInput{
+		Bucket:     aws.String(bucket),
+		CopySource: aws.String(bucket + "/" + permanentKey),
+		Key:        aws.String(tempKey),
+	})
+	if err != nil {
+		helper.Logger("failed move object", "move to object temp: copy", err)
+		return errors.New("Gagal mengembalikan file ke temp.")
+	}
+
+	if err := DeleteObject(ctx, permanentKey); err != nil {
+		helper.Logger("failed move object", "move to object temp: delete", err)
+		return errors.New("Gagal menghapus file permanent.")
+	}
+
+	return nil
+}
+
 func DeleteObject(ctx context.Context, key string) error {
 	if _, err := os.Stat(".env"); err == nil {
 		if err := godotenv.Load(); err != nil {
@@ -176,4 +208,8 @@ func GeneratePressignedGetURL(objectKey string) (string, error) {
 	}
 
 	return req.URL, nil
+}
+
+func PermanentKey(tempKey string) string {
+	return "uploads/" + strings.TrimPrefix(tempKey, "temp/")
 }

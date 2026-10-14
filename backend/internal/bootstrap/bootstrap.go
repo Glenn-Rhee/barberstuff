@@ -60,7 +60,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	cashSessionService := service.NewCashSessionService(cashSessionRepo, storeRepo, staffRepo, serviceRepo, capsterRepo, db)
 	transactionsService := service.NewTransactionsService(cashSessionRepo, transactionsRepo, bookingRepo, customerRepo, staffRepo, db)
 	positionService := service.NewPositionService(positionRepo)
-	employeeService := service.NewEmployeeService(employeeRepo, positionRepo, storeRepo, absentRepo, db)
+	employeeService := service.NewEmployeeService(employeeRepo, positionRepo, storeRepo, absentRepo, staffRepo, db)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)

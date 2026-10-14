@@ -8,7 +8,7 @@ import (
 	"barberstuff_backend/internal/repository"
 	"context"
 	"errors"
-	"log"
+	"fmt"
 	"regexp"
 	"runtime"
 	"strings"
@@ -22,7 +22,7 @@ import (
 
 type EmployeeService interface {
 	CreateEmployee(ctx context.Context, req dto.CreateEmployeeReq) error
-	GetEmployees(req dto.GetEmployeeReq) (dto.GetEmployeeRes, dto.ResponsePagination, error)
+	GetEmployees(req dto.GetEmployeeReq, claims *lib.CustomClaims) (dto.GetEmployeeRes, dto.ResponsePagination, error)
 	PatchEmployee(ctx context.Context, req dto.PatchEmployeeReq, id string) error
 	SoftDeleteEmployee(id string) error
 	Absent(req dto.CreateAbsentReq) error
@@ -34,6 +34,7 @@ type employeeService struct {
 	positionRepo repository.PositionRepository
 	storeRepo    repository.StoreRepository
 	absentRepo   repository.AbsentRepository
+	staffRepo    repository.StaffRepository
 	db           *gorm.DB
 }
 
@@ -42,6 +43,7 @@ func NewEmployeeService(
 	pr repository.PositionRepository,
 	sr repository.StoreRepository,
 	ar repository.AbsentRepository,
+	str repository.StaffRepository,
 	d *gorm.DB,
 ) EmployeeService {
 	return &employeeService{
@@ -49,6 +51,7 @@ func NewEmployeeService(
 		positionRepo: pr,
 		storeRepo:    sr,
 		absentRepo:   ar,
+		staffRepo:    str,
 		db:           d,
 	}
 }
@@ -61,8 +64,8 @@ var (
 )
 
 var employeeUniqueErrors = map[string]error{
-	"email_employee_unique":              errPhoneTaken,
-	"employee_phone_number_unique":       errEmailTaken,
+	"employee_phone_number_unique":       errPhoneTaken,
+	"email_employee_unique":              errEmailTaken,
 	"national_id_number_employee_unique": errNationalIDTaken,
 }
 
@@ -86,6 +89,17 @@ func (s *employeeService) isValidAccountNumber(str string) bool {
 	return accRe.MatchString(strings.TrimSpace(str))
 }
 
+func rollbackFiles(ctx context.Context, keys ...*string) {
+	for _, k := range keys {
+		if k == nil {
+			continue
+		}
+		if err := lib.MoveObjectToTemp(ctx, *k); err != nil {
+			helper.Logger("rollback file to temp", "CreateEmployee", err)
+		}
+	}
+}
+
 func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmployeeReq) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat karyawan baru."
 	_, filePath, _, _ := runtime.Caller(0)
@@ -94,11 +108,13 @@ func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmpl
 		return errors.New("Minimum usia adalah 20 tahun & max usia 35 tahun.")
 	}
 
+	req.NationalIdNumber = strings.TrimSpace(req.NationalIdNumber)
 	if _, err := helper.ValidateIdentityNumber(req.NationalIdNumber); err != nil {
 		return err
 	}
 
-	if ok := s.isValidAccountNumber(req.AccountNumber); !ok {
+	req.AccountNumber = strings.TrimSpace(req.AccountNumber)
+	if !s.isValidAccountNumber(req.AccountNumber) {
 		return errors.New("Periksa no rekening yang benar.")
 	}
 
@@ -112,45 +128,43 @@ func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmpl
 		return errors.New("Id toko tidak valid.")
 	}
 
-	_, err = s.positionRepo.FindOne("id = ?", idPosition)
-	if err != nil {
+	// key file harus berupa object key di folder temp/
+	if req.ImageUrl != nil && !strings.HasPrefix(*req.ImageUrl, "temp/") {
+		return errors.New("Image url harus berupa object key.")
+	}
+	if !strings.HasPrefix(req.IdentityDocumentUrl, "temp/") {
+		return errors.New("Image url harus berupa object key.")
+	}
+
+	if _, err = s.positionRepo.FindOne("id = ?", idPosition); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Posisi tidak ditemukan atau telah dihapus.")
 		}
-
 		helper.Logger("find one position", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
-	_, err = s.storeRepo.FindOne("id = ?", idStore)
-	if err != nil {
+	if _, err = s.storeRepo.FindOne("id = ?", idStore); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Toko tidak ditemukan atau telah dihapus.")
 		}
-
 		helper.Logger("find one store", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
-	var imageUrl *string
-	if req.ImageUrl != nil {
-		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImageUrl)
-		if err != nil {
-			return err
-		}
-
-		imageUrl = &permanentKey
-	}
-
-	identityKeyUrl, err := lib.MoveObjectToPermanent(ctx, req.IdentityDocumentUrl)
-	if err != nil {
-		log.Println("Cihuy")
-		return err
-	}
-
 	basicSalary := decimal.NewFromFloat(req.BasicSalary)
 
-	err = s.db.Transaction(func(tx *gorm.DB) error {
+	// file yang benar-benar sudah berpindah ke uploads/
+	var moved []*string
+
+	txErr := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var imageKey *string
+		if req.ImageUrl != nil {
+			k := lib.PermanentKey(*req.ImageUrl)
+			imageKey = &k
+		}
+		identityKey := lib.PermanentKey(req.IdentityDocumentUrl)
+
 		newEmployee := entity.Employee{
 			ID:                  uuid.New(),
 			IdPosition:          idPosition,
@@ -164,14 +178,14 @@ func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmpl
 			Address:             req.Address,
 			Status:              entity.EmployeeStatusActive,
 			NationalIDNumber:    &req.NationalIdNumber,
-			ImageUrl:            imageUrl,
-			IdentityDocumentUrl: &identityKeyUrl,
+			ImageUrl:            imageKey,
+			IdentityDocumentUrl: &identityKey,
 			AccountNumber:       &req.AccountNumber,
 			BankName:            &req.BankName,
 		}
 
-		err = s.employeeRepo.Create(tx, &newEmployee)
-		if err != nil {
+		// 1. insert dulu; kalau bentrok, S3 belum tersentuh
+		if err := s.employeeRepo.Create(tx, &newEmployee); err != nil {
 			if constraint, ok := helper.UniqueViolationConstraint(err); ok {
 				if mapped, found := employeeUniqueErrors[constraint]; found {
 					return mapped
@@ -181,34 +195,50 @@ func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmpl
 			return err
 		}
 
+		// 2. DB sudah OK, baru pindahkan file
+		if req.ImageUrl != nil {
+			if _, err := lib.MoveObjectToPermanent(ctx, *req.ImageUrl); err != nil {
+				return err // DB rollback otomatis
+			}
+			moved = append(moved, imageKey)
+		}
+
+		if _, err := lib.MoveObjectToPermanent(ctx, req.IdentityDocumentUrl); err != nil {
+			return err // DB rollback otomatis
+		}
+		moved = append(moved, &identityKey)
+
 		return nil
 	})
 
-	if err != nil {
-		if errors.Is(err, errEmailTaken) {
-			return err
+	if txErr != nil {
+		// kembalikan hanya file yang sudah sempat pindah
+		rollbackFiles(ctx, moved...)
+
+		if errors.Is(txErr, errPhoneTaken) {
+			return errPhoneTaken
 		}
 
-		if errors.Is(err, errPhoneTaken) {
-			return err
+		if errors.Is(txErr, errEmailTaken) {
+			return errEmailTaken
 		}
 
-		if errors.Is(err, errNationalIDTaken) {
-			return err
+		if errors.Is(txErr, errNationalIDTaken) {
+			return errNationalIDTaken
 		}
 
-		if errors.Is(err, errEmployeeExists) {
-			return err
+		if errors.Is(txErr, errEmployeeExists) {
+			return errEmployeeExists
 		}
 
-		helper.Logger("Create employee", filePath, err)
-		return errors.New(BASE_MESSAGE)
+		helper.Logger("Create employee", filePath, txErr)
+		return fmt.Errorf("%s atau mohon upload gambar ulang.", BASE_MESSAGE)
 	}
 
 	return nil
 }
 
-func (s *employeeService) GetEmployees(req dto.GetEmployeeReq) (dto.GetEmployeeRes, dto.ResponsePagination, error) {
+func (s *employeeService) GetEmployees(req dto.GetEmployeeReq, claims *lib.CustomClaims) (dto.GetEmployeeRes, dto.ResponsePagination, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat karyawan baru."
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -229,6 +259,62 @@ func (s *employeeService) GetEmployees(req dto.GetEmployeeReq) (dto.GetEmployeeR
 	}
 
 	var scopes []func(*gorm.DB) *gorm.DB
+
+	if claims.Role == entity.RoleMitra {
+		idMitra := claims.UserId
+
+		staff, err := s.staffRepo.FindOne("id = ?", idMitra)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New("Akun tidak ditemukan. Mohon login ulang.")
+			}
+
+			helper.Logger("find one staff", filePath, err)
+			return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+		}
+
+		if staff.IdStore == nil {
+			return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New("Akun anda tidak terikat dengan toko. Hubungin admin.")
+		}
+
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Preload("Store", func(d *gorm.DB) *gorm.DB {
+				return d.Where("id = ?", staff.IdStore)
+			})
+		})
+	} else {
+		if req.IdStore != nil {
+			idStore, err := uuid.Parse(*req.IdStore)
+			if err != nil {
+				return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New("Id toko tidak valid")
+			}
+
+			scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+				return d.Where("id_store = ?", idStore)
+			})
+		}
+	}
+
+	if claims.Role == entity.RoleCustomer {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Preload("Position", func(d *gorm.DB) *gorm.DB {
+				positionName := "%" + "capster" + "%"
+				return d.Where("NAME ILIKE ?", positionName)
+			})
+		})
+	} else {
+		if req.IdPosition != nil {
+			idPosition, err := uuid.Parse(*req.IdPosition)
+			if err != nil {
+				return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New("Id jabatan tidak valid")
+			}
+
+			scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+				return d.Where("id_position = ?", idPosition)
+			})
+		}
+	}
+
 	if req.Query != nil {
 		q := "%" + *req.Query + "%"
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
