@@ -25,12 +25,14 @@ type EmployeeService interface {
 	GetEmployees(req dto.GetEmployeeReq) (dto.GetEmployeeRes, dto.ResponsePagination, error)
 	PatchEmployee(ctx context.Context, req dto.PatchEmployeeReq, id string) error
 	SoftDeleteEmployee(id string) error
+	Absent(req dto.CreateAbsentReq) error
 }
 
 type employeeService struct {
 	employeeRepo repository.EmployeeRepository
 	positionRepo repository.PositionRepository
 	storeRepo    repository.StoreRepository
+	absentRepo   repository.AbsentRepository
 	db           *gorm.DB
 }
 
@@ -38,12 +40,14 @@ func NewEmployeeService(
 	er repository.EmployeeRepository,
 	pr repository.PositionRepository,
 	sr repository.StoreRepository,
+	ar repository.AbsentRepository,
 	d *gorm.DB,
 ) EmployeeService {
 	return &employeeService{
 		employeeRepo: er,
 		positionRepo: pr,
 		storeRepo:    sr,
+		absentRepo:   ar,
 		db:           d,
 	}
 }
@@ -583,6 +587,87 @@ func (s *employeeService) SoftDeleteEmployee(id string) error {
 		}
 
 		helper.Logger("delete employee", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengabsen karyawan."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idEmployee, err := uuid.Parse(req.IdEmployee)
+	if err != nil {
+		return errors.New("Id karyawan tidak valid.")
+	}
+
+	idStore, err := uuid.Parse(req.IdStore)
+	if err != nil {
+		return errors.New("Id toko tidak valid.")
+	}
+
+	_, err = s.employeeRepo.FindOne("id = ?", idEmployee)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Karyawan tidak ditemukan atau telah dihapus")
+		}
+
+		helper.Logger("find one employee", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Toko tidak ditemukan atau telah dihapus")
+		}
+
+		helper.Logger("find one store", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load location", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	now := time.Now().In(loc)
+	startOfDay := time.Date(
+		now.Year(),
+		now.Month(),
+		now.Day(),
+		0, 0, 0, 0, loc,
+	)
+	startOfNextDay := startOfDay.AddDate(0, 0, 1)
+
+	_, err = s.
+		absentRepo.
+		FindOne("id_employee = ? AND created_at >= ? AND created_at < ?", idEmployee, startOfDay, startOfNextDay)
+
+	if err == nil {
+		return errors.New("Karyawan telah absent.")
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		helper.Logger("find absent employee", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	 absent := entity.Absent{
+		ID: uuid.New(),
+		IdEmployee: idEmployee,
+		IdStore: idStore,
+	 }
+
+	err = s.absentRepo.Create(&absent)
+	if err != nil {
+		if helper.IsUniqueViolation(err) {
+			return errors.New("Karyawan ini telah absen.")
+		}
+
+		helper.Logger("Create absent", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 

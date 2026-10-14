@@ -60,6 +60,9 @@ CREATE TRIGGER trg_capster_updated_at
 
 CREATE INDEX idx_capster_id_store ON capster(id_store);
 
+CREATE UNIQUE INDEX absent_employee_per_day_key
+ON absent (id_employee, ((created_at AT TIME ZONE 'Asia/Jakarta')::date));
+
 -- +goose StatementEnd
 
 -- +goose Down
