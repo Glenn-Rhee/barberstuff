@@ -89,6 +89,89 @@ func (s *employeeService) isValidAccountNumber(str string) bool {
 	return accRe.MatchString(strings.TrimSpace(str))
 }
 
+func (s *employeeService) buildEmployeeScopes(req dto.GetEmployeeReq, claims *lib.CustomClaims) ([]func(*gorm.DB) *gorm.DB, *uuid.UUID, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data karyawan."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	var lockedStore *uuid.UUID // toko yang dikunci untuk kasir/mitra
+
+	switch claims.Role {
+	case entity.RoleAdmin:
+		if req.IdStore != nil {
+			id, err := uuid.Parse(*req.IdStore)
+			if err != nil {
+				return nil, nil, errors.New("Id toko tidak valid")
+			}
+			scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+				return d.Where("employee.id_store = ?", id)
+			})
+		}
+		if req.IdPosition != nil {
+			id, err := uuid.Parse(*req.IdPosition)
+			if err != nil {
+				return nil, nil, errors.New("Id jabatan tidak valid")
+			}
+			scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+				return d.Where("employee.id_position = ?", id)
+			})
+		}
+
+	case entity.RoleCashier, entity.RoleMitra:
+		staff, err := s.staffRepo.FindOne("id = ?", claims.UserId)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, nil, errors.New("Akun tidak ditemukan. Mohon login ulang.")
+			}
+			helper.Logger("find one staff", filePath, err)
+			return nil, nil, errors.New(BASE_MESSAGE)
+		}
+		if staff.IdStore == nil {
+			return nil, nil, errors.New("Akun anda tidak terikat dengan toko. Hubungi admin.")
+		}
+
+		storeID := *staff.IdStore
+		lockedStore = &storeID
+		// id_store dari query param sengaja diabaikan
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("employee.id_store = ?", storeID)
+		})
+		// filter jabatan tetap boleh, hanya mempersempit hasil dalam tokonya
+		if req.IdPosition != nil {
+			id, err := uuid.Parse(*req.IdPosition)
+			if err != nil {
+				return nil, nil, errors.New("Id jabatan tidak valid")
+			}
+			scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+				return d.Where("employee.id_position = ?", id)
+			})
+		}
+
+	case entity.RoleCustomer:
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Joins("JOIN position ON position.id = employee.id_position").
+				Where("position.name ILIKE ?", "%capster%").
+				Where("employee.status = ?", entity.EmployeeStatusActive)
+		})
+
+	default:
+		return nil, nil, errors.New("Anda tidak memiliki akses.")
+	}
+
+	if req.Query != nil && strings.TrimSpace(*req.Query) != "" {
+		q := "%" + strings.TrimSpace(*req.Query) + "%"
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("(employee.name ILIKE ? OR employee.phone_number ILIKE ?)", q, q)
+		})
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Where("employee.deleted_at IS NULL")
+	})
+
+	return scopes, lockedStore, nil
+}
+
 func rollbackFiles(ctx context.Context, keys ...*string) {
 	for _, k := range keys {
 		if k == nil {
@@ -239,210 +322,148 @@ func (s *employeeService) CreateEmployee(ctx context.Context, req dto.CreateEmpl
 }
 
 func (s *employeeService) GetEmployees(req dto.GetEmployeeReq, claims *lib.CustomClaims) (dto.GetEmployeeRes, dto.ResponsePagination, error) {
-	const BASE_MESSAGE = "Terjadi kesalahan saat membuat karyawan baru."
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data karyawan."
 	_, filePath, _, _ := runtime.Caller(0)
+	empty := dto.GetEmployeeRes{}
 
-	var page = 1
-	var limit = 20
-	var orderBy = dto.OrderAsc
-
-	if req.Page != nil {
+	page, limit, orderBy := 1, 20, dto.OrderAsc
+	if req.Page != nil && *req.Page >= 1 {
 		page = *req.Page
 	}
 
-	if req.Limit != nil {
+	if req.Limit != nil && *req.Limit >= 1 && *req.Limit <= 50 {
 		limit = *req.Limit
 	}
-
 	if req.OrderBy != nil {
 		orderBy = *req.OrderBy
 	}
 
-	var scopes []func(*gorm.DB) *gorm.DB
-
-	if claims.Role == entity.RoleMitra {
-		idMitra := claims.UserId
-
-		staff, err := s.staffRepo.FindOne("id = ?", idMitra)
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New("Akun tidak ditemukan. Mohon login ulang.")
-			}
-
-			helper.Logger("find one staff", filePath, err)
-			return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
-		}
-
-		if staff.IdStore == nil {
-			return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New("Akun anda tidak terikat dengan toko. Hubungin admin.")
-		}
-
-		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-			return d.Preload("Store", func(d *gorm.DB) *gorm.DB {
-				return d.Where("id = ?", staff.IdStore)
-			})
-		})
-	} else {
-		if req.IdStore != nil {
-			idStore, err := uuid.Parse(*req.IdStore)
-			if err != nil {
-				return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New("Id toko tidak valid")
-			}
-
-			scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-				return d.Where("id_store = ?", idStore)
-			})
-		}
+	scopes, lockedStore, err := s.buildEmployeeScopes(req, claims)
+	if err != nil {
+		return empty, dto.ResponsePagination{}, err
 	}
-
-	if claims.Role == entity.RoleCustomer {
-		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-			return d.Preload("Position", func(d *gorm.DB) *gorm.DB {
-				positionName := "%" + "capster" + "%"
-				return d.Where("NAME ILIKE ?", positionName)
-			})
-		})
-	} else {
-		if req.IdPosition != nil {
-			idPosition, err := uuid.Parse(*req.IdPosition)
-			if err != nil {
-				return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New("Id jabatan tidak valid")
-			}
-
-			scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-				return d.Where("id_position = ?", idPosition)
-			})
-		}
-	}
-
-	if req.Query != nil {
-		q := "%" + *req.Query + "%"
-		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-			return d.Where("employee.name ILIKE ? OR employee.phone_number = ?", q, q)
-		})
-	}
-
-	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-		return d.Where("employee.deleted_at IS NULL")
-	})
 
 	totalData, err := s.employeeRepo.Count(scopes...)
 	if err != nil {
 		helper.Logger("Count total employee", filePath, err)
-		return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+		return empty, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 
-	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+	// salinan scopes agar Count tidak terpengaruh Offset/Limit
+	listScopes := append(append([]func(*gorm.DB) *gorm.DB{}, scopes...), func(d *gorm.DB) *gorm.DB {
 		return d.Clauses(clause.OrderBy{
-			Columns: []clause.OrderByColumn{
-				{
-					Column: clause.Column{Name: "name"},
-					Desc:   orderBy == dto.OrderDesc,
-				},
-			},
+			Columns: []clause.OrderByColumn{{
+				Column: clause.Column{Table: "employee", Name: "name"},
+				Desc:   orderBy == dto.OrderDesc,
+			}},
 		}).Offset((page - 1) * limit).Limit(limit)
 	})
 
-	paginationData := helper.GetPaginationData(page, limit, int(totalData))
-	employees, err := s.employeeRepo.FindAll(scopes...)
+	employees, err := s.employeeRepo.FindAll(listScopes...)
 	if err != nil {
 		helper.Logger("Find all data employee", filePath, err)
-		return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+		return empty, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 
-	dataEmployees := make([]dto.EmployeeData, 0, len(employees))
+	pagination := helper.GetPaginationData(page, limit, int(totalData))
+	isCustomer := claims.Role == entity.RoleCustomer
+
+	presign := func(key *string, label string) *string {
+		if key == nil {
+			return nil
+		}
+		url, err := lib.GeneratePressignedGetURL(*key)
+		if err != nil {
+			helper.Logger(label, filePath, err)
+			return nil
+		}
+		return &url
+	}
+
+	list := make([]dto.EmployeeData, 0, len(employees))
 	for _, v := range employees {
 		var store *dto.StoreEmployee
-		if v.IdStore != nil {
-			store = &dto.StoreEmployee{
-				Id:   *v.IdStore,
-				Name: v.Store.Name,
-			}
+		if v.IdStore != nil && v.Store != nil {
+			store = &dto.StoreEmployee{Id: *v.IdStore, Name: v.Store.Name}
 		}
 
-		var imageUrl *string
-		if v.ImageUrl != nil {
-			pressignedURL, err := lib.GeneratePressignedGetURL(*v.ImageUrl)
-			if err != nil {
-				helper.Logger("generate presigned image url", filePath, err)
-			}
-
-			imageUrl = &pressignedURL
+		// field yang boleh dilihat semua role
+		item := dto.EmployeeData{
+			Id:       v.ID,
+			Name:     v.Name,
+			Position: dto.EmployeePosition{ID: v.Position.ID, Name: v.Position.Name},
+			Store:    store,
+			Status:   v.Status,
+			Gender:   v.Gender,
+			ImageUrl: presign(v.ImageUrl, "generate presigned image url"),
 		}
 
-		var identityDocumentURL *string
-		if v.IdentityDocumentUrl != nil {
-			pressignedURL, err := lib.GeneratePressignedGetURL(*v.IdentityDocumentUrl)
-			if err != nil {
-				helper.Logger("generate presigned identity doc url", filePath, err)
-			}
+		// field sensitif: hanya non-customer
+		if !isCustomer {
+			salary := v.Position.BasicSalary
+			posCreatedAt := v.Position.CreatedAt
+			createdAt := v.CreatedAt
 
-			identityDocumentURL = &pressignedURL
+			item.Position.BasicSalary = &salary
+			item.Position.CreatedAt = &posCreatedAt
+			item.PhoneNumber = v.PhoneNumber
+			item.Email = v.Email
+			item.Address = v.Address
+			item.NationalIdNumber = v.NationalIDNumber
+			item.IdentityDocumentUrl = presign(v.IdentityDocumentUrl, "generate presigned identity doc url")
+			item.AccountNumber = v.AccountNumber
+			item.BankName = v.BankName
+			item.CreatedAt = &createdAt
 		}
 
-		dataEmployees = append(dataEmployees, dto.EmployeeData{
-			Id:   v.ID,
-			Name: v.Name,
-			Position: dto.GetPositionRes{
-				ID:          v.Position.ID,
-				Name:        v.Position.Name,
-				BasicSalary: v.Position.BasicSalary,
-				CreatedAt:   v.Position.CreatedAt,
-			},
-			Store:               store,
-			PhoneNumber:         v.PhoneNumber,
-			Status:              v.Status,
-			Gender:              v.Gender,
-			Email:               v.Email,
-			Address:             v.Address,
-			NationalIdNumber:    v.NationalIDNumber,
-			ImageUrl:            imageUrl,
-			IdentityDocumentUrl: identityDocumentURL,
-			AccountNumber:       v.AccountNumber,
-			BankName:            v.BankName,
-			CreatedAt:           v.CreatedAt,
+		list = append(list, item)
+	}
+
+	// customer: tanpa KPI
+	if isCustomer {
+		return dto.GetEmployeeRes{Employees: list}, pagination, nil
+	}
+
+	// KPI mengikuti hak akses
+	var kpiScopes []func(*gorm.DB) *gorm.DB
+	if lockedStore != nil { // kasir & mitra
+		storeID := *lockedStore
+		kpiScopes = append(kpiScopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("employee.id_store = ?", storeID).Where("deleted_at IS NULL")
 		})
 	}
 
-	totalEmployeeBystatus, err := s.employeeRepo.CountByStatus(func(d *gorm.DB) *gorm.DB {
-		return d.Where("deleted_at IS NULL")
-	})
-
+	rows, err := s.employeeRepo.CountByStatus(kpiScopes...)
 	if err != nil {
 		helper.Logger("count employee by status", filePath, err)
-		return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+		return empty, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 
-	result := make(map[string]int64, len(totalEmployeeBystatus))
-	for _, row := range totalEmployeeBystatus {
-		result[row.Status] = row.Total
-	}
-
-	active := result[string(entity.EmployeeStatusActive)]
-	inactive := result[string(entity.EmployeeStatusInactive)]
-
+	counts := make(map[string]int64, len(rows))
 	var total int64
-	for _, n := range result {
-		total += n
+	for _, r := range rows {
+		counts[r.Status] = r.Total
+		total += r.Total
 	}
 
-	totalStore, err := s.storeRepo.Count()
-	if err != nil {
-		helper.Logger("count store", filePath, err)
-		return dto.GetEmployeeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
-	}
-
-	dataKPI := dto.EmployeeKPI{
-		TotalEmployees:         total,
-		TotalActiveEmployees:   active,
-		TotalInactiveEmployees: inactive,
-		TotalStores:            totalStore,
+	var totalStore int64 = 1
+	if lockedStore == nil { // admin
+		totalStore, err = s.storeRepo.Count()
+		if err != nil {
+			helper.Logger("count store", filePath, err)
+			return empty, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+		}
 	}
 
 	return dto.GetEmployeeRes{
-		KPI:       dataKPI,
-		Employees: dataEmployees,
-	}, paginationData, nil
+		KPI: &dto.EmployeeKPI{
+			TotalEmployees:         total,
+			TotalActiveEmployees:   counts[string(entity.EmployeeStatusActive)],
+			TotalInactiveEmployees: counts[string(entity.EmployeeStatusInactive)],
+			TotalStores:            totalStore,
+		},
+		Employees: list,
+	}, pagination, nil
 }
 
 func (s *employeeService) PatchEmployee(ctx context.Context, req dto.PatchEmployeeReq, id string) error {

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 type CreateEmployeeReq struct {
@@ -44,26 +45,37 @@ type StoreEmployee struct {
 	Name string    `json:"name"`
 }
 
+// Khusus employee: gaji dan created_at hanya terisi untuk non-customer.
+type EmployeePosition struct {
+	ID          uuid.UUID        `json:"id"`
+	Name        string           `json:"name"`
+	BasicSalary *decimal.Decimal `json:"basic_salary,omitempty"`
+	CreatedAt   *time.Time       `json:"created_at,omitempty"`
+}
+
 type EmployeeData struct {
-	Id                  uuid.UUID                  `json:"id"`
-	Name                string                     `json:"name"`
-	Position            GetPositionRes             `json:"position"`
-	Store               *StoreEmployee             `json:"store"`
-	PhoneNumber         *string                    `json:"phone_number"`
-	Status              entity.EmployeeStatusEnum  `json:"status"`
-	Gender              *entity.EmployeeGenderEnum `json:"gender"`
-	Email               *string                    `json:"email"`
-	Address             *string                    `json:"address"`
-	NationalIdNumber    *string                    `json:"national_id_number"`
-	ImageUrl            *string                    `json:"image_url"`
-	IdentityDocumentUrl *string                    `json:"identity_document_url"`
-	AccountNumber       *string                    `json:"account_number"`
-	BankName            *string                    `json:"bank_name"`
-	CreatedAt           time.Time                  `json:"created_at"`
+	// dilihat semua role (termasuk customer)
+	Id       uuid.UUID                  `json:"id"`
+	Name     string                     `json:"name"`
+	Position EmployeePosition           `json:"position"`
+	Store    *StoreEmployee             `json:"store,omitempty"`
+	Status   entity.EmployeeStatusEnum  `json:"status"`
+	Gender   *entity.EmployeeGenderEnum `json:"gender,omitempty"`
+	ImageUrl *string                    `json:"image_url,omitempty"`
+
+	// hanya admin, kasir, mitra
+	PhoneNumber         *string    `json:"phone_number,omitempty"`
+	Email               *string    `json:"email,omitempty"`
+	Address             *string    `json:"address,omitempty"`
+	NationalIdNumber    *string    `json:"national_id_number,omitempty"`
+	IdentityDocumentUrl *string    `json:"identity_document_url,omitempty"`
+	AccountNumber       *string    `json:"account_number,omitempty"`
+	BankName            *string    `json:"bank_name,omitempty"`
+	CreatedAt           *time.Time `json:"created_at,omitempty"`
 }
 
 type GetEmployeeRes struct {
-	KPI       EmployeeKPI    `json:"kpi"`
+	KPI       *EmployeeKPI   `json:"kpi,omitempty"` // nil untuk customer
 	Employees []EmployeeData `json:"employees"`
 }
 
