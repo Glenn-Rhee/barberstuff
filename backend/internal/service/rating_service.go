@@ -7,6 +7,7 @@ import (
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"errors"
+	"log"
 	"runtime"
 
 	"github.com/google/uuid"
@@ -48,6 +49,7 @@ func NewRatingService(
 func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomClaims) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data rating!"
 	_, filePath, _, _ := runtime.Caller(0)
+	log.Println("Req:", req)
 
 	idBooking, err := uuid.Parse(req.IdBooking)
 	if err != nil {
@@ -59,14 +61,14 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 		return errors.New("Data tidak valid! Mohon login kembali.")
 	}
 
-	if helper.IsAllFieldsNil(req) {
+	if helper.IsAllFieldsNil(req.Rating) {
 		return errors.New("Mohon menilai setidaknya satu dari toko, capster, atau staff kami.")
 	}
 
 	_, err = s.bookingRepo.FindOne("id = ? AND status_booking = ?", idBooking, entity.BookingStatusCompleted)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("Booking tidak ditemukan!")
+			return errors.New("Booking tidak ditemukan atau belum selesai.")
 		}
 
 		helper.Logger("find one booking", filePath, err)
