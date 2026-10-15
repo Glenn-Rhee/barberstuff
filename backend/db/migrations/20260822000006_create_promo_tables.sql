@@ -11,6 +11,8 @@ CREATE TABLE promo (
     description TEXT,
     discount_type discount_type_enum NOT NULL DEFAULT 'fixed',
     discount_value NUMERIC(12,2) NOT NULL DEFAULT 0, -- nominal (fixed) atau persen 0-100 (percentage)
+    usage_limit_per_customer INTEGER,
+    start_at TIMESTAMP,
     expired_at TIMESTAMP,
     image_promo TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -18,6 +20,11 @@ CREATE TABLE promo (
     CONSTRAINT chk_promo_discount_value CHECK (
         discount_value >= 0
         AND (discount_type <> 'percentage' OR discount_value <= 100)
+    ),
+    CONSTRAINT chk_promo_usage_limit
+    CHECK (
+        usage_limit_per_customer IS NULL
+        OR usage_limit_per_customer >= 1
     )
 );
 
