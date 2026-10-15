@@ -69,23 +69,6 @@ definitions:
       name:
         type: string
     type: object
-  dto.CapsterDataResponse:
-    properties:
-      avg_rating:
-        type: number
-      created_at:
-        type: string
-      id:
-        type: string
-      id_store:
-        type: string
-      image_url:
-        type: string
-      name:
-        type: string
-      status:
-        $ref: '#/definitions/entity.CapsterStatusEnum'
-    type: object
   dto.CashSessionStaff:
     properties:
       id:
@@ -191,19 +174,6 @@ definitions:
         $ref: '#/definitions/dto.DataStoreBooking'
       total_price:
         type: number
-    type: object
-  dto.CreateCapsterRequest:
-    properties:
-      id_store:
-        type: string
-      image_url:
-        type: string
-      name:
-        minLength: 3
-        type: string
-    required:
-    - id_store
-    - name
     type: object
   dto.CreateCashSession:
     properties:
@@ -575,6 +545,8 @@ definitions:
         type: string
       address:
         type: string
+      avg_rating:
+        type: number
       bank_name:
         type: string
       created_at:
@@ -1248,21 +1220,6 @@ definitions:
     required:
     - notes
     type: object
-  dto.UpdateCapsterRequest:
-    properties:
-      id_store:
-        type: string
-      image_url:
-        type: string
-      name:
-        type: string
-      status:
-        allOf:
-        - $ref: '#/definitions/entity.CapsterStatusEnum'
-        enum:
-        - active
-        - inactive
-    type: object
   dto.UpdatePositionReq:
     properties:
       basic_salary:
@@ -1389,14 +1346,6 @@ definitions:
     - BookingStatusProgress
     - BookingStatusCompleted
     - BookingStatusCanceled
-  entity.CapsterStatusEnum:
-    enum:
-    - active
-    - inactive
-    type: string
-    x-enum-varnames:
-    - CapsterStatusActive
-    - CapsterStatusInactive
   entity.EmployeeGenderEnum:
     enum:
     - male
@@ -2116,176 +2065,6 @@ paths:
       summary: Cek ketersediaan slot booking toko
       tags:
       - Booking
-  /capster:
-    get:
-      description: Mengambil semua data capster serta dapat melakukan filter serta
-        pagination. Dapat diakses oleh semua user yang telah terauthentikasi
-      parameters:
-      - description: Nama capster
-        in: query
-        name: name
-        type: string
-      - description: Page
-        in: query
-        name: page
-        type: integer
-      - description: Limit
-        in: query
-        name: limit
-        type: integer
-      - default: name
-        description: Sort By
-        enum:
-        - name
-        - created_at
-        in: query
-        name: sortBy
-        type: string
-      - default: asc
-        description: Order By
-        enum:
-        - asc
-        - desc
-        in: query
-        name: orderBy
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Succes get data capsters!
-          schema:
-            allOf:
-            - $ref: '#/definitions/dto.SwaggerResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/dto.CapsterDataResponse'
-                  type: array
-                meta:
-                  $ref: '#/definitions/dto.ResponsePagination'
-              type: object
-        "400":
-          description: Data tidak valid
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-        "401":
-          description: Tidak memiliki akses
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-        "424":
-          description: Gagal mengambil data
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-      security:
-      - BearerAuth: []
-      summary: Mengambil semua data capster
-      tags:
-      - Capster
-    post:
-      consumes:
-      - application/json
-      description: Membuat data capster baru pada toko tertentu. Hanya dapat diakses
-        oleh admin. Image url dapat diisi dengan object key yang didapatkan ketiika
-        presigned URL
-      parameters:
-      - description: Data capster baru
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateCapsterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Berhasil membuat capster baru!
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-        "400":
-          description: Data tidak valid
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-        "401":
-          description: Tidak memiliki akses
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-      security:
-      - BearerAuth: []
-      summary: Tambah capster baru
-      tags:
-      - Capster
-  /capster/{id}:
-    delete:
-      description: Menghapus data capster berdasarkan ID.
-      parameters:
-      - description: ID capster
-        format: uuid
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Berhasil menghapus capster
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-        "400":
-          description: Gagal menghapus capster
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-        "401":
-          description: Anda tidak memiliki akses
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-      security:
-      - BearerAuth: []
-      summary: Hapus capster
-      tags:
-      - Capster
-    patch:
-      consumes:
-      - application/json
-      description: Mengupdate data capster berdasarkan ID. Field yang ingin diubah
-        dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Untuk
-        field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim.
-        Image url dapat diisi dengan object key yang didapatkan ketiika presigned
-        URL
-      parameters:
-      - description: ID capster
-        format: uuid
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Data capster yang ingin diupdate
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateCapsterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Berhasil mengupdate capster
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-        "400":
-          description: Data tidak valid atau gagal mengupdate capster
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-        "401":
-          description: Anda tidak memiliki akses
-          schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
-      security:
-      - BearerAuth: []
-      summary: Update data capster
-      tags:
-      - Capster
   /cash-sessions:
     get:
       consumes:

@@ -962,262 +962,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/capster": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Mengambil semua data capster serta dapat melakukan filter serta pagination. Dapat diakses oleh semua user yang telah terauthentikasi",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Capster"
-                ],
-                "summary": "Mengambil semua data capster",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Nama capster",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "name",
-                            "created_at"
-                        ],
-                        "type": "string",
-                        "default": "name",
-                        "description": "Sort By",
-                        "name": "sortBy",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "asc",
-                            "desc"
-                        ],
-                        "type": "string",
-                        "default": "asc",
-                        "description": "Order By",
-                        "name": "orderBy",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Succes get data capsters!",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/dto.SwaggerResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.CapsterDataResponse"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/definitions/dto.ResponsePagination"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Data tidak valid",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak memiliki akses",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "424": {
-                        "description": "Gagal mengambil data",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Membuat data capster baru pada toko tertentu. Hanya dapat diakses oleh admin. Image url dapat diisi dengan object key yang didapatkan ketiika presigned URL",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Capster"
-                ],
-                "summary": "Tambah capster baru",
-                "parameters": [
-                    {
-                        "description": "Data capster baru",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateCapsterRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Berhasil membuat capster baru!",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Data tidak valid",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak memiliki akses",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/capster/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Menghapus data capster berdasarkan ID.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Capster"
-                ],
-                "summary": "Hapus capster",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "ID capster",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Berhasil menghapus capster",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Gagal menghapus capster",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Anda tidak memiliki akses",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Mengupdate data capster berdasarkan ID. Field yang ingin diubah dapat dikirim secara parsial, sehingga tidak semua field wajib dikirim. Untuk field id_store, berfungsi untuk memindahkan capster ke toko yang idnya dikirim. Image url dapat diisi dengan object key yang didapatkan ketiika presigned URL",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Capster"
-                ],
-                "summary": "Update data capster",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "ID capster",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Data capster yang ingin diupdate",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateCapsterRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Berhasil mengupdate capster",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Data tidak valid atau gagal mengupdate capster",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Anda tidak memiliki akses",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/cash-sessions": {
             "get": {
                 "security": [
@@ -3780,32 +3524,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CapsterDataResponse": {
-            "type": "object",
-            "properties": {
-                "avg_rating": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "id_store": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "$ref": "#/definitions/entity.CapsterStatusEnum"
-                }
-            }
-        },
         "dto.CashSessionStaff": {
             "type": "object",
             "properties": {
@@ -3963,25 +3681,6 @@ const docTemplate = `{
                 },
                 "total_price": {
                     "type": "number"
-                }
-            }
-        },
-        "dto.CreateCapsterRequest": {
-            "type": "object",
-            "required": [
-                "id_store",
-                "name"
-            ],
-            "properties": {
-                "id_store": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "minLength": 3
                 }
             }
         },
@@ -4536,6 +4235,9 @@ const docTemplate = `{
                 },
                 "address": {
                     "type": "string"
+                },
+                "avg_rating": {
+                    "type": "number"
                 },
                 "bank_name": {
                     "type": "string"
@@ -5546,31 +5248,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdateCapsterRequest": {
-            "type": "object",
-            "properties": {
-                "id_store": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "enum": [
-                        "active",
-                        "inactive"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/entity.CapsterStatusEnum"
-                        }
-                    ]
-                }
-            }
-        },
         "dto.UpdatePositionReq": {
             "type": "object",
             "properties": {
@@ -5762,17 +5439,6 @@ const docTemplate = `{
                 "BookingStatusProgress",
                 "BookingStatusCompleted",
                 "BookingStatusCanceled"
-            ]
-        },
-        "entity.CapsterStatusEnum": {
-            "type": "string",
-            "enum": [
-                "active",
-                "inactive"
-            ],
-            "x-enum-varnames": [
-                "CapsterStatusActive",
-                "CapsterStatusInactive"
             ]
         },
         "entity.EmployeeGenderEnum": {
