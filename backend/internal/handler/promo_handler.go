@@ -270,6 +270,18 @@ func (h *PromoHandler) DeletePromo(ctx *gin.Context) {
 	})
 }
 
+// ClaimedPromo godoc
+// @Summary      Klaim promo
+// @Description  Customer yang telah login dapat mengklaim promo berdasarkan ID promo.
+// @Tags         Promo
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id_promo path string true "ID promo yang akan diklaim"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil claim promo"
+// @Failure      400 {object} dto.SwaggerResponse "Gagal melakukan klaim promo"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /promo/claim/{id_promo} [post]
 func (h *PromoHandler) ClaimedPromo(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

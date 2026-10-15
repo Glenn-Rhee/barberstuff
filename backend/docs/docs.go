@@ -2258,6 +2258,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/promo/claim/{id_promo}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Customer yang telah login dapat mengklaim promo berdasarkan ID promo.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Klaim promo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID promo yang akan diklaim",
+                        "name": "id_promo",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil claim promo",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Gagal melakukan klaim promo",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/promo/{id}": {
             "delete": {
                 "security": [
@@ -4098,9 +4147,6 @@ const docTemplate = `{
             "required": [
                 "discount_type",
                 "discount_value",
-                "expired_at",
-                "image_url",
-                "start_at",
                 "status",
                 "title"
             ],
@@ -4128,6 +4174,10 @@ const docTemplate = `{
                 },
                 "image_url": {
                     "type": "string"
+                },
+                "min_member_points": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "start_at": {
                     "type": "string"
@@ -5122,6 +5172,10 @@ const docTemplate = `{
                 },
                 "image_url": {
                     "type": "string"
+                },
+                "min_member_points": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "start_at": {
                     "type": "string"

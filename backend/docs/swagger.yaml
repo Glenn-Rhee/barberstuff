@@ -297,6 +297,9 @@ definitions:
         type: string
       image_url:
         type: string
+      min_member_points:
+        minimum: 1
+        type: integer
       start_at:
         type: string
       status:
@@ -315,9 +318,6 @@ definitions:
     required:
     - discount_type
     - discount_value
-    - expired_at
-    - image_url
-    - start_at
     - status
     - title
     type: object
@@ -958,6 +958,9 @@ definitions:
         type: string
       image_url:
         type: string
+      min_member_points:
+        minimum: 1
+        type: integer
       start_at:
         type: string
       status:
@@ -3066,6 +3069,38 @@ paths:
       security:
       - BearerAuth: []
       summary: Mengubah data promo
+      tags:
+      - Promo
+  /promo/claim/{id_promo}:
+    post:
+      consumes:
+      - application/json
+      description: Customer yang telah login dapat mengklaim promo berdasarkan ID
+        promo.
+      parameters:
+      - description: ID promo yang akan diklaim
+        in: path
+        name: id_promo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil claim promo
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Gagal melakukan klaim promo
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Klaim promo
       tags:
       - Promo
   /rating:
