@@ -23,6 +23,7 @@ type PromoService interface {
 	GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) ([]dto.GetPromoRes, dto.ResponsePagination, error)
 	PatchPromo(ctx context.Context, req dto.PatchPromoReq, id string) error
 	DeletePromo(id string) error
+	ClaimPromo(id string, claimUser *lib.CustomClaims) error
 }
 
 type promoService struct {
@@ -311,6 +312,93 @@ func (s *promoService) DeletePromo(id string) error {
 
 	if rowsAffected == 0 {
 		return errors.New("Promo tidak ditemukan atau telah dihapus.")
+	}
+
+	return nil
+}
+
+// businessError menandai error yang pesannya aman ditampilkan ke user.
+type businessError struct{ msg string }
+
+func (e *businessError) Error() string { return e.msg }
+
+func newBusinessError(msg string) error {
+	return &businessError{msg: msg}
+}
+
+func (s *promoService) ClaimPromo(id string, claimUser *lib.CustomClaims) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat claim promo."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idPromo, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id promo tidak valid.")
+	}
+
+	idUser, err := uuid.Parse(claimUser.UserId)
+	if err != nil {
+		return errors.New("Data tidak valid, mohon login ulang.")
+	}
+
+	err = s.promoRepo.Transaction(func(tx repository.PromoRepository) error {
+		// Kunci baris promo supaya request bersamaan untuk promo ini antre satu per satu.
+		promo, err := tx.FindOneForUpdate("id = ? AND status = ?", idPromo, entity.PromoStatusVisible)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return newBusinessError("Promo tidak ditemukan atau tidak dapat di claim.")
+			}
+			return err
+		}
+
+		// Cek masa berlaku.
+		now := time.Now()
+		if promo.StartAt != nil && promo.StartAt.After(now) {
+			return newBusinessError("Promo belum berlaku.")
+		}
+		if promo.ExpiredAt != nil && !promo.ExpiredAt.After(now) {
+			return newBusinessError("Promo sudah berakhir.")
+		}
+
+		// Claim promo yang sama dan belum dipakai harus dipakai dulu.
+		unusedClaims, err := tx.CountClaimed(func(d *gorm.DB) *gorm.DB {
+			return d.Where("id_promo = ? AND id_user = ? AND is_used = ?", idPromo, idUser, false)
+		})
+		if err != nil {
+			return err
+		}
+		if unusedClaims > 0 {
+			return newBusinessError("Anda masih memiliki promo ini yang belum digunakan.")
+		}
+
+		// Cek batas total claim per customer (nil = tanpa batas).
+		if promo.UsageLimitPerCustomer != nil {
+			totalClaims, err := tx.CountClaimed(func(d *gorm.DB) *gorm.DB {
+				return d.Where("id_promo = ? AND id_user = ?", idPromo, idUser)
+			})
+			if err != nil {
+				return err
+			}
+			if totalClaims >= *promo.UsageLimitPerCustomer {
+				return newBusinessError("Anda sudah mencapai batas maximum claim promo ini.")
+			}
+		}
+
+		return tx.CreateClaimed(&entity.PromoClaimed{
+			ID:      uuid.New(),
+			IDPromo: idPromo,
+			IDUser:  idUser,
+			IsUsed:  false,
+		})
+	})
+
+	if err != nil {
+		var bizErr *businessError
+		if errors.As(err, &bizErr) {
+			return bizErr
+		}
+
+		helper.Logger("claim promo", filePath, err)
+		return errors.New(BASE_MESSAGE)
 	}
 
 	return nil
