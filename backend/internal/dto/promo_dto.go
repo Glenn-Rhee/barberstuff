@@ -14,10 +14,11 @@ type CreatePromoReq struct {
 	Description        *string                 `json:"description" binding:"omitempty"`
 	DiscountType       entity.DiscountTypeEnum `json:"discount_type" binding:"required,oneof=percentage fixed"`
 	DiscountValue      float64                 `json:"discount_value" binding:"required,numeric,min=1"`
-	UsageLimitCustomer *int64                  `json:"usage_limit_customer" binding:"omitempty,min=1"`
-	StartAt            time.Time               `json:"start_at" binding:"required"`
-	ExpiredAt          time.Time               `json:"expired_at" binding:"required"`
-	ImageUrl           string                  `json:"image_url" binding:"required"`
+	UsageLimitCustomer *int64                  `json:"usage_limit_customer" binding:"omitempty,numeric,min=1"`
+	MinMemberPoints    *int64                  `json:"min_member_points" binding:"omitempty,numeric,min=1"`
+	StartAt            *time.Time              `json:"start_at" binding:"omitempty"`
+	ExpiredAt          *time.Time              `json:"expired_at" binding:"omitempty"`
+	ImageUrl           string                  `json:"image_url" binding:"omitempty"`
 }
 
 type SortPromo string

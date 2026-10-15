@@ -32,6 +32,7 @@ type Promo struct {
 	StartAt               *time.Time       `gorm:"column:start_at"`
 	ExpiredAt             *time.Time       `gorm:"column:expired_at"`
 	ImagePromo            string           `gorm:"column:image_promo"`
+	MinMemberPoints       *int64           `gorm:"column:min_member_points"`
 	CreatedAt             time.Time        `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt             time.Time        `gorm:"column:updated_at;not null;autoUpdateTime"`
 	DeletedAt             *time.Time       `gorm:"column:deleted_at"`

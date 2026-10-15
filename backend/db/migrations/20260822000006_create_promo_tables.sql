@@ -12,6 +12,7 @@ CREATE TABLE promo (
     discount_type discount_type_enum NOT NULL DEFAULT 'fixed',
     discount_value NUMERIC(12,2) NOT NULL DEFAULT 0, -- nominal (fixed) atau persen 0-100 (percentage)
     usage_limit_per_customer INTEGER,
+    min_member_points INTEGER,
     start_at TIMESTAMP,
     expired_at TIMESTAMP,
     image_promo TEXT,

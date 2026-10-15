@@ -61,8 +61,9 @@ func (s *promoService) CreatePromo(ctx context.Context, req dto.CreatePromoReq) 
 		DiscountType:          req.DiscountType,
 		DiscountValue:         decimal.NewFromFloat(req.DiscountValue),
 		UsageLimitPerCustomer: req.UsageLimitCustomer,
-		StartAt:               &req.StartAt,
-		ExpiredAt:             &req.ExpiredAt,
+		StartAt:               req.StartAt,
+		ExpiredAt:             req.ExpiredAt,
+		MinMemberPoints:       req.MinMemberPoints,
 		ImagePromo:            permanentKey,
 	}
 
