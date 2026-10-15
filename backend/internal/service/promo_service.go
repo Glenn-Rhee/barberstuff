@@ -22,6 +22,7 @@ type PromoService interface {
 	CreatePromo(ctx context.Context, req dto.CreatePromoReq) error
 	GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) ([]dto.GetPromoRes, dto.ResponsePagination, error)
 	PatchPromo(ctx context.Context, req dto.PatchPromoReq, id string) error
+	DeletePromo(id string) error
 }
 
 type promoService struct {
@@ -283,6 +284,28 @@ func (s *promoService) PatchPromo(ctx context.Context, req dto.PatchPromoReq, id
 	rowsAffected, err := s.promoRepo.Updates(updates, idPromo)
 	if err != nil {
 		helper.Logger("update promo", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Promo tidak ditemukan atau telah dihapus.")
+	}
+
+	return nil
+}
+
+func (s *promoService) DeletePromo(id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat menghapus promo."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idPromo, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id promo tidak valid")
+	}
+
+	rowsAffected, err := s.promoRepo.SoftDelete(idPromo)
+	if err != nil {
+		helper.Logger("delete promo", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
