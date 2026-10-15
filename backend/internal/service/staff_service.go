@@ -42,6 +42,7 @@ type staffService struct {
 	bookingRepo     repository.BookingRepository
 	serviceRepo     repository.ServiceRepository
 	bookingItemRepo repository.BookingItemRepository
+	absentRepo      repository.AbsentRepository
 	db              *gorm.DB
 }
 
@@ -54,6 +55,7 @@ func NewStaffService(
 	br repository.BookingRepository,
 	svr repository.ServiceRepository,
 	bi repository.BookingItemRepository,
+	abr repository.AbsentRepository,
 	db *gorm.DB,
 ) StaffService {
 	return &staffService{
@@ -66,6 +68,7 @@ func NewStaffService(
 		bookingRepo:     br,
 		serviceRepo:     svr,
 		bookingItemRepo: bi,
+		absentRepo:      abr,
 	}
 }
 
@@ -582,6 +585,27 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 	}
 
 	now := time.Now().In(loc)
+	startOfDay := time.Date(
+		now.Year(),
+		now.Month(),
+		now.Day(),
+		0, 0, 0, 0, loc,
+	)
+	startOfNextDay := startOfDay.AddDate(0, 0, 1)
+	_, err = s.absentRepo.FindOne(
+		"id_employee = ? AND created_at >= ? AND created_at < ?",
+		idCapster, startOfDay, startOfNextDay,
+	)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Capster belum hadir, tidak dapat menggunakan capster ini.")
+		}
+
+		helper.Logger("find absent", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
 	scheduledAt := req.BookingDate.In(loc)
 
 	if scheduledAt.Before(now) {
@@ -760,6 +784,35 @@ func (s *staffService) CheckinBooking(qrCode string, claims *lib.CustomClaims) e
 		return errors.New(BASE_MESSAGE)
 	}
 
+	loc, err := time.LoadLocation(string(dataStore.Timezone))
+	if err != nil {
+		helper.Logger("load timezone", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	now := time.Now().In(loc)
+	startOfDay := time.Date(
+		now.Year(),
+		now.Month(),
+		now.Day(),
+		0, 0, 0, 0, loc,
+	)
+
+	startOfNextDay := startOfDay.AddDate(0, 0, 1)
+	_, err = s.absentRepo.FindOne(
+		"id_employee = ? AND created_at >= ? AND created_at < ?",
+		dataBooking.IDEmployee, startOfDay, startOfNextDay,
+	)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("Capster belum hadir, tidak dapat menggunakan capster ini.")
+		}
+
+		helper.Logger("find absent", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
 	dataStaff, err := s.staffRepo.FindOne("id = ?", claims.UserId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -776,14 +829,6 @@ func (s *staffService) CheckinBooking(qrCode string, claims *lib.CustomClaims) e
 	if *dataStaff.IdStore != dataBooking.IDStore {
 		return errors.New("Anda tidak dapat checkin di toko bukan milik anda.")
 	}
-
-	loc, err := time.LoadLocation(string(dataStore.Timezone))
-	if err != nil {
-		helper.Logger("load timezone", filePath, err)
-		return errors.New(BASE_MESSAGE)
-	}
-
-	now := time.Now().In(loc)
 
 	var scopesGetAll []func(*gorm.DB) *gorm.DB
 	scopesGetAll = append(scopesGetAll, func(d *gorm.DB) *gorm.DB {
