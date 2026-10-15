@@ -515,7 +515,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 			}
 
 			now := time.Now()
-			if dataPromo.Promo.ExpiredAt != nil && dataPromo.Promo.ExpiredAt.After(now) {
+			if dataPromo.Promo.ExpiredAt != nil && !dataPromo.Promo.ExpiredAt.After(now) {
 				return dto.CreateBookingResponse{}, errors.New("Promo sudah kedaluwarsa!")
 			}
 
@@ -634,7 +634,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		if idPromoClaimed != nil {
 			updates := map[string]interface{}{
 				"is_used":  true,
-				"useed_at": time.Now(),
+				"used_at": time.Now(),
 			}
 
 			rowsAffected, err := s.promoRepo.UpdatesClaim(tx, *idPromoClaimed, updates)
