@@ -22,6 +22,7 @@ type PromoRepository interface {
 	CreateClaimed(v *entity.PromoClaimed) error
 	Transaction(fn func(tx PromoRepository) error) error
 	FindOneForUpdate(query interface{}, args ...interface{}) (entity.Promo, error)
+	UpdatesClaim(tx *gorm.DB, id uuid.UUID, v interface{}) (int64, error)
 }
 
 type promoRepository struct {
@@ -131,4 +132,14 @@ func (r *promoRepository) FindOneForUpdate(query interface{}, args ...interface{
 		First(&data)
 
 	return data, result.Error
+}
+
+func (r *promoRepository) UpdatesClaim(tx *gorm.DB, id uuid.UUID, v interface{}) (int64, error) {
+	result := tx.
+		Model(&entity.PromoClaimed{}).
+		Where("id = ?", id).
+		Where("is_used = ?", false).
+		Updates(v)
+
+	return result.RowsAffected, result.Error
 }

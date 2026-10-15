@@ -38,6 +38,7 @@ type bookingService struct {
 	serviceRepo  repository.ServiceRepository
 	promoRepo    repository.PromoRepository
 	staffRepo    repository.StaffRepository
+	customerRepo repository.CustomerRepository
 	db           *gorm.DB
 }
 
@@ -49,6 +50,7 @@ func NewBookingService(
 	srp repository.ServiceRepository,
 	pr repository.PromoRepository,
 	sfr repository.StaffRepository,
+	cr repository.CustomerRepository,
 	db *gorm.DB,
 ) BookingService {
 	return &bookingService{
@@ -59,6 +61,7 @@ func NewBookingService(
 		serviceRepo:  srp,
 		promoRepo:    pr,
 		staffRepo:    sfr,
+		customerRepo: cr,
 		db:           db,
 	}
 }
@@ -511,8 +514,27 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 				return dto.CreateBookingResponse{}, errors.New("Promo ini sudah tidak berlaku!")
 			}
 
-			if dataPromo.Promo.ExpiredAt != nil && dataPromo.Promo.ExpiredAt.Before(time.Now()) {
-				return dto.CreateBookingResponse{}, errors.New("Promo ini sudah kedaluwarsa!")
+			now := time.Now()
+			if dataPromo.Promo.ExpiredAt != nil && dataPromo.Promo.ExpiredAt.After(now) {
+				return dto.CreateBookingResponse{}, errors.New("Promo sudah kedaluwarsa!")
+			}
+
+			if dataPromo.Promo.StartAt != nil && dataPromo.Promo.StartAt.After(now) {
+				return dto.CreateBookingResponse{}, errors.New("Promo belum berlaku.")
+			}
+
+			dataCustomer, err := s.customerRepo.FindOne("id = ?", userId)
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					return dto.CreateBookingResponse{}, errors.New("Data tidak ditemukan, mohon registrasi ulang.")
+				}
+
+				helper.Logger("find one customer", filePath, err)
+				return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
+			}
+
+			if dataPromo.Promo.MinMemberPoints != nil && dataCustomer.MemberPoints < int(*dataPromo.Promo.MinMemberPoints) {
+				return dto.CreateBookingResponse{}, errors.New("Poin anda tidak cukup.")
 			}
 
 			if dataPromo.Promo.DiscountType == entity.DiscountTypeFixed {
@@ -607,11 +629,32 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		BookingItems:   bookingItems,
 	}
 
+	var errPromoUsed = errors.New("Promo telah digunakan.")
 	err = s.db.Transaction(func(tx *gorm.DB) error {
+		if idPromoClaimed != nil {
+			updates := map[string]interface{}{
+				"is_used":  true,
+				"useed_at": time.Now(),
+			}
+
+			rowsAffected, err := s.promoRepo.UpdatesClaim(tx, *idPromoClaimed, updates)
+			if err != nil {
+				return err
+			}
+
+			if rowsAffected == 0 {
+				return errPromoUsed
+			}
+		}
+
 		return s.bookingRepo.Create(tx, &data)
 	})
 
 	if err != nil {
+		if errors.Is(err, errPromoUsed) {
+			return dto.CreateBookingResponse{}, err
+		}
+
 		helper.Logger("createe data booking", filePath, err)
 		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
 	}
