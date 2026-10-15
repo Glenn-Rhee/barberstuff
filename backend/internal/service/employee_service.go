@@ -498,7 +498,7 @@ func (s *employeeService) PatchEmployee(ctx context.Context, req dto.PatchEmploy
 	if helper.IsAllFieldsNil(req) {
 		return errors.New("Ubah setidaknya 1 data.")
 	}
-	
+
 	if req.Name != nil {
 		updates["name"] = req.Name
 	}
@@ -738,7 +738,7 @@ func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
 		return errors.New("Id toko tidak valid.")
 	}
 
-	_, err = s.employeeRepo.FindOne("id = ?", idEmployee)
+	dataEmployee, err := s.employeeRepo.FindOne("id = ?", idEmployee)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Karyawan tidak ditemukan atau telah dihapus")
@@ -746,6 +746,14 @@ func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
 
 		helper.Logger("find one employee", filePath, err)
 		return errors.New(BASE_MESSAGE)
+	}
+
+	if dataEmployee.IdStore == nil {
+		return errors.New("Karyawan tidak ditemukan terikat dengan toko.")
+	}
+
+	if *dataEmployee.IdStore != idStore {
+		return errors.New("Tidak dapat absen melalui toko lain. Hubungi admin.")
 	}
 
 	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
