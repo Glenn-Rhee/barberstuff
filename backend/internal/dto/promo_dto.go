@@ -48,3 +48,15 @@ type GetPromoRes struct {
 	ExpiredAt          time.Time               `json:"expired_at"`
 	ImageUrl           string                  `json:"image_url"`
 }
+
+type PatchPromoReq struct {
+	Title              *string                  `json:"title" binding:"omitempty,min=1,max=50"`
+	Status             *entity.PromoStatusEnum  `json:"status" binding:"omitempty,oneof=visible hide"`
+	Description        *string                  `json:"description" binding:"omitempty"`
+	DiscountType       *entity.DiscountTypeEnum `json:"discount_type" binding:"omitempty,oneof=percentage fixed"`
+	DiscountValue      *float64                 `json:"discount_value" binding:"omitempty,numeric,min=1"`
+	UsageLimitCustomer *int64                   `json:"usage_limit_customer" binding:"omitempty,min=1"`
+	StartAt            *time.Time               `json:"start_at" binding:"omitempty"`
+	ExpiredAt          *time.Time               `json:"expired_at" binding:"omitempty"`
+	ImageUrl           *string                  `json:"image_url" binding:"omitempty"`
+}

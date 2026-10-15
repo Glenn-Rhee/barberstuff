@@ -90,7 +90,7 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 
 	var scopesStaff []func(*gorm.DB) *gorm.DB
 	scopesStaff = append(scopesStaff, func(d *gorm.DB) *gorm.DB {
-		return d.Where("id_store = ?", idStore)
+		return d.Where("staff.id_store = ?", idStore)
 	})
 
 	dataStaff, err := s.staffRepo.FindAll(scopesStaff...)
@@ -126,7 +126,7 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New("User tidak valid!")
 	}
 
-	dataCapster, err := s.employeeRepo.FindOneCapster("id = ? AND status = ?", idCapster, entity.EmployeeStatusActive)
+	dataCapster, err := s.employeeRepo.FindOneCapster("employee.id = ? AND employee.status = ?", idCapster, entity.EmployeeStatusActive)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Capster tidak ditemukan atau telah dihapus!")
@@ -145,7 +145,7 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 	}
 
 	_, err = s.bookingRepo.FindOne(
-		"id_user = ? AND status_booking IN ?",
+		"booking.id_user = ? AND booking.status_booking IN ?",
 		userId,
 		[]entity.BookingStatusEnum{entity.BookingStatusBooked, entity.BookingStatusProgress},
 	)
@@ -194,8 +194,8 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 	var scopeActiveBookings []func(*gorm.DB) *gorm.DB
 	scopeActiveBookings = append(scopeActiveBookings, func(d *gorm.DB) *gorm.DB {
 		return d.
-			Where("id_store = ?", req.IdStore).
-			Where("status_booking IN ?", []entity.BookingStatusEnum{
+			Where("booking.id_store = ?", req.IdStore).
+			Where("booking.status_booking IN ?", []entity.BookingStatusEnum{
 				entity.BookingStatusBooked,
 				entity.BookingStatusProgress,
 			})
@@ -224,8 +224,8 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 	var scopesActiveCapster []func(*gorm.DB) *gorm.DB
 	scopesActiveCapster = append(scopesActiveCapster, func(d *gorm.DB) *gorm.DB {
 		return d.
-			Where("id_store = ?", req.IdStore).
-			Where("status = ?", entity.EmployeeStatusActive)
+			Where("employee.id_store = ?", req.IdStore).
+			Where("employee.status = ?", entity.EmployeeStatusActive)
 	})
 
 	dataCapsters, err := s.employeeRepo.FindAllCapster(scopesActiveCapster...)
@@ -358,7 +358,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New("Booking minimal 30 menit dari sekarang.")
 	}
 
-	dataCapster, err := s.employeeRepo.FindOneCapster("id = ? AND status = ?", idCapster, entity.EmployeeStatusActive)
+	dataCapster, err := s.employeeRepo.FindOneCapster("employee.id = ? AND employee.status = ?", idCapster, entity.EmployeeStatusActive)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return dto.CreateBookingResponse{}, errors.New("Capster tidak ditemukan atau telah dihapus!")
@@ -377,7 +377,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 	}
 
 	_, err = s.bookingRepo.FindOne(
-		"id_user = ? AND status_booking IN ?",
+		"booking.id_user = ? AND booking.status_booking IN ?",
 		userId,
 		[]entity.BookingStatusEnum{entity.BookingStatusBooked, entity.BookingStatusProgress},
 	)
@@ -412,8 +412,8 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 	var scopeActiveBookings []func(*gorm.DB) *gorm.DB
 	scopeActiveBookings = append(scopeActiveBookings, func(d *gorm.DB) *gorm.DB {
 		return d.
-			Where("id_store = ?", req.IdStore).
-			Where("status_booking IN ?", []entity.BookingStatusEnum{
+			Where("booking.id_store = ?", req.IdStore).
+			Where("booking.status_booking IN ?", []entity.BookingStatusEnum{
 				entity.BookingStatusBooked,
 				entity.BookingStatusProgress,
 			})
@@ -442,8 +442,8 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 	var scopesActiveCapster []func(*gorm.DB) *gorm.DB
 	scopesActiveCapster = append(scopesActiveCapster, func(d *gorm.DB) *gorm.DB {
 		return d.
-			Where("id_store = ?", req.IdStore).
-			Where("status = ?", entity.EmployeeStatusActive)
+			Where("employee.id_store = ?", req.IdStore).
+			Where("employee.status = ?", entity.EmployeeStatusActive)
 	})
 
 	dataCapsters, err := s.employeeRepo.FindAllCapster(scopesActiveCapster...)
@@ -479,7 +479,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New("Data Service tidak valid!")
 	}
 
-	dataService, err := s.serviceRepo.FindOne("id = ?", IdService)
+	dataService, err := s.serviceRepo.FindOne("service.id = ?", IdService)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return dto.CreateBookingResponse{}, errors.New("Service tidak ditemukan! Atau telah dihapus")
@@ -501,7 +501,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 	var discountAmount = decimal.Zero
 	var totalPrice = subTotal
 	if req.IdPromoClaimed != nil {
-		dataPromo, err := s.promoRepo.FindOne("id = ?", req.IdPromoClaimed)
+		dataPromo, err := s.promoRepo.FindOneWithClaimed("promo_claimed.id = ?", req.IdPromoClaimed)
 		if err == nil {
 			if dataPromo.IsUsed {
 				return dto.CreateBookingResponse{}, errors.New("Promo ini telah digunakan")
@@ -595,7 +595,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		StatusBooking:  entity.BookingStatusBooked,
 		IDStore:        idStore,
 		IDCustomer:     userId,
-		IDEmployee:      idCapster,
+		IDEmployee:     idCapster,
 		IDStaff:        *idStaff,
 		IDPromoClaimed: idPromoClaimed,
 		SubTotal:       subTotal,
@@ -808,7 +808,6 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 			if idx == reservedIdx {
 				available = false
 			}
-
 
 			if available {
 				availableCount++

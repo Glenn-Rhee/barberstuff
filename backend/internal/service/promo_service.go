@@ -21,6 +21,7 @@ import (
 type PromoService interface {
 	CreatePromo(ctx context.Context, req dto.CreatePromoReq) error
 	GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) ([]dto.GetPromoRes, dto.ResponsePagination, error)
+	PatchPromo(ctx context.Context, req dto.PatchPromoReq, id string) error
 }
 
 type promoService struct {
@@ -73,7 +74,7 @@ func (s *promoService) CreatePromo(ctx context.Context, req dto.CreatePromoReq) 
 }
 
 func (s *promoService) GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) ([]dto.GetPromoRes, dto.ResponsePagination, error) {
-	const BASE_MESSAGE = "Terjadi kesalahan saat membuat promo."
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data promo."
 	_, filePath, _, _ := runtime.Caller(0)
 
 	var scopes []func(*gorm.DB) *gorm.DB
@@ -181,7 +182,7 @@ func (s *promoService) GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) (
 		if claims.Role != entity.RoleCustomer {
 			usageLimit = v.UsageLimitPerCustomer
 		}
-		
+
 		dataPromoes = append(dataPromoes, dto.GetPromoRes{
 			ID:                 v.ID,
 			Title:              v.Title,
@@ -197,4 +198,97 @@ func (s *promoService) GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) (
 	}
 
 	return dataPromoes, paginationData, nil
+}
+
+func (s *promoService) PatchPromo(ctx context.Context, req dto.PatchPromoReq, id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengubah promo."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idPromo, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id promo tidak valid.")
+	}
+
+	if helper.IsAllFieldsNil(req) {
+		return errors.New("Ubah setidaknya 1 data.")
+	}
+
+	updates := make(map[string]interface{})
+
+	if (req.DiscountType != nil && req.DiscountValue == nil) ||
+		(req.DiscountType == nil && req.DiscountValue != nil) {
+		return errors.New("Tipe diskon dan jumlah diskon wajib diisi.")
+	}
+
+	if req.Title != nil {
+		updates["title"] = strings.TrimSpace(*req.Title)
+	}
+
+	if req.Status != nil {
+		updates["status"] = req.Status
+	}
+
+	if req.Description != nil {
+		updates["description"] = req.Description
+	}
+
+	if req.DiscountType != nil && req.DiscountValue != nil {
+		if *req.DiscountType == entity.DiscountTypePercentage && *req.DiscountValue > 100 {
+			return errors.New("Maximum persentase diskon adalah 100%")
+		}
+
+		updates["discount_type"] = req.DiscountType
+		updates["discount_value"] = req.DiscountValue
+	}
+
+	if req.UsageLimitCustomer != nil {
+		updates["usage_limit_customer"] = req.UsageLimitCustomer
+	}
+
+	if req.StartAt != nil {
+		updates["start_at"] = req.StartAt
+	}
+
+	if req.ExpiredAt != nil {
+		updates["expired_at"] = req.ExpiredAt
+	}
+
+	if req.ImageUrl != nil {
+		dataPromo, err := s.promoRepo.FindOne("id = ?", idPromo)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("Promo tidak ditemukan atau telah dihapus.")
+			}
+
+			helper.Logger("find one promo", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+
+		if strings.Split(dataPromo.ImagePromo, "/")[0] == "uploads" {
+			err := lib.DeleteObject(ctx, dataPromo.ImagePromo)
+			if err != nil {
+				helper.Logger("delete image employee", filePath, err)
+				return errors.New(BASE_MESSAGE)
+			}
+		}
+
+		permanentKey, err := lib.MoveObjectToPermanent(ctx, *req.ImageUrl)
+		if err != nil {
+			return err
+		}
+
+		updates["image_promo"] = permanentKey
+	}
+
+	rowsAffected, err := s.promoRepo.Updates(updates, idPromo)
+	if err != nil {
+		helper.Logger("update promo", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Promo tidak ditemukan atau telah dihapus.")
+	}
+
+	return nil
 }

@@ -365,7 +365,7 @@ func (s *employeeService) GetEmployees(req dto.GetEmployeeReq, claims *lib.Custo
 		return empty, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 	isCustomer := claims.Role == entity.RoleCustomer
-	
+
 	if isCustomer {
 		employees, err = s.employeeRepo.FindAllCapster(listScopes...)
 		if err != nil {
@@ -495,6 +495,10 @@ func (s *employeeService) PatchEmployee(ctx context.Context, req dto.PatchEmploy
 	}
 
 	updates := make(map[string]interface{})
+	if helper.IsAllFieldsNil(req) {
+		return errors.New("Ubah setidaknya 1 data.")
+	}
+	
 	if req.Name != nil {
 		updates["name"] = req.Name
 	}

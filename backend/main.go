@@ -170,6 +170,7 @@ func main() {
 		promo.Use(h.AuthMiddleware)
 		promo.POST("/", h.PromoHandler.CreatePromo)
 		promo.GET("/", h.PromoHandler.GetPromo)
+		promo.PATCH("/:id", h.PromoHandler.PatchPromo)
 	}
 
 	upload := r.Group("/upload")
