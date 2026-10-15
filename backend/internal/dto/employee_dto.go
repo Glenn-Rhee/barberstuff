@@ -55,13 +55,14 @@ type EmployeePosition struct {
 
 type EmployeeData struct {
 	// dilihat semua role (termasuk customer)
-	Id       uuid.UUID                  `json:"id"`
-	Name     string                     `json:"name"`
-	Position EmployeePosition           `json:"position"`
-	Store    *StoreEmployee             `json:"store"`
-	Status   entity.EmployeeStatusEnum  `json:"status"`
-	Gender   *entity.EmployeeGenderEnum `json:"gender"`
-	ImageUrl *string                    `json:"image_url"`
+	Id        uuid.UUID                  `json:"id"`
+	Name      string                     `json:"name"`
+	Position  EmployeePosition           `json:"position"`
+	Store     *StoreEmployee             `json:"store"`
+	Status    entity.EmployeeStatusEnum  `json:"status"`
+	Gender    *entity.EmployeeGenderEnum `json:"gender"`
+	ImageUrl  *string                    `json:"image_url"`
+	AvgRating float64                    `json:"avg_rating"`
 
 	// hanya admin, kasir, mitra
 	PhoneNumber         *string    `json:"phone_number"`

@@ -387,15 +387,26 @@ func (s *employeeService) GetEmployees(req dto.GetEmployeeReq, claims *lib.Custo
 			store = &dto.StoreEmployee{Id: *v.IdStore, Name: v.Store.Name}
 		}
 
+		var totalRating = 0
+		var avgRating float64 = 5.0
+		for _, r := range v.Ratings {
+			totalRating += int(r.Score)
+		}
+
+		if len(v.Ratings) > 0 {
+			avgRating = float64(totalRating) / float64(len(v.Ratings))
+		}
+
 		// field yang boleh dilihat semua role
 		item := dto.EmployeeData{
-			Id:       v.ID,
-			Name:     v.Name,
-			Position: dto.EmployeePosition{ID: v.Position.ID, Name: v.Position.Name},
-			Store:    store,
-			Status:   v.Status,
-			Gender:   v.Gender,
-			ImageUrl: presign(v.ImageUrl, "generate presigned image url"),
+			Id:        v.ID,
+			Name:      v.Name,
+			Position:  dto.EmployeePosition{ID: v.Position.ID, Name: v.Position.Name},
+			Store:     store,
+			Status:    v.Status,
+			Gender:    v.Gender,
+			ImageUrl:  presign(v.ImageUrl, "generate presigned image url"),
+			AvgRating: avgRating,
 		}
 
 		// field sensitif: hanya non-customer

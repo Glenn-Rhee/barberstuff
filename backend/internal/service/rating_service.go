@@ -90,7 +90,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 				return err
 			}
 
-			_, err = s.ratingRepo.FindOne("id_booking = ? AND id_capster = ?", idBooking, idCapster)
+			_, err = s.ratingRepo.FindOne("id_booking = ? AND id_employee = ?", idBooking, idCapster)
 			if err != nil {
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					return err

@@ -54,6 +54,11 @@ func (r *employeeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entit
 	var employees []entity.Employee
 	result := r.db.
 		Where("employee.deleted_at IS NULL").
+		Preload("Ratings", func(d *gorm.DB) *gorm.DB {
+			return d.Select("id", "score", "id_employee").
+				Where("id_employee IS NOT NULL").
+				Where("type = ?", entity.RatingTypeCapster)
+		}).
 		Preload("Position").
 		Preload("Store", func(d *gorm.DB) *gorm.DB {
 			return d.Select("id", "name")
@@ -67,7 +72,7 @@ func (r *employeeRepository) FindAllCapster(scopes ...func(*gorm.DB) *gorm.DB) (
 	var employees []entity.Employee
 	result := r.db.
 		Preload("Ratings", func(d *gorm.DB) *gorm.DB {
-			return d.Select("id", "score", "id_capster").
+			return d.Select("id", "score", "id_employee").
 				Where("id_employee IS NOT NULL").
 				Where("type = ?", entity.RatingTypeCapster)
 		}).
