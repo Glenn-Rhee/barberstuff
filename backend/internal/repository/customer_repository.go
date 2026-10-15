@@ -76,7 +76,13 @@ func (r *customerRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entit
 		Preload("PremiumType").
 		Preload("Bookings", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Preload("Capster").
+				Preload("Employee", func(d *gorm.DB) *gorm.DB {
+					return d.
+						Joins("JOIN position ON position.id = employee.id_position").
+						Where("employee.deleted_at IS NULL").
+						Where("position.deleted_at IS NULL").
+						Where("position.name ILIKE ?", "%capster%")
+				}).
 				Preload("BookingItems", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("Service")
 				}).
@@ -136,7 +142,7 @@ func (r *customerRepository) FindAllByStore(idStore *uuid.UUID, scopes ...func(*
 				db = db.Where("booking.id_store = ?", *idStore)
 			}
 			return db.
-				Preload("Capster", func(d *gorm.DB) *gorm.DB {
+				Preload("Employee", func(d *gorm.DB) *gorm.DB {
 					return d.
 						Joins("JOIN position ON position.id = employee.id_position").
 						Where("employee.deleted_at IS NULL").
