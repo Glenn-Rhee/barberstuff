@@ -52,7 +52,13 @@ func (r *bookingRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 		}).
 		Preload("Ratings", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Store").
-				Preload("Employee").
+				Preload("Employee", func(d *gorm.DB) *gorm.DB {
+					return d.
+						Joins("JOIN position ON position.id = employee.id_position").
+						Where("employee.deleted_at IS NULL").
+						Where("position.deleted_at IS NULL").
+						Where("position.name ILIKE ?", "%capster%")
+				}).
 				Preload("Staff", func(d *gorm.DB) *gorm.DB {
 					return d.
 						Joins("JOIN position ON position.id = employee.id_position").

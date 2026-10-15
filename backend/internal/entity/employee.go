@@ -44,6 +44,7 @@ type Employee struct {
 
 	Position Position `gorm:"foreignKey:IdPosition"`
 	Store    *Store   `gorm:"foreignKey:IdStore"`
+	Ratings  []Rating   `gorm:"foreignKey:IDEmployee"`
 }
 
 func (Employee) TableName() string {

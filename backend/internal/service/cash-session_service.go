@@ -28,7 +28,7 @@ type cashSessionService struct {
 	storeRepo       repository.StoreRepository
 	staffRepo       repository.StaffRepository
 	serviceRepo     repository.ServiceRepository
-	capsterRepo     repository.CapsterRepository
+	employeeRepo    repository.EmployeeRepository
 	db              *gorm.DB
 }
 
@@ -37,7 +37,7 @@ func NewCashSessionService(
 	sr repository.StoreRepository,
 	str repository.StaffRepository,
 	svr repository.ServiceRepository,
-	cpr repository.CapsterRepository,
+	er repository.EmployeeRepository,
 	db *gorm.DB,
 ) CashSessionService {
 	return &cashSessionService{
@@ -46,7 +46,7 @@ func NewCashSessionService(
 		staffRepo:       str,
 		db:              db,
 		serviceRepo:     svr,
-		capsterRepo:     cpr,
+		employeeRepo:    er,
 	}
 }
 
@@ -98,7 +98,7 @@ func (s *cashSessionService) CreateCashSession(req dto.CreateCashSession, claims
 		return dto.CreateCashSessionResponse{}, errors.New("Tidak dapat membuka kasir, tidak ada service.")
 	}
 
-	totalCapster, err := s.capsterRepo.Count(countScopes...)
+	totalCapster, err := s.employeeRepo.CountCapster(countScopes...)
 	if err != nil {
 		return dto.CreateCashSessionResponse{}, errors.New(BASE_MESSAGE)
 	}

@@ -18,30 +18,30 @@ type RatingService interface {
 }
 
 type ratingService struct {
-	ratingRepo  repository.RatingRepository
-	bookingRepo repository.BookingRepository
-	capsterRepo repository.CapsterRepository
-	staffRepo   repository.StaffRepository
-	storeRepo   repository.StoreRepository
-	db          *gorm.DB
+	ratingRepo   repository.RatingRepository
+	bookingRepo  repository.BookingRepository
+	employeeRepo repository.EmployeeRepository
+	staffRepo    repository.StaffRepository
+	storeRepo    repository.StoreRepository
+	db           *gorm.DB
 }
 
 func NewRatingService(
 	rr repository.RatingRepository,
 	br repository.BookingRepository,
-	cr repository.CapsterRepository,
+	er repository.EmployeeRepository,
 	sr repository.StaffRepository,
 	str repository.StoreRepository,
 	db *gorm.DB,
 
 ) RatingService {
 	return &ratingService{
-		ratingRepo:  rr,
-		bookingRepo: br,
-		db:          db,
-		capsterRepo: cr,
-		staffRepo:   sr,
-		storeRepo:   str,
+		ratingRepo:   rr,
+		bookingRepo:  br,
+		db:           db,
+		employeeRepo: er,
+		staffRepo:    sr,
+		storeRepo:    str,
 	}
 }
 
@@ -59,7 +59,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 		return errors.New("Data tidak valid! Mohon login kembali.")
 	}
 
-	if req.Rating.Capster == nil && req.Rating.Staff == nil && req.Rating.Store == nil {
+	if helper.IsAllFieldsNil(req) {
 		return errors.New("Mohon menilai setidaknya satu dari toko, capster, atau staff kami.")
 	}
 
@@ -85,7 +85,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 				return err
 			}
 
-			_, err = s.capsterRepo.FindOne("id = ?", idCapster)
+			_, err = s.employeeRepo.FindOneCapster("id = ?", idCapster)
 			if err != nil {
 				return err
 			}
@@ -96,7 +96,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 					return err
 				}
 
-				dataRating.IDCapster = &idCapster
+				dataRating.IDEmployee = &idCapster
 				dataRating.IdStaff = nil
 				dataRating.IDStore = nil
 				dataRating.Score = int16(req.Rating.Capster.Score)
@@ -132,7 +132,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 					return err
 				}
 
-				dataRating.IDCapster = nil
+				dataRating.IDEmployee = nil
 				dataRating.IdStaff = &idStaff
 				dataRating.IDStore = nil
 				dataRating.Score = int16(req.Rating.Staff.Score)
@@ -164,7 +164,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 					return err
 				}
 
-				dataRating.IDCapster = nil
+				dataRating.IDEmployee = nil
 				dataRating.IdStaff = nil
 				dataRating.IDStore = &idStore
 				dataRating.Score = int16(req.Rating.Store.Score)

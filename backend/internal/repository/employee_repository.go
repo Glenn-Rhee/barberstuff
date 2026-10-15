@@ -30,6 +30,7 @@ type EmployeeRepository interface {
 	Updates(tx *gorm.DB, v interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	SoftDelete(tx *gorm.DB, id uuid.UUID) (int64, error)
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
+	CountCapster(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 	CountByStatus(scopes ...func(*gorm.DB) *gorm.DB) ([]countByStatus, error)
 	FindWithPresence(idStore uuid.UUID, start, end time.Time) ([]EmployeeAbsentRow, error)
 	FindOneCapster(query interface{}, args ...interface{}) (entity.Employee, error)
@@ -65,11 +66,16 @@ func (r *employeeRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entit
 func (r *employeeRepository) FindAllCapster(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Employee, error) {
 	var employees []entity.Employee
 	result := r.db.
-		Joins("JOIN position ON position.id = employee.id_position").
+		Preload("Ratings", func(d *gorm.DB) *gorm.DB {
+			return d.Select("id", "score", "id_capster").
+				Where("id_employee IS NOT NULL").
+				Where("type = ?", entity.RatingTypeCapster)
+		}).
 		Scopes(scopes...).
+		Joins("JOIN position ON position.id = employee.id_position").
 		Where("employee.deleted_at IS NULL").
 		Where("position.deleted_at IS NULL").
-		Where("LOWER(position.name) = ?", "capster").
+		Where("position.name ILIKE ?", "%capster%").
 		Find(&employees)
 
 	return employees, result.Error
@@ -100,6 +106,19 @@ func (r *employeeRepository) SoftDelete(tx *gorm.DB, id uuid.UUID) (int64, error
 func (r *employeeRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
 	var total int64
 	result := r.db.Model(&entity.Employee{}).Scopes(scopes...).Count(&total)
+	return total, result.Error
+}
+
+func (r *employeeRepository) CountCapster(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+	var total int64
+	result := r.db.
+		Model(&entity.Employee{}).
+		Scopes(scopes...).
+		Joins("JOIN position ON position.id = employee.id_position").
+		Where("employee.deleted_at IS NULL").
+		Where("position.deleted_at IS NULL").
+		Where("position.name ILIKE ?", "%capster%").
+		Count(&total)
 	return total, result.Error
 }
 
@@ -143,7 +162,7 @@ func (r *employeeRepository) FindOneCapster(query interface{}, args ...interface
 		Where(query, args...).
 		Where("employee.deleted_at IS NULL").
 		Where("position.deleted_at IS NULL").
-		Where("LOWER(position.name) = ?", "capster").
+		Where("position.name ILIKE ?", "%capster%").
 		First(&employee)
 
 	return employee, result.Error

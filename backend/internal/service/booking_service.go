@@ -31,20 +31,20 @@ type BookingService interface {
 }
 
 type bookingService struct {
-	bookingRepo repository.BookingRepository
-	client      *redis.Client
-	capsterRepo repository.CapsterRepository
-	storeRepo   repository.StoreRepository
-	serviceRepo repository.ServiceRepository
-	promoRepo   repository.PromoRepository
-	staffRepo   repository.StaffRepository
-	db          *gorm.DB
+	bookingRepo  repository.BookingRepository
+	client       *redis.Client
+	employeeRepo repository.EmployeeRepository
+	storeRepo    repository.StoreRepository
+	serviceRepo  repository.ServiceRepository
+	promoRepo    repository.PromoRepository
+	staffRepo    repository.StaffRepository
+	db           *gorm.DB
 }
 
 func NewBookingService(
 	br repository.BookingRepository,
 	c *redis.Client,
-	cr repository.CapsterRepository,
+	er repository.EmployeeRepository,
 	sr repository.StoreRepository,
 	srp repository.ServiceRepository,
 	pr repository.PromoRepository,
@@ -52,14 +52,14 @@ func NewBookingService(
 	db *gorm.DB,
 ) BookingService {
 	return &bookingService{
-		bookingRepo: br,
-		client:      c,
-		capsterRepo: cr,
-		storeRepo:   sr,
-		serviceRepo: srp,
-		promoRepo:   pr,
-		staffRepo:   sfr,
-		db:          db,
+		bookingRepo:  br,
+		client:       c,
+		employeeRepo: er,
+		storeRepo:    sr,
+		serviceRepo:  srp,
+		promoRepo:    pr,
+		staffRepo:    sfr,
+		db:           db,
 	}
 }
 
@@ -126,7 +126,7 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New("User tidak valid!")
 	}
 
-	dataCapster, err := s.capsterRepo.FindOne(&entity.Capster{ID: idCapster, Status: entity.CapsterStatusActive})
+	dataCapster, err := s.employeeRepo.FindOneCapster("id = ? AND status = ?", idCapster, entity.EmployeeStatusActive)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Capster tidak ditemukan atau telah dihapus!")
@@ -136,7 +136,11 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 		return errors.New(BASE_MESSAGE)
 	}
 
-	if dataCapster.IDStore != idStore {
+	if dataCapster.IdStore == nil {
+		return errors.New("Capster tidak ditemukan")
+	}
+
+	if *dataCapster.IdStore != idStore {
 		return errors.New("Capster ini bukan merupakan bagian dari toko yang anda pilih!")
 	}
 
@@ -213,7 +217,7 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 			diff = -diff
 		}
 		if diff < BUSY_WINDOW {
-			busyCapsterSet[v.IDCapster] = true
+			busyCapsterSet[v.IDEmployee] = true
 		}
 	}
 
@@ -221,10 +225,10 @@ func (s *bookingService) LockBooking(req dto.LockBookingRequest, claims *lib.Cus
 	scopesActiveCapster = append(scopesActiveCapster, func(d *gorm.DB) *gorm.DB {
 		return d.
 			Where("id_store = ?", req.IdStore).
-			Where("status = ?", entity.CapsterStatusActive)
+			Where("status = ?", entity.EmployeeStatusActive)
 	})
 
-	dataCapsters, err := s.capsterRepo.FindAll(scopesActiveCapster...)
+	dataCapsters, err := s.employeeRepo.FindAllCapster(scopesActiveCapster...)
 	if err != nil {
 		helper.Logger("find all capsters", filePath, err)
 		return errors.New(BASE_MESSAGE)
@@ -354,7 +358,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New("Booking minimal 30 menit dari sekarang.")
 	}
 
-	dataCapster, err := s.capsterRepo.FindOne(&entity.Capster{ID: idCapster, Status: entity.CapsterStatusActive})
+	dataCapster, err := s.employeeRepo.FindOneCapster("id = ? AND status = ?", idCapster, entity.EmployeeStatusActive)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return dto.CreateBookingResponse{}, errors.New("Capster tidak ditemukan atau telah dihapus!")
@@ -364,7 +368,11 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
 	}
 
-	if dataCapster.IDStore != idStore {
+	if dataCapster.IdStore == nil {
+		return dto.CreateBookingResponse{}, errors.New("Capster tidak ditemukan")
+	}
+
+	if *dataCapster.IdStore != idStore {
 		return dto.CreateBookingResponse{}, errors.New("Capster ini bukan merupakan bagian dari toko yang anda pilih!")
 	}
 
@@ -427,7 +435,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 			diff = -diff
 		}
 		if diff < BUSY_WINDOW {
-			busyCapsterSet[v.IDCapster] = true
+			busyCapsterSet[v.IDEmployee] = true
 		}
 	}
 
@@ -435,10 +443,10 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 	scopesActiveCapster = append(scopesActiveCapster, func(d *gorm.DB) *gorm.DB {
 		return d.
 			Where("id_store = ?", req.IdStore).
-			Where("status = ?", entity.CapsterStatusActive)
+			Where("status = ?", entity.EmployeeStatusActive)
 	})
 
-	dataCapsters, err := s.capsterRepo.FindAll(scopesActiveCapster...)
+	dataCapsters, err := s.employeeRepo.FindAllCapster(scopesActiveCapster...)
 	if err != nil {
 		helper.Logger("find all capsters", filePath, err)
 		return dto.CreateBookingResponse{}, errors.New(BASE_MESSAGE)
@@ -587,7 +595,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		StatusBooking:  entity.BookingStatusBooked,
 		IDStore:        idStore,
 		IDCustomer:     userId,
-		IDCapster:      idCapster,
+		IDEmployee:      idCapster,
 		IDStaff:        *idStaff,
 		IDPromoClaimed: idPromoClaimed,
 		SubTotal:       subTotal,
@@ -674,10 +682,10 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 	var scopes []func(*gorm.DB) *gorm.DB
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 		return d.Where("id_store = ?", idStore).
-			Where("status = ?", entity.CapsterStatusActive)
+			Where("status = ?", entity.EmployeeStatusActive)
 	})
 
-	dataCapsters, err := s.capsterRepo.FindAll(scopes...)
+	dataCapsters, err := s.employeeRepo.FindAll(scopes...)
 	if err != nil {
 		helper.Logger("Find all data capsters", filePath, err)
 		return dto.GetBookingStoreResponse{}, errors.New(BASE_MESSAGE)
@@ -765,7 +773,7 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 				diff = -diff
 			}
 			if diff < CAPSTER_BUSY_WINDOW {
-				busyCapsterSet[b.IDCapster] = true
+				busyCapsterSet[b.IDEmployee] = true
 			}
 		}
 
@@ -800,6 +808,7 @@ func (s *bookingService) GetBookingStore(ctx context.Context, claims *lib.Custom
 			if idx == reservedIdx {
 				available = false
 			}
+
 
 			if available {
 				availableCount++
@@ -946,8 +955,8 @@ func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.
 					AND s.name ILIKE ?
 				)
 				OR EXISTS (
-					SELECT 1 FROM capster c
-					WHERE c.id = booking.id_capster
+					SELECT 1 FROM employee c
+					WHERE c.id = booking.id_employee
 					AND c.name ILIKE ?
 				)
 				OR EXISTS (
@@ -1021,8 +1030,8 @@ func (s *bookingService) GetBookingUser(claims *lib.CustomClaims, reqParams dto.
 		dataBooking := dto.GetBookingUserResponse{
 			Id: b.ID,
 			Capster: dto.DataCapsterBooking{
-				Id:   b.Capster.ID,
-				Name: b.Capster.Name,
+				Id:   b.Employee.ID,
+				Name: b.Employee.Name,
 			},
 			Store: dto.DataStoreBooking{
 				Id:          b.Store.ID,
@@ -1177,10 +1186,10 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 			return d.
 				Joins("JOIN customer ON customer.id = booking.id_user").
-				Joins("LEFT JOIN capster ON capster.id = booking.id_capster").
+				Joins("LEFT JOIN employee ON employee.id = booking.id_employee").
 				Where(
 					d.Where("customer.name ILIKE ?", q).
-						Or("capster.name ILIKE ?", q).
+						Or("employee.name ILIKE ?", q).
 						Or(`EXISTS (
 					SELECT 1 FROM
 					booking_item bi
@@ -1227,7 +1236,7 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 
 	totalData, err := s.bookingRepo.Count(scopes...)
 	if err != nil {
-		helper.Logger("counte total booking", filePath, err)
+		helper.Logger("count total booking", filePath, err)
 		return []dto.GetBookingsResponse{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 
@@ -1301,7 +1310,7 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 		totalRatingCapster := 0
 		var avgRating float32 = 5.0
 		for _, v := range b.Ratings {
-			if v.IDCapster != nil && v.Type == entity.RatingTypeCapster {
+			if v.IDEmployee != nil && v.Type == entity.RatingTypeCapster {
 				totalRatingCapster += int(v.Score)
 			}
 		}
@@ -1334,8 +1343,8 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 				ScheduledAt: b.ScheduledAt.Local(),
 				Capster: dto.CapsterBookings{
 					DataCapsterBooking: dto.DataCapsterBooking{
-						Id:   b.Capster.ID,
-						Name: b.Capster.Name,
+						Id:   b.Employee.ID,
+						Name: b.Employee.Name,
 					},
 					AvgRating: avgRating,
 				},

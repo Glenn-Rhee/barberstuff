@@ -823,8 +823,8 @@ func (c *customerService) FindCustomers(params dto.FindCustomerRequest, claims *
 				lastVisitedAt = &t
 			}
 
-			capsterCount[b.IDCapster]++
-			capsterNameMap[b.IDCapster] = b.Capster.Name
+			capsterCount[b.IDEmployee]++
+			capsterNameMap[b.IDEmployee] = b.Employee.Name
 
 			for _, item := range b.BookingItems {
 				serviceCount[item.IDService]++
