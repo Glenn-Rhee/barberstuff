@@ -27,11 +27,12 @@ type PromoService interface {
 }
 
 type promoService struct {
-	promoRepo repository.PromoRepository
+	promoRepo    repository.PromoRepository
+	customerRepo repository.CustomerRepository
 }
 
-func NewPromoService(pr repository.PromoRepository) PromoService {
-	return &promoService{promoRepo: pr}
+func NewPromoService(pr repository.PromoRepository, cr repository.CustomerRepository) PromoService {
+	return &promoService{promoRepo: pr, customerRepo: cr}
 }
 
 func (s *promoService) CreatePromo(ctx context.Context, req dto.CreatePromoReq) error {
@@ -194,8 +195,9 @@ func (s *promoService) GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) (
 			DiscountType:       v.DiscountType,
 			DiscountValue:      v.DiscountValue,
 			UsageLimitCustomer: usageLimit,
-			StartAt:            *v.StartAt,
-			ExpiredAt:          *v.ExpiredAt,
+			MinMemberPoints:    v.MinMemberPoints,
+			StartAt:            v.StartAt,
+			ExpiredAt:          v.ExpiredAt,
 			ImageUrl:           pressignedURL,
 		})
 	}
@@ -246,6 +248,10 @@ func (s *promoService) PatchPromo(ctx context.Context, req dto.PatchPromoReq, id
 
 	if req.UsageLimitCustomer != nil {
 		updates["usage_limit_customer"] = req.UsageLimitCustomer
+	}
+
+	if req.MinMemberPoints != nil {
+		updates["min_member_points"] = req.MinMemberPoints
 	}
 
 	if req.StartAt != nil {
@@ -382,6 +388,21 @@ func (s *promoService) ClaimPromo(id string, claimUser *lib.CustomClaims) error 
 			if totalClaims >= *promo.UsageLimitPerCustomer {
 				return newBusinessError("Anda sudah mencapai batas maximum claim promo ini.")
 			}
+		}
+
+		// Cek apakah ada syartt minimum member point 
+		dataCustomer, err := s.customerRepo.FindOne("id = ?", idUser)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return newBusinessError("Akun tidak ditemukan. Mohon daftar ulang.")
+			}
+
+			return err
+		}
+
+
+		if promo.MinMemberPoints != nil && dataCustomer.MemberPoints < int(*promo.MinMemberPoints) {
+			return newBusinessError("Poin member anda tidak cukup.")
 		}
 
 		return tx.CreateClaimed(&entity.PromoClaimed{

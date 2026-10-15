@@ -45,8 +45,9 @@ type GetPromoRes struct {
 	DiscountType       entity.DiscountTypeEnum `json:"discount_type"`
 	DiscountValue      decimal.Decimal         `json:"discount_value"`
 	UsageLimitCustomer *int64                  `json:"usage_limit_customer"`
-	StartAt            time.Time               `json:"start_at"`
-	ExpiredAt          time.Time               `json:"expired_at"`
+	MinMemberPoints    *int64                  `json:"min_member_points"`
+	StartAt            *time.Time              `json:"start_at"`
+	ExpiredAt          *time.Time              `json:"expired_at"`
 	ImageUrl           string                  `json:"image_url"`
 }
 
@@ -57,6 +58,7 @@ type PatchPromoReq struct {
 	DiscountType       *entity.DiscountTypeEnum `json:"discount_type" binding:"omitempty,oneof=percentage fixed"`
 	DiscountValue      *float64                 `json:"discount_value" binding:"omitempty,numeric,min=1"`
 	UsageLimitCustomer *int64                   `json:"usage_limit_customer" binding:"omitempty,min=1"`
+	MinMemberPoints    *int64                   `json:"min_member_points" binding:"omitempty,numeric,min=1"`
 	StartAt            *time.Time               `json:"start_at" binding:"omitempty"`
 	ExpiredAt          *time.Time               `json:"expired_at" binding:"omitempty"`
 	ImageUrl           *string                  `json:"image_url" binding:"omitempty"`
