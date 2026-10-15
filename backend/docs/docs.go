@@ -2103,6 +2103,266 @@ const docTemplate = `{
                 }
             }
         },
+        "/promo": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil daftar promo dengan filter pencarian, status, dan jenis diskon, serta mendukung pagination dan pengurutan. Jika parameter sort_by tidak dikirim, data diurutkan berdasarkan jumlah klaim terbanyak. Default page adalah 1 dan limit adalah 20.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Mendapatkan daftar promo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pencarian berdasarkan judul promo",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "visible",
+                            "hide"
+                        ],
+                        "type": "string",
+                        "description": "Filter status promo",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "percentage",
+                            "fixed"
+                        ],
+                        "type": "string",
+                        "description": "Filter jenis diskon",
+                        "name": "discount_type",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "name",
+                            "created_at",
+                            "discount_value"
+                        ],
+                        "type": "string",
+                        "description": "Kolom pengurutan",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Nomor halaman",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Jumlah data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "Urutan pengurutan",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data promo",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal mengambil data promo",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat membuat promo baru dengan mengisi judul, status, deskripsi, jenis diskon, nilai diskon, batas penggunaan per pelanggan, tanggal mulai, tanggal kedaluwarsa, dan URL gambar promo.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Admin membuat promo baru",
+                "parameters": [
+                    {
+                        "description": "Data promo baru",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatePromoReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membuat promo baru",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal membuat promo",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/promo/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin menghapus promo secara soft delete, sehingga data tidak dihapus secara permanen dari database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Menghapus promo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID promo",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menghapus promo",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Gagal menghapus promo",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat mengubah satu atau beberapa field promo tanpa harus mengirim seluruh data. Minimal satu field harus dikirim untuk diperbarui.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Mengubah data promo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID promo",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data promo yang akan diperbarui",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatchPromoReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengubah data promo",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal mengubah data promo",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rating": {
             "post": {
                 "security": [
@@ -3833,6 +4093,67 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreatePromoReq": {
+            "type": "object",
+            "required": [
+                "discount_type",
+                "discount_value",
+                "expired_at",
+                "image_url",
+                "start_at",
+                "status",
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "discount_type": {
+                    "enum": [
+                        "percentage",
+                        "fixed"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.DiscountTypeEnum"
+                        }
+                    ]
+                },
+                "discount_value": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "expired_at": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "start_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "enum": [
+                        "visible",
+                        "hide"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.PromoStatusEnum"
+                        }
+                    ]
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                },
+                "usage_limit_customer": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
         "dto.CreateRatingRequest": {
             "type": "object",
             "required": [
@@ -4775,6 +5096,58 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.PatchPromoReq": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "discount_type": {
+                    "enum": [
+                        "percentage",
+                        "fixed"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.DiscountTypeEnum"
+                        }
+                    ]
+                },
+                "discount_value": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "expired_at": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "start_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "enum": [
+                        "visible",
+                        "hide"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.PromoStatusEnum"
+                        }
+                    ]
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                },
+                "usage_limit_customer": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
         "dto.PresignRequest": {
             "type": "object",
             "required": [
@@ -5441,6 +5814,17 @@ const docTemplate = `{
                 "BookingStatusCanceled"
             ]
         },
+        "entity.DiscountTypeEnum": {
+            "type": "string",
+            "enum": [
+                "percentage",
+                "fixed"
+            ],
+            "x-enum-varnames": [
+                "DiscountTypePercentage",
+                "DiscountTypeFixed"
+            ]
+        },
         "entity.EmployeeGenderEnum": {
             "type": "string",
             "enum": [
@@ -5520,6 +5904,17 @@ const docTemplate = `{
                 "TypeService",
                 "TypePackage",
                 "TypeProduct"
+            ]
+        },
+        "entity.PromoStatusEnum": {
+            "type": "string",
+            "enum": [
+                "visible",
+                "hide"
+            ],
+            "x-enum-varnames": [
+                "PromoStatusVisible",
+                "PromoStatusHide"
             ]
         },
         "entity.RoleEnum": {

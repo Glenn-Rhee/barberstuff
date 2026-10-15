@@ -32,7 +32,7 @@ type GetPromoReq struct {
 	Query        *string                  `form:"q" binding:"omitempty"`
 	Status       *entity.PromoStatusEnum  `form:"status" binding:"omitempty,oneof=visible hide"`
 	DiscountType *entity.DiscountTypeEnum `form:"discount_type" binding:"omitempty,oneof=percentage fixed"`
-	SortBy       *SortPromo               `form:"promo" binding:"omitempty"`
+	SortBy       *SortPromo               `form:"sort_by" binding:"omitempty"`
 	RequestParamsPagination
 }
 
