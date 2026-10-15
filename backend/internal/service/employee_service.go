@@ -364,16 +364,8 @@ func (s *employeeService) GetEmployees(req dto.GetEmployeeReq, claims *lib.Custo
 		helper.Logger("Find all data employee", filePath, err)
 		return empty, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
+
 	isCustomer := claims.Role == entity.RoleCustomer
-
-	if isCustomer {
-		employees, err = s.employeeRepo.FindAllCapster(listScopes...)
-		if err != nil {
-			helper.Logger("Find all data employee", filePath, err)
-			return empty, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
-		}
-	}
-
 	pagination := helper.GetPaginationData(page, limit, int(totalData))
 
 	presign := func(key *string, label string) *string {
