@@ -6,7 +6,7 @@ CREATE TYPE discount_type_enum AS ENUM ('percentage', 'fixed');
 
 CREATE TABLE promo (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR(50) NOT NULL,
     status promo_status_enum NOT NULL DEFAULT 'visible',
     description TEXT,
     discount_type discount_type_enum NOT NULL DEFAULT 'fixed',
@@ -17,6 +17,7 @@ CREATE TABLE promo (
     image_promo TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP,
     CONSTRAINT chk_promo_discount_value CHECK (
         discount_value >= 0
         AND (discount_type <> 'percentage' OR discount_value <= 100)

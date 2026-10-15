@@ -24,6 +24,7 @@ type Handlers struct {
 	TransactionsHandler *handler.TransactionsHandler
 	PositionHandler     *handler.PositionHandler
 	EmployeeHandler     *handler.EmployeeHandler
+	PromoHandler        *handler.PromoHandler
 	AuthMiddleware      gin.HandlerFunc
 	BookingService      service.BookingService
 }
@@ -58,6 +59,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	transactionsService := service.NewTransactionsService(cashSessionRepo, transactionsRepo, bookingRepo, customerRepo, staffRepo, db)
 	positionService := service.NewPositionService(positionRepo)
 	employeeService := service.NewEmployeeService(employeeRepo, positionRepo, storeRepo, absentRepo, staffRepo, db)
+	promoService := service.NewPromoService(promoRepo)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
@@ -72,6 +74,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	uploadHandler := handler.NewUploadHandler()
 	positionHandler := handler.NewPositionHandler(positionService)
 	employeeHandler := handler.NewEmployeeHandler(employeeService)
+	promoHandler := handler.NewPromoHandler(promoService)
 
 	// middleware
 	authMiddleware := middleware.AuthMiddleware(authRepo, staffRepo, customerRepo)
@@ -91,5 +94,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 		UploadHandler:       uploadHandler,
 		PositionHandler:     positionHandler,
 		EmployeeHandler:     employeeHandler,
+		PromoHandler:        promoHandler,
 	}
 }

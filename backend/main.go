@@ -165,6 +165,12 @@ func main() {
 		employee.GET("/absent", h.EmployeeHandler.GetEmployeeAbsent)
 	}
 
+	promo := r.Group("/promo")
+	{
+		promo.Use(h.AuthMiddleware)
+		promo.POST("/", h.PromoHandler.CreatePromo)
+	}
+
 	upload := r.Group("/upload")
 	{
 		upload.Use(h.AuthMiddleware)

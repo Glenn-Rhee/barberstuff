@@ -22,16 +22,19 @@ const (
 )
 
 type Promo struct {
-	ID            uuid.UUID        `gorm:"column:id;primaryKey"`
-	Title         string           `gorm:"column:title;not null"`
-	Status        PromoStatusEnum  `gorm:"column:status;not null"`
-	Description   *string          `gorm:"column:description"`
-	DiscountType  DiscountTypeEnum `gorm:"column:discount_type;not null"`
-	DiscountValue decimal.Decimal  `gorm:"column:discount_value;not null;default:0"`
-	ExpiredAt     *time.Time       `gorm:"column:expired_at"`
-	ImagePromo    string           `gorm:"column:image_promo"`
-	CreatedAt     time.Time        `gorm:"column:created_at;not null;autoCreateTime"`
-	UpdatedAt     time.Time        `gorm:"column:updated_at;not null;autoUpdateTime"`
+	ID                    uuid.UUID        `gorm:"column:id;primaryKey"`
+	Title                 string           `gorm:"column:title;not null"`
+	Status                PromoStatusEnum  `gorm:"column:status;not null"`
+	Description           *string          `gorm:"column:description"`
+	DiscountType          DiscountTypeEnum `gorm:"column:discount_type;not null"`
+	DiscountValue         decimal.Decimal  `gorm:"column:discount_value;not null;default:0"`
+	UsageLimitPerCustomer *int64           `gorm:"column:usage_limit_per_customer"`
+	StartAt               *time.Time       `gorm:"column:start_at"`
+	ExpiredAt             *time.Time       `gorm:"column:expired_at"`
+	ImagePromo            string           `gorm:"column:image_promo"`
+	CreatedAt             time.Time        `gorm:"column:created_at;not null;autoCreateTime"`
+	UpdatedAt             time.Time        `gorm:"column:updated_at;not null;autoUpdateTime"`
+	DeletedAt             *time.Time       `gorm:"column:deleted_at"`
 }
 
 func (Promo) TableName() string {

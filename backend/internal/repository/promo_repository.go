@@ -8,6 +8,7 @@ import (
 
 type PromoRepository interface {
 	FindOne(query interface{}, args ...interface{}) (entity.PromoClaimed, error)
+	Create(v *entity.Promo) error
 }
 
 type promoRepository struct {
@@ -27,4 +28,8 @@ func (r *promoRepository) FindOne(query interface{}, args ...interface{}) (entit
 		First(&data)
 
 	return data, result.Error
+}
+
+func (r *promoRepository) Create(v *entity.Promo) error {
+	return r.db.Model(&v).Create(v).Error
 }
