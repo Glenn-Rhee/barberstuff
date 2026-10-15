@@ -3,6 +3,9 @@ package dto
 import (
 	"barberstuff_backend/internal/entity"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 type CreatePromoReq struct {
@@ -15,4 +18,33 @@ type CreatePromoReq struct {
 	StartAt            time.Time               `json:"start_at" binding:"required"`
 	ExpiredAt          time.Time               `json:"expired_at" binding:"required"`
 	ImageUrl           string                  `json:"image_url" binding:"required"`
+}
+
+type SortPromo string
+
+const (
+	SortPromoByName      SortPromo = "name"
+	SortPromoByCreatedAt SortPromo = "created_at"
+	SortPromoByValue     SortPromo = "discount_value"
+)
+
+type GetPromoReq struct {
+	Query        *string                  `form:"q" binding:"omitempty"`
+	Status       *entity.PromoStatusEnum  `form:"status" binding:"omitempty,oneof=visible hide"`
+	DiscountType *entity.DiscountTypeEnum `form:"discount_type" binding:"omitempty,oneof=percentage fixed"`
+	SortBy       *SortPromo               `form:"promo" binding:"omitempty"`
+	RequestParamsPagination
+}
+
+type GetPromoRes struct {
+	ID                 uuid.UUID               `json:"id"`
+	Title              string                  `json:"title"`
+	Status             entity.PromoStatusEnum  `json:"status"`
+	Description        *string                 `json:"description"`
+	DiscountType       entity.DiscountTypeEnum `json:"discount_type"`
+	DiscountValue      decimal.Decimal         `json:"discount_value"`
+	UsageLimitCustomer *int64                  `json:"usage_limit_customer"`
+	StartAt            time.Time               `json:"start_at"`
+	ExpiredAt          time.Time               `json:"expired_at"`
+	ImageUrl           string                  `json:"image_url"`
 }

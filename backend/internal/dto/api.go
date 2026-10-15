@@ -30,9 +30,9 @@ type ResponsePagination struct {
 }
 
 type RequestParamsPagination struct {
-	Page    *int       `form:"page" binding:"omitempty,min=1"`
-	Limit   *int       `form:"limit" binding:"omitempty,min=1,max=50"`
-	OrderBy *OrderBy   `form:"order" binding:"omitempty,oneof=asc desc"`
+	Page    *int     `form:"page" binding:"omitempty,min=1"`
+	Limit   *int     `form:"limit" binding:"omitempty,min=1,max=50"`
+	OrderBy *OrderBy `form:"order" binding:"omitempty,oneof=asc desc"`
 }
 
 // SwaggerResponse hanya dipakai untuk keperluan dokumentasi Swagger (swag).
