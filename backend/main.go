@@ -180,6 +180,7 @@ func main() {
 	{
 		benefit.Use(h.AuthMiddleware)
 		benefit.POST("/", h.BenefitHandler.CreateBenefit)
+		benefit.GET("/", h.BenefitHandler.GetBenefits)
 	}
 
 	upload := r.Group("/upload")

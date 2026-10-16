@@ -13,6 +13,7 @@ type BenefitRepository interface {
 	Updates(v interface{}, id uuid.UUID) (int64, error)
 	FindOne(where interface{}, args ...interface{}) (entity.Benefit, error)
 	Delete(id uuid.UUID) (int64, error)
+	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
 
 type benefitRepository struct {
@@ -55,4 +56,14 @@ func (r *benefitRepository) Delete(id uuid.UUID) (int64, error) {
 	result := r.db.Where("id = ?").Delete(&entity.Benefit{})
 
 	return result.RowsAffected, result.Error
+}
+
+func (r *benefitRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+	var total int64
+	result := r.db.
+		Model(&entity.Benefit{}).
+		Scopes(scopes...).
+		Count(&total)
+
+	return total, result.Error
 }
