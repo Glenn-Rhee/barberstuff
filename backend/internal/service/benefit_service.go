@@ -19,6 +19,7 @@ import (
 type BenefitService interface {
 	CrateBenefit(ctx context.Context, req dto.CreateBenefitReq) error
 	GetBenefits(req dto.GetBenefitReq, claims *lib.CustomClaims) ([]dto.GetBenefitRes, dto.ResponsePagination, error)
+	PatchBenefit(ctx context.Context, req dto.PatchBenefitReq, id string) error
 }
 
 type benefitService struct {
@@ -68,7 +69,7 @@ func (s *benefitService) CrateBenefit(ctx context.Context, req dto.CreateBenefit
 }
 
 func (s *benefitService) GetBenefits(req dto.GetBenefitReq, claims *lib.CustomClaims) ([]dto.GetBenefitRes, dto.ResponsePagination, error) {
-	const BASE_MESSAGE = "Terjadi kesalahan saat membuat benefit baru, mohon upload ulang."
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data benefit."
 	_, filePath, _, _ := runtime.Caller(0)
 
 	var scopes []func(*gorm.DB) *gorm.DB
@@ -165,4 +166,88 @@ func (s *benefitService) GetBenefits(req dto.GetBenefitReq, claims *lib.CustomCl
 	}
 
 	return dataBenefits, paginationData, nil
+}
+
+func (s *benefitService) PatchBenefit(ctx context.Context, req dto.PatchBenefitReq, id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengupdate data benefit"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idBenefit, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id benefit tidak valid.")
+	}
+
+	if helper.IsAllFieldsNil(req) {
+		return errors.New("Ubah minimal jadi 1 data")
+	}
+
+	updates := make(map[string]interface{})
+	if req.Title != nil {
+		updates["title"] = strings.TrimSpace(*req.Title)
+	}
+
+	if req.Description != nil {
+		updates["description"] = strings.TrimSpace(*req.Description)
+	}
+
+	if req.Status != nil {
+		updates["status"] = req.Status
+	}
+
+	var (
+		errImage           = errors.New("Gagal memperbarui gambar.")
+		errBenefitNotFound = errors.New("Benefit tidak ditemukan.")
+	)
+
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		if req.ImageUrl != nil {
+			permanentKey := lib.PermanentKey(*req.ImageUrl)
+			updates["image_url"] = permanentKey
+		}
+
+		rowsAffected, err := s.benefitRepo.Updates(tx, updates, idBenefit)
+		if err != nil {
+			return err
+		}
+
+		if rowsAffected == 0 {
+			return errBenefitNotFound
+		}
+
+		if req.ImageUrl != nil {
+			_, err = lib.MoveObjectToPermanent(ctx, *req.ImageUrl)
+			if err != nil {
+				return errImage
+			}
+
+			benefit, err := s.benefitRepo.FindOne("id = ?", idBenefit)
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					return errBenefitNotFound
+				}
+
+				return err
+			}
+
+			if benefit.ImageUrl != nil && strings.Split(*benefit.ImageUrl, "/")[0] == "uploads" {
+				err = lib.DeleteObject(ctx, *benefit.ImageUrl)
+				if err != nil {
+					return errImage
+				}
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		if errors.Is(err, errBenefitNotFound) || errors.Is(err, errImage) {
+			return err
+		}
+
+		helper.Logger("update benefit", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
 }

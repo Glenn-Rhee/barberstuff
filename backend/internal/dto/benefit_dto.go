@@ -37,3 +37,10 @@ type GetBenefitRes struct {
 	Status      *entity.BenefitStatusEnum `json:"status,omitempty"`
 	CreatedAt   time.Time                 `json:"created_at"`
 }
+
+type PatchBenefitReq struct {
+	Title       *string                   `json:"title" binding:"omitempty,min=1"`
+	Description *string                   `json:"description" binding:"omitempty,min=1"`
+	ImageUrl    *string                   `json:"image_url" binding:"omitempty"`
+	Status      *entity.BenefitStatusEnum `json:"status" binding:"omitempty,oneof=visible hide"`
+}

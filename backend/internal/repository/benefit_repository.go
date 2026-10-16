@@ -10,7 +10,7 @@ import (
 type BenefitRepository interface {
 	Create(tx *gorm.DB, b *entity.Benefit) error
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Benefit, error)
-	Updates(v interface{}, id uuid.UUID) (int64, error)
+	Updates(tx *gorm.DB, v interface{}, id uuid.UUID) (int64, error)
 	FindOne(where interface{}, args ...interface{}) (entity.Benefit, error)
 	Delete(id uuid.UUID) (int64, error)
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
@@ -36,8 +36,8 @@ func (r *benefitRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity
 	return benefits, result.Error
 }
 
-func (r *benefitRepository) Updates(v interface{}, id uuid.UUID) (int64, error) {
-	result := r.db.
+func (r *benefitRepository) Updates(tx *gorm.DB, v interface{}, id uuid.UUID) (int64, error) {
+	result := tx.
 		Model(&entity.Benefit{}).
 		Where("id = ?", id).
 		Updates(v)
