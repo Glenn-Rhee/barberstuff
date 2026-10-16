@@ -2921,7 +2921,8 @@ paths:
         in: query
         name: discount_type
         type: string
-      - description: Kolom pengurutan
+      - description: Kolom pengurutan, default akan diurutkan dari promo yang sering
+          diclaim
         enum:
         - name
         - created_at
@@ -3069,6 +3070,72 @@ paths:
       security:
       - BearerAuth: []
       summary: Mengubah data promo
+      tags:
+      - Promo
+  /promo/claim:
+    get:
+      consumes:
+      - application/json
+      description: Customer dapat melihat daftar promo yang telah diklaim oleh akun
+        mereka, dengan filter jenis diskon, pengurutan, dan pagination.
+      parameters:
+      - description: Filter jenis diskon
+        enum:
+        - percentage
+        - fixed
+        in: query
+        name: discount_type
+        type: string
+      - description: Kolom pengurutan
+        enum:
+        - name
+        - created_at
+        - discount_value
+        in: query
+        name: sort_by
+        type: string
+      - default: 1
+        description: Nomor halaman
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 20
+        description: Jumlah data per halaman
+        in: query
+        maximum: 50
+        minimum: 1
+        name: limit
+        type: integer
+      - description: Urutan pengurutan
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil daftar promo yang telah diklaim
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengambil data promo yang telah diklaim
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mendapatkan daftar promo yang telah diklaim
       tags:
       - Promo
   /promo/claim/{id_promo}:

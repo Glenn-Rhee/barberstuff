@@ -2155,7 +2155,7 @@ const docTemplate = `{
                             "discount_value"
                         ],
                         "type": "string",
-                        "description": "Kolom pengurutan",
+                        "description": "Kolom pengurutan, default akan diurutkan dari promo yang sering diclaim",
                         "name": "sort_by",
                         "in": "query"
                     },
@@ -2251,6 +2251,102 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/promo/claim": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Customer dapat melihat daftar promo yang telah diklaim oleh akun mereka, dengan filter jenis diskon, pengurutan, dan pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Mendapatkan daftar promo yang telah diklaim",
+                "parameters": [
+                    {
+                        "enum": [
+                            "percentage",
+                            "fixed"
+                        ],
+                        "type": "string",
+                        "description": "Filter jenis diskon",
+                        "name": "discount_type",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "name",
+                            "created_at",
+                            "discount_value"
+                        ],
+                        "type": "string",
+                        "description": "Kolom pengurutan",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Nomor halaman",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Jumlah data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "Urutan pengurutan",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar promo yang telah diklaim",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal mengambil data promo yang telah diklaim",
                         "schema": {
                             "$ref": "#/definitions/dto.SwaggerResponse"
                         }

@@ -328,6 +328,23 @@ func (h *PromoHandler) ClaimedPromo(ctx *gin.Context) {
 	})
 }
 
+// GetClaimPromo godoc
+// @Summary      Mendapatkan daftar promo yang telah diklaim
+// @Description  Customer dapat melihat daftar promo yang telah diklaim oleh akun mereka, dengan filter jenis diskon, pengurutan, dan pagination.
+// @Tags         Promo
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        discount_type query string false "Filter jenis diskon" Enums(percentage, fixed)
+// @Param        sort_by query string false "Kolom pengurutan" Enums(name, created_at, discount_value)
+// @Param        page query int false "Nomor halaman" default(1) minimum(1)
+// @Param        limit query int false "Jumlah data per halaman" default(20) minimum(1) maximum(50)
+// @Param        order query string false "Urutan pengurutan" Enums(asc, desc)
+// @Success      200 {object} dto.SwaggerResponse "Berhasil mengambil daftar promo yang telah diklaim"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengambil data promo yang telah diklaim"
+// @Router       /promo/claim [get]
 func (h *PromoHandler) GetClaimPromo(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
