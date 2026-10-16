@@ -24,6 +24,7 @@ type PromoService interface {
 	PatchPromo(ctx context.Context, req dto.PatchPromoReq, id string) error
 	DeletePromo(id string) error
 	ClaimPromo(id string, claimUser *lib.CustomClaims) error
+	GetClaimPromo(req dto.GetPromoClaimReq, claimUser *lib.CustomClaims) ([]dto.GetPromoClaimRes, dto.ResponsePagination, error)
 }
 
 type promoService struct {
@@ -238,18 +239,20 @@ func (s *promoService) GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) (
 		}
 
 		dataPromoes = append(dataPromoes, dto.GetPromoRes{
-			ID:                 v.ID,
-			Title:              v.Title,
 			Status:             v.Status,
-			Description:        v.Description,
-			DiscountType:       v.DiscountType,
-			DiscountValue:      v.DiscountValue,
 			UsageLimitCustomer: usageLimit,
-			MinMemberPoints:    v.MinMemberPoints,
-			StartAt:            v.StartAt,
-			ExpiredAt:          v.ExpiredAt,
-			ImageUrl:           pressignedURL,
 			IsClaim:            isClaim,
+			DataPromo: dto.DataPromo{
+				ID:              v.ID,
+				Title:           v.Title,
+				Description:     v.Description,
+				DiscountType:    v.DiscountType,
+				DiscountValue:   v.DiscountValue,
+				MinMemberPoints: v.MinMemberPoints,
+				StartAt:         v.StartAt,
+				ExpiredAt:       v.ExpiredAt,
+				ImageUrl:        pressignedURL,
+			},
 		})
 	}
 
@@ -474,4 +477,108 @@ func (s *promoService) ClaimPromo(id string, claimUser *lib.CustomClaims) error 
 	}
 
 	return nil
+}
+
+func (s *promoService) GetClaimPromo(req dto.GetPromoClaimReq, claimUser *lib.CustomClaims) ([]dto.GetPromoClaimRes, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat claim promo."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idCustomer, err := uuid.Parse(claimUser.UserId)
+	if err != nil {
+		return []dto.GetPromoClaimRes{}, dto.ResponsePagination{}, errors.New("Akun tidak valid, mohon login ulang.")
+	}
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.
+			Preload("Promo").
+			Joins("JOIN promo ON promo.id = promo_claimed.id_promo").
+			Where("promo_claimed.id_user = ? AND promo_claimed.is_used = ?", idCustomer, false)
+
+	})
+	var page = 1
+	var limit = 20
+	var sortBy = dto.SortPromoByCreatedAt
+	var orderBy = dto.OrderDesc
+
+	if req.Page != nil {
+		page = *req.Page
+	}
+
+	if req.Limit != nil {
+		limit = *req.Limit
+	}
+
+	if req.SortBy != nil {
+		sortBy = *req.SortBy
+	}
+
+	if req.OrderBy != nil {
+		orderBy = *req.OrderBy
+	}
+
+	if req.DiscountType != nil {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.
+				Where("promo.discount_type = ?", req.DiscountType)
+		})
+	}
+
+	var sort string
+
+	switch sortBy {
+	case dto.SortPromoByName:
+		sort = "promo.name"
+	case dto.SortPromoByValue:
+		sort = "promo.discount_value"
+	default:
+		sort = "promo_claimed.created_at"
+	}
+
+	totalData, err := s.promoRepo.CountClaimed(scopes...)
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{
+					Column: clause.Column{Name: sort},
+					Desc:   orderBy == dto.OrderDesc,
+				},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
+
+	promoClaims, err := s.promoRepo.FindAllWithClaimed(scopes...)
+	if err != nil {
+		helper.Logger("find all promo", filePath, err)
+		return []dto.GetPromoClaimRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataPromoClaims := make([]dto.GetPromoClaimRes, 0, len(promoClaims))
+
+	for _, v := range promoClaims {
+		pressignedURL, err := lib.GeneratePressignedGetURL(v.Promo.ImagePromo)
+		if err != nil {
+			helper.Logger("generate presigned url", filePath, err)
+		}
+
+		dataPromoClaims = append(dataPromoClaims, dto.GetPromoClaimRes{
+			Id:        v.ID,
+			ClaimedAt: v.CreatedAt,
+			Promo: dto.DataPromo{
+				ID:              v.Promo.ID,
+				Title:           v.Promo.Title,
+				Description:     v.Promo.Description,
+				DiscountType:    v.Promo.DiscountType,
+				DiscountValue:   v.Promo.DiscountValue,
+				MinMemberPoints: v.Promo.MinMemberPoints,
+				StartAt:         v.Promo.StartAt,
+				ExpiredAt:       v.Promo.ExpiredAt,
+				ImageUrl:        pressignedURL,
+			},
+		})
+	}
+
+	return dataPromoClaims, paginationData, nil
 }

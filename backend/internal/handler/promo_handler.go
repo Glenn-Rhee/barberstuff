@@ -93,7 +93,7 @@ func (h *PromoHandler) CreatePromo(ctx *gin.Context) {
 // @Param        q query string false "Pencarian berdasarkan judul promo"
 // @Param        status query string false "Filter status promo" Enums(visible, hide)
 // @Param        discount_type query string false "Filter jenis diskon" Enums(percentage, fixed)
-// @Param        sort_by query string false "Kolom pengurutan" Enums(name, created_at, discount_value)
+// @Param        sort_by query string false "Kolom pengurutan, default akan diurutkan dari promo yang sering diclaim" Enums(name, created_at, discount_value)
 // @Param        page query int false "Nomor halaman" default(1) minimum(1)
 // @Param        limit query int false "Jumlah data per halaman" default(20) minimum(1) maximum(50)
 // @Param        order query string false "Urutan pengurutan" Enums(asc, desc)
@@ -324,6 +324,59 @@ func (h *PromoHandler) ClaimedPromo(ctx *gin.Context) {
 	helper.NewSuccessResponse(ctx, dto.ResponseApi[any]{
 		Data:       nil,
 		Message:    "Berhasil claim promo!",
+		StatusCode: http.StatusOK,
+	})
+}
+
+func (h *PromoHandler) GetClaimPromo(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if claimsResult.Role != entity.RoleCustomer {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	var reqParams dto.GetPromoClaimReq
+	if err := ctx.ShouldBindQuery(&reqParams); err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    helper.FormatValidationError(err)[0],
+			StatusCode: http.StatusBadRequest,
+		})
+		return
+	}
+
+	result, meta, err := h.service.GetClaimPromo(reqParams, claimsResult)
+	if err != nil {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    err.Error(),
+			StatusCode: http.StatusNotAcceptable,
+		})
+		return
+	}
+
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[[]dto.GetPromoClaimRes]{
+		Data:       result,
+		Meta:       &meta,
+		Message:    "Berhasil mengambil data promo!",
 		StatusCode: http.StatusOK,
 	})
 }

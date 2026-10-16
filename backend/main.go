@@ -173,6 +173,7 @@ func main() {
 		promo.PATCH("/:id", h.PromoHandler.PatchPromo)
 		promo.DELETE("/:id", h.PromoHandler.DeletePromo)
 		promo.POST("/claim/:id", h.PromoHandler.ClaimedPromo)
+		promo.GET("/claim", h.PromoHandler.GetClaimPromo)
 	}
 
 	upload := r.Group("/upload")
