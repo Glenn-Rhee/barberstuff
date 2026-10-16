@@ -33,6 +33,7 @@ type Transactions struct {
 	CreatedAt       time.Time       `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt       time.Time       `gorm:"column:updated_at;not null;autoUpdateTime"`
 	DeletedAt       *time.Time      `gorm:"column:deleted_at"`
+	CashSession     CashSession     `gorm:"foreignKey:IDCashSession"`
 }
 
 func (Transactions) TableName() string {

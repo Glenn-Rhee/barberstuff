@@ -571,14 +571,16 @@ func (s *cashSessionService) getHistoryCashStore(req dto.HistoryCashSessionReq, 
 		var totalOutcome decimal.Decimal
 
 		for _, t := range c.Transactions {
-			if t.TransactionType == entity.TransactionIncome {
-				if t.PaymentType == entity.PaymentCash {
-					totalIncomeCash = totalIncomeCash.Add(t.Amount)
+			if t.DeletedAt == nil {
+				if t.TransactionType == entity.TransactionIncome {
+					if t.PaymentType == entity.PaymentCash {
+						totalIncomeCash = totalIncomeCash.Add(t.Amount)
+					} else {
+						totalIncomeCashless = totalIncomeCashless.Add(t.Amount)
+					}
 				} else {
-					totalIncomeCashless = totalIncomeCashless.Add(t.Amount)
+					totalOutcome = totalOutcome.Add(t.Amount)
 				}
-			} else {
-				totalOutcome = totalOutcome.Add(t.Amount)
 			}
 		}
 
