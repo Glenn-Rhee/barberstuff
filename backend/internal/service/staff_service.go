@@ -536,7 +536,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 			return errors.New("Nama dan no telpon wajib diisi untuk membuat customer baru")
 		}
 
-		dataCustomer, err := s.customerRepo.FindOne("phone_number = ?", *req.Customer.PhoneNumber)
+		dataCustomer, err := s.customerRepo.FindOne("customer.phone_number = ?", *req.Customer.PhoneNumber)
 		if err == nil {
 			idCustomer = dataCustomer.ID
 		} else {
@@ -568,7 +568,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 
 	}
 
-	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
+	dataStore, err := s.storeRepo.FindOne("store.id = ?", idStore)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Toko tidak ditemukan atau telah dihapus.")
@@ -593,7 +593,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 	)
 	startOfNextDay := startOfDay.AddDate(0, 0, 1)
 	_, err = s.absentRepo.FindOne(
-		"id_employee = ? AND created_at >= ? AND created_at < ?",
+		"absent.id_employee = ? AND absent.created_at >= ? AND absent.created_at < ?",
 		idCapster, startOfDay, startOfNextDay,
 	)
 
@@ -612,7 +612,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 		return errors.New("Tanggal dan jam booking tidak boleh kurang dari waktu sekarang")
 	}
 
-	_, err = s.employeeRepo.FindOneCapster("id = ? AND status = ? AND id_store = ?", idCapster, entity.EmployeeStatusActive, idStore)
+	_, err = s.employeeRepo.FindOneCapster("employee.id = ? AND employee.status = ? AND employee.id_store = ?", idCapster, entity.EmployeeStatusActive, idStore)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Capster tidak ditemukan atau telah dihapus!")
@@ -623,7 +623,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 	}
 
 	_, err = s.bookingRepo.FindOne(
-		"id_user = ? AND status_booking IN ?",
+		"booking.id_user = ? AND booking.status_booking IN ?",
 		idCustomer,
 		[]entity.BookingStatusEnum{entity.BookingStatusBooked, entity.BookingStatusProgress},
 	)
@@ -640,8 +640,8 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 	var scopeActiveBookings []func(*gorm.DB) *gorm.DB
 	scopeActiveBookings = append(scopeActiveBookings, func(d *gorm.DB) *gorm.DB {
 		return d.
-			Where("id_store = ?", idStore).
-			Where("status_booking IN ?", []entity.BookingStatusEnum{
+			Where("booking.id_store = ?", idStore).
+			Where("booking.status_booking IN ?", []entity.BookingStatusEnum{
 				entity.BookingStatusBooked,
 				entity.BookingStatusProgress,
 			})
@@ -669,8 +669,8 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 	var scopesActiveCapster []func(*gorm.DB) *gorm.DB
 	scopesActiveCapster = append(scopesActiveCapster, func(d *gorm.DB) *gorm.DB {
 		return d.
-			Where("id_store = ?", idStore).
-			Where("status = ?", entity.EmployeeStatusActive)
+			Where("employee.id_store = ?", idStore).
+			Where("employee.status = ?", entity.EmployeeStatusActive)
 	})
 
 	dataCapsters, err := s.employeeRepo.FindAllCapster(scopesActiveCapster...)
@@ -696,7 +696,7 @@ func (s *staffService) CreateBooking(claims *lib.CustomClaims, req dto.CreateCas
 
 	var scopesService []func(*gorm.DB) *gorm.DB
 	scopesService = append(scopesService, func(d *gorm.DB) *gorm.DB {
-		return d.Where("id IN ? AND status = ? AND id_store = ?", idServices, entity.ProductStatusActive, idStore)
+		return d.Where("service.id IN ? AND service.status = ? AND service.id_store = ?", idServices, entity.ProductStatusActive, idStore)
 	})
 
 	dataServices, err := s.serviceRepo.FindAll(scopesService...)

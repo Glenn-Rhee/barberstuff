@@ -10,6 +10,7 @@ type AbsentRepository interface {
 	FindOne(query interface{}, args ...interface{}) (entity.Absent, error)
 	Create(v *entity.Absent) error
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Absent, error)
+	CreateMany(v []entity.Absent) error
 }
 
 type absentRepository struct {
@@ -45,4 +46,8 @@ func (r *absentRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.
 		Find(&absents)
 
 	return absents, result.Error
+}
+
+func (r *absentRepository) CreateMany(v []entity.Absent) error {
+	return r.db.Create(&v).Error
 }

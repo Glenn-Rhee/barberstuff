@@ -720,9 +720,23 @@ func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengabsen karyawan."
 	_, filePath, _, _ := runtime.Caller(0)
 
-	idEmployee, err := uuid.Parse(req.IdEmployee)
-	if err != nil {
-		return errors.New("Id karyawan tidak valid.")
+	if len(req.IdEmployee) == 0 {
+		return errors.New("Id karyawan tidak boleh kosong.")
+	}
+
+	// parse + deduplikasi
+	seen := make(map[uuid.UUID]struct{}, len(req.IdEmployee))
+	idEmployees := make([]uuid.UUID, 0, len(req.IdEmployee))
+	for _, v := range req.IdEmployee {
+		id, err := uuid.Parse(v)
+		if err != nil {
+			return errors.New("Id karyawan tidak valid.")
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		idEmployees = append(idEmployees, id)
 	}
 
 	idStore, err := uuid.Parse(req.IdStore)
@@ -730,22 +744,26 @@ func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
 		return errors.New("Id toko tidak valid.")
 	}
 
-	dataEmployee, err := s.employeeRepo.FindOne("id = ?", idEmployee)
+	// ambil semua karyawan sekaligus
+	employees, err := s.employeeRepo.FindAll(func(d *gorm.DB) *gorm.DB {
+		return d.Where("employee.id IN ?", idEmployees)
+	})
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("Karyawan tidak ditemukan atau telah dihapus")
-		}
-
-		helper.Logger("find one employee", filePath, err)
+		helper.Logger("find all employee", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
-	if dataEmployee.IdStore == nil {
-		return errors.New("Karyawan tidak ditemukan terikat dengan toko.")
+	if len(employees) != len(idEmployees) {
+		return errors.New("Ada karyawan yang tidak ditemukan atau telah dihapus.")
 	}
 
-	if *dataEmployee.IdStore != idStore {
-		return errors.New("Tidak dapat absen melalui toko lain. Hubungi admin.")
+	for _, e := range employees {
+		if e.IdStore == nil {
+			return fmt.Errorf("Karyawan %s tidak terikat dengan toko.", e.Name)
+		}
+		if *e.IdStore != idStore {
+			return fmt.Errorf("Karyawan %s tidak dapat absen melalui toko lain. Hubungi admin.", e.Name)
+		}
 	}
 
 	dataStore, err := s.storeRepo.FindOne("id = ?", idStore)
@@ -753,7 +771,6 @@ func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Toko tidak ditemukan atau telah dihapus")
 		}
-
 		helper.Logger("find one store", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
@@ -765,46 +782,54 @@ func (s *employeeService) Absent(req dto.CreateAbsentReq) error {
 	}
 
 	now := time.Now().In(loc)
-	startOfDay := time.Date(
-		now.Year(),
-		now.Month(),
-		now.Day(),
-		0, 0, 0, 0, loc,
-	)
+	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
 	startOfNextDay := startOfDay.AddDate(0, 0, 1)
 
-	_, err = s.
-		absentRepo.
-		FindOne("id_employee = ? AND created_at >= ? AND created_at < ?", idEmployee, startOfDay, startOfNextDay)
-
-	if err == nil {
-		return errors.New("Karyawan telah absen.")
-	}
-
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
+	// cek yang sudah absen hari ini, satu query
+	alreadyAbsent, err := s.absentRepo.FindAll(func(d *gorm.DB) *gorm.DB {
+		return d.
+			Where("id_employee IN ?", idEmployees).
+			Where("created_at >= ? AND created_at < ?", startOfDay, startOfNextDay)
+	})
+	if err != nil {
 		helper.Logger("find absent employee", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
-	absent := entity.Absent{
-		ID:         uuid.New(),
-		IdEmployee: idEmployee,
-		IdStore:    idStore,
-	}
-
-	err = s.absentRepo.Create(&absent)
-	if err != nil {
-		if helper.IsUniqueViolation(err) {
-			return errors.New("Karyawan ini telah absen.")
+	if len(alreadyAbsent) > 0 {
+		absentSet := make(map[uuid.UUID]struct{}, len(alreadyAbsent))
+		for _, a := range alreadyAbsent {
+			absentSet[a.IdEmployee] = struct{}{}
 		}
 
-		helper.Logger("Create absent", filePath, err)
+		names := make([]string, 0, len(alreadyAbsent))
+		for _, e := range employees {
+			if _, ok := absentSet[e.ID]; ok {
+				names = append(names, e.Name)
+			}
+		}
+		return fmt.Errorf("Karyawan telah absen: %s.", strings.Join(names, ", "))
+	}
+
+	absents := make([]entity.Absent, 0, len(idEmployees))
+	for _, id := range idEmployees {
+		absents = append(absents, entity.Absent{
+			ID:         uuid.New(),
+			IdEmployee: id,
+			IdStore:    idStore,
+		})
+	}
+
+	if err := s.absentRepo.CreateMany(absents); err != nil {
+		if helper.IsUniqueViolation(err) {
+			return errors.New("Ada karyawan yang telah absen.")
+		}
+		helper.Logger("create absent", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
 	return nil
 }
-
 func (s *employeeService) GetEmployeeAbsent(req dto.GetEmployeeAbsentReq) ([]dto.GetEmployeeAbsentRes, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengabsen karyawan."
 	_, filePath, _, _ := runtime.Caller(0)
