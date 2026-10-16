@@ -65,18 +65,18 @@ type EmployeeData struct {
 	AvgRating float64                    `json:"avg_rating"`
 
 	// hanya admin, kasir, mitra
-	PhoneNumber         *string    `json:"phone_number"`
-	Email               *string    `json:"email"`
-	Address             *string    `json:"address"`
-	NationalIdNumber    *string    `json:"national_id_number"`
-	IdentityDocumentUrl *string    `json:"identity_document_url"`
-	AccountNumber       *string    `json:"account_number"`
-	BankName            *string    `json:"bank_name"`
-	CreatedAt           *time.Time `json:"created_at"`
+	PhoneNumber         *string    `json:"phone_number,omitempty"`
+	Email               *string    `json:"email,omitempty"`
+	Address             *string    `json:"address,omitempty"`
+	NationalIdNumber    *string    `json:"national_id_number,omitempty"`
+	IdentityDocumentUrl *string    `json:"identity_document_url,omitempty"`
+	AccountNumber       *string    `json:"account_number,omitempty"`
+	BankName            *string    `json:"bank_name,omitempty"`
+	CreatedAt           *time.Time `json:"created_at,omitempty"`
 }
 
 type GetEmployeeRes struct {
-	KPI       *EmployeeKPI   `json:"kpi"` // nil untuk customer
+	KPI       *EmployeeKPI   `json:"kpi,omitempty"` // nil untuk customer
 	Employees []EmployeeData `json:"employees"`
 }
 

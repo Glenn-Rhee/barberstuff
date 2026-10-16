@@ -49,6 +49,7 @@ type GetPromoRes struct {
 	StartAt            *time.Time              `json:"start_at"`
 	ExpiredAt          *time.Time              `json:"expired_at"`
 	ImageUrl           string                  `json:"image_url"`
+	IsClaim            *bool                   `json:"is_claim,omitempty"`
 }
 
 type PatchPromoReq struct {

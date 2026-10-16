@@ -174,6 +174,42 @@ func (s *promoService) GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) (
 		return []dto.GetPromoRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
 	}
 
+	// status claim per promo (khusus customer)
+	type claimStatus struct {
+		hasUnused    bool  // ada claim yang belum digunakan
+		totalClaimed int64 // total claim (sudah dipakai + belum)
+	}
+	claimMap := make(map[uuid.UUID]*claimStatus)
+
+	if claims.Role == entity.RoleCustomer && len(promoes) > 0 {
+		promoIDs := make([]uuid.UUID, 0, len(promoes))
+		for _, p := range promoes {
+			promoIDs = append(promoIDs, p.ID)
+		}
+
+		claimeds, err := s.promoRepo.FindAllWithClaimed(func(d *gorm.DB) *gorm.DB {
+			return d.
+				Where("id_user = ?", claims.UserId).
+				Where("id_promo IN ?", promoIDs)
+		})
+		if err != nil {
+			helper.Logger("find all claimed promo", filePath, err)
+			return []dto.GetPromoRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+		}
+
+		for _, c := range claimeds {
+			st, ok := claimMap[c.IDPromo]
+			if !ok {
+				st = &claimStatus{}
+				claimMap[c.IDPromo] = st
+			}
+			st.totalClaimed++
+			if !c.IsUsed {
+				st.hasUnused = true
+			}
+		}
+	}
+
 	dataPromoes := make([]dto.GetPromoRes, 0, len(promoes))
 
 	for _, v := range promoes {
@@ -183,8 +219,22 @@ func (s *promoService) GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) (
 		}
 
 		var usageLimit *int64
+		var isClaim *bool
+
 		if claims.Role != entity.RoleCustomer {
 			usageLimit = v.UsageLimitPerCustomer
+		} else if st, ok := claimMap[v.ID]; ok {
+			switch {
+			case st.hasUnused:
+				claimed := true
+				isClaim = &claimed
+			case v.UsageLimitPerCustomer != nil && st.totalClaimed >= *v.UsageLimitPerCustomer:
+				claimed := true
+				isClaim = &claimed
+			default:
+				claimed := false
+				isClaim = &claimed
+			}
 		}
 
 		dataPromoes = append(dataPromoes, dto.GetPromoRes{
@@ -199,6 +249,7 @@ func (s *promoService) GetPromo(req dto.GetPromoReq, claims *lib.CustomClaims) (
 			StartAt:            v.StartAt,
 			ExpiredAt:          v.ExpiredAt,
 			ImageUrl:           pressignedURL,
+			IsClaim:            isClaim,
 		})
 	}
 
@@ -247,7 +298,7 @@ func (s *promoService) PatchPromo(ctx context.Context, req dto.PatchPromoReq, id
 	}
 
 	if req.UsageLimitCustomer != nil {
-		updates["usage_limit_customer"] = req.UsageLimitCustomer
+		updates["usage_limit_per_customer"] = req.UsageLimitCustomer
 	}
 
 	if req.MinMemberPoints != nil {
@@ -390,7 +441,7 @@ func (s *promoService) ClaimPromo(id string, claimUser *lib.CustomClaims) error 
 			}
 		}
 
-		// Cek apakah ada syartt minimum member point 
+		// Cek apakah ada syartt minimum member point
 		dataCustomer, err := s.customerRepo.FindOne("id = ?", idUser)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -399,7 +450,6 @@ func (s *promoService) ClaimPromo(id string, claimUser *lib.CustomClaims) error 
 
 			return err
 		}
-
 
 		if promo.MinMemberPoints != nil && dataCustomer.MemberPoints < int(*promo.MinMemberPoints) {
 			return newBusinessError("Poin member anda tidak cukup.")
