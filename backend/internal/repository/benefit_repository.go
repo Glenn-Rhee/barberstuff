@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type BenefitRepository interface {
@@ -12,7 +13,7 @@ type BenefitRepository interface {
 	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Benefit, error)
 	Updates(tx *gorm.DB, v interface{}, id uuid.UUID) (int64, error)
 	FindOne(where interface{}, args ...interface{}) (entity.Benefit, error)
-	Delete(id uuid.UUID) (int64, error)
+	Delete(tx *gorm.DB, id uuid.UUID) (entity.Benefit, int64, error)
 	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
 
@@ -52,10 +53,14 @@ func (r *benefitRepository) FindOne(where interface{}, args ...interface{}) (ent
 	return benefit, result.Error
 }
 
-func (r *benefitRepository) Delete(id uuid.UUID) (int64, error) {
-	result := r.db.Where("id = ?").Delete(&entity.Benefit{})
+func (r *benefitRepository) Delete(tx *gorm.DB, id uuid.UUID) (entity.Benefit, int64, error) {
+	var benefit entity.Benefit
+	result := tx.
+		Clauses(clause.Returning{}).
+		Where("id = ?", id).
+		Delete(&benefit)
 
-	return result.RowsAffected, result.Error
+	return benefit, result.RowsAffected, result.Error
 }
 
 func (r *benefitRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {

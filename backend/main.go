@@ -182,6 +182,7 @@ func main() {
 		benefit.POST("/", h.BenefitHandler.CreateBenefit)
 		benefit.GET("/", h.BenefitHandler.GetBenefits)
 		benefit.PATCH("/:id", h.BenefitHandler.PatchBenefit)
+		benefit.DELETE("/:id", h.BenefitHandler.DeleteBenefit)
 	}
 
 	upload := r.Group("/upload")

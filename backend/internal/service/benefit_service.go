@@ -20,6 +20,7 @@ type BenefitService interface {
 	CrateBenefit(ctx context.Context, req dto.CreateBenefitReq) error
 	GetBenefits(req dto.GetBenefitReq, claims *lib.CustomClaims) ([]dto.GetBenefitRes, dto.ResponsePagination, error)
 	PatchBenefit(ctx context.Context, req dto.PatchBenefitReq, id string) error
+	DeleteBenefit(ctx context.Context, id string) error
 }
 
 type benefitService struct {
@@ -246,6 +247,51 @@ func (s *benefitService) PatchBenefit(ctx context.Context, req dto.PatchBenefitR
 		}
 
 		helper.Logger("update benefit", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *benefitService) DeleteBenefit(ctx context.Context, id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat menghapus data benefit"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idBenefit, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id benefit tidak valid")
+	}
+
+	var (
+		errBenefitNotFound = errors.New("Benefit not found")
+		errFailedDelete    = errors.New("Failed delete image")
+	)
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		benefit, rowsAffected, err := s.benefitRepo.Delete(tx, idBenefit)
+		if err != nil {
+			return err
+		}
+
+		if rowsAffected == 0 {
+			return errBenefitNotFound
+		}
+
+		if benefit.ImageUrl != nil {
+			err = lib.DeleteObject(ctx, *benefit.ImageUrl)
+			if err != nil {
+				return errFailedDelete
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		if errors.Is(err, errBenefitNotFound) || errors.Is(err, errFailedDelete) {
+			return errors.New("Benefit tidak ditemukan atau telah dihapus.")
+		}
+
+		helper.Logger("delete benefit", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
