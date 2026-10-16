@@ -485,6 +485,256 @@ const docTemplate = `{
                 }
             }
         },
+        "/benefit": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dan customer dapat melihat daftar benefit dengan filter pencarian, status, pengurutan, dan pagination. Field status hanya disertakan dalam respons untuk admin, sedangkan customer tidak menerima field tersebut.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Benefit"
+                ],
+                "summary": "Mendapatkan daftar benefit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pencarian berdasarkan judul atau deskripsi benefit",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "visible",
+                            "hide"
+                        ],
+                        "type": "string",
+                        "description": "Filter status benefit",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "title",
+                            "status",
+                            "created_at"
+                        ],
+                        "type": "string",
+                        "description": "Kolom pengurutan",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Nomor halaman",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Jumlah data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "Urutan pengurutan",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar benefit",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal mengambil data benefit",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat membuat benefit baru dengan mengisi judul, deskripsi, URL gambar, dan status benefit.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Benefit"
+                ],
+                "summary": "Membuat benefit baru",
+                "parameters": [
+                    {
+                        "description": "Data benefit baru",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateBenefitReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil membuat benefit baru",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal membuat benefit",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/benefit/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin menghapus benefit secara permanen dari database (hard delete).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Benefit"
+                ],
+                "summary": "Menghapus benefit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID benefit",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menghapus benefit",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Gagal menghapus benefit",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat mengubah satu atau beberapa field benefit tanpa harus mengirim seluruh data.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Benefit"
+                ],
+                "summary": "Mengubah data benefit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID benefit",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data benefit yang akan diperbarui",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatchBenefitReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengubah benefit",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal mengubah benefit",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/booking": {
             "get": {
                 "security": [
@@ -4031,6 +4281,35 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateBenefitReq": {
+            "type": "object",
+            "required": [
+                "description",
+                "image_url",
+                "status",
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "visible",
+                        "hide"
+                    ]
+                },
+                "title": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
         "dto.CreateBookingRequest": {
             "type": "object",
             "required": [
@@ -5169,6 +5448,29 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.PatchBenefitReq": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "visible",
+                        "hide"
+                    ]
+                },
+                "title": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
         "dto.PatchEmployeeReq": {
             "type": "object",
             "properties": {
@@ -5955,13 +6257,17 @@ const docTemplate = `{
                 "booked",
                 "progress",
                 "completed",
-                "canceled"
+                "canceled",
+                "visible",
+                "hide"
             ],
             "x-enum-varnames": [
                 "BookingStatusBooked",
                 "BookingStatusProgress",
                 "BookingStatusCompleted",
-                "BookingStatusCanceled"
+                "BookingStatusCanceled",
+                "BenefitStatusVisible",
+                "BenefitStatusHide"
             ]
         },
         "entity.DiscountTypeEnum": {

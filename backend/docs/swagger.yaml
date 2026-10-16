@@ -136,6 +136,27 @@ definitions:
     - name
     - role
     type: object
+  dto.CreateBenefitReq:
+    properties:
+      description:
+        minLength: 1
+        type: string
+      image_url:
+        type: string
+      status:
+        enum:
+        - visible
+        - hide
+        type: string
+      title:
+        minLength: 1
+        type: string
+    required:
+    - description
+    - image_url
+    - status
+    - title
+    type: object
   dto.CreateBookingRequest:
     properties:
       booking_date:
@@ -893,6 +914,22 @@ definitions:
     - phoneNumber
     - temp_token
     type: object
+  dto.PatchBenefitReq:
+    properties:
+      description:
+        minLength: 1
+        type: string
+      image_url:
+        type: string
+      status:
+        enum:
+        - visible
+        - hide
+        type: string
+      title:
+        minLength: 1
+        type: string
+    type: object
   dto.PatchEmployeeReq:
     properties:
       account_number:
@@ -1417,12 +1454,16 @@ definitions:
     - progress
     - completed
     - canceled
+    - visible
+    - hide
     type: string
     x-enum-varnames:
     - BookingStatusBooked
     - BookingStatusProgress
     - BookingStatusCompleted
     - BookingStatusCanceled
+    - BenefitStatusVisible
+    - BenefitStatusHide
   entity.DiscountTypeEnum:
     enum:
     - percentage
@@ -1844,6 +1885,173 @@ paths:
       summary: Verifikasi OTP registrasi
       tags:
       - Customer
+  /benefit:
+    get:
+      consumes:
+      - application/json
+      description: Admin dan customer dapat melihat daftar benefit dengan filter pencarian,
+        status, pengurutan, dan pagination. Field status hanya disertakan dalam respons
+        untuk admin, sedangkan customer tidak menerima field tersebut.
+      parameters:
+      - description: Pencarian berdasarkan judul atau deskripsi benefit
+        in: query
+        name: q
+        type: string
+      - description: Filter status benefit
+        enum:
+        - visible
+        - hide
+        in: query
+        name: status
+        type: string
+      - description: Kolom pengurutan
+        enum:
+        - title
+        - status
+        - created_at
+        in: query
+        name: sort_by
+        type: string
+      - default: 1
+        description: Nomor halaman
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 20
+        description: Jumlah data per halaman
+        in: query
+        maximum: 50
+        minimum: 1
+        name: limit
+        type: integer
+      - description: Urutan pengurutan
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil daftar benefit
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau gagal mengambil data benefit
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mendapatkan daftar benefit
+      tags:
+      - Benefit
+    post:
+      consumes:
+      - application/json
+      description: Admin dapat membuat benefit baru dengan mengisi judul, deskripsi,
+        URL gambar, dan status benefit.
+      parameters:
+      - description: Data benefit baru
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateBenefitReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil membuat benefit baru
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau gagal membuat benefit
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Membuat benefit baru
+      tags:
+      - Benefit
+  /benefit/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Admin menghapus benefit secara permanen dari database (hard delete).
+      parameters:
+      - description: ID benefit
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menghapus benefit
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Gagal menghapus benefit
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Menghapus benefit
+      tags:
+      - Benefit
+    patch:
+      consumes:
+      - application/json
+      description: Admin dapat mengubah satu atau beberapa field benefit tanpa harus
+        mengirim seluruh data.
+      parameters:
+      - description: ID benefit
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data benefit yang akan diperbarui
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatchBenefitReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengubah benefit
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau gagal mengubah benefit
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mengubah data benefit
+      tags:
+      - Benefit
   /booking:
     get:
       description: Mengambil daftar booking berdasarkan status booking, dapat difilter
