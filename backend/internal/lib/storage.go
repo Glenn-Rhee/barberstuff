@@ -87,6 +87,7 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 		}
 	}
 	bucket := os.Getenv("WASABI_BUCKET")
+	log.Printf("DEBUG bucket=%q tempKey=%q", bucket, tempKey)
 
 	if strings.Split(tempKey, "/")[0] != "temp" {
 		return "", errors.New("Image url harus berupa object key.")
@@ -110,7 +111,7 @@ func MoveObjectToPermanent(ctx context.Context, tempKey string) (string, error) 
 			Key:    aws.String(tempKey),
 		})
 		helper.Logger("failed move object", "move to object permanent", err)
-		return "", errors.New("Gagal membuat data, mohon upload gambar ulang.")
+		return "", errors.New("Ukuran gambar terlalu besar.")
 	}
 
 	permanentKey := strings.Replace(tempKey, "temp/", "uploads/", 1)
@@ -142,7 +143,6 @@ func MoveObjectToTemp(ctx context.Context, permanentKey string) error {
 		}
 	}
 	bucket := os.Getenv("WASABI_BUCKET")
-
 	if !strings.HasPrefix(permanentKey, "uploads/") {
 		return errors.New("Image url harus berupa object key.")
 	}
@@ -178,7 +178,6 @@ func DeleteObject(ctx context.Context, key string) error {
 	}
 
 	bucket := os.Getenv("WASABI_BUCKET")
-
 	_, err := S3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),

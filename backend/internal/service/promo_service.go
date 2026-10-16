@@ -493,6 +493,7 @@ func (s *promoService) GetClaimPromo(req dto.GetPromoClaimReq, claimUser *lib.Cu
 		return d.
 			Preload("Promo").
 			Joins("JOIN promo ON promo.id = promo_claimed.id_promo").
+			Where("promo.deleted_at IS NULL").
 			Where("promo_claimed.id_user = ? AND promo_claimed.is_used = ?", idCustomer, false)
 
 	})
@@ -527,8 +528,8 @@ func (s *promoService) GetClaimPromo(req dto.GetPromoClaimReq, claimUser *lib.Cu
 	var sort string
 
 	switch sortBy {
-	case dto.SortPromoByName:
-		sort = "promo.name"
+	case dto.SortPromoByTitle:
+		sort = "promo.title"
 	case dto.SortPromoByValue:
 		sort = "promo.discount_value"
 	default:
@@ -536,13 +537,15 @@ func (s *promoService) GetClaimPromo(req dto.GetPromoClaimReq, claimUser *lib.Cu
 	}
 
 	totalData, err := s.promoRepo.CountClaimed(scopes...)
+	if err != nil {
+		helper.Logger("count promo", filePath, err)
+		return []dto.GetPromoClaimRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 		return d.Clauses(clause.OrderBy{
 			Columns: []clause.OrderByColumn{
-				{
-					Column: clause.Column{Name: sort},
-					Desc:   orderBy == dto.OrderDesc,
-				},
+				{Column: clause.Column{Name: sort}, Desc: orderBy == dto.OrderDesc},
+				{Column: clause.Column{Name: "promo_claimed.id"}, Desc: orderBy == dto.OrderDesc},
 			},
 		}).Offset((page - 1) * limit).Limit(limit)
 	})

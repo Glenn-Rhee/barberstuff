@@ -176,6 +176,12 @@ func main() {
 		promo.GET("/claim", h.PromoHandler.GetClaimPromo)
 	}
 
+	benefit := r.Group("/benefit")
+	{
+		benefit.Use(h.AuthMiddleware)
+		benefit.POST("/", h.BenefitHandler.CreateBenefit)
+	}
+
 	upload := r.Group("/upload")
 	{
 		upload.Use(h.AuthMiddleware)

@@ -22,3 +22,7 @@ type Benefit struct {
 	CreatedAt   time.Time         `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt   time.Time         `gorm:"column:updated_at;not null;autoUpdateTime"`
 }
+
+func (Benefit) TableName() string {
+	return "benefit"
+}
