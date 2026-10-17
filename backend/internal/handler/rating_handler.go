@@ -85,7 +85,7 @@ func (h *RatingHandler) Create(ctx *gin.Context) {
 
 // GetRating godoc
 // @Summary      Mendapatkan daftar rating
-// @Description  Admin dan customer dapat melihat daftar rating dengan filter ID target, pencarian, rentang skor rating, pengurutan, dan pagination. Skor rating tidak dapat mengirim salah satunya, kirim keduanya atau tidak sama sekali. Apabila ingin filter rating untuk score 5 saja, maka rating_min_score=5&rating_max_score=5
+// @Description  Admin dan customer dapat melihat daftar rating dengan filter ID target, pencarian, rentang skor rating, pengurutan, dan pagination. Skor rating tidak dapat mengirim salah satunya, kirim keduanya atau tidak sama sekali. Apabila ingin filter rating untuk score 5 saja, maka rating_min_score=5&rating_max_score=5. Id target rating bisa dikirim untuk id toko, id employee (capster), atau id staff
 // @Tags         Rating
 // @Accept       json
 // @Produce      json
