@@ -65,7 +65,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 		return errors.New("Mohon menilai setidaknya satu dari toko, capster, atau staff kami.")
 	}
 
-	_, err = s.bookingRepo.FindOne("id = ? AND status_booking = ?", idBooking, entity.BookingStatusCompleted)
+	_, err = s.bookingRepo.FindOne("booking.id = ? AND booking.status_booking = ?", idBooking, entity.BookingStatusCompleted)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Booking tidak ditemukan atau belum selesai.")
@@ -87,12 +87,12 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 				return err
 			}
 
-			_, err = s.employeeRepo.FindOneCapster("id = ?", idCapster)
+			_, err = s.employeeRepo.FindOneCapster("employee.id = ?", idCapster)
 			if err != nil {
 				return err
 			}
 
-			_, err = s.ratingRepo.FindOne("id_booking = ? AND id_employee = ?", idBooking, idCapster)
+			_, err = s.ratingRepo.FindOne("rating.id_booking = ? AND rating.id_employee = ?", idBooking, idCapster)
 			if err != nil {
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					return err
@@ -128,7 +128,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 				return errors.New("Hanya dapat rating kasir!")
 			}
 
-			_, err = s.ratingRepo.FindOne("id_booking = ? AND id_staff = ?", idBooking, idStaff)
+			_, err = s.ratingRepo.FindOne("rating.id_booking = ? AND rating.id_staff = ?", idBooking, idStaff)
 			if err != nil {
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					return err
@@ -160,7 +160,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 				return err
 			}
 
-			dataRatingRegistered, err := s.ratingRepo.FindOne("id_booking = ? AND id_store = ?", idBooking, idStore)
+			dataRatingRegistered, err := s.ratingRepo.FindOne("rating.id_booking = ? AND rating.id_store = ?", idBooking, idStore)
 			if err != nil {
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					return err

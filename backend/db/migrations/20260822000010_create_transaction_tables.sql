@@ -30,6 +30,10 @@ CREATE TABLE transactions (
     deleted_at TIMESTAMP
 );
 CREATE UNIQUE INDEX idx_cash_session_store_date ON cash_session (id_store, created_at);
+
+CREATE TABLE title_outcome (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+)
 -- +goose StatementEnd
 
 -- +goose Down
