@@ -1,6 +1,10 @@
 package dto
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Review struct {
 	Id      uuid.UUID              `json:"id"`
@@ -60,4 +64,5 @@ type GetRatingRes struct {
 	ImageUrl    *string   `json:"image_url"`
 	Score       int       `json:"score"`
 	Message     *string   `json:"message"`
+	CreatedAt   time.Time `json:"created_at"`
 }

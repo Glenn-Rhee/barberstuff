@@ -64,7 +64,12 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 		return errors.New("Mohon menilai setidaknya satu dari toko, capster, atau staff kami.")
 	}
 
-	_, err = s.bookingRepo.FindOne("booking.id = ? AND booking.status_booking = ?", idBooking, entity.BookingStatusCompleted)
+	// FIX: tambah booking.id_user agar hanya pemilik booking yang bisa memberi rating,
+	// dan hasilnya disimpan (bukan "_") untuk validasi di bawah
+	dataBooking, err := s.bookingRepo.FindOne(
+		"booking.id = ? AND booking.id_user = ? AND booking.status_booking = ?",
+		idBooking, idUser, entity.BookingStatusCompleted,
+	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Booking tidak ditemukan atau belum selesai.")
@@ -74,19 +79,43 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 		return errors.New(BASE_MESSAGE)
 	}
 
-	err = s.db.Transaction(func(tx *gorm.DB) error {
-		dataRating := entity.Rating{
-			IDUser:    idUser,
-			IDBooking: idBooking,
+	// FIX: parse + validasi ID di luar transaksi, supaya user dapat pesan error yang jelas
+	// dan ID harus cocok dengan data booking
+	var idCapster, idStaff, idStore uuid.UUID
+
+	if req.Rating.Capster != nil {
+		idCapster, err = uuid.Parse(req.Rating.Capster.Id)
+		if err != nil {
+			return errors.New("Id capster tidak valid!")
 		}
+		if idCapster != dataBooking.IDEmployee {
+			return errors.New("Capster tidak sesuai dengan booking ini!")
+		}
+	}
 
+	if req.Rating.Staff != nil {
+		idStaff, err = uuid.Parse(req.Rating.Staff.Id)
+		if err != nil {
+			return errors.New("Id kasir tidak valid!")
+		}
+		if idStaff != dataBooking.IDStaff {
+			return errors.New("Kasir tidak sesuai dengan booking ini!")
+		}
+	}
+
+	if req.Rating.Store != nil {
+		idStore, err = uuid.Parse(req.Rating.Store.Id)
+		if err != nil {
+			return errors.New("Id toko tidak valid!")
+		}
+		if idStore != dataBooking.IDStore {
+			return errors.New("Toko tidak sesuai dengan booking ini!")
+		}
+	}
+
+	err = s.db.Transaction(func(tx *gorm.DB) error {
 		if req.Rating.Capster != nil {
-			idCapster, err := uuid.Parse(req.Rating.Capster.Id)
-			if err != nil {
-				return err
-			}
-
-			_, err = s.employeeRepo.FindOneCapster("employee.id = ?", idCapster)
+			_, err := s.employeeRepo.FindOneCapster("employee.id = ?", idCapster)
 			if err != nil {
 				return err
 			}
@@ -97,27 +126,24 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 					return err
 				}
 
-				dataRating.IDEmployee = &idCapster
-				dataRating.IdStaff = nil
-				dataRating.IDStore = nil
-				dataRating.Score = int16(req.Rating.Capster.Score)
-				dataRating.Type = entity.RatingTypeCapster
+				// FIX: objek baru + ID baru untuk setiap rating (sebelumnya ID kosong 0000...)
+				dataRating := entity.Rating{
+					ID:         uuid.New(),
+					IDUser:     idUser,
+					IDBooking:  idBooking,
+					IDEmployee: &idCapster,
+					Score:      int16(req.Rating.Capster.Score),
+					Type:       entity.RatingTypeCapster,
+				}
 
 				err = s.ratingRepo.Create(tx, &dataRating)
 				if err != nil {
 					return err
 				}
 			}
-
-			dataRating.ID = uuid.New()
 		}
 
 		if req.Rating.Staff != nil {
-			idStaff, err := uuid.Parse(req.Rating.Staff.Id)
-			if err != nil {
-				return err
-			}
-
 			dataStaff, err := s.staffRepo.FindOne("id = ?", idStaff)
 			if err != nil {
 				return err
@@ -133,28 +159,25 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 					return err
 				}
 
-				dataRating.IDEmployee = nil
-				dataRating.IdStaff = &idStaff
-				dataRating.IDStore = nil
-				dataRating.Score = int16(req.Rating.Staff.Score)
-				dataRating.Type = entity.RatingTypeStaff
+				// FIX: objek baru + ID baru
+				dataRating := entity.Rating{
+					ID:        uuid.New(),
+					IDUser:    idUser,
+					IDBooking: idBooking,
+					IdStaff:   &idStaff,
+					Score:     int16(req.Rating.Staff.Score),
+					Type:      entity.RatingTypeStaff,
+				}
 
 				err = s.ratingRepo.Create(tx, &dataRating)
 				if err != nil {
 					return err
 				}
 			}
-
-			dataRating.ID = uuid.New()
 		}
 
 		if req.Rating.Store != nil {
-			idStore, err := uuid.Parse(req.Rating.Store.Id)
-			if err != nil {
-				return err
-			}
-
-			_, err = s.storeRepo.FindOne("id = ?", idStore)
+			_, err := s.storeRepo.FindOne("id = ?", idStore)
 			if err != nil {
 				return err
 			}
@@ -165,19 +188,25 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 					return err
 				}
 
-				dataRating.IDEmployee = nil
-				dataRating.IdStaff = nil
-				dataRating.IDStore = &idStore
-				dataRating.Score = int16(req.Rating.Store.Score)
-				dataRating.Type = entity.RatingTypeStore
-				dataRating.Message = req.Rating.Store.Message
+				// FIX: objek baru + ID baru
+				dataRating := entity.Rating{
+					ID:        uuid.New(),
+					IDUser:    idUser,
+					IDBooking: idBooking,
+					IDStore:   &idStore,
+					Score:     int16(req.Rating.Store.Score),
+					Type:      entity.RatingTypeStore,
+					Message:   req.Rating.Store.Message,
+				}
 
 				err = s.ratingRepo.Create(tx, &dataRating)
 				if err != nil {
 					return err
 				}
 			} else {
+				// FIX: skor ikut diperbarui, bukan hanya message
 				err := s.ratingRepo.Updates(map[string]interface{}{
+					"score":   int16(req.Rating.Store.Score),
 					"message": req.Rating.Store.Message,
 				}, dataRatingRegistered.ID)
 
@@ -185,9 +214,8 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 					return err
 				}
 			}
-
-			dataRating.ID = uuid.New()
 		}
+
 		return nil
 	})
 
@@ -201,7 +229,6 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 
 	return nil
 }
-
 func (s *ratingService) GetRatings(req dto.GetRatingReq) ([]dto.GetRatingRes, dto.ResponsePagination, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data rating!"
 	_, filePath, _, _ := runtime.Caller(0)
@@ -299,6 +326,7 @@ func (s *ratingService) GetRatings(req dto.GetRatingReq) ([]dto.GetRatingRes, dt
 			ImageUrl:    imgUrl,
 			Score:       int(v.Score),
 			Message:     v.Message,
+			CreatedAt:   v.CreatedAt,
 		})
 	}
 
