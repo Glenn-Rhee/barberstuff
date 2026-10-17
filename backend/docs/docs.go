@@ -4242,7 +4242,10 @@ const docTemplate = `{
             ],
             "properties": {
                 "id_employee": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "id_store": {
                     "type": "string"

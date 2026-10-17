@@ -10,6 +10,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"runtime"
 	"time"
 
@@ -41,6 +42,8 @@ type bookingService struct {
 	customerRepo repository.CustomerRepository
 	db           *gorm.DB
 }
+
+var validSortColumn = regexp.MustCompile(`^[a-z_]+$`)
 
 func NewBookingService(
 	br repository.BookingRepository,
@@ -633,7 +636,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		if idPromoClaimed != nil {
 			updates := map[string]interface{}{
-				"is_used":  true,
+				"is_used": true,
 				"used_at": time.Now(),
 			}
 
@@ -1226,20 +1229,16 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 	if reqParams.Query != nil {
 		q := "%" + *reqParams.Query + "%"
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			// FIX: kondisi pencarian ditulis langsung, tidak lagi memakai d.Where(...) di dalam Where(...)
 			return d.
 				Joins("JOIN customer ON customer.id = booking.id_user").
 				Joins("LEFT JOIN employee ON employee.id = booking.id_employee").
-				Where(
-					d.Where("customer.name ILIKE ?", q).
-						Or("employee.name ILIKE ?", q).
-						Or(`EXISTS (
-					SELECT 1 FROM
-					booking_item bi
+				Where(`(customer.name ILIKE ? OR employee.name ILIKE ? OR EXISTS (
+					SELECT 1 FROM booking_item bi
 					JOIN service s ON s.id = bi.id_service
 					WHERE bi.id_booking = booking.id
 					AND s.name ILIKE ?
-				)`, q),
-				)
+				))`, q, q, q)
 		})
 	}
 
@@ -1284,6 +1283,7 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 
 	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
 		if reqParams.SortBy == nil {
+			// FIX: tambah booking.id ASC sebagai tie-breaker agar pagination stabil
 			d = d.Clauses(clause.OrderBy{
 				Expression: clause.Expr{
 					SQL: `CASE booking.status_booking
@@ -1291,7 +1291,7 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 						WHEN ? THEN 2
 						WHEN ? THEN 3
 						ELSE 4
-					END ASC, booking.created_at ASC`,
+					END ASC, booking.scheduled_at DESC, booking.id ASC`,
 					Vars: []interface{}{
 						entity.BookingStatusProgress,
 						entity.BookingStatusBooked,
@@ -1300,13 +1300,27 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 				},
 			})
 		} else {
+			// FIX: nama kolom divalidasi (hanya huruf kecil dan underscore) lalu diberi
+			// nama tabel "booking" agar tidak ambigu saat ada JOIN, plus tie-breaker booking.id
+			sortCol := string(sortBy)
+			if !validSortColumn.MatchString(sortCol) {
+				sortCol = "scheduled_at"
+			}
+
 			d = d.Clauses(clause.OrderBy{
 				Columns: []clause.OrderByColumn{
 					{
 						Column: clause.Column{
-							Name: string(sortBy),
+							Table: "booking",
+							Name:  sortCol,
 						},
 						Desc: dto.SortBooking(orderBy) == "desc",
+					},
+					{
+						Column: clause.Column{
+							Table: "booking",
+							Name:  "id",
+						},
 					},
 				},
 			})
@@ -1350,15 +1364,18 @@ func (s *bookingService) GetBookings(reqParams dto.GetBookingsRequest, claims *l
 		}
 
 		totalRatingCapster := 0
+		countRatingCapster := 0 // FIX: hitung jumlah rating capster saja
 		var avgRating float32 = 5.0
 		for _, v := range b.Ratings {
 			if v.IDEmployee != nil && v.Type == entity.RatingTypeCapster {
 				totalRatingCapster += int(v.Score)
+				countRatingCapster++
 			}
 		}
 
-		if len(b.Ratings) > 0 {
-			avgRating = float32(totalRatingCapster) / float32(len(b.Ratings))
+		// FIX: pembagi memakai jumlah rating capster, bukan len(b.Ratings)
+		if countRatingCapster > 0 {
+			avgRating = float32(totalRatingCapster) / float32(countRatingCapster)
 		}
 
 		services := make([]dto.DataServiceBooking, 0, len(b.BookingItems))

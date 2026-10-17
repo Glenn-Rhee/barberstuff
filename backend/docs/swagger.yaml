@@ -108,7 +108,9 @@ definitions:
   dto.CreateAbsentReq:
     properties:
       id_employee:
-        type: string
+        items:
+          type: string
+        type: array
       id_store:
         type: string
     required:
