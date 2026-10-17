@@ -57,7 +57,7 @@ func (s *transactionsService) CreateTransaction(req dto.CreateTransactionReq) er
 		return errors.New("Id buku kasir tidak valid.")
 	}
 
-	_, err = s.cashSessionRepo.FindOne("id = ? AND status = ?", idCashSession, entity.SessionOpen)
+	dataCashSession, err := s.cashSessionRepo.FindOne("id = ? AND status = ?", idCashSession, entity.SessionOpen)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Pembukuan tidak ditemukan atau telah ditutup.")
@@ -65,6 +65,16 @@ func (s *transactionsService) CreateTransaction(req dto.CreateTransactionReq) er
 
 		helper.Logger("find one cash session", filePath, err)
 		return errors.New(BASE_MESSAGE)
+	}
+
+	loc := time.Local
+	now := time.Now().In(loc)
+	createdAt := dataCashSession.CreatedAt.In(loc)
+
+	ny, nm, nd := now.Date()
+	cy, cm, cd := createdAt.Date()
+	if ny != cy || nm != cm || nd != cd {
+		return errors.New("Pembukuan kasir bukan milik hari ini. Harap tutup pembukuan sebelumnya dan buka pembukuan baru.")
 	}
 
 	if req.TransactionType == entity.TransactionIncome {
