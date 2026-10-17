@@ -127,6 +127,7 @@ func main() {
 	{
 		rating.Use(h.AuthMiddleware)
 		rating.POST("/", h.RatingHandler.Create)
+		rating.GET("/", h.RatingHandler.GetRating)
 	}
 
 	cashSessions := r.Group("/cash-sessions")

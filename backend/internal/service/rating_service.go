@@ -7,15 +7,16 @@ import (
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"errors"
-	"log"
 	"runtime"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type RatingService interface {
 	Create(req dto.CreateRatingRequest, claims *lib.CustomClaims) error
+	GetRatings(req dto.GetRatingReq) ([]dto.GetRatingRes, dto.ResponsePagination, error)
 }
 
 type ratingService struct {
@@ -34,7 +35,6 @@ func NewRatingService(
 	sr repository.StaffRepository,
 	str repository.StoreRepository,
 	db *gorm.DB,
-
 ) RatingService {
 	return &ratingService{
 		ratingRepo:   rr,
@@ -49,7 +49,6 @@ func NewRatingService(
 func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomClaims) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data rating!"
 	_, filePath, _, _ := runtime.Caller(0)
-	log.Println("Req:", req)
 
 	idBooking, err := uuid.Parse(req.IdBooking)
 	if err != nil {
@@ -201,4 +200,107 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 	}
 
 	return nil
+}
+
+func (s *ratingService) GetRatings(req dto.GetRatingReq) ([]dto.GetRatingRes, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data rating!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	if req.Query != nil {
+		q := "%" + *req.Query + "%"
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("message ILIKE ?", q)
+		})
+	}
+
+	if req.IdTarget != nil {
+		IdTarget, err := uuid.Parse(*req.IdTarget)
+		if err != nil {
+			return []dto.GetRatingRes{}, dto.ResponsePagination{}, errors.New("Id toko tidak valid.")
+		}
+
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("id_store = ? OR id_employee ? OR id_staff ?", IdTarget, IdTarget, IdTarget)
+		})
+	}
+
+	if (req.RatingMinScore == nil && req.RatingMaxScore != nil) ||
+		(req.RatingMinScore != nil && req.RatingMaxScore == nil) {
+		return []dto.GetRatingRes{}, dto.ResponsePagination{}, errors.New("Tidak dapat mengisi hanya salah satu min rating dan max rating saja.")
+	}
+
+	if req.RatingMinScore != nil && req.RatingMaxScore != nil {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("score >= ? AND score <= ?", req.RatingMinScore, req.RatingMaxScore)
+		})
+	}
+
+	var page = 1
+	var limit = 20
+	var sortBy = dto.RatingByScore
+	var orderBy = dto.OrderDesc
+
+	if req.Page != nil {
+		page = *req.Page
+	}
+
+	if req.Limit != nil {
+		limit = *req.Limit
+	}
+
+	if req.SortBy != nil {
+		sortBy = *req.SortBy
+	}
+
+	if req.OrderBy != nil {
+		orderBy = *req.OrderBy
+	}
+
+	totalData, err := s.ratingRepo.Count(scopes...)
+	if err != nil {
+		helper.Logger("count total rating", filePath, err)
+		return []dto.GetRatingRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{Column: clause.Column{Name: string(sortBy)}, Desc: orderBy == dto.OrderDesc},
+				{Column: clause.Column{Name: "created_at"}},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
+	ratings, err := s.ratingRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("find all ratings", filePath, err)
+		return []dto.GetRatingRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataRatings := make([]dto.GetRatingRes, 0, len(ratings))
+	for _, v := range ratings {
+		var imgUrl *string
+		if v.Customer.ImageCustomer != nil {
+			pressignedUrl, err := lib.GeneratePressignedGetURL(*v.Customer.ImageCustomer)
+			if err != nil {
+				helper.Logger("generate img url", filePath, err)
+			}
+
+			imgUrl = &pressignedUrl
+		}
+
+		dataRatings = append(dataRatings, dto.GetRatingRes{
+			ID:          v.ID,
+			IDCustomer:  v.Customer.ID,
+			Name:        v.Customer.Name,
+			PremiumType: v.Customer.PremiumType.Name,
+			ImageUrl:    imgUrl,
+			Score:       int(v.Score),
+			Message:     v.Message,
+		})
+	}
+
+	return dataRatings, paginationData, nil
 }

@@ -8,10 +8,11 @@ import (
 )
 
 type RatingRepository interface {
-	FindAll(where interface{}, args ...interface{}) ([]entity.Rating, error)
+	FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Rating, error)
 	Create(tx *gorm.DB, d *entity.Rating) error
 	FindOne(where interface{}, args ...interface{}) (entity.Rating, error)
 	Updates(value interface{}, id uuid.UUID) error
+	Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error)
 }
 
 type ratingRepository struct {
@@ -22,7 +23,7 @@ func NewRatingRepository(db *gorm.DB) RatingRepository {
 	return &ratingRepository{db: db}
 }
 
-func (r *ratingRepository) FindAll(where interface{}, args ...interface{}) ([]entity.Rating, error) {
+func (r *ratingRepository) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]entity.Rating, error) {
 	var dataRating []entity.Rating
 	result := r.db.
 		Select("id", "id_user", "id_store", "score", "message", "created_at").
@@ -30,7 +31,7 @@ func (r *ratingRepository) FindAll(where interface{}, args ...interface{}) ([]en
 			return db.Select("id", "name", "image_customer", "id_premium_type").
 				Preload("PremiumType")
 		}).
-		Where(where, args...).
+		Scopes(scopes...).
 		Find(&dataRating)
 	return dataRating, result.Error
 }
@@ -50,4 +51,10 @@ func (r *ratingRepository) Updates(value interface{}, id uuid.UUID) error {
 		Model(&entity.Rating{}).
 		Where("id = ?", id).
 		Updates(value).Error
+}
+
+func (r *ratingRepository) Count(scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
+	var total int64
+	result := r.db.Model(&entity.Rating{}).Scopes(scopes...).Count(&total)
+	return total, result.Error
 }

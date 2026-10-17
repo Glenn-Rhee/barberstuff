@@ -35,3 +35,29 @@ type CreateRatingRequest struct {
 	IdBooking string            `json:"id_booking" binding:"required"`
 	Rating    RatingDataRequest `json:"rating" binding:"required"`
 }
+
+type SortRating string
+
+const (
+	RatingByScore     SortRating = "score"
+	RatingByCreatedAt SortRating = "created_at"
+)
+
+type GetRatingReq struct {
+	IdTarget       *string     `form:"id_target" binding:"omitempty"`
+	Query          *string     `form:"q" binding:"omitempty"`
+	RatingMinScore *int        `form:"rating_score" binding:"omitempty,numeric,min=1,max=5"`
+	RatingMaxScore *int        `form:"rating_score" binding:"omitempty,numeric,min=1,max=5"`
+	SortBy         *SortRating `form:"sort_by" binding:"omitempty,oneof=score created_at"`
+	RequestParamsPagination
+}
+
+type GetRatingRes struct {
+	ID          uuid.UUID `json:"id"`
+	IDCustomer  uuid.UUID `json:"id_customer"`
+	Name        string    `json:"name"`
+	PremiumType string    `json:"premium_type"`
+	ImageUrl    *string   `json:"image_url"`
+	Score       int       `json:"score"`
+	Message     *string   `json:"message"`
+}

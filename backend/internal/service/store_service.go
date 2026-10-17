@@ -233,7 +233,9 @@ func (s *storeService) GetStore(claims lib.CustomClaims, idStore string) (dto.St
 		return dto.StoreData{}, errors.New(BASE_MESSAGE)
 	}
 
-	dataRatings, err := s.ratingRepo.FindAll("id_store = ?", idStore)
+	dataRatings, err := s.ratingRepo.FindAll(func(d *gorm.DB) *gorm.DB {
+		return d.Where("id_store = ?", idStore)
+	})
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		helper.Logger("Find all ratings", filePath, err)
 		return dto.StoreData{}, errors.New(BASE_MESSAGE)
