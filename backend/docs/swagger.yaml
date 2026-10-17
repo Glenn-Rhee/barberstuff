@@ -780,6 +780,25 @@ definitions:
       name:
         type: string
     type: object
+  dto.GetRatingRes:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      id_customer:
+        type: string
+      image_url:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+      premium_type:
+        type: string
+      score:
+        type: integer
+    type: object
   dto.GetServiceResponse:
     properties:
       created_at:
@@ -1452,20 +1471,20 @@ definitions:
     type: object
   entity.BookingStatusEnum:
     enum:
+    - visible
+    - hide
     - booked
     - progress
     - completed
     - canceled
-    - visible
-    - hide
     type: string
     x-enum-varnames:
+    - BenefitStatusVisible
+    - BenefitStatusHide
     - BookingStatusBooked
     - BookingStatusProgress
     - BookingStatusCompleted
     - BookingStatusCanceled
-    - BenefitStatusVisible
-    - BenefitStatusHide
   entity.DiscountTypeEnum:
     enum:
     - percentage
@@ -3444,7 +3463,14 @@ paths:
         "200":
           description: Berhasil mengambil daftar rating
           schema:
-            $ref: '#/definitions/dto.SwaggerResponse'
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GetRatingRes'
+                  type: array
+              type: object
         "400":
           description: Parameter tidak valid
           schema:

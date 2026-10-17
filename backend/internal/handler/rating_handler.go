@@ -98,7 +98,7 @@ func (h *RatingHandler) Create(ctx *gin.Context) {
 // @Param        page query int false "Nomor halaman" default(1) minimum(1)
 // @Param        limit query int false "Jumlah data per halaman" default(20) minimum(1) maximum(50)
 // @Param        order query string false "Urutan pengurutan" Enums(asc, desc)
-// @Success      200 {object} dto.SwaggerResponse "Berhasil mengambil daftar rating"
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.GetRatingRes} "Berhasil mengambil daftar rating"
 // @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
 // @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
 // @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data rating"

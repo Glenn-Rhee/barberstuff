@@ -2847,7 +2847,22 @@ const docTemplate = `{
                     "200": {
                         "description": "Berhasil mengambil daftar rating",
                         "schema": {
-                            "$ref": "#/definitions/dto.SwaggerResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.GetRatingRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -5360,6 +5375,35 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.GetRatingRes": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "id_customer": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "premium_type": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.GetServiceResponse": {
             "type": "object",
             "properties": {
@@ -6368,20 +6412,20 @@ const docTemplate = `{
         "entity.BookingStatusEnum": {
             "type": "string",
             "enum": [
+                "visible",
+                "hide",
                 "booked",
                 "progress",
                 "completed",
-                "canceled",
-                "visible",
-                "hide"
+                "canceled"
             ],
             "x-enum-varnames": [
+                "BenefitStatusVisible",
+                "BenefitStatusHide",
                 "BookingStatusBooked",
                 "BookingStatusProgress",
                 "BookingStatusCompleted",
-                "BookingStatusCanceled",
-                "BenefitStatusVisible",
-                "BenefitStatusHide"
+                "BookingStatusCanceled"
             ]
         },
         "entity.DiscountTypeEnum": {

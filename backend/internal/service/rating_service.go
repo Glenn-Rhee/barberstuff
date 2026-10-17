@@ -230,7 +230,7 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 	return nil
 }
 func (s *ratingService) GetRatings(req dto.GetRatingReq) ([]dto.GetRatingRes, dto.ResponsePagination, error) {
-	const BASE_MESSAGE = "Terjadi kesalahan saat membuat data rating!"
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data rating!"
 	_, filePath, _, _ := runtime.Caller(0)
 
 	var scopes []func(*gorm.DB) *gorm.DB
@@ -248,7 +248,7 @@ func (s *ratingService) GetRatings(req dto.GetRatingReq) ([]dto.GetRatingRes, dt
 		}
 
 		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
-			return d.Where("id_store = ? OR id_employee ? OR id_staff ?", IdTarget, IdTarget, IdTarget)
+			return d.Where("id_store = ? OR id_employee = ? OR id_staff = ?", IdTarget, IdTarget, IdTarget)
 		})
 	}
 
