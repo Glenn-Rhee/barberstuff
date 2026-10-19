@@ -113,10 +113,22 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 		}
 	}
 
+	var (
+		errRatingCreated = errors.New("Rating telah dibuat.")
+	)
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		if req.Rating.Capster != nil {
 			_, err := s.employeeRepo.FindOneCapster("employee.id = ?", idCapster)
 			if err != nil {
+				return err
+			}
+
+			_, err = s.ratingRepo.FindOne("id_user = ? AND id_capster = ?", idUser, idCapster)
+			if err == nil {
+				return errRatingCreated
+			}
+
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				return err
 			}
 
@@ -153,6 +165,15 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 				return errors.New("Hanya dapat rating kasir!")
 			}
 
+			_, err = s.ratingRepo.FindOne("id_user = ? AND id_staff = ?", idUser, idStaff)
+			if err == nil {
+				return errRatingCreated
+			}
+
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				return err
+			}
+
 			_, err = s.ratingRepo.FindOne("rating.id_booking = ? AND rating.id_staff = ?", idBooking, idStaff)
 			if err != nil {
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -179,6 +200,15 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 		if req.Rating.Store != nil {
 			_, err := s.storeRepo.FindOne("id = ?", idStore)
 			if err != nil {
+				return err
+			}
+
+			_, err = s.ratingRepo.FindOne("id_user = ? AND id_store = ?", idUser, idStore)
+			if err == nil {
+				return errRatingCreated
+			}
+
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				return err
 			}
 
@@ -223,6 +253,11 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Data tidak ditemukan atau telah dihapus!")
 		}
+
+		if errors.Is(err, errRatingCreated) {
+			return err
+		}
+		
 		helper.Logger("create rating", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
