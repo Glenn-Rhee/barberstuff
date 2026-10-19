@@ -563,8 +563,6 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 		}
 	}
 
-	totalPrice = decimal.NewFromInt(constant.APP_SERVICE_FEE).Add(totalPrice)
-
 	idBooking := uuid.New()
 	bookingItems := []entity.BookingItem{{
 		ID:          uuid.New(),
@@ -685,7 +683,7 @@ func (s *bookingService) CreateBooking(ctx context.Context, claims *lib.CustomCl
 			Name:  dataService.Name,
 			Price: dataService.Price,
 		}},
-		AppServiceFee: constant.APP_SERVICE_FEE,
+		// AppServiceFee: constant.APP_SERVICE_FEE,
 	}
 
 	return result, nil

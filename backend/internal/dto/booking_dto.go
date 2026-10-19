@@ -78,7 +78,7 @@ type CreateBookingResponse struct {
 	IdBooking     uuid.UUID            `json:"id_booking"`
 	QrCode        string               `json:"qr_code"`
 	BookingDate   time.Time            `json:"booking_date"`
-	AppServiceFee int64                `json:"app_service_fee"`
+	AppServiceFee *int64               `json:"app_service_fee,omitempty"`
 	TotalPrice    decimal.Decimal      `json:"total_price"`
 	Store         DataStoreBooking     `json:"store"`
 	Capster       DataCapsterBooking   `json:"capster"`

@@ -257,13 +257,14 @@ func (s *ratingService) Create(req dto.CreateRatingRequest, claims *lib.CustomCl
 		if errors.Is(err, errRatingCreated) {
 			return err
 		}
-		
+
 		helper.Logger("create rating", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
 	return nil
 }
+
 func (s *ratingService) GetRatings(req dto.GetRatingReq) ([]dto.GetRatingRes, dto.ResponsePagination, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data rating!"
 	_, filePath, _, _ := runtime.Caller(0)
