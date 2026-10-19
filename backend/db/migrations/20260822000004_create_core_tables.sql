@@ -14,6 +14,7 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE premium_type (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(20) NOT NULL UNIQUE,
+    min_points INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

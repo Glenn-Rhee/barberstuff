@@ -9,6 +9,7 @@ import (
 type PremiumType struct {
 	ID        uuid.UUID `gorm:"column:id;primaryKey"`
 	Name      string    `gorm:"column:name;not null;unique"`
+	MinPoints int       `gorm:"column:min_points;not null"`
 	CreatedAt time.Time `gorm:"column:created_at;not null;autoCreateTime"`
 	UpdatedAt time.Time `gorm:"column:updated_at;not null;autoUpdateTime"`
 }

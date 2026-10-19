@@ -27,6 +27,7 @@ type transactionsService struct {
 	bookingRepo     repository.BookingRepository
 	customerRepo    repository.CustomerRepository
 	staffRepo       repository.StaffRepository
+	premiumTypeRepo repository.PremiumTypeRepository
 	db              *gorm.DB
 }
 
@@ -36,6 +37,7 @@ func NewTransactionsService(
 	br repository.BookingRepository,
 	cr repository.CustomerRepository,
 	sr repository.StaffRepository,
+	ptr repository.PremiumTypeRepository,
 	db *gorm.DB,
 ) TransactionsService {
 	return &transactionsService{
@@ -45,6 +47,7 @@ func NewTransactionsService(
 		db:              db,
 		customerRepo:    cr,
 		staffRepo:       sr,
+		premiumTypeRepo: ptr,
 	}
 }
 
@@ -282,7 +285,10 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 		IDBooking:       transactionsIdBooking,
 	}
 
-	var errBookingNotFound = errors.New("Booking tidak ditemukan atau telah selesai.")
+	var (
+		errBookingNotFound  = errors.New("Booking tidak ditemukan atau telah selesai.")
+		errCustomerNotFound = errors.New("Data anda tidak ditemukan.")
+	)
 	err := s.db.Transaction(func(tx *gorm.DB) error {
 		// Hanya untuk transaksi yang berasal dari booking
 		if transactionsIdBooking != nil {
@@ -303,6 +309,28 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 				helper.Logger("add member points", filePath, err)
 				return errors.New(BASE_MESSAGE)
 			}
+
+			cust, err := s.customerRepo.FindOne("id = ? AND id_premium_type IS NOT NULL", dataBooking.IDCustomer)
+			if err == nil {
+				bestTier, err := s.premiumTypeRepo.FindHighestByPoints(cust.MemberPoints)
+				if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+					return err
+				}
+
+				if err == nil && (cust.IdPremiumType == nil || *cust.IdPremiumType != bestTier.ID) {
+					rowsAffected, err := s.customerRepo.UpdateProfile(map[string]interface{}{
+						"id_premium_type": bestTier.ID,
+					}, cust.ID)
+
+					if err != nil {
+						return err
+					}
+
+					if rowsAffected == 0 {
+						return errCustomerNotFound
+					}
+				}
+			}
 		}
 
 		if err := s.transactionRepo.Create(tx, &newTransaction); err != nil {
@@ -317,12 +345,17 @@ func (s *transactionsService) createIncome(req dto.CreateTransactionReq, idCashS
 		if errors.Is(err, errBookingNotFound) {
 			return err
 		}
+
+		if errors.Is(err, errCustomerNotFound) {
+			return err
+		}
 		helper.Logger("Create transaksi", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
 	return nil
 }
+
 func (s *transactionsService) createOutcome(req dto.CreateTransactionReq, idCashSession uuid.UUID) error {
 	const BASE_MESSAGE = "Terjadi kesalahan saat membuat saldo awal!"
 	_, filePath, _, _ := runtime.Caller(0)
