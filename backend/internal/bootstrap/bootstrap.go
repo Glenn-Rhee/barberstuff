@@ -58,7 +58,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	bookingService := service.NewBookingService(bookingRepo, lib.ClientRedis, employeeRepo, storeRepo, serviceRepo, promoRepo, staffRepo, customerRepo, db)
 	ratingService := service.NewRatingService(ratingRepo, bookingRepo, employeeRepo, staffRepo, storeRepo, db)
 	cashSessionService := service.NewCashSessionService(cashSessionRepo, storeRepo, staffRepo, serviceRepo, employeeRepo, db)
-	transactionsService := service.NewTransactionsService(cashSessionRepo, transactionsRepo, bookingRepo, customerRepo, staffRepo, db)
+	transactionsService := service.NewTransactionsService(cashSessionRepo, transactionsRepo, bookingRepo, customerRepo, staffRepo, premiumTypeRepo, db)
 	positionService := service.NewPositionService(positionRepo)
 	employeeService := service.NewEmployeeService(employeeRepo, positionRepo, storeRepo, absentRepo, staffRepo, db)
 	promoService := service.NewPromoService(promoRepo, customerRepo)

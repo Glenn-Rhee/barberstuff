@@ -6412,20 +6412,20 @@ const docTemplate = `{
         "entity.BookingStatusEnum": {
             "type": "string",
             "enum": [
-                "visible",
-                "hide",
                 "booked",
                 "progress",
                 "completed",
-                "canceled"
+                "canceled",
+                "visible",
+                "hide"
             ],
             "x-enum-varnames": [
-                "BenefitStatusVisible",
-                "BenefitStatusHide",
                 "BookingStatusBooked",
                 "BookingStatusProgress",
                 "BookingStatusCompleted",
-                "BookingStatusCanceled"
+                "BookingStatusCanceled",
+                "BenefitStatusVisible",
+                "BenefitStatusHide"
             ]
         },
         "entity.DiscountTypeEnum": {

@@ -1471,20 +1471,20 @@ definitions:
     type: object
   entity.BookingStatusEnum:
     enum:
-    - visible
-    - hide
     - booked
     - progress
     - completed
     - canceled
+    - visible
+    - hide
     type: string
     x-enum-varnames:
-    - BenefitStatusVisible
-    - BenefitStatusHide
     - BookingStatusBooked
     - BookingStatusProgress
     - BookingStatusCompleted
     - BookingStatusCanceled
+    - BenefitStatusVisible
+    - BenefitStatusHide
   entity.DiscountTypeEnum:
     enum:
     - percentage
