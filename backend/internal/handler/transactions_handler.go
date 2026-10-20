@@ -154,6 +154,18 @@ func (h *TransactionsHandler) VoidTransaction(ctx *gin.Context) {
 	})
 }
 
+// CreateTitleOutcome godoc
+// @Summary      Membuat judul pengeluaran
+// @Description  Admin dapat membuat judul pengeluaran baru.
+// @Tags         Transactions - Title Outcome
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.CreateTitleOutcomeReq true "Data judul pengeluaran"
+// @Success      201 {object} dto.SwaggerResponse "Berhasil membuat judul pengeluaran baru"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal membuat judul pengeluaran"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /transactions/title [post]
 func (h *TransactionsHandler) CreateTitleOutcome(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -206,6 +218,22 @@ func (h *TransactionsHandler) CreateTitleOutcome(ctx *gin.Context) {
 	})
 }
 
+// GetTitleOutcome godoc
+// @Summary      Mendapatkan daftar judul pengeluaran
+// @Description  Admin dan kasir dapat melihat daftar judul pengeluaran dengan pencarian dan pagination.
+// @Tags         Transactions - Title Outcome
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        q query string false "Pencarian berdasarkan nama judul pengeluaran"
+// @Param        page query int false "Nomor halaman" default(1) minimum(1)
+// @Param        limit query int false "Jumlah data per halaman" default(20) minimum(1) maximum(50)
+// @Param        order query string false "Urutan pengurutan" Enums(asc, desc)
+// @Success      200 {object} dto.SwaggerResponse{data=[]dto.GetTitleOutcomeRes} "Berhasil mengambil daftar judul pengeluaran"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      406 {object} dto.SwaggerResponse "Gagal mengambil daftar judul pengeluaran"
+// @Router       /transactions/title [get]
 func (h *TransactionsHandler) GetTitleOutcome(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -259,6 +287,19 @@ func (h *TransactionsHandler) GetTitleOutcome(ctx *gin.Context) {
 	})
 }
 
+// UpdateTitleOutcome godoc
+// @Summary      Mengubah judul pengeluaran
+// @Description  Admin dapat mengubah nama judul pengeluaran berdasarkan ID.
+// @Tags         Transactions - Title Outcome
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path string true "ID judul pengeluaran"
+// @Param        request body dto.UpdateTitleOutcomeReq true "Data judul pengeluaran yang akan diperbarui"
+// @Success      201 {object} dto.SwaggerResponse "Berhasil mengubah judul pengeluaran"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau gagal mengubah judul pengeluaran"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /transactions/title/{id} [patch]
 func (h *TransactionsHandler) UpdateTitleOutcome(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -313,6 +354,18 @@ func (h *TransactionsHandler) UpdateTitleOutcome(ctx *gin.Context) {
 	})
 }
 
+// DeleteTitleOutcome godoc
+// @Summary      Menghapus judul pengeluaran
+// @Description  Admin menghapus judul pengeluaran berdasarkan ID.
+// @Tags         Transactions - Title Outcome
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path string true "ID judul pengeluaran"
+// @Success      201 {object} dto.SwaggerResponse "Berhasil menghapus judul pengeluaran"
+// @Failure      400 {object} dto.SwaggerResponse "Gagal menghapus judul pengeluaran"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /transactions/title/{id} [delete]
 func (h *TransactionsHandler) DeleteTitleOutcome(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

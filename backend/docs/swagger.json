@@ -4085,6 +4085,256 @@
                 }
             }
         },
+        "/transactions/title": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dan kasir dapat melihat daftar judul pengeluaran dengan pencarian dan pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transactions - Title Outcome"
+                ],
+                "summary": "Mendapatkan daftar judul pengeluaran",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pencarian berdasarkan nama judul pengeluaran",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Nomor halaman",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Jumlah data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "Urutan pengurutan",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar judul pengeluaran",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.GetTitleOutcomeRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Gagal mengambil daftar judul pengeluaran",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat membuat judul pengeluaran baru.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transactions - Title Outcome"
+                ],
+                "summary": "Membuat judul pengeluaran",
+                "parameters": [
+                    {
+                        "description": "Data judul pengeluaran",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateTitleOutcomeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Berhasil membuat judul pengeluaran baru",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal membuat judul pengeluaran",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transactions/title/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin menghapus judul pengeluaran berdasarkan ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transactions - Title Outcome"
+                ],
+                "summary": "Menghapus judul pengeluaran",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID judul pengeluaran",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Berhasil menghapus judul pengeluaran",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Gagal menghapus judul pengeluaran",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat mengubah nama judul pengeluaran berdasarkan ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transactions - Title Outcome"
+                ],
+                "summary": "Mengubah judul pengeluaran",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID judul pengeluaran",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data judul pengeluaran yang akan diperbarui",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateTitleOutcomeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Berhasil mengubah judul pengeluaran",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau gagal mengubah judul pengeluaran",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/transactions/void": {
             "patch": {
                 "security": [
@@ -4752,6 +5002,17 @@
                             "$ref": "#/definitions/entity.ProductTypeEnum"
                         }
                     ]
+                }
+            }
+        },
+        "dto.CreateTitleOutcomeReq": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -5426,6 +5687,20 @@
                 },
                 "type": {
                     "$ref": "#/definitions/entity.ProductTypeEnum"
+                }
+            }
+        },
+        "dto.GetTitleOutcomeRes": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -6350,6 +6625,14 @@
                 }
             }
         },
+        "dto.UpdateTitleOutcomeReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UserAuth": {
             "type": "object",
             "properties": {
@@ -6405,20 +6688,20 @@
         "entity.BookingStatusEnum": {
             "type": "string",
             "enum": [
+                "visible",
+                "hide",
                 "booked",
                 "progress",
                 "completed",
-                "canceled",
-                "visible",
-                "hide"
+                "canceled"
             ],
             "x-enum-varnames": [
+                "BenefitStatusVisible",
+                "BenefitStatusHide",
                 "BookingStatusBooked",
                 "BookingStatusProgress",
                 "BookingStatusCompleted",
-                "BookingStatusCanceled",
-                "BenefitStatusVisible",
-                "BenefitStatusHide"
+                "BookingStatusCanceled"
             ]
         },
         "entity.DiscountTypeEnum": {

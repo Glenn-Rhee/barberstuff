@@ -380,6 +380,13 @@ definitions:
     - price
     - type
     type: object
+  dto.CreateTitleOutcomeReq:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
   dto.CreateTransactionReq:
     properties:
       amount:
@@ -819,6 +826,15 @@ definitions:
         $ref: '#/definitions/entity.ProductStatusEnum'
       type:
         $ref: '#/definitions/entity.ProductTypeEnum'
+    type: object
+  dto.GetTitleOutcomeRes:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
     type: object
   dto.HistoryCashSessionRes:
     properties:
@@ -1435,6 +1451,11 @@ definitions:
         - Asia/Makassar
         - Asia/Jayapura
     type: object
+  dto.UpdateTitleOutcomeReq:
+    properties:
+      name:
+        type: string
+    type: object
   dto.UserAuth:
     properties:
       email:
@@ -1471,20 +1492,20 @@ definitions:
     type: object
   entity.BookingStatusEnum:
     enum:
+    - visible
+    - hide
     - booked
     - progress
     - completed
     - canceled
-    - visible
-    - hide
     type: string
     x-enum-varnames:
+    - BenefitStatusVisible
+    - BenefitStatusHide
     - BookingStatusBooked
     - BookingStatusProgress
     - BookingStatusCompleted
     - BookingStatusCanceled
-    - BenefitStatusVisible
-    - BenefitStatusHide
   entity.DiscountTypeEnum:
     enum:
     - percentage
@@ -4268,6 +4289,166 @@ paths:
       summary: Membuat transaksi
       tags:
       - Transactions
+  /transactions/title:
+    get:
+      consumes:
+      - application/json
+      description: Admin dan kasir dapat melihat daftar judul pengeluaran dengan pencarian
+        dan pagination.
+      parameters:
+      - description: Pencarian berdasarkan nama judul pengeluaran
+        in: query
+        name: q
+        type: string
+      - default: 1
+        description: Nomor halaman
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 20
+        description: Jumlah data per halaman
+        in: query
+        maximum: 50
+        minimum: 1
+        name: limit
+        type: integer
+      - description: Urutan pengurutan
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil daftar judul pengeluaran
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GetTitleOutcomeRes'
+                  type: array
+              type: object
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "406":
+          description: Gagal mengambil daftar judul pengeluaran
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mendapatkan daftar judul pengeluaran
+      tags:
+      - Transactions - Title Outcome
+    post:
+      consumes:
+      - application/json
+      description: Admin dapat membuat judul pengeluaran baru.
+      parameters:
+      - description: Data judul pengeluaran
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTitleOutcomeReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Berhasil membuat judul pengeluaran baru
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau gagal membuat judul pengeluaran
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Membuat judul pengeluaran
+      tags:
+      - Transactions - Title Outcome
+  /transactions/title/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Admin menghapus judul pengeluaran berdasarkan ID.
+      parameters:
+      - description: ID judul pengeluaran
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Berhasil menghapus judul pengeluaran
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Gagal menghapus judul pengeluaran
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Menghapus judul pengeluaran
+      tags:
+      - Transactions - Title Outcome
+    patch:
+      consumes:
+      - application/json
+      description: Admin dapat mengubah nama judul pengeluaran berdasarkan ID.
+      parameters:
+      - description: ID judul pengeluaran
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data judul pengeluaran yang akan diperbarui
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateTitleOutcomeReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Berhasil mengubah judul pengeluaran
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau gagal mengubah judul pengeluaran
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mengubah judul pengeluaran
+      tags:
+      - Transactions - Title Outcome
   /transactions/void:
     patch:
       consumes:
