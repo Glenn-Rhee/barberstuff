@@ -149,6 +149,7 @@ func main() {
 			title.POST("/", h.TransactionsHandler.CreateTitleOutcome)
 			title.GET("/", h.TransactionsHandler.GetTitleOutcome)
 			title.PATCH("/:id", h.TransactionsHandler.UpdateTitleOutcome)
+			title.DELETE("/:id", h.TransactionsHandler.DeleteTitleOutcome)
 		}
 	}
 

@@ -23,6 +23,7 @@ type TransactionsService interface {
 	CreateTitleOutcome(req dto.CreateTitleOutcomeReq) error
 	GetTitleOutcomes(req dto.GetTitleOutcomeReq) ([]dto.GetTitleOutcomeRes, dto.ResponsePagination, error)
 	UpdatesTitleOutcomes(req dto.UpdateTitleOutcomeReq, id string) error
+	DeleteTitleOutcomes(id string) error
 }
 
 type transactionsService struct {
@@ -503,6 +504,28 @@ func (s *transactionsService) UpdatesTitleOutcomes(req dto.UpdateTitleOutcomeReq
 		}
 
 		helper.Logger("update title outcome", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Judul pengeluaran tidak ditemukan atau telah dihapus.")
+	}
+
+	return nil
+}
+
+func (s *transactionsService) DeleteTitleOutcomes(id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat menghapus judul pengeluaran."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idTitle, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id judul pengeluaran tidak valid.")
+	}
+
+	rowsAffected, err := s.titleOutcomeRepo.Delete(idTitle)
+	if err != nil {
+		helper.Logger("delete title outcome", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
