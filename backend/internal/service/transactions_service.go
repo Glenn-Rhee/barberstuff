@@ -22,6 +22,7 @@ type TransactionsService interface {
 	VoidTransaction(claims *lib.CustomClaims, req dto.VoidTransactionReq) error
 	CreateTitleOutcome(req dto.CreateTitleOutcomeReq) error
 	GetTitleOutcomes(req dto.GetTitleOutcomeReq) ([]dto.GetTitleOutcomeRes, dto.ResponsePagination, error)
+	UpdatesTitleOutcomes(req dto.UpdateTitleOutcomeReq, id string) error
 }
 
 type transactionsService struct {
@@ -475,4 +476,39 @@ func (s *transactionsService) GetTitleOutcomes(req dto.GetTitleOutcomeReq) ([]dt
 	}
 
 	return dataTitles, dataPagination, nil
+}
+
+func (s *transactionsService) UpdatesTitleOutcomes(req dto.UpdateTitleOutcomeReq, id string) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengubah judul pengeluaran."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idTitle, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("Id judul pengeluaran tidak valid.")
+	}
+
+	if helper.IsAllFieldsNil(req) {
+		return errors.New("Ubah setidaknya salah satu data judul pengeluaran.")
+	}
+
+	updates := make(map[string]interface{})
+	if req.Name != nil {
+		updates["name"] = req.Name
+	}
+
+	rowsAffected, err := s.titleOutcomeRepo.Updates(updates, idTitle)
+	if err != nil {
+		if helper.IsUniqueViolation(err) {
+			return errors.New("Nama ini telah terdaftar")
+		}
+
+		helper.Logger("update title outcome", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Judul pengeluaran tidak ditemukan atau telah dihapus.")
+	}
+
+	return nil
 }

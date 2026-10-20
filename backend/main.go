@@ -144,8 +144,12 @@ func main() {
 		transactions.Use(h.AuthMiddleware)
 		transactions.POST("/", h.TransactionsHandler.CreateTransaction)
 		transactions.PATCH("/void", h.TransactionsHandler.VoidTransaction)
-		transactions.POST("/title", h.TransactionsHandler.CreateTitleOutcome)
-		transactions.GET("/title", h.TransactionsHandler.GetTitleOutcome)
+		title := transactions.Group("/title")
+		{
+			title.POST("/", h.TransactionsHandler.CreateTitleOutcome)
+			title.GET("/", h.TransactionsHandler.GetTitleOutcome)
+			title.PATCH("/:id", h.TransactionsHandler.UpdateTitleOutcome)
+		}
 	}
 
 	position := r.Group("/position")

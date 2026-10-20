@@ -27,6 +27,10 @@ type CreateTitleOutcomeReq struct {
 	Name string `json:"name" binding:"required"`
 }
 
+type UpdateTitleOutcomeReq struct {
+	Name *string `json:"name" binding:"omitempty"`
+}
+
 type GetTitleOutcomeReq struct {
 	Query *string `form:"q" binding:"omitempty"`
 	RequestParamsPagination
