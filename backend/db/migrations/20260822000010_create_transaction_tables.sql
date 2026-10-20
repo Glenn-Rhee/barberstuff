@@ -33,13 +33,17 @@ CREATE UNIQUE INDEX idx_cash_session_store_date ON cash_session (id_store, creat
 
 CREATE TABLE title_outcome (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-)
+    name varchar(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS cash_session;
+DROP TABLE IF EXISTS title_outcome;
 DROP TYPE IF EXISTS cash_session_type;
 DROP TYPE IF EXISTS payment_type;
 DROP TYPE IF EXISTS transaction_type;
