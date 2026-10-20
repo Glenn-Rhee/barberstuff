@@ -33,7 +33,7 @@ CREATE UNIQUE INDEX idx_cash_session_store_date ON cash_session (id_store, creat
 
 CREATE TABLE title_outcome (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name varchar(50) NOT NULL,
+    name varchar(50) NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

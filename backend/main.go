@@ -144,6 +144,7 @@ func main() {
 		transactions.Use(h.AuthMiddleware)
 		transactions.POST("/", h.TransactionsHandler.CreateTransaction)
 		transactions.PATCH("/void", h.TransactionsHandler.VoidTransaction)
+		transactions.POST("/title", h.TransactionsHandler.CreateTitleOutcome)
 	}
 
 	position := r.Group("/position")

@@ -17,3 +17,7 @@ type VoidTransactionReq struct {
 	IdTransaction string `json:"id_transaction" binding:"required"`
 	Description   string `json:"description" binding:"required"`
 }
+
+type CreateTitleOutcomeReq struct {
+	Name string `json:"name" binding:"required"`
+}

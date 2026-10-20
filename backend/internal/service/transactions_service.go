@@ -19,16 +19,18 @@ import (
 type TransactionsService interface {
 	CreateTransaction(req dto.CreateTransactionReq) error
 	VoidTransaction(claims *lib.CustomClaims, req dto.VoidTransactionReq) error
+	CreateTitleOutcome(req dto.CreateTitleOutcomeReq) error
 }
 
 type transactionsService struct {
-	cashSessionRepo repository.CashSessionRepository
-	transactionRepo repository.TransactionsRepository
-	bookingRepo     repository.BookingRepository
-	customerRepo    repository.CustomerRepository
-	staffRepo       repository.StaffRepository
-	premiumTypeRepo repository.PremiumTypeRepository
-	db              *gorm.DB
+	cashSessionRepo  repository.CashSessionRepository
+	transactionRepo  repository.TransactionsRepository
+	bookingRepo      repository.BookingRepository
+	customerRepo     repository.CustomerRepository
+	staffRepo        repository.StaffRepository
+	premiumTypeRepo  repository.PremiumTypeRepository
+	titleOutcomeRepo repository.TitleOutcomeRepossitory
+	db               *gorm.DB
 }
 
 func NewTransactionsService(
@@ -38,16 +40,18 @@ func NewTransactionsService(
 	cr repository.CustomerRepository,
 	sr repository.StaffRepository,
 	ptr repository.PremiumTypeRepository,
+	tor repository.TitleOutcomeRepossitory,
 	db *gorm.DB,
 ) TransactionsService {
 	return &transactionsService{
-		cashSessionRepo: csr,
-		transactionRepo: tr,
-		bookingRepo:     br,
-		db:              db,
-		customerRepo:    cr,
-		staffRepo:       sr,
-		premiumTypeRepo: ptr,
+		cashSessionRepo:  csr,
+		transactionRepo:  tr,
+		bookingRepo:      br,
+		db:               db,
+		customerRepo:     cr,
+		staffRepo:        sr,
+		premiumTypeRepo:  ptr,
+		titleOutcomeRepo: tor,
 	}
 }
 
@@ -381,6 +385,28 @@ func (s *transactionsService) createOutcome(req dto.CreateTransactionReq, idCash
 
 	if err != nil {
 		helper.Logger("create new transactions", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *transactionsService) CreateTitleOutcome(req dto.CreateTitleOutcomeReq) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat membuat judul pengeluaran."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	newTitle := entity.TitleOutcome{
+		ID:   uuid.New(),
+		Name: req.Name,
+	}
+
+	err := s.titleOutcomeRepo.Create(&newTitle)
+	if err != nil {
+		if helper.IsUniqueViolation(err) {
+			return errors.New("Nama pengeluaran ini telah terdaftar.")
+		}
+		
+		helper.Logger("Create title outcome", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
