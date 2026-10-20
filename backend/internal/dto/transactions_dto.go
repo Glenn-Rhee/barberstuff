@@ -1,6 +1,11 @@
 package dto
 
-import "barberstuff_backend/internal/entity"
+import (
+	"barberstuff_backend/internal/entity"
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type CreateTransactionReq struct {
 	IDCashSession   string                 `json:"id_cash_session" binding:"required"`
@@ -20,4 +25,15 @@ type VoidTransactionReq struct {
 
 type CreateTitleOutcomeReq struct {
 	Name string `json:"name" binding:"required"`
+}
+
+type GetTitleOutcomeReq struct {
+	Query *string `form:"q" binding:"omitempty"`
+	RequestParamsPagination
+}
+
+type GetTitleOutcomeRes struct {
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	CreatdAt time.Time `json:"created_at"`
 }

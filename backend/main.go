@@ -145,6 +145,7 @@ func main() {
 		transactions.POST("/", h.TransactionsHandler.CreateTransaction)
 		transactions.PATCH("/void", h.TransactionsHandler.VoidTransaction)
 		transactions.POST("/title", h.TransactionsHandler.CreateTitleOutcome)
+		transactions.GET("/title", h.TransactionsHandler.GetTitleOutcome)
 	}
 
 	position := r.Group("/position")

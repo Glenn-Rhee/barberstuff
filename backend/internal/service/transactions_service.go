@@ -14,12 +14,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type TransactionsService interface {
 	CreateTransaction(req dto.CreateTransactionReq) error
 	VoidTransaction(claims *lib.CustomClaims, req dto.VoidTransactionReq) error
 	CreateTitleOutcome(req dto.CreateTitleOutcomeReq) error
+	GetTitleOutcomes(req dto.GetTitleOutcomeReq) ([]dto.GetTitleOutcomeRes, dto.ResponsePagination, error)
 }
 
 type transactionsService struct {
@@ -405,10 +407,72 @@ func (s *transactionsService) CreateTitleOutcome(req dto.CreateTitleOutcomeReq) 
 		if helper.IsUniqueViolation(err) {
 			return errors.New("Nama pengeluaran ini telah terdaftar.")
 		}
-		
+
 		helper.Logger("Create title outcome", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 
 	return nil
+}
+
+func (s *transactionsService) GetTitleOutcomes(req dto.GetTitleOutcomeReq) ([]dto.GetTitleOutcomeRes, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil judul pengeluaran."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	if req.Query != nil {
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			q := "%" + *req.Query + "%"
+			return d.Where("name ILIKE ?", q)
+		})
+	}
+
+	var page = 1
+	var limit = 20
+	var orderBy = dto.OrderAsc
+
+	if req.Page != nil {
+		page = *req.Page
+	}
+
+	if req.Limit != nil {
+		limit = *req.Limit
+	}
+
+	if req.OrderBy != nil {
+		orderBy = *req.OrderBy
+	}
+
+	totalData, err := s.titleOutcomeRepo.Count(scopes...)
+	if err != nil {
+		helper.Logger("count total title outcome", filePath, err)
+		return []dto.GetTitleOutcomeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{Column: clause.Column{Name: "name"}, Desc: orderBy == dto.OrderDesc},
+				{Column: clause.Column{Name: "id"}},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
+	})
+
+	dataPagination := helper.GetPaginationData(page, limit, int(totalData))
+	titles, err := s.titleOutcomeRepo.FindAll(scopes...)
+	if err != nil {
+		helper.Logger("Find all data", filePath, err)
+		return []dto.GetTitleOutcomeRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataTitles := make([]dto.GetTitleOutcomeRes, 0, len(titles))
+	for _, v := range titles {
+		dataTitles = append(dataTitles, dto.GetTitleOutcomeRes{
+			ID:       v.ID,
+			Name:     v.Name,
+			CreatdAt: v.CreatedAt,
+		})
+	}
+
+	return dataTitles, dataPagination, nil
 }
