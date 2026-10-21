@@ -610,6 +610,13 @@ definitions:
       total_visited:
         type: integer
     type: object
+  dto.DeactivateDeviceReq:
+    properties:
+      fcm_token:
+        type: string
+    required:
+    - fcm_token
+    type: object
   dto.EmployeeData:
     properties:
       account_number:
@@ -1456,6 +1463,22 @@ definitions:
       name:
         type: string
     type: object
+  dto.UpsertDeviceTokenReq:
+    properties:
+      app_version:
+        maxLength: 20
+        type: string
+      fcm_token:
+        type: string
+      platform:
+        allOf:
+        - $ref: '#/definitions/entity.PlatformDeviceTokenEnum'
+        enum:
+        - android
+    required:
+    - fcm_token
+    - platform
+    type: object
   dto.UserAuth:
     properties:
       email:
@@ -1492,20 +1515,20 @@ definitions:
     type: object
   entity.BookingStatusEnum:
     enum:
-    - visible
-    - hide
     - booked
     - progress
     - completed
     - canceled
+    - visible
+    - hide
     type: string
     x-enum-varnames:
-    - BenefitStatusVisible
-    - BenefitStatusHide
     - BookingStatusBooked
     - BookingStatusProgress
     - BookingStatusCompleted
     - BookingStatusCanceled
+    - BenefitStatusVisible
+    - BenefitStatusHide
   entity.DiscountTypeEnum:
     enum:
     - percentage
@@ -1556,6 +1579,12 @@ definitions:
     x-enum-varnames:
     - PaymentCash
     - PaymentCashless
+  entity.PlatformDeviceTokenEnum:
+    enum:
+    - android
+    type: string
+    x-enum-varnames:
+    - PlatformAndroid
   entity.ProductStatusEnum:
     enum:
     - active
@@ -2660,6 +2689,71 @@ paths:
       summary: Daftar customer
       tags:
       - Customer
+  /devices:
+    patch:
+      consumes:
+      - application/json
+      description: Menonaktifkan perangkat customer berdasarkan FCM token. Hanya dapat
+        diakses oleh customer.
+      parameters:
+      - description: FCM token perangkat yang akan dinonaktifkan
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DeactivateDeviceReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menghapus data perangkat!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid atau gagal menonaktifkan perangkat
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Nonaktifkan perangkat
+      tags:
+      - Device Token
+    post:
+      consumes:
+      - application/json
+      description: Menyimpan atau memperbarui FCM token perangkat customer untuk kebutuhan
+        push notification. Hanya dapat diakses oleh customer.
+      parameters:
+      - description: Data perangkat customer
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpsertDeviceTokenReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menyimpan data perangkat!
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Data tidak valid atau gagal menyimpan data perangkat
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Simpan data perangkat
+      tags:
+      - Device Token
   /employee:
     get:
       description: Mengambil daftar karyawan yang dapat difilter berdasarkan kata

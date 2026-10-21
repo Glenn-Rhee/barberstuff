@@ -1603,6 +1603,106 @@ const docTemplate = `{
                 }
             }
         },
+        "/devices": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menyimpan atau memperbarui FCM token perangkat customer untuk kebutuhan push notification. Hanya dapat diakses oleh customer.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Device Token"
+                ],
+                "summary": "Simpan data perangkat",
+                "parameters": [
+                    {
+                        "description": "Data perangkat customer",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpsertDeviceTokenReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menyimpan data perangkat!",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Data tidak valid atau gagal menyimpan data perangkat",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menonaktifkan perangkat customer berdasarkan FCM token. Hanya dapat diakses oleh customer.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Device Token"
+                ],
+                "summary": "Nonaktifkan perangkat",
+                "parameters": [
+                    {
+                        "description": "FCM token perangkat yang akan dinonaktifkan",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeactivateDeviceReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menghapus data perangkat!",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Data tidak valid atau gagal menonaktifkan perangkat",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/employee": {
             "get": {
                 "security": [
@@ -5363,6 +5463,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.DeactivateDeviceReq": {
+            "type": "object",
+            "required": [
+                "fcm_token"
+            ],
+            "properties": {
+                "fcm_token": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.EmployeeData": {
             "type": "object",
             "properties": {
@@ -6640,6 +6751,32 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpsertDeviceTokenReq": {
+            "type": "object",
+            "required": [
+                "fcm_token",
+                "platform"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string",
+                    "maxLength": 20
+                },
+                "fcm_token": {
+                    "type": "string"
+                },
+                "platform": {
+                    "enum": [
+                        "android"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.PlatformDeviceTokenEnum"
+                        }
+                    ]
+                }
+            }
+        },
         "dto.UserAuth": {
             "type": "object",
             "properties": {
@@ -6695,20 +6832,20 @@ const docTemplate = `{
         "entity.BookingStatusEnum": {
             "type": "string",
             "enum": [
-                "visible",
-                "hide",
                 "booked",
                 "progress",
                 "completed",
-                "canceled"
+                "canceled",
+                "visible",
+                "hide"
             ],
             "x-enum-varnames": [
-                "BenefitStatusVisible",
-                "BenefitStatusHide",
                 "BookingStatusBooked",
                 "BookingStatusProgress",
                 "BookingStatusCompleted",
-                "BookingStatusCanceled"
+                "BookingStatusCanceled",
+                "BenefitStatusVisible",
+                "BenefitStatusHide"
             ]
         },
         "entity.DiscountTypeEnum": {
@@ -6777,6 +6914,15 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "PaymentCash",
                 "PaymentCashless"
+            ]
+        },
+        "entity.PlatformDeviceTokenEnum": {
+            "type": "string",
+            "enum": [
+                "android"
+            ],
+            "x-enum-varnames": [
+                "PlatformAndroid"
             ]
         },
         "entity.ProductStatusEnum": {

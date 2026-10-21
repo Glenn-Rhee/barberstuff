@@ -19,6 +19,18 @@ func NewDeviceTokenHandler(service service.DeviceTokenService) *DeviceTokenHandl
 	return &DeviceTokenHandler{service: service}
 }
 
+// UpsertDevice godoc
+// @Summary      Simpan data perangkat
+// @Description  Menyimpan atau memperbarui FCM token perangkat customer untuk kebutuhan push notification. Hanya dapat diakses oleh customer.
+// @Tags         Device Token
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.UpsertDeviceTokenReq true "Data perangkat customer"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menyimpan data perangkat!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid atau gagal menyimpan data perangkat"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /devices [post]
 func (h *DeviceTokenHandler) UpsertDevice(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -71,6 +83,18 @@ func (h *DeviceTokenHandler) UpsertDevice(ctx *gin.Context) {
 	})
 }
 
+// Deactivate godoc
+// @Summary      Nonaktifkan perangkat
+// @Description  Menonaktifkan perangkat customer berdasarkan FCM token. Hanya dapat diakses oleh customer.
+// @Tags         Device Token
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.DeactivateDeviceReq true "FCM token perangkat yang akan dinonaktifkan"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menghapus data perangkat!"
+// @Failure      400 {object} dto.SwaggerResponse "Data tidak valid atau gagal menonaktifkan perangkat"
+// @Failure      401 {object} dto.SwaggerResponse "Tidak memiliki akses"
+// @Router       /devices [patch]
 func (h *DeviceTokenHandler) Deactivate(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
