@@ -26,6 +26,7 @@ type Handlers struct {
 	EmployeeHandler     *handler.EmployeeHandler
 	PromoHandler        *handler.PromoHandler
 	BenefitHandler      *handler.BenefitHandler
+	DeviceHandler       *handler.DeviceTokenHandler
 	AuthMiddleware      gin.HandlerFunc
 	BookingService      service.BookingService
 }
@@ -49,6 +50,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	absentRepo := repository.NewAbsentRepository(db)
 	benefitRepo := repository.NewBenefitRepository(db)
 	titleOutcomeRepo := repository.NewTitleOutcomeRepository(db)
+	deviceTokenRepo := repository.NewDeviceTokenRepository(db)
 
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis, premiumTypeRepo, staffRepo)
@@ -64,6 +66,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	employeeService := service.NewEmployeeService(employeeRepo, positionRepo, storeRepo, absentRepo, staffRepo, db)
 	promoService := service.NewPromoService(promoRepo, customerRepo)
 	benefitService := service.NewBenefitService(benefitRepo, db)
+	deviceService := service.NewDeviceTokenService(deviceTokenRepo)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
@@ -80,6 +83,7 @@ func InitHandlers(db *gorm.DB) *Handlers {
 	employeeHandler := handler.NewEmployeeHandler(employeeService)
 	promoHandler := handler.NewPromoHandler(promoService)
 	benefitHandler := handler.NewBenefitHandler(benefitService)
+	deviceHandler := handler.NewDeviceTokenHandler(deviceService)
 
 	// middleware
 	authMiddleware := middleware.AuthMiddleware(authRepo, staffRepo, customerRepo)
@@ -101,5 +105,6 @@ func InitHandlers(db *gorm.DB) *Handlers {
 		EmployeeHandler:     employeeHandler,
 		PromoHandler:        promoHandler,
 		BenefitHandler:      benefitHandler,
+		DeviceHandler:       deviceHandler,
 	}
 }

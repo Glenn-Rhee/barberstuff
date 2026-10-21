@@ -62,6 +62,12 @@ func main() {
 		auth.POST("/refresh-token", h.AuthHandler.RefreshToken)
 	}
 
+	devices := r.Group("/devices")
+	{
+		devices.Use(h.AuthMiddleware)
+		devices.POST("/", h.DeviceHandler.UpsertDevice)
+	}
+
 	store := r.Group("/store")
 	{
 		store.Use(h.AuthMiddleware)
