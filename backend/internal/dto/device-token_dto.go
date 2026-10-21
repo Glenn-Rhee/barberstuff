@@ -7,3 +7,7 @@ type UpsertDeviceTokenReq struct {
 	AppVersion *string                        `json:"app_version" binding:"omitempty,max=20"`
 	Platform   entity.PlatformDeviceTokenEnum `json:"platform" binding:"required,oneof=android"`
 }
+
+type DeactivateDeviceReq struct {
+	FcmToken string `json:"fcm_token" binding:"required"`
+}

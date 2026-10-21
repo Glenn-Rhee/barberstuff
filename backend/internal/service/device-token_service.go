@@ -11,10 +11,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type DeviceTokenService interface {
 	UpsertDeviceToken(req dto.UpsertDeviceTokenReq, claims *lib.CustomClaims) error
+	Deactivate(req dto.DeactivateDeviceReq, claims *lib.CustomClaims) error
 }
 
 type deviceTokenService struct {
@@ -51,6 +53,32 @@ func (s *deviceTokenService) UpsertDeviceToken(req dto.UpsertDeviceTokenReq, cla
 	err = s.deviceTokenRepo.Upsert(&d)
 	if err != nil {
 		helper.Logger("upsert device token", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	return nil
+}
+
+func (s *deviceTokenService) Deactivate(req dto.DeactivateDeviceReq, claims *lib.CustomClaims) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat sign out."
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idUser, err := uuid.Parse(claims.UserId)
+	if err != nil {
+		return errors.New("Data tidak valid. Mohon registrasi ulang.")
+	}
+
+	updates := map[string]interface{}{
+		"is_active":    false,
+		"last_seen_at": time.Now(),
+	}
+
+	_, err = s.deviceTokenRepo.Deactive(updates, func(d *gorm.DB) *gorm.DB {
+		return d.Where("fcm_token = ?", req.FcmToken).Where("id_user = ?", idUser)
+	})
+
+	if err != nil {
+		helper.Logger("deativate device token", filePath, err)
 		return errors.New(BASE_MESSAGE)
 	}
 

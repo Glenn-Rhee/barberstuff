@@ -53,6 +53,7 @@ func (r *deviceTokenRepoitory) FindAll(scopes ...func(*gorm.DB) *gorm.DB) ([]ent
 
 func (r *deviceTokenRepoitory) Deactive(v interface{}, scopes ...func(*gorm.DB) *gorm.DB) (int64, error) {
 	result := r.db.Model(&entity.DeviceToken{}).
+		Where("is_active = ?", true).
 		Scopes(scopes...).
 		Updates(v)
 

@@ -66,6 +66,7 @@ func main() {
 	{
 		devices.Use(h.AuthMiddleware)
 		devices.POST("/", h.DeviceHandler.UpsertDevice)
+		devices.PATCH("/", h.DeviceHandler.Deactivate)
 	}
 
 	store := r.Group("/store")
