@@ -33,9 +33,9 @@ func main() {
 	db := db.Connect()
 	lib.RedisInit()
 	lib.StorageInit()
-	h := bootstrap.InitHandlers(db)
 	r := gin.Default()
 	c := cron.New()
+	ctx := context.Background()
 	cfg := config.Load()
 
 	if _, err := os.Stat(".env"); err == nil {
@@ -48,7 +48,6 @@ func main() {
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	ctx := context.Background()
 	var sender fcm.Sender
 	if cfg.FCMEnabled {
 		s, err := fcm.NewFirebaseSender(ctx, []byte(cfg.FCMCredentialsJSON), cfg.FCMCredentialsFile)
@@ -59,6 +58,8 @@ func main() {
 	} else {
 		sender = fcm.NewNoopSender()
 	}
+
+	h := bootstrap.InitHandlers(db, sender)
 
 	auth := r.Group("/auth")
 	{

@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"barberstuff_backend/internal/handler"
+	"barberstuff_backend/internal/infra/fcm"
 	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/middleware"
 	"barberstuff_backend/internal/repository"
@@ -31,7 +32,7 @@ type Handlers struct {
 	BookingService      service.BookingService
 }
 
-func InitHandlers(db *gorm.DB) *Handlers {
+func InitHandlers(db *gorm.DB, sender fcm.Sender) *Handlers {
 	// Repo
 	customerRepo := repository.NewCustomerRepository(db)
 	authRepo := repository.NewAuthRepository(db)
