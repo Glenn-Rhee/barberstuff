@@ -45,3 +45,8 @@ type GetNotificationRes struct {
 	Notifications []NotificationData `json:"notifications"`
 	TotalUnread   int64              `json:"total_unread"`
 }
+
+type MarkReadNotifReq struct {
+	IDsNotif *[]string `json:"ids_notif" binding:"omitempty"`
+	All      *bool     `json:"all" binding:"omitempty"`
+}

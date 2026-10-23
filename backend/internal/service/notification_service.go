@@ -26,6 +26,7 @@ type NotificationService interface {
 	Notify(tx *gorm.DB, in dto.NotifyInput) (dto.NotifyResult, error)
 	DispatchPending(ctx context.Context, limit int) (int, error)
 	GetNotifications(req dto.GetNotificationReq, claims *lib.CustomClaims) (dto.GetNotificationRes, dto.ResponsePagination, error)
+	MarkRead(req dto.MarkReadNotifReq, claims *lib.CustomClaims) error
 }
 
 type notificationService struct {
@@ -375,6 +376,95 @@ func (s *notificationService) GetNotifications(req dto.GetNotificationReq, claim
 		Notifications: dataNotif,
 		TotalUnread:   totalUnread,
 	}, paginationData, nil
+}
+
+func (s *notificationService) MarkRead(req dto.MarkReadNotifReq, claims *lib.CustomClaims) error {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data notifikasi!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idUser, err := uuid.Parse(claims.UserId)
+	if err != nil {
+		return errors.New("Data tidak valid, mohon login ulang.")
+	}
+
+	markAll := req.All != nil && *req.All
+
+	switch {
+	case req.IDsNotif != nil && markAll:
+		return errors.New("Mohon hanya kirim salah satu saja.")
+	case req.IDsNotif == nil && !markAll:
+		return errors.New("Mohon kirim ids_notif atau all.")
+	}
+
+	var scopesUpdate func(*gorm.DB) *gorm.DB
+	if markAll {
+		scopesUpdate = func(d *gorm.DB) *gorm.DB {
+			return d.Where("id_user = ? AND is_read = FALSE", idUser)
+		}
+	} else {
+		if len(*req.IDsNotif) == 0 {
+			return errors.New("Tandai baca setidaknya satu notifikasi.")
+		}
+
+		if len(*req.IDsNotif) > 100 {
+			return errors.New("Update notif maximum hanya 100 data.")
+		}
+
+		seen := make(map[uuid.UUID]struct{}, len(*req.IDsNotif))
+		idsNotif := make([]uuid.UUID, 0, len(*req.IDsNotif))
+		for _, v := range *req.IDsNotif {
+			id, err := uuid.Parse(v)
+			if err != nil {
+				return errors.New("Id notif tidak valid.")
+			}
+
+			if _, ok := seen[id]; ok {
+				continue
+			}
+
+			seen[id] = struct{}{}
+			idsNotif = append(idsNotif, id)
+		}
+
+		notifications, err := s.notifRepo.FindAll(nil, func(d *gorm.DB) *gorm.DB {
+			return d.Where("id IN ?", idsNotif).Where("id_user = ?", idUser)
+		})
+
+		if err != nil {
+			helper.Logger("find all notif", filePath, err)
+			return errors.New(BASE_MESSAGE)
+		}
+
+		if len(notifications) != len(idsNotif) {
+			return errors.New("Terdapat notiff yang tidak ditemukan atau telah dihapus.")
+		}
+
+		scopesUpdate = func(d *gorm.DB) *gorm.DB {
+			return d.Where("id_user = ?", idUser).Where("is_read = FALSE").Where("id IN ?", idsNotif)
+		}
+	}
+
+	if scopesUpdate == nil {
+		return errors.New("Permintaan tidak valid.")
+	}
+
+	updates := map[string]interface{}{
+		"is_read": true,
+		"read_at": time.Now(),
+	}
+
+	rowsAffected, err := s.notifRepo.Updates(nil, updates, scopesUpdate)
+
+	if err != nil {
+		helper.Logger("update notif", filePath, err)
+		return errors.New(BASE_MESSAGE)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Notif telah ditandai sebagai baca.")
+	}
+
+	return nil
 }
 
 func buildFCMData(n entity.Notification) map[string]string {

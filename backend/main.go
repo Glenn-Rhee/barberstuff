@@ -94,6 +94,7 @@ func main() {
 	{
 		notif.Use(h.AuthMiddleware)
 		notif.GET("/", h.NotifHandler.GetNotifications)
+		notif.PATCH("/mark-as-read", h.NotifHandler.MarkAsRead)
 	}
 
 	store := r.Group("/store")
