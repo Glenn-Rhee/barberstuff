@@ -28,6 +28,7 @@ type Handlers struct {
 	PromoHandler        *handler.PromoHandler
 	BenefitHandler      *handler.BenefitHandler
 	DeviceHandler       *handler.DeviceTokenHandler
+	NotifHandler        *handler.NotificationHandler
 	AuthMiddleware      gin.HandlerFunc
 	BookingService      service.BookingService
 	NotifService        service.NotificationService
@@ -90,6 +91,7 @@ func InitHandlers(db *gorm.DB, sender fcm.Sender) *Handlers {
 	promoHandler := handler.NewPromoHandler(promoService)
 	benefitHandler := handler.NewBenefitHandler(benefitService)
 	deviceHandler := handler.NewDeviceTokenHandler(deviceService, notifService)
+	notifHandler := handler.NewNotifHandler(notifService)
 
 	// middleware
 	authMiddleware := middleware.AuthMiddleware(authRepo, staffRepo, customerRepo)
@@ -111,6 +113,7 @@ func InitHandlers(db *gorm.DB, sender fcm.Sender) *Handlers {
 		EmployeeHandler:     employeeHandler,
 		PromoHandler:        promoHandler,
 		BenefitHandler:      benefitHandler,
+		NotifHandler:        notifHandler,
 		DeviceHandler:       deviceHandler,
 		NotifService:        notifService,
 	}

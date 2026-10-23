@@ -36,7 +36,7 @@ func main() {
 			log.Println("Error load dotenv file:", err.Error())
 		}
 	}
-	
+
 	db := db.Connect()
 	lib.RedisInit()
 	lib.StorageInit()
@@ -88,6 +88,12 @@ func main() {
 		devices.Use(h.AuthMiddleware)
 		devices.POST("/", h.DeviceHandler.UpsertDevice)
 		devices.PATCH("/", h.DeviceHandler.Deactivate)
+	}
+
+	notif := r.Group("/notifications")
+	{
+		notif.Use(h.AuthMiddleware)
+		notif.GET("/", h.NotifHandler.GetNotifications)
 	}
 
 	store := r.Group("/store")

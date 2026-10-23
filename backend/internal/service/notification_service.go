@@ -5,6 +5,7 @@ import (
 	"barberstuff_backend/internal/entity"
 	"barberstuff_backend/internal/helper"
 	"barberstuff_backend/internal/infra/fcm"
+	"barberstuff_backend/internal/lib"
 	"barberstuff_backend/internal/repository"
 	"context"
 	"encoding/json"
@@ -24,6 +25,7 @@ import (
 type NotificationService interface {
 	Notify(tx *gorm.DB, in dto.NotifyInput) (dto.NotifyResult, error)
 	DispatchPending(ctx context.Context, limit int) (int, error)
+	GetNotifications(req dto.GetNotificationReq, claims *lib.CustomClaims) ([]dto.GetNotificationRes, dto.ResponsePagination, error)
 }
 
 type notificationService struct {
@@ -57,6 +59,7 @@ func NewNotificationService(
 func (s *notificationService) Notify(tx *gorm.DB, in dto.NotifyInput) (dto.NotifyResult, error) {
 	const BASE_MESSAGE = "Terjadi kesalahan saat notifikasi!"
 	_, filePath, _, _ := runtime.Caller(0)
+
 	in.EventType = strings.TrimSpace(in.EventType)
 	in.Title = strings.TrimSpace(in.Title)
 	in.Body = strings.TrimSpace(in.Body)
@@ -284,6 +287,82 @@ func (s *notificationService) DispatchPending(ctx context.Context, limit int) (i
 	}
 
 	return processed, nil
+}
+
+func (s *notificationService) GetNotifications(req dto.GetNotificationReq, claims *lib.CustomClaims) ([]dto.GetNotificationRes, dto.ResponsePagination, error) {
+	const BASE_MESSAGE = "Terjadi kesalahan saat mengambil data notifikasi!"
+	_, filePath, _, _ := runtime.Caller(0)
+
+	idUser, err := uuid.Parse(claims.UserId)
+	if err != nil {
+		return []dto.GetNotificationRes{}, dto.ResponsePagination{}, errors.New("Data tidak valid. Mohon registrasi ulang.")
+	}
+
+	var scopes []func(*gorm.DB) *gorm.DB
+	if req.Query != nil {
+		q := "%" + *req.Query + "%"
+		scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+			return d.Where("event_type ILIKE ? OR title ILIKE ? OR body ILIKE ?", q, q, q)
+		})
+	}
+
+	var page = 1
+	var limit = 20
+	var orderBy = dto.OrderDesc
+
+	if req.Page != nil {
+		page = *req.Page
+	}
+
+	if req.Limit != nil {
+		limit = *req.Limit
+	}
+
+	if req.OrderBy != nil {
+		orderBy = *req.OrderBy
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Where("id_user = ?", idUser)
+	})
+
+	totalData, err := s.notifRepo.Count(nil, scopes...)
+	if err != nil {
+		helper.Logger("count notif", filePath, err)
+		return []dto.GetNotificationRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	scopes = append(scopes, func(d *gorm.DB) *gorm.DB {
+		return d.Clauses(clause.OrderBy{
+			Columns: []clause.OrderByColumn{
+				{Column: clause.Column{Name: "is_read"}, Desc: orderBy == dto.OrderDesc},
+				{Column: clause.Column{Name: "created_at"}, Desc: true},
+			},
+		}).Offset((page - 1) * limit).Limit(limit)
+	})
+
+	paginationData := helper.GetPaginationData(page, limit, int(totalData))
+	notifications, err := s.notifRepo.FindAll(nil, scopes...)
+	if err != nil {
+		helper.Logger("find all notif", filePath, err)
+		return []dto.GetNotificationRes{}, dto.ResponsePagination{}, errors.New(BASE_MESSAGE)
+	}
+
+	dataNotif := make([]dto.GetNotificationRes, 0, len(notifications))
+	for _, v := range notifications {
+		dataNotif = append(dataNotif, dto.GetNotificationRes{
+			ID:        v.ID,
+			EventType: v.EventType,
+			Title:     v.Title,
+			Body:      v.Body,
+			Data:      v.Data,
+			IsRead:    v.IsRead,
+			ReadAt:    v.ReadAt,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+
+	return dataNotif, paginationData, nil
 }
 
 func buildFCMData(n entity.Notification) map[string]string {
