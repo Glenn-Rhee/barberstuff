@@ -19,6 +19,24 @@ func NewNotifHandler(service service.NotificationService) *NotificationHandler {
 	return &NotificationHandler{service: service}
 }
 
+// GetNotifications godoc
+// @Summary      Mendapatkan daftar notifikasi
+// @Description  Customer dapat mengambil daftar notifikasi miliknya dengan filter pencarian, rentang waktu, dan pagination. Notifikasi ditampilkan dari yang terbaru ke terlama secara default.
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        q query string false "Kata kunci pencarian notifikasi"
+// @Param        before_at query string false "Filter notifikasi sebelum waktu tertentu (RFC3339)" Format(date-time)
+// @Param        after_at query string false "Filter notifikasi setelah waktu tertentu (RFC3339)" Format(date-time)
+// @Param        page query int false "Nomor halaman" default(1) minimum(1)
+// @Param        limit query int false "Jumlah data per halaman" default(20) minimum(1) maximum(50)
+// @Param        order query string false "Urutan pengurutan berdasarkan waktu" Enums(asc, desc) default(desc)
+// @Success      200 {object} dto.SwaggerResponse{data=dto.GetNotificationRes,meta=dto.ResponsePagination} "Berhasil mengambil daftar notifikasi"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter query tidak valid"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Failure      424 {object} dto.SwaggerResponse "Gagal mengambil data notifikasi"
+// @Router       /notifications [get]
 func (h *NotificationHandler) GetNotifications(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {
@@ -72,6 +90,18 @@ func (h *NotificationHandler) GetNotifications(ctx *gin.Context) {
 	})
 }
 
+// MarkAsRead godoc
+// @Summary      Menandai notifikasi sebagai sudah dibaca
+// @Description  Customer dapat menandai notifikasi tertentu sebagai sudah dibaca dengan mengirim ids_notif (minimal 1 dan maksimal 100 ID), atau menandai semua notifikasi sebagai sudah dibaca dengan mengirim all bernilai true. Hanya salah satu dari ids_notif atau all yang boleh dikirim dalam satu request.
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.MarkReadNotifReq true "ID notifikasi atau penanda untuk membaca semua notifikasi"
+// @Success      200 {object} dto.SwaggerResponse "Berhasil menandai notifikasi sebagai sudah dibaca"
+// @Failure      400 {object} dto.SwaggerResponse "Parameter tidak valid atau kedua opsi dikirim sekaligus"
+// @Failure      401 {object} dto.SwaggerResponse "Anda tidak memiliki akses"
+// @Router       /notifications/mark-as-read [patch]
 func (h *NotificationHandler) MarkAsRead(ctx *gin.Context) {
 	claims, exist := ctx.Get("claims")
 	if !exist {

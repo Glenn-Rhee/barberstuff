@@ -2101,6 +2101,168 @@ const docTemplate = `{
                 }
             }
         },
+        "/notifications": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Customer dapat mengambil daftar notifikasi miliknya dengan filter pencarian, rentang waktu, dan pagination. Notifikasi ditampilkan dari yang terbaru ke terlama secara default.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Mendapatkan daftar notifikasi",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kata kunci pencarian notifikasi",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Filter notifikasi sebelum waktu tertentu (RFC3339)",
+                        "name": "before_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Filter notifikasi setelah waktu tertentu (RFC3339)",
+                        "name": "after_at",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Nomor halaman",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Jumlah data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Urutan pengurutan berdasarkan waktu",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar notifikasi",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.SwaggerResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.GetNotificationRes"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.ResponsePagination"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter query tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "424": {
+                        "description": "Gagal mengambil data notifikasi",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/mark-as-read": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Customer dapat menandai notifikasi tertentu sebagai sudah dibaca dengan mengirim ids_notif (minimal 1 dan maksimal 100 ID), atau menandai semua notifikasi sebagai sudah dibaca dengan mengirim all bernilai true. Hanya salah satu dari ids_notif atau all yang boleh dikirim dalam satu request.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Menandai notifikasi sebagai sudah dibaca",
+                "parameters": [
+                    {
+                        "description": "ID notifikasi atau penanda untuk membaca semua notifikasi",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MarkReadNotifReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil menandai notifikasi sebagai sudah dibaca",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid atau kedua opsi dikirim sekaligus",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Anda tidak memiliki akses",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/position": {
             "get": {
                 "security": [
@@ -5730,6 +5892,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.GetNotificationRes": {
+            "type": "object",
+            "properties": {
+                "notifications": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.NotificationData"
+                    }
+                },
+                "total_unread": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.GetPositionRes": {
             "type": "object",
             "properties": {
@@ -5882,6 +6058,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.MarkReadNotifReq": {
+            "type": "object",
+            "properties": {
+                "all": {
+                    "type": "boolean"
+                },
+                "ids_notif": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "dto.NewStoreRequest": {
             "type": "object",
             "required": [
@@ -5948,6 +6138,35 @@ const docTemplate = `{
                             "$ref": "#/definitions/entity.StoreTimezoneEnum"
                         }
                     ]
+                }
+            }
+        },
+        "dto.NotificationData": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "event_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_read": {
+                    "type": "boolean"
+                },
+                "read_at": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },

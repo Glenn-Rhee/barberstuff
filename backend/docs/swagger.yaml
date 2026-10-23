@@ -783,6 +783,15 @@ definitions:
         - $ref: '#/definitions/dto.EmployeeKPI'
         description: nil untuk customer
     type: object
+  dto.GetNotificationRes:
+    properties:
+      notifications:
+        items:
+          $ref: '#/definitions/dto.NotificationData'
+        type: array
+      total_unread:
+        type: integer
+    type: object
   dto.GetPositionRes:
     properties:
       basic_salary:
@@ -883,6 +892,15 @@ definitions:
     - id_capster
     - id_store
     type: object
+  dto.MarkReadNotifReq:
+    properties:
+      all:
+        type: boolean
+      ids_notif:
+        items:
+          type: string
+        type: array
+    type: object
   dto.NewStoreRequest:
     properties:
       address:
@@ -929,6 +947,25 @@ definitions:
     - phone_number
     - store_type
     - timezone
+    type: object
+  dto.NotificationData:
+    properties:
+      body:
+        type: string
+      created_at:
+        type: string
+      data:
+        type: object
+      event_type:
+        type: string
+      id:
+        type: string
+      is_read:
+        type: boolean
+      read_at:
+        type: string
+      title:
+        type: string
     type: object
   dto.OauthCustomerRequest:
     properties:
@@ -3017,6 +3054,115 @@ paths:
       summary: Mencatat absensi karyawan
       tags:
       - Employee
+  /notifications:
+    get:
+      consumes:
+      - application/json
+      description: Customer dapat mengambil daftar notifikasi miliknya dengan filter
+        pencarian, rentang waktu, dan pagination. Notifikasi ditampilkan dari yang
+        terbaru ke terlama secara default.
+      parameters:
+      - description: Kata kunci pencarian notifikasi
+        in: query
+        name: q
+        type: string
+      - description: Filter notifikasi sebelum waktu tertentu (RFC3339)
+        format: date-time
+        in: query
+        name: before_at
+        type: string
+      - description: Filter notifikasi setelah waktu tertentu (RFC3339)
+        format: date-time
+        in: query
+        name: after_at
+        type: string
+      - default: 1
+        description: Nomor halaman
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 20
+        description: Jumlah data per halaman
+        in: query
+        maximum: 50
+        minimum: 1
+        name: limit
+        type: integer
+      - default: desc
+        description: Urutan pengurutan berdasarkan waktu
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil daftar notifikasi
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SwaggerResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GetNotificationRes'
+                meta:
+                  $ref: '#/definitions/dto.ResponsePagination'
+              type: object
+        "400":
+          description: Parameter query tidak valid
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "424":
+          description: Gagal mengambil data notifikasi
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Mendapatkan daftar notifikasi
+      tags:
+      - Notifications
+  /notifications/mark-as-read:
+    patch:
+      consumes:
+      - application/json
+      description: Customer dapat menandai notifikasi tertentu sebagai sudah dibaca
+        dengan mengirim ids_notif (minimal 1 dan maksimal 100 ID), atau menandai semua
+        notifikasi sebagai sudah dibaca dengan mengirim all bernilai true. Hanya salah
+        satu dari ids_notif atau all yang boleh dikirim dalam satu request.
+      parameters:
+      - description: ID notifikasi atau penanda untuk membaca semua notifikasi
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MarkReadNotifReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil menandai notifikasi sebagai sudah dibaca
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "400":
+          description: Parameter tidak valid atau kedua opsi dikirim sekaligus
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+        "401":
+          description: Anda tidak memiliki akses
+          schema:
+            $ref: '#/definitions/dto.SwaggerResponse'
+      security:
+      - BearerAuth: []
+      summary: Menandai notifikasi sebagai sudah dibaca
+      tags:
+      - Notifications
   /position:
     get:
       consumes:

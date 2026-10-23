@@ -35,7 +35,7 @@ type NotificationData struct {
 	EventType string         `json:"event_type"`
 	Title     string         `json:"title"`
 	Body      string         `json:"body"`
-	Data      datatypes.JSON `json:"data"`
+	Data      datatypes.JSON `json:"data" swaggertype:"object"`
 	IsRead    bool           `json:"is_read"`
 	ReadAt    *time.Time     `json:"read_at"`
 	CreatedAt time.Time      `json:"created_at"`
