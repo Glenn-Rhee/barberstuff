@@ -4,11 +4,15 @@ import (
 	"barberstuff_backend/internal/dto"
 	"barberstuff_backend/internal/entity"
 	"barberstuff_backend/internal/helper"
+	"barberstuff_backend/internal/infra/fcm"
 	"barberstuff_backend/internal/repository"
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"runtime"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/google/uuid"
@@ -19,6 +23,7 @@ import (
 
 type NotificationService interface {
 	Notify(tx *gorm.DB, in dto.NotifyInput) (dto.NotifyResult, error)
+	DispatchPending(ctx context.Context, limit int) (int, error)
 }
 
 type notificationService struct {
@@ -26,6 +31,8 @@ type notificationService struct {
 	deliveryRepo repository.NotificationDeliveryRepository
 	deviceRepo   repository.DeviceTokenRepository
 	txManager    repository.TxManager
+	sender       fcm.Sender
+	maxAttempts  int16
 }
 
 var ErrInvalidNotification = errors.New("notification: input tidak valid")
@@ -35,12 +42,15 @@ func NewNotificationService(
 	dr repository.NotificationDeliveryRepository,
 	dvr repository.DeviceTokenRepository,
 	tm repository.TxManager,
+	sender fcm.Sender,
 ) NotificationService {
 	return &notificationService{
 		notifRepo:    nr,
 		deliveryRepo: dr,
 		deviceRepo:   dvr,
 		txManager:    tm,
+		sender:       sender,
+		maxAttempts:  3,
 	}
 }
 
@@ -144,6 +154,190 @@ func (s *notificationService) Notify(tx *gorm.DB, in dto.NotifyInput) (dto.Notif
 	}
 
 	return result, nil
+}
+
+func (s *notificationService) DispatchPending(ctx context.Context, limit int) (int, error) {
+	if limit <= 0 {
+		limit = 50
+	}
+
+	processed := 0
+
+	err := s.txManager.Transaction(func(tx *gorm.DB) error {
+		statusQ := []entity.StatusNotificationDeliveryEnum{
+			entity.DeliveryStatusFailed,
+			entity.DeliveryStatusPending,
+		}
+		deliveries, err := s.deliveryRepo.FindAll(tx, func(d *gorm.DB) *gorm.DB {
+			return d.Clauses(clause.Locking{Strength: "UPDATE", Options: "SKIP LOCKED"}).
+				Where("status IN ? AND attempts < ?", statusQ, s.maxAttempts).
+				Order("created_at ASC").
+				Limit(limit)
+		})
+
+		if err != nil {
+			return err
+		}
+
+		if len(deliveries) == 0 {
+			return nil
+		}
+
+		notifIDs := make([]uuid.UUID, 0, len(deliveries))
+		deviceIDs := make([]uuid.UUID, 0, len(deliveries))
+		for _, d := range deliveries {
+			notifIDs = append(notifIDs, d.IdNotification)
+			deviceIDs = append(deviceIDs, d.IdDeviceToken)
+		}
+
+		notifList, err := s.notifRepo.FindAll(tx, func(d *gorm.DB) *gorm.DB {
+			return d.Where("id IN ?", notifIDs)
+		})
+
+		if err != nil {
+			{
+				return err
+			}
+		}
+
+		deviceList, err := s.deviceRepo.FindAll(func(d *gorm.DB) *gorm.DB {
+			return d.Where("id IN ?", deviceIDs)
+		})
+
+		if err != nil {
+			return err
+		}
+
+		notifMap := make(map[uuid.UUID]entity.Notification, len(notifList))
+		for _, n := range notifList {
+			notifMap[n.ID] = n
+		}
+
+		deviceMap := make(map[uuid.UUID]entity.DeviceToken, len(deviceList))
+		for _, d := range deviceList {
+			deviceMap[d.ID] = d
+		}
+
+		for _, del := range deliveries {
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+
+			processed++
+
+			n, okN := notifMap[del.IdNotification]
+			dev, okD := deviceMap[del.IdDeviceToken]
+
+			switch {
+			case !okN:
+				if err := s.markDelivery(tx, del.ID, entity.DeliveryStatusFailed, "", "notifikasi tidak ditemukan", true); err != nil {
+					return err
+				}
+				continue
+			case !okD || !dev.IsActive:
+				if err := s.markDelivery(tx, del.ID, entity.DeliveryStatusInvalidToken, "", "device tidak aktif", false); err != nil {
+					return err
+				}
+				continue
+			}
+
+			msgID, sendErr := s.sender.Send(ctx, fcm.Message{
+				Token: dev.FcmToken,
+				Title: n.Title,
+				Body:  n.Body,
+				Data:  buildFCMData(n),
+			})
+
+			var markErr error
+			switch {
+			case sendErr == nil:
+				markErr = s.markDelivery(tx, del.ID, entity.DeliveryStatusSent, msgID, "", false)
+
+			case errors.Is(sendErr, fcm.ErrInvalidToken):
+				markErr = s.markDelivery(tx, del.ID, entity.DeliveryStatusInvalidToken, "", sendErr.Error(), false)
+				if markErr == nil {
+					_, markErr = s.deviceRepo.Deactive(
+						map[string]interface{}{"is_active": false},
+						func(d *gorm.DB) *gorm.DB {
+							return d.Where("id = ?", dev.ID)
+						},
+					)
+				}
+
+			case errors.Is(sendErr, fcm.ErrPermanent):
+				markErr = s.markDelivery(tx, del.ID, entity.DeliveryStatusFailed, "", sendErr.Error(), true)
+
+			default:
+				markErr = s.markDelivery(tx, del.ID, entity.DeliveryStatusFailed, "", sendErr.Error(), false)
+			}
+
+			if markErr != nil {
+				return markErr
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return 0, err
+	}
+
+	return processed, nil
+}
+
+func buildFCMData(n entity.Notification) map[string]string {
+	out := map[string]string{"notification_id": n.ID.String()}
+	var raw map[string]interface{}
+
+	if len(n.Data) > 0 && json.Unmarshal(n.Data, &raw) == nil {
+		for k, v := range raw {
+			if str, ok := v.(string); ok {
+				out[k] = str
+			} else {
+				out[k] = fmt.Sprint(v)
+			}
+		}
+	}
+
+	out["notification_id"] = n.ID.String()
+	return out
+}
+
+func (s *notificationService) markDelivery(
+	tx *gorm.DB, id uuid.UUID, status entity.StatusNotificationDeliveryEnum,
+	providerMsgID, errMsg string, exhaust bool,
+) error {
+	v := map[string]interface{}{"status": status}
+
+	if exhaust {
+		v["attempts"] = s.maxAttempts
+	} else {
+		v["attempts"] = gorm.Expr("attempts + 1")
+	}
+
+	if status == entity.DeliveryStatusSent {
+		v["provider_message_id"] = providerMsgID
+		v["sent_at"] = time.Now()
+		v["error"] = nil
+	} else {
+		v["error"] = truncate(errMsg, 500)
+	}
+
+	_, err := s.deliveryRepo.Updates(tx, v, func(d *gorm.DB) *gorm.DB {
+		return d.Where("id = ?", id)
+	})
+
+	return err
+}
+
+func truncate(s string, max int) string {
+	r := []rune(s)
+	if len(r) <= max {
+		return s
+	}
+
+	return string(r[:max])
 }
 
 func validateNotifyInput(in dto.NotifyInput) error {

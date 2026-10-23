@@ -7,6 +7,7 @@ import (
 	"barberstuff_backend/internal/config"
 	"barberstuff_backend/internal/infra/fcm"
 	"barberstuff_backend/internal/lib"
+	"barberstuff_backend/internal/worker"
 	"context"
 	"fmt"
 	"log"
@@ -30,6 +31,12 @@ import (
 // @description                 Masukkan token dengan format: Bearer {token}
 func main() {
 	log.Println("Server is starting...")
+	if _, err := os.Stat(".env"); err == nil {
+		if err := godotenv.Load(); err != nil {
+			log.Println("Error load dotenv file:", err.Error())
+		}
+	}
+	
 	db := db.Connect()
 	lib.RedisInit()
 	lib.StorageInit()
@@ -37,16 +44,6 @@ func main() {
 	c := cron.New()
 	ctx := context.Background()
 	cfg := config.Load()
-
-	if _, err := os.Stat(".env"); err == nil {
-		if err := godotenv.Load(); err != nil {
-			log.Println("Error load dotenv file:", err.Error())
-		}
-	}
-
-	if os.Getenv("APP_ENV") == "development" {
-		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	}
 
 	var sender fcm.Sender
 	if cfg.FCMEnabled {
@@ -56,10 +53,18 @@ func main() {
 		}
 		sender = s
 	} else {
+		log.Println("cihuy")
 		sender = fcm.NewNoopSender()
 	}
 
 	h := bootstrap.InitHandlers(db, sender)
+
+	go worker.RunNotificationDispatcher(ctx, h.NotifService)
+
+	if os.Getenv("APP_ENV") == "development" {
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		r.POST("/debug/notify", h.AuthMiddleware, h.DeviceHandler.DebugNotify)
+	}
 
 	auth := r.Group("/auth")
 	{

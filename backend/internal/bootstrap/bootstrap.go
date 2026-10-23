@@ -30,6 +30,7 @@ type Handlers struct {
 	DeviceHandler       *handler.DeviceTokenHandler
 	AuthMiddleware      gin.HandlerFunc
 	BookingService      service.BookingService
+	NotifService        service.NotificationService
 }
 
 func InitHandlers(db *gorm.DB, sender fcm.Sender) *Handlers {
@@ -52,6 +53,9 @@ func InitHandlers(db *gorm.DB, sender fcm.Sender) *Handlers {
 	benefitRepo := repository.NewBenefitRepository(db)
 	titleOutcomeRepo := repository.NewTitleOutcomeRepository(db)
 	deviceTokenRepo := repository.NewDeviceTokenRepository(db)
+	notifRepo := repository.NewNotificationRepository(db)
+	notifDeliverRepo := repository.NewNotificationDelivery(db)
+	txManagerRepo := repository.NewTxManager(db)
 
 	// Service
 	customerService := service.NewCustomerService(customerRepo, authRepo, db, lib.ClientRedis, premiumTypeRepo, staffRepo)
@@ -68,6 +72,7 @@ func InitHandlers(db *gorm.DB, sender fcm.Sender) *Handlers {
 	promoService := service.NewPromoService(promoRepo, customerRepo)
 	benefitService := service.NewBenefitService(benefitRepo, db)
 	deviceService := service.NewDeviceTokenService(deviceTokenRepo)
+	notifService := service.NewNotificationService(notifRepo, notifDeliverRepo, deviceTokenRepo, txManagerRepo, sender)
 
 	// Handler
 	customerHandler := handler.NewCustomerHandler(customerService)
@@ -84,7 +89,7 @@ func InitHandlers(db *gorm.DB, sender fcm.Sender) *Handlers {
 	employeeHandler := handler.NewEmployeeHandler(employeeService)
 	promoHandler := handler.NewPromoHandler(promoService)
 	benefitHandler := handler.NewBenefitHandler(benefitService)
-	deviceHandler := handler.NewDeviceTokenHandler(deviceService)
+	deviceHandler := handler.NewDeviceTokenHandler(deviceService, notifService)
 
 	// middleware
 	authMiddleware := middleware.AuthMiddleware(authRepo, staffRepo, customerRepo)
@@ -107,5 +112,6 @@ func InitHandlers(db *gorm.DB, sender fcm.Sender) *Handlers {
 		PromoHandler:        promoHandler,
 		BenefitHandler:      benefitHandler,
 		DeviceHandler:       deviceHandler,
+		NotifService:        notifService,
 	}
 }

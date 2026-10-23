@@ -9,14 +9,16 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type DeviceTokenHandler struct {
-	service service.DeviceTokenService
+	service      service.DeviceTokenService
+	notifService service.NotificationService
 }
 
-func NewDeviceTokenHandler(service service.DeviceTokenService) *DeviceTokenHandler {
-	return &DeviceTokenHandler{service: service}
+func NewDeviceTokenHandler(service service.DeviceTokenService, ns service.NotificationService) *DeviceTokenHandler {
+	return &DeviceTokenHandler{service: service, notifService: ns}
 }
 
 // UpsertDevice godoc
@@ -145,4 +147,40 @@ func (h *DeviceTokenHandler) Deactivate(ctx *gin.Context) {
 		Message:    "Berhasil menghapus data perangkat!",
 		StatusCode: http.StatusOK,
 	})
+}
+
+// handler sementara, HAPUS setelah tes selesai
+func (h *DeviceTokenHandler) DebugNotify(ctx *gin.Context) {
+	claims, exist := ctx.Get("claims")
+	if !exist {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Anda tidak memiliki akses!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	claimsResult, ok := claims.(*lib.CustomClaims)
+	if !ok {
+		helper.NewErrorResponse(ctx, dto.ResponseApi[any]{
+			Message:    "Gagal membaca data!",
+			StatusCode: http.StatusUnauthorized,
+		})
+		return
+	}
+	idUser, _ := uuid.Parse(claimsResult.UserId)
+
+	res, err := h.notifService.Notify(nil, dto.NotifyInput{
+		IdUser:    idUser,
+		EventType: "debug_test",
+		Title:     "Tes notifikasi",
+		Body:      "Halo dari backend",
+		Data:      map[string]string{"screen": "home"},
+		DedupKey:  "tes:1",
+	})
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, res)
 }
