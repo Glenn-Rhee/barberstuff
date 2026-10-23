@@ -4,6 +4,8 @@ import (
 	"barberstuff_backend/db"
 	_ "barberstuff_backend/docs"
 	"barberstuff_backend/internal/bootstrap"
+	"barberstuff_backend/internal/config"
+	"barberstuff_backend/internal/infra/fcm"
 	"barberstuff_backend/internal/lib"
 	"context"
 	"fmt"
@@ -34,6 +36,7 @@ func main() {
 	h := bootstrap.InitHandlers(db)
 	r := gin.Default()
 	c := cron.New()
+	cfg := config.Load()
 
 	if _, err := os.Stat(".env"); err == nil {
 		if err := godotenv.Load(); err != nil {
@@ -43,6 +46,18 @@ func main() {
 
 	if os.Getenv("APP_ENV") == "development" {
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
+
+	ctx := context.Background()
+	var sender fcm.Sender
+	if cfg.FCMEnabled {
+		s, err := fcm.NewFirebaseSender(ctx, []byte(cfg.FCMCredentialsJSON), cfg.FCMCredentialsFile)
+		if err != nil {
+			log.Fatalf("init fcm: %v", err)
+		}
+		sender = s
+	} else {
+		sender = fcm.NewNoopSender()
 	}
 
 	auth := r.Group("/auth")
