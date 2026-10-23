@@ -64,7 +64,7 @@ func (h *NotificationHandler) GetNotifications(ctx *gin.Context) {
 		return
 	}
 
-	helper.NewSuccessResponse(ctx, dto.ResponseApi[[]dto.GetNotificationRes]{
+	helper.NewSuccessResponse(ctx, dto.ResponseApi[dto.GetNotificationRes]{
 		Data:       result,
 		Message:    "Succes get data notif!",
 		StatusCode: http.StatusOK,

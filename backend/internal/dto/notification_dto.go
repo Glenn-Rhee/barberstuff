@@ -30,7 +30,7 @@ type GetNotificationReq struct {
 	RequestParamsPagination
 }
 
-type GetNotificationRes struct {
+type NotificationData struct {
 	ID        uuid.UUID      `json:"id"`
 	EventType string         `json:"event_type"`
 	Title     string         `json:"title"`
@@ -39,4 +39,9 @@ type GetNotificationRes struct {
 	IsRead    bool           `json:"is_read"`
 	ReadAt    *time.Time     `json:"read_at"`
 	CreatedAt time.Time      `json:"created_at"`
+}
+
+type GetNotificationRes struct {
+	Notifications []NotificationData `json:"notifications"`
+	TotalUnread   int64              `json:"total_unread"`
 }
